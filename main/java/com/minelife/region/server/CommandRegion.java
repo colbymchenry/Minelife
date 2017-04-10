@@ -20,7 +20,7 @@ public class CommandRegion implements ICommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/region create\n/region delete";
+        return "/region create '-s'\n/region delete '-s'\n" + EnumChatFormatting.GOLD + "Use '-s' at the end of command to specify subregion.";
     }
 
     @Override
@@ -49,13 +49,24 @@ public class CommandRegion implements ICommand {
             int[] max = new int[]{selection.getMaximumPoint().getBlockX(), selection.getMaximumPoint().getBlockY(), selection.getMaximumPoint().getBlockZ()};
 
             try {
-                Region.createRegion(sender.getEntityWorld().getWorldInfo().getWorldName(), min, max);
+                if (args.length < 2)
+                    Region.createRegion(sender.getEntityWorld().getWorldInfo().getWorldName(), min, max);
+                else if (args[1].equalsIgnoreCase("-s"))
+                    SubRegion.createSubRegion(Region.getRegionAt(player.getEntityWorld(), selection.getCenter().getBlockX(),
+                            selection.getCenter().getBlockY(), selection.getCenter().getBlockZ()), min, max);
+                else
+                    player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
             } catch (Exception e) {
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: " + e.getMessage()));
             }
         } else if (args[0].equalsIgnoreCase("delete")) {
             try {
-                Region.deleteRegion(Region.getRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUUID());
+                if (args.length < 2)
+                    Region.deleteRegion(Region.getRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUUID());
+                else if (args[1].equalsIgnoreCase("-s"))
+                    SubRegion.deleteSubRegion(SubRegion.getSubRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUUID());
+                else
+                    player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
             } catch (SQLException e) {
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: " + e.getMessage()));
             }
