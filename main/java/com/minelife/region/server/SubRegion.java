@@ -34,7 +34,7 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
      */
 
     public static void createSubRegion(Region parentRegion, int[] min, int[] max) throws Exception {
-        // TODO: Check if it goes outside the parent region
+        // TODO: Test if it goes outside the parent region
         // TODO: Test Command
         ResultSet result = Minelife.SQLITE.query("SELECT * FROM subregions WHERE world='" + parentRegion.getWorld() + "' AND " +
                 "minX <= '" + min[0] + "' AND " +
@@ -45,6 +45,15 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
                 "maxZ >= '" + max[2] + "'");
 
         if (result.next()) throw new Exception("Overlapping another subregion.");
+
+        int minX = min[0], minY = min[1], minZ = min[2];
+        int maxX = max[0], maxY = max[1], maxZ = max[2];
+
+        int p_minX = parentRegion.getMin()[0], p_minY = parentRegion.getMin()[1], p_minZ = parentRegion.getMin()[2];
+        int p_maxX = parentRegion.getMax()[0], p_maxY = parentRegion.getMax()[1], p_maxZ = parentRegion.getMax()[2];
+
+        if(minX < p_minX || minZ < p_minZ || minY < p_minY || maxX > p_maxX || maxY > p_maxY || maxZ > p_maxZ)
+            throw new Exception("Selection does not fall within the bounds of the parent region.");
 
         Minelife.SQLITE.query("INSERT INTO subregions (parentregionuuid, minX, minY, minZ, maxX, maxY, maxZ) " +
                 "VALUES ('" + parentRegion.getUUID().toString() + "', " +
