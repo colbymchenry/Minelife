@@ -35,6 +35,7 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
 
     public static void createSubRegion(Region parentRegion, int[] min, int[] max) throws Exception {
         // TODO: Check if it goes outside the parent region
+        // TODO: Make command
         ResultSet result = Minelife.SQLITE.query("SELECT * FROM subregions WHERE world='" + parentRegion.getWorld() + "' AND " +
                 "minX <= '" + min[0] + "' AND " +
                 "minY <= '" + min[1] + "' AND " +
