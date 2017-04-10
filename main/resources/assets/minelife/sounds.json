@@ -1,0 +1,18 @@
+{
+  "gui.atm.click": {
+    "category": "neutral",
+    "sounds": ["minelife:atm/click"]
+  },
+  "gui.atm.cash_register_purchase": {
+    "category": "neutral",
+    "sounds": ["minelife:atm/cash_register_purchase"]
+  },
+  "gui.atm.error": {
+    "category": "neutral",
+    "sounds": ["minelife:atm/error"]
+  },
+  "gun.m4.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/m4_shot"]
+  }
+}
