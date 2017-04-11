@@ -37,42 +37,42 @@ public class CommandRegion implements ICommand {
             return;
         }
 
-        if (args[0].equalsIgnoreCase("create")) {
-            com.sk89q.worldedit.regions.Region selection = WorldEditHook.getSelection(player);
-
-            if (selection == null || selection.getMinimumPoint() == null || selection.getMaximumPoint() == null) {
-                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: No valid selection was made."));
-                return;
-            }
-
-            int[] min = new int[]{selection.getMinimumPoint().getBlockX(), selection.getMinimumPoint().getBlockY(), selection.getMinimumPoint().getBlockZ()};
-            int[] max = new int[]{selection.getMaximumPoint().getBlockX(), selection.getMaximumPoint().getBlockY(), selection.getMaximumPoint().getBlockZ()};
-
-            try {
-                if (args.length < 2)
-                    Region.createRegion(sender.getEntityWorld().getWorldInfo().getWorldName(), min, max);
-                else if (args[1].equalsIgnoreCase("-s"))
-                    SubRegion.createSubRegion(Region.getRegionAt(player.getEntityWorld(), selection.getCenter().getBlockX(),
-                            selection.getCenter().getBlockY(), selection.getCenter().getBlockZ()), min, max);
-                else
-                    player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
-            } catch (Exception e) {
-                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: " + e.getMessage()));
-            }
-        } else if (args[0].equalsIgnoreCase("delete")) {
-            try {
-                if (args.length < 2)
-                    Region.deleteRegion(Region.getRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUUID());
-                else if (args[1].equalsIgnoreCase("-s"))
-                    SubRegion.deleteSubRegion(SubRegion.getSubRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUUID());
-                else
-                    player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
-            } catch (SQLException e) {
-                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: " + e.getMessage()));
-            }
-        } else {
-            player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
-        }
+//        if (args[0].equalsIgnoreCase("create")) {
+//            com.sk89q.worldedit.regions.Region selection = WorldEditHook.getSelection(player);
+//
+//            if (selection == null || selection.getMinimumPoint() == null || selection.getMaximumPoint() == null) {
+//                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: No valid selection was made."));
+//                return;
+//            }
+//
+//            int[] min = new int[]{selection.getMinimumPoint().getBlockX(), selection.getMinimumPoint().getBlockY(), selection.getMinimumPoint().getBlockZ()};
+//            int[] max = new int[]{selection.getMaximumPoint().getBlockX(), selection.getMaximumPoint().getBlockY(), selection.getMaximumPoint().getBlockZ()};
+//
+//            try {
+//                if (args.length < 2)
+//                    Region.createRegion(sender.getEntityWorld().getWorldInfo().getWorldName(), min, max);
+//                else if (args[1].equalsIgnoreCase("-s"))
+//                    SubRegion.createSubRegion(Region.getRegionAt(player.getEntityWorld(), selection.getCenter().getBlockX(),
+//                            selection.getCenter().getBlockY(), selection.getCenter().getBlockZ()), min, max);
+//                else
+//                    player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
+//            } catch (Exception e) {
+//                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: " + e.getMessage()));
+//            }
+//        } else if (args[0].equalsIgnoreCase("delete")) {
+//            try {
+//                if (args.length < 2)
+//                    Region.deleteRegion(Region.getRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUUID());
+//                else if (args[1].equalsIgnoreCase("-s"))
+//                    SubRegion.deleteSubRegion(SubRegion.getSubRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUUID());
+//                else
+//                    player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
+//            } catch (SQLException e) {
+//                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: " + e.getMessage()));
+//            }
+//        } else {
+//            player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
+//        }
     }
 
     @Override

@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,23 +22,25 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.util.vector.Vector3f;
 
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public abstract class Gun extends Item implements IExtendedReach {
+public abstract class Gun extends Item {
 
     public ResourceLocation texture;
     public ResourceLocation objModelLocation;
     public IModelCustom model;
     public String name;
-    public int rateOfFire;
-    public int tick;
+    public float fireRate, nextFire;
+    public float gravity = 9.81f;
+    public float initialBulletVelocity = 5f;
 
-    public Gun(String name, int rateOfFire, FMLPreInitializationEvent event) {
+    public Gun(String name, float fireRate, FMLPreInitializationEvent event) {
         this.name = name;
-        this.rateOfFire = rateOfFire < 1 ? 1 : rateOfFire;
+        this.fireRate = fireRate;
         setUnlocalizedName(name);
         setCreativeTab(ModGun.tabGuns);
 
@@ -51,17 +54,22 @@ public abstract class Gun extends Item implements IExtendedReach {
 
     @Override
     public void onUpdate(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
-        if (!p_77663_5_) this.tick = 0;
-        else {
-            if (Mouse.isButtonDown(0)) {
-                if (this.tick % this.rateOfFire == 0 || this.tick == 0) {
-                    this.fire();
-                }
+//        if (!p_77663_5_) this.tick = 0;
+//        else {
+        fireRate = 2000;
+        if (Mouse.isButtonDown(0) && System.currentTimeMillis() > nextFire) {
+            System.out.println("CALLED1");
+            nextFire = System.currentTimeMillis() + fireRate;
+            this.fire();
+            this.shootBullet();
+//                if (this.tick % this.rateOfFire == 0 || this.tick == 0) {
+//                    this.fire();
+//                }
 
-                this.tick++;
-            } else {
-                this.tick = 0;
-            }
+//                this.tick++;
+//            } else {
+//                this.tick = 0;
+//            }
         }
     }
 
@@ -85,78 +93,32 @@ public abstract class Gun extends Item implements IExtendedReach {
 
     public abstract void fire();
 
-    // This is mostly copied from the EntityRenderer#getMouseOver() method
-    public static MovingObjectPosition getMouseOverExtended(float dist) {
-        Minecraft mc = Minecraft.getMinecraft();
-        EntityLivingBase theRenderViewEntity = mc.renderViewEntity;
-        AxisAlignedBB theViewBoundingBox = AxisAlignedBB.getBoundingBox(
-                theRenderViewEntity.posX - 0.5D,
-                theRenderViewEntity.posY - 0.0D,
-                theRenderViewEntity.posZ - 0.5D,
-                theRenderViewEntity.posX + 0.5D,
-                theRenderViewEntity.posY + 1.5D,
-                theRenderViewEntity.posZ + 0.5D
-        );
-        MovingObjectPosition returnMOP = null;
-        if (mc.theWorld != null) {
-            double var2 = dist;
-            returnMOP = theRenderViewEntity.rayTrace(var2, 0);
-            double calcdist = var2;
-            Vec3 pos = Vec3.createVectorHelper((double) theRenderViewEntity.posX, (double) theRenderViewEntity.posY + (double) theRenderViewEntity.getEyeHeight(), (double) theRenderViewEntity.posZ);
-            var2 = calcdist;
-            if (returnMOP != null) {
-                calcdist = returnMOP.hitVec.distanceTo(pos);
-            }
+    public void shootBullet() {
+        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 
-            Vec3 lookvec = theRenderViewEntity.getLook(0);
-            Vec3 var8 = pos.addVector(lookvec.xCoord * var2,
-                    lookvec.yCoord * var2,
-                    lookvec.zCoord * var2);
-            Entity pointedEntity = null;
-            float var9 = 1.0F;
-            @SuppressWarnings("unchecked")
-            List<Entity> list = mc.theWorld.getEntitiesWithinAABBExcludingEntity(
-                    theRenderViewEntity,
-                    theViewBoundingBox.addCoord(
-                            lookvec.xCoord * var2,
-                            lookvec.yCoord * var2,
-                            lookvec.zCoord * var2).expand(var9, var9, var9));
-            double d = calcdist;
+//        double distanceTraveled = (initialBulletVelocity * Math.cos(player.rotationPitch) / gravity);
+//        distanceTraveled *= (initialBulletVelocity * Math.sin(player.rotationPitch)) + Math.sqrt((Math.pow(initialBulletVelocity * Math.sin(player.rotationPitch), 2)) + (2 * gravity * player.posY));
+//        double timeTraveled = distanceTraveled / (initialBulletVelocity * Math.cos(player.rotationPitch));
 
-            for (Entity entity : list) {
-                if (entity.canBeCollidedWith()) {
-                    float bordersize = entity.getCollisionBorderSize();
-                    AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(
-                            entity.posX - entity.width / 2,
-                            entity.posY,
-                            entity.posZ - entity.width / 2,
-                            entity.posX + entity.width / 2,
-                            entity.posY + entity.height,
-                            entity.posZ + entity.width / 2);
-                    aabb.expand(bordersize, bordersize, bordersize);
-                    MovingObjectPosition mop0 = aabb.calculateIntercept(pos, var8);
+        int range = 50;
+        AxisAlignedBB surrounding_check = AxisAlignedBB.getBoundingBox(player.posX - range, player.posY - range, player.posZ - range, player.posX + range, player.posY + range, player.posZ + range);
 
-                    if (aabb.isVecInside(pos)) {
-                        if (0.0D < d || d == 0.0D) {
-                            pointedEntity = entity;
-                            d = 0.0D;
-                        }
-                    } else if (mop0 != null) {
-                        double d1 = pos.distanceTo(mop0.hitVec);
+        List<EntityLivingBase> surrounding_entities = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check);
+        Vec3 lookVec = player.getLookVec();
 
-                        if (d1 < d || d == 0.0D) {
-                            pointedEntity = entity;
-                            d = d1;
-                        }
-                    }
-                }
-            }
+        for (EntityLivingBase entity : surrounding_entities) {
+            double minX = entity.boundingBox.minX / lookVec.xCoord;
+            double minY = entity.boundingBox.minY / lookVec.yCoord;
+            double minZ = entity.boundingBox.minZ / lookVec.zCoord;
 
-            if (pointedEntity != null && (d < calcdist || returnMOP == null)) {
-                returnMOP = new MovingObjectPosition(pointedEntity);
+            double maxX = entity.boundingBox.maxX / lookVec.xCoord;
+            double maxY = entity.boundingBox.maxY / lookVec.yCoord;
+            double maxZ = entity.boundingBox.maxZ / lookVec.zCoord;
+
+            if(minZ <= minX && maxZ >= minX) {
+                System.out.println("HIT");
             }
         }
-        return returnMOP;
     }
 
 }

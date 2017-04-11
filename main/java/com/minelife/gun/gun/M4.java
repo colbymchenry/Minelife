@@ -77,28 +77,5 @@ public class M4 extends Gun {
         Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + "gun." + ((Gun) Minecraft.getMinecraft().thePlayer.getHeldItem().getItem()).name + ".shot", 0.5F, 1.0F);
 
         animation = new Animation(0, 0, 0).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0, 0.2f);
-
-
-        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-
-        float reach = this.getReach();
-        MovingObjectPosition mov = getMouseOverExtended(reach);
-
-        if (mov != null)
-        {
-            if (mov.entityHit != null && mov.entityHit.hurtResistantTime == 0)
-            {
-                if (mov.entityHit != player )
-                {
-                    Minelife.NETWORK.sendToServer(new MessageExtendedReachAttack(
-                            mov.entityHit.getEntityId()));
-                }
-            }
-        }
-    }
-
-    @Override
-    public float getReach() {
-        return 20;
     }
 }

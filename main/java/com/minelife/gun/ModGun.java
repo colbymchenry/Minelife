@@ -22,8 +22,6 @@ public class ModGun extends SubMod {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         GameRegistry.registerItem(new M4(event), "m4");
-
-        registerPacket(MessageExtendedReachAttack.Handler.class, MessageExtendedReachAttack.class, Side.SERVER);
     }
 
     @Override
