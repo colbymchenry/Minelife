@@ -1,15 +1,23 @@
 package com.minelife.gun.gun;
 
 import com.minelife.Minelife;
-import com.minelife.gun.Ammo;
-import com.minelife.gun.Animation;
-import com.minelife.gun.Gun;
+import com.minelife.gun.*;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityCow;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+
+import java.util.List;
+
 
 public class M4 extends Gun {
 
@@ -68,6 +76,29 @@ public class M4 extends Gun {
     public void fire() {
         Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + "gun." + ((Gun) Minecraft.getMinecraft().thePlayer.getHeldItem().getItem()).name + ".shot", 0.5F, 1.0F);
 
-        animation = new Animation(0, 0, 0).translateTo((float) (Math.random() / 2f), (float) (Math.random() / 2f), 2, 0.2f).translateTo(0, 0, 0, 0.2f);
+        animation = new Animation(0, 0, 0).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0, 0.2f);
+
+
+        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+
+        float reach = this.getReach();
+        MovingObjectPosition mov = getMouseOverExtended(reach);
+
+        if (mov != null)
+        {
+            if (mov.entityHit != null && mov.entityHit.hurtResistantTime == 0)
+            {
+                if (mov.entityHit != player )
+                {
+                    Minelife.NETWORK.sendToServer(new MessageExtendedReachAttack(
+                            mov.entityHit.getEntityId()));
+                }
+            }
+        }
+    }
+
+    @Override
+    public float getReach() {
+        return 20;
     }
 }

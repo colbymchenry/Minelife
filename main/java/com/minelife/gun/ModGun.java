@@ -5,6 +5,7 @@ import com.minelife.SubMod;
 import com.minelife.gun.gun.M4;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -21,6 +22,8 @@ public class ModGun extends SubMod {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         GameRegistry.registerItem(new M4(event), "m4");
+
+        registerPacket(MessageExtendedReachAttack.Handler.class, MessageExtendedReachAttack.class, Side.SERVER);
     }
 
     @Override
