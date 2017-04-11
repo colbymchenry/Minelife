@@ -46,16 +46,16 @@ public abstract class Gun extends Item {
 
     @Override
     public void onUpdate(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
-        if(!p_77663_5_) tick = 0;
+        if(!p_77663_5_) this.tick = 0;
         else {
             if (Mouse.isButtonDown(0)) {
-                if (tick % 4 == 0 || tick == 0) {
-                    Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + "gun." + ((Gun) Minecraft.getMinecraft().thePlayer.getHeldItem().getItem()).name + ".shot", 0.5F, 1.0F);
+                if (this.tick % this.rateOfFire == 0 || this.tick == 0) {
+                    this.fire();
                 }
 
-                tick++;
+                this.tick++;
             } else {
-                tick = 0;
+                this.tick = 0;
             }
         }
     }
@@ -77,5 +77,7 @@ public abstract class Gun extends Item {
     public abstract boolean shouldUseRenderHelper(IItemRenderer.ItemRenderType type, ItemStack item, IItemRenderer.ItemRendererHelper helper);
 
     public abstract void renderItem(IItemRenderer.ItemRenderType type, ItemStack item, Object... data);
+
+    public abstract void fire();
 
 }
