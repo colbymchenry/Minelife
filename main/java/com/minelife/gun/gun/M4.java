@@ -74,9 +74,11 @@ public class M4 extends Gun {
 
     @Override
     public void fire() {
-
-        Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + "gun." + ((Gun) Minecraft.getMinecraft().thePlayer.getHeldItem().getItem()).name + ".shot", 0.5F, 1.0F);
-
         animation = new Animation(0, 0, 0).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0, 0.2f);
+    }
+
+    @Override
+    public String getSoundName(Ammo ammo) {
+        return "gun.m4.shot";
     }
 }

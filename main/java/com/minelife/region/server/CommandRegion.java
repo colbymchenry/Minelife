@@ -36,7 +36,7 @@ public class CommandRegion implements ICommand {
             player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
             return;
         }
-
+// TODO: Get world edit to work so can uncomment all this code
 //        if (args[0].equalsIgnoreCase("create")) {
 //            com.sk89q.worldedit.regions.Region selection = WorldEditHook.getSelection(player);
 //

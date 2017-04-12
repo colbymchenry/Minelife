@@ -9,6 +9,7 @@ import net.minecraft.world.World;
 
 public class WorldEditHook {
 
+    // TODO: Get world edit to work so can uncomment code
 //    public static com.sk89q.worldedit.regions.Region getSelection(EntityPlayerMP player) {
 //        try {
 //            ForgeWorld forgeWorld = ForgeWorldEdit.inst.getWorld(player.getEntityWorld());

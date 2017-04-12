@@ -5,14 +5,17 @@ import com.minelife.Minelife;
 import com.minelife.gun.client.RenderGun;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.ResourceLocation;
@@ -22,6 +25,8 @@ import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
+import net.minecraftforge.common.MinecraftForge;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -36,9 +41,10 @@ public abstract class Gun extends Item {
     public ResourceLocation objModelLocation;
     public IModelCustom model;
     public String name;
-    public long fireRate, nextFire;
-    public float gravity = 9.81f;
-    public float initialBulletVelocity = 5f;
+    public long fireRate;
+
+    @SideOnly(Side.CLIENT)
+    public long nextFire;
 
     public Gun(String name, long fireRate, FMLPreInitializationEvent event) {
         this.name = name;
@@ -55,14 +61,15 @@ public abstract class Gun extends Item {
     }
 
     @Override
-    public void onUpdate(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
-        if(Minecraft.getMinecraft().thePlayer.getHeldItem() == null) return;
-        if(!(Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof Gun)) return;
+    public void onUpdate(ItemStack stack, World world, Entity holder, int arg, boolean inHand) {
+        // only call on the client side
+        if(!world.isRemote) return;
+        if(!inHand) return;
 
         if (Mouse.isButtonDown(0) && System.currentTimeMillis() > nextFire) {
             nextFire = System.currentTimeMillis() + fireRate;
+            Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + getSoundName(getPossibleAmmo()[0]), 0.5F, 1.0F);
             this.fire();
-            this.shootBullet();
         }
     }
 
@@ -86,22 +93,31 @@ public abstract class Gun extends Item {
 
     public abstract void fire();
 
-    public void shootBullet() {
-        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+    public abstract String getSoundName(Ammo ammo);
 
+    @SideOnly(Side.SERVER)
+    public void shootBullet(EntityPlayerMP player, ItemStack itemStack) {
 //        double distanceTraveled = (initialBulletVelocity * Math.cos(player.rotationPitch) / gravity);
 //        distanceTraveled *= (initialBulletVelocity * Math.sin(player.rotationPitch)) + Math.sqrt((Math.pow(initialBulletVelocity * Math.sin(player.rotationPitch), 2)) + (2 * gravity * player.posY));
 //        double timeTraveled = distanceTraveled / (initialBulletVelocity * Math.cos(player.rotationPitch));
 
+        NBTTagCompound tagCompound = itemStack.writeToNBT(new NBTTagCompound());
+
+        if(System.currentTimeMillis() > (!tagCompound.hasKey("nextFire") ? 0 : tagCompound.getLong("nextFire"))) {
+            tagCompound.setLong("nextFire", System.currentTimeMillis() + fireRate);
+            itemStack.readFromNBT(tagCompound);
+        } else {
+            return;
+        }
+
+        player.worldObj.playSoundToNearExcept(player, Minelife.MOD_ID + ":" + getSoundName(getPossibleAmmo()[0]), 0.5F, 1.0F);
+
+        // TODO: Check if block is in the way
         int range = 50;
         AxisAlignedBB surrounding_check = AxisAlignedBB.getBoundingBox(player.posX - range, player.posY - range, player.posZ - range, player.posX + range, player.posY + range, player.posZ + range);
 
         List<EntityLivingBase> surrounding_entities = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check);
         Vec3 lookVec = player.getLookVec();
-        System.out.println("------- look vec ----------");
-        System.out.println(lookVec.xCoord + "," + lookVec.yCoord + "," + lookVec.zCoord);
-        System.out.println("------- player pos ------");
-        System.out.println(player.posX + "," + player.posY + "," + player.posZ);
 
         for (EntityLivingBase entity : surrounding_entities) {
             if(entity != player) {
@@ -132,10 +148,6 @@ public abstract class Gun extends Item {
                     maxZ = min_z;
                 }
 
-                System.out.println("-------- ENTITY BOUNDING BOX ------");
-                System.out.println(entity.boundingBox.minX + "," + entity.boundingBox.minY + "," + entity.boundingBox.minZ);
-                System.out.println(entity.boundingBox.maxX + "," + entity.boundingBox.maxY + "," + entity.boundingBox.maxZ);
-
                 double largestMinValue = minX;
 
                 if(minZ > minX && minZ > minY) {
@@ -153,15 +165,9 @@ public abstract class Gun extends Item {
                 }
 
                 if(smallestMaxValue > largestMinValue) {
-                    System.out.println("HIT");
+                    MinecraftForge.EVENT_BUS.post(new EntityShotEvent(player, entity, player.getHeldItem()));
+                    return;
                 }
-
-                System.out.println("----- CALCULATIONS ------");
-                System.out.println(smallestMaxValue + "," + largestMinValue);
-                System.out.println("minZ=" + minZ + "," + "maxZ=" + maxZ);
-                System.out.println("minX=" + minX + "," + "maxX=" + maxX);
-                System.out.println("minY=" + minY + "," + "maxY=" + maxY);
-
             }
         }
     }
