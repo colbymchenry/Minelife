@@ -356,8 +356,6 @@ public class Animation
                 Vector3d vec1 = new Vector3d(posX(), posY(), posZ());
                 angle = Math.cos(vec.dot(vec1));
 
-                System.out.println(angle);
-
                 if (x < posX())
                 {
                     isLessX = true;

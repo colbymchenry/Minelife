@@ -22,7 +22,7 @@ import java.util.List;
 public class M4 extends Gun {
 
     public M4(FMLPreInitializationEvent event) {
-        super("m4", 4, event);
+        super("m4", 65, event);
     }
 
 
@@ -74,6 +74,7 @@ public class M4 extends Gun {
 
     @Override
     public void fire() {
+
         Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + "gun." + ((Gun) Minecraft.getMinecraft().thePlayer.getHeldItem().getItem()).name + ".shot", 0.5F, 1.0F);
 
         animation = new Animation(0, 0, 0).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0, 0.2f);

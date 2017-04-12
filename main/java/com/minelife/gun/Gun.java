@@ -1,5 +1,6 @@
 package com.minelife.gun;
 
+import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.gun.client.RenderGun;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -24,6 +25,7 @@ import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.awt.geom.Line2D;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -34,11 +36,11 @@ public abstract class Gun extends Item {
     public ResourceLocation objModelLocation;
     public IModelCustom model;
     public String name;
-    public float fireRate, nextFire;
+    public long fireRate, nextFire;
     public float gravity = 9.81f;
     public float initialBulletVelocity = 5f;
 
-    public Gun(String name, float fireRate, FMLPreInitializationEvent event) {
+    public Gun(String name, long fireRate, FMLPreInitializationEvent event) {
         this.name = name;
         this.fireRate = fireRate;
         setUnlocalizedName(name);
@@ -54,22 +56,13 @@ public abstract class Gun extends Item {
 
     @Override
     public void onUpdate(ItemStack p_77663_1_, World p_77663_2_, Entity p_77663_3_, int p_77663_4_, boolean p_77663_5_) {
-//        if (!p_77663_5_) this.tick = 0;
-//        else {
-        fireRate = 2000;
+        if(Minecraft.getMinecraft().thePlayer.getHeldItem() == null) return;
+        if(!(Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof Gun)) return;
+
         if (Mouse.isButtonDown(0) && System.currentTimeMillis() > nextFire) {
-            System.out.println("CALLED1");
             nextFire = System.currentTimeMillis() + fireRate;
             this.fire();
             this.shootBullet();
-//                if (this.tick % this.rateOfFire == 0 || this.tick == 0) {
-//                    this.fire();
-//                }
-
-//                this.tick++;
-//            } else {
-//                this.tick = 0;
-//            }
         }
     }
 
@@ -105,18 +98,23 @@ public abstract class Gun extends Item {
 
         List<EntityLivingBase> surrounding_entities = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check);
         Vec3 lookVec = player.getLookVec();
+        System.out.println(lookVec.xCoord + "," + lookVec.yCoord + "," + lookVec.zCoord);
 
         for (EntityLivingBase entity : surrounding_entities) {
-            double minX = entity.boundingBox.minX / lookVec.xCoord;
-            double minY = entity.boundingBox.minY / lookVec.yCoord;
-            double minZ = entity.boundingBox.minZ / lookVec.zCoord;
+            if(entity != player) {
+                double minX = entity.boundingBox.minX / (lookVec.xCoord + player.posX);
+                double maxX = entity.boundingBox.maxX / (lookVec.xCoord + player.posX);
 
-            double maxX = entity.boundingBox.maxX / lookVec.xCoord;
-            double maxY = entity.boundingBox.maxY / lookVec.yCoord;
-            double maxZ = entity.boundingBox.maxZ / lookVec.zCoord;
+                double minY = entity.boundingBox.minY / (lookVec.yCoord + player.posY);
+                double maxY = entity.boundingBox.maxY / (lookVec.yCoord + player.posY);
 
-            if(minZ <= minX && maxZ >= minX) {
-                System.out.println("HIT");
+                double minZ = entity.boundingBox.minZ / (lookVec.zCoord + player.posZ);
+                double maxZ = entity.boundingBox.maxZ / (lookVec.zCoord + player.posZ);
+
+                System.out.println("minZ=" + minZ + "," + "maxZ=" + maxZ);
+                System.out.println("minX=" + minX + "," + "maxX=" + maxX);
+                System.out.println("minY=" + minY + "," + "maxY=" + maxY);
+
             }
         }
     }
