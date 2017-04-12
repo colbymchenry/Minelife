@@ -98,19 +98,66 @@ public abstract class Gun extends Item {
 
         List<EntityLivingBase> surrounding_entities = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check);
         Vec3 lookVec = player.getLookVec();
+        System.out.println("------- look vec ----------");
         System.out.println(lookVec.xCoord + "," + lookVec.yCoord + "," + lookVec.zCoord);
+        System.out.println("------- player pos ------");
+        System.out.println(player.posX + "," + player.posY + "," + player.posZ);
 
         for (EntityLivingBase entity : surrounding_entities) {
             if(entity != player) {
-                double minX = entity.boundingBox.minX / (lookVec.xCoord + player.posX);
-                double maxX = entity.boundingBox.maxX / (lookVec.xCoord + player.posX);
+                double minX = (entity.boundingBox.minX - player.posX) / lookVec.xCoord;
+                double maxX = (entity.boundingBox.maxX - player.posX) / lookVec.xCoord;
 
-                double minY = entity.boundingBox.minY / (lookVec.yCoord + player.posY);
-                double maxY = entity.boundingBox.maxY / (lookVec.yCoord + player.posY);
+                double minY = (entity.boundingBox.minY - player.posY) / lookVec.yCoord;
+                double maxY = (entity.boundingBox.maxY - player.posY) / lookVec.yCoord;
 
-                double minZ = entity.boundingBox.minZ / (lookVec.zCoord + player.posZ);
-                double maxZ = entity.boundingBox.maxZ / (lookVec.zCoord + player.posZ);
+                double minZ = (entity.boundingBox.minZ - player.posZ) / lookVec.zCoord;
+                double maxZ = (entity.boundingBox.maxZ - player.posZ) / lookVec.zCoord;
 
+                if(lookVec.xCoord < 0) {
+                    double min_x = minX;
+                    minX = maxX;
+                    maxX = min_x;
+                }
+
+                if(lookVec.yCoord < 0) {
+                    double min_y = minY;
+                    minY = maxY;
+                    maxY = min_y;
+                }
+
+                if(lookVec.zCoord < 0) {
+                    double min_z = minZ;
+                    minZ = maxZ;
+                    maxZ = min_z;
+                }
+
+                System.out.println("-------- ENTITY BOUNDING BOX ------");
+                System.out.println(entity.boundingBox.minX + "," + entity.boundingBox.minY + "," + entity.boundingBox.minZ);
+                System.out.println(entity.boundingBox.maxX + "," + entity.boundingBox.maxY + "," + entity.boundingBox.maxZ);
+
+                double largestMinValue = minX;
+
+                if(minZ > minX && minZ > minY) {
+                    largestMinValue = minZ;
+                } else if (minY > minX && minY > minZ) {
+                    largestMinValue = minY;
+                }
+
+                double smallestMaxValue = maxX;
+
+                if(maxZ < maxX && maxZ < maxY) {
+                    smallestMaxValue = maxZ;
+                } else if(maxY < maxX && maxY < maxZ) {
+                    smallestMaxValue = maxY;
+                }
+
+                if(smallestMaxValue > largestMinValue) {
+                    System.out.println("HIT");
+                }
+
+                System.out.println("----- CALCULATIONS ------");
+                System.out.println(smallestMaxValue + "," + largestMinValue);
                 System.out.println("minZ=" + minZ + "," + "maxZ=" + maxZ);
                 System.out.println("minX=" + minX + "," + "maxX=" + maxX);
                 System.out.println("minY=" + minY + "," + "maxY=" + maxY);
