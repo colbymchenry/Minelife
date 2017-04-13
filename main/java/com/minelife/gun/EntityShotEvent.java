@@ -9,10 +9,17 @@ public class EntityShotEvent extends Event {
     private EntityLivingBase entityShooter;
     private EntityLivingBase entityDamaged;
     private ItemStack gun;
+    private int damage;
 
     public EntityShotEvent(EntityLivingBase entityShooter, EntityLivingBase entityDamaged, ItemStack gun) {
         this.entityShooter = entityShooter;
         this.entityDamaged = entityDamaged;
         this.gun = gun;
+
+        // TODO: Damage entity
+        if(!this.isCanceled())
+//            entityDamaged.da
     }
+
+
 }

@@ -37,7 +37,7 @@ public class PacketMouseClick implements IMessage {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
 
             if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof Gun) {
-                ((Gun) player.getHeldItem().getItem()).shootBullet(player);
+                ((Gun) player.getHeldItem().getItem()).shootBullet(player, player.getHeldItem());
             }
 
             return null;

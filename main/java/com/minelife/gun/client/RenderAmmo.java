@@ -1,6 +1,6 @@
 package com.minelife.gun.client;
 
-import com.minelife.gun.Ammo;
+import com.minelife.gun.EnumAmmo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
@@ -8,9 +8,9 @@ import org.lwjgl.opengl.GL11;
 
 public class RenderAmmo implements IItemRenderer {
 
-    private Ammo ammo;
+    private EnumAmmo ammo;
 
-    public RenderAmmo(Ammo ammo) {
+    public RenderAmmo(EnumAmmo ammo) {
         this.ammo = ammo;
     }
 

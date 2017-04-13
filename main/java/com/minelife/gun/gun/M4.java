@@ -1,22 +1,10 @@
 package com.minelife.gun.gun;
 
-import com.minelife.Minelife;
 import com.minelife.gun.*;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityCow;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
 import net.minecraftforge.client.IItemRenderer;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-
-import java.util.List;
 
 
 public class M4 extends Gun {
@@ -27,8 +15,8 @@ public class M4 extends Gun {
 
 
     @Override
-    public Ammo[] getPossibleAmmo() {
-        return new Ammo[0];
+    public EnumAmmo[] getPossibleAmmo() {
+        return new EnumAmmo[0];
     }
 
     @Override
@@ -78,7 +66,17 @@ public class M4 extends Gun {
     }
 
     @Override
-    public String getSoundName(Ammo ammo) {
+    public void reload() {
+
+    }
+
+    @Override
+    public String getSoundName(EnumAmmo ammo) {
         return "gun.m4.shot";
+    }
+
+    @Override
+    public int getClipSize() {
+        return 30;
     }
 }
