@@ -3,6 +3,7 @@ package com.minelife.gun;
 import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 
 public class EntityShotEvent extends Event {
 
@@ -16,10 +17,31 @@ public class EntityShotEvent extends Event {
         this.entityDamaged = entityDamaged;
         this.gun = gun;
 
-        // TODO: Damage entity
-        if(!this.isCanceled())
-//            entityDamaged.da
+        if (this.isCanceled()) return;
+
+        Object[] ammo = ItemGun.getAmmo(gun);
+
+        if(ammo == null) return;
+
+        this.damage = ((EnumAmmo) ammo[0]).damage;
+
+        entityDamaged.attackEntityFrom(DamageSource.causeMobDamage(entityShooter), this.damage);
     }
 
+    public EntityLivingBase getEntityShooter() {
+        return entityShooter;
+    }
+
+    public EntityLivingBase getEntityDamaged() {
+        return entityDamaged;
+    }
+
+    public ItemStack getGun() {
+        return gun;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
 
 }

@@ -1,20 +1,16 @@
 package com.minelife.gun.client;
 
-import com.minelife.Minelife;
-import com.minelife.gun.Gun;
+import com.minelife.gun.ItemGun;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.client.model.AdvancedModelLoader;
-import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
 
 public class RenderGun implements IItemRenderer {
 
-    private Gun gun;
+    private ItemGun gun;
 
-    public RenderGun(Gun gun) {
+    public RenderGun(ItemGun gun) {
         this.gun = gun;
     }
 

@@ -7,16 +7,10 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 
-public class M4 extends Gun {
+public class M4 extends ItemGun {
 
     public M4(FMLPreInitializationEvent event) {
         super("m4", 65, event);
-    }
-
-
-    @Override
-    public EnumAmmo[] getPossibleAmmo() {
-        return new EnumAmmo[0];
     }
 
     @Override
@@ -63,16 +57,6 @@ public class M4 extends Gun {
     @Override
     public void fire() {
         animation = new Animation(0, 0, 0).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0, 0.2f);
-    }
-
-    @Override
-    public void reload() {
-
-    }
-
-    @Override
-    public String getSoundName(EnumAmmo ammo) {
-        return "gun.m4.shot";
     }
 
     @Override

@@ -23,7 +23,7 @@ import net.minecraftforge.client.model.IModelCustom;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Mouse;
 
-public abstract class Gun extends Item {
+public abstract class ItemGun extends Item {
 
     public ResourceLocation texture;
     public ResourceLocation objModelLocation;
@@ -34,7 +34,7 @@ public abstract class Gun extends Item {
     @SideOnly(Side.CLIENT)
     public long nextFire;
 
-    public Gun(String name, long fireRate, FMLPreInitializationEvent event) {
+    public ItemGun(String name, long fireRate, FMLPreInitializationEvent event) {
         this.name = name;
         this.fireRate = fireRate;
         setUnlocalizedName(name);
@@ -61,42 +61,6 @@ public abstract class Gun extends Item {
         }
     }
 
-    @Override
-    public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
-        return true;
-    }
-
-    @Override
-    public EnumAction getItemUseAction(ItemStack par1ItemStack) {
-        return EnumAction.none;
-    }
-
-    public void setAmmo(EnumAmmo ammo, int amount, ItemStack itemStack) {
-        if(itemStack.getItem() instanceof Gun) return;
-
-        NBTTagCompound tagCompound = itemStack.writeToNBT(new NBTTagCompound());
-
-        if(amount > getClipSize()) amount = getClipSize();
-
-        tagCompound.setString("ammo", ammo.name() + "," + amount);
-    }
-
-    public abstract EnumAmmo[] getPossibleAmmo();
-
-    public abstract boolean handleRenderType(ItemStack item, IItemRenderer.ItemRenderType type);
-
-    public abstract boolean shouldUseRenderHelper(IItemRenderer.ItemRenderType type, ItemStack item, IItemRenderer.ItemRendererHelper helper);
-
-    public abstract void renderItem(IItemRenderer.ItemRenderType type, ItemStack item, Object... data);
-
-    public abstract void fire();
-
-    public abstract void reload();
-
-    public abstract String getSoundName(EnumAmmo ammo);
-
-    public abstract int getClipSize();
-
     @SideOnly(Side.SERVER)
     public void shootBullet(EntityPlayerMP player, ItemStack itemStack) {
 //        double distanceTraveled = (initialBulletVelocity * Math.cos(player.rotationPitch) / gravity);
@@ -121,5 +85,29 @@ public abstract class Gun extends Item {
         if (target != null)
             MinecraftForge.EVENT_BUS.post(new EntityShotEvent(player, target, player.getHeldItem()));
     }
+
+    @Override
+    public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public EnumAction getItemUseAction(ItemStack par1ItemStack) {
+        return EnumAction.none;
+    }
+
+    public abstract boolean handleRenderType(ItemStack item, IItemRenderer.ItemRenderType type);
+
+    public abstract boolean shouldUseRenderHelper(IItemRenderer.ItemRenderType type, ItemStack item, IItemRenderer.ItemRendererHelper helper);
+
+    public abstract void renderItem(IItemRenderer.ItemRenderType type, ItemStack item, Object... data);
+
+    public abstract void fire();
+
+    public abstract void reload(ItemStack itemStack);
+
+    public abstract String getSoundNameForShot(ItemStack ammo);
+
+    public abstract int getClipSize();
 
 }
