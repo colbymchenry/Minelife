@@ -1,5 +1,6 @@
 package com.minelife.gun;
 
+import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.PlayerHelper;
 import com.minelife.gun.client.RenderGun;
@@ -22,6 +23,8 @@ import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Mouse;
+
+import java.util.List;
 
 public abstract class ItemGun extends Item {
 
@@ -86,6 +89,80 @@ public abstract class ItemGun extends Item {
             MinecraftForge.EVENT_BUS.post(new EntityShotEvent(player, target, player.getHeldItem()));
     }
 
+    public static ItemStack getAmmo(ItemStack itemStack) {
+        if(!(itemStack.getItem() instanceof ItemGun)) return null;
+
+        if(!itemStack.hasTagCompound()) return null;
+
+        NBTTagCompound tagCompound = itemStack.getTagCompound();
+
+        if(!tagCompound.hasKey("ammo")) return null;
+
+        String[] data = tagCompound.getString("ammo").split(",");
+
+        return new ItemStack(Item.getItemById(Integer.parseInt(data[0])), Integer.parseInt(data[1]));
+    }
+
+    @SideOnly(Side.SERVER)
+    public static void reload(EntityPlayerMP player, ItemStack stackGun) {
+        if(!(stackGun.getItem() instanceof ItemGun)) return;
+
+        ItemGun itemGun = (ItemGun) stackGun.getItem();
+
+        ItemStack stackAmmo = getAmmoFromInventory(player, stackGun);
+
+        if(stackAmmo == null) return;
+
+        ItemAmmo itemAmmo = (ItemAmmo) stackAmmo.getItem();
+
+        NBTTagCompound tagCompound = stackGun.hasTagCompound() ? stackGun.getTagCompound() : stackGun.writeToNBT(new NBTTagCompound());
+
+        ItemStack currentAmmo = getAmmo(stackGun);
+
+        int ammoAmount = 0;
+
+        while(ammoAmount < itemGun.getClipSize() && stackAmmo != null) {
+            // add current ammo
+            if (currentAmmo != null) ammoAmount += currentAmmo.stackSize;
+
+            int difference = itemGun.getClipSize() - ammoAmount;
+
+            if(stackAmmo.stackSize > difference) {
+                stackAmmo.stackSize -= difference;
+            } else {
+                difference = stackAmmo.stackSize;
+                // TODO: Remove from stack from inventory
+            }
+
+            ammoAmount += difference;
+
+            stackAmmo = getAmmoFromInventory(player, stackGun);
+        }
+
+        tagCompound.setString("ammo", Item.getIdFromItem(itemAmmo) + "," + ammoAmount);
+
+        stackGun.readFromNBT(tagCompound);
+    }
+
+    @SideOnly(Side.SERVER)
+    public static ItemStack getAmmoFromInventory(EntityPlayerMP player, ItemStack gun) {
+        if(!(gun.getItem() instanceof ItemGun)) return null;
+
+        ItemGun itemGun = (ItemGun) gun.getItem();
+
+        for (ItemStack itemStack : player.inventory.mainInventory) {
+            if(itemStack != null) {
+                if(itemStack.getItem() instanceof ItemAmmo) {
+                    if(itemGun.validAmmo().contains(itemStack.getItem())) {
+                        return itemStack;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
         return true;
@@ -104,10 +181,12 @@ public abstract class ItemGun extends Item {
 
     public abstract void fire();
 
-    public abstract void reload(ItemStack itemStack);
+    public abstract void reload(ItemStack ammo);
 
-    public abstract String getSoundNameForShot(ItemStack ammo);
+    public abstract String getSoundForShot(ItemStack ammo);
 
     public abstract int getClipSize();
+
+    public abstract List<ItemAmmo> validAmmo();
 
 }
