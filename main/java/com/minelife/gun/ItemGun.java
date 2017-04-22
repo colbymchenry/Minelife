@@ -3,6 +3,7 @@ package com.minelife.gun;
 import com.minelife.Minelife;
 import com.minelife.PlayerHelper;
 import com.minelife.gun.client.RenderGun;
+import com.minelife.police.client.ModelBipedCustom;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -100,11 +101,8 @@ public abstract class ItemGun extends Item {
         tagCompound.setString("ammo", tagCompound.getString("ammo").split(",")[0] + "," + (ammo.stackSize - 1));
         gunStack.stackTagCompound = tagCompound;
 
-        System.out.println(ammo.stackSize - 1);
-
         player.worldObj.playSoundToNearExcept(player, Minelife.MOD_ID + ":" + getSoundForShot(getAmmo(gunStack)), 0.5F, 1.0F);
 
-        // TODO: Check if block is in the way
         EntityLivingBase target = PlayerHelper.getTargetEntity(player, 50);
 
         if (target != null) {
@@ -148,6 +146,8 @@ public abstract class ItemGun extends Item {
 
     @SideOnly(Side.CLIENT)
     public abstract void renderItem(IItemRenderer.ItemRenderType type, ItemStack item, Object... data);
+
+    public abstract void setArmRotations(ModelBipedCustom model, float f1);
 
     /*
     ---------------------------- STATIC METHODS -------------------------------------

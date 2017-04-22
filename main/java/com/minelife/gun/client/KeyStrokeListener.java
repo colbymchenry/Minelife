@@ -19,7 +19,6 @@ public class KeyStrokeListener {
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if(keyReload.isPressed()) {
-            System.out.println("CALLED");
             Minelife.NETWORK.sendToServer(new PacketReload());
         }
     }
