@@ -8,41 +8,33 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 
-public class PacketMouseClick implements IMessage {
+public class PacketReload implements IMessage {
 
-    private boolean rightMouse;
-
-    public PacketMouseClick() {
+    public PacketReload() {
     }
-
-    public PacketMouseClick(boolean rightMouse) {
-        this.rightMouse = rightMouse;
-    }
-
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        this.rightMouse = buf.readBoolean();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeBoolean(this.rightMouse);
     }
 
-    public static class Handler implements IMessageHandler<PacketMouseClick, IMessage> {
+    public static class Handler implements IMessageHandler<PacketReload, IMessage> {
 
         @Override
-        public IMessage onMessage(PacketMouseClick message, MessageContext ctx) {
+        public IMessage onMessage(PacketReload message, MessageContext ctx) {
             EntityPlayer player = ctx.getServerHandler().playerEntity;
-
-            if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemGun) {
-                ((ItemGun) player.getHeldItem().getItem()).shootBullet(player, player.getHeldItem());
+            ItemStack heldItem = player.getHeldItem();
+            if(heldItem != null && heldItem.getItem() instanceof ItemGun) {
+                ItemGun.reload(player, heldItem);
             }
-
             return null;
         }
+
     }
 
 }

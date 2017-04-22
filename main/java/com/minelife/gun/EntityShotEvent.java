@@ -19,11 +19,11 @@ public class EntityShotEvent extends Event {
 
         if (this.isCanceled()) return;
 
-        Object[] ammo = ItemGun.getAmmo(gun);
+        ItemStack ammo = ItemGun.getAmmo(gun);
 
         if(ammo == null) return;
 
-        this.damage = ((EnumAmmo) ammo[0]).damage;
+        this.damage = ModGun.ammoMap.get(ammo.getItem().getClass()).getDamage();
 
         entityDamaged.attackEntityFrom(DamageSource.causeMobDamage(entityShooter), this.damage);
     }

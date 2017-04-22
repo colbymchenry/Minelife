@@ -1,16 +1,22 @@
 package com.minelife.gun.gun;
 
+import com.google.common.collect.Lists;
+import com.minelife.Minelife;
 import com.minelife.gun.*;
+import com.minelife.gun.ammo.Ammo556;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 
 public class M4 extends ItemGun {
 
     public M4(FMLPreInitializationEvent event) {
-        super("m4", 65, event);
+        super(event);
     }
 
     @Override
@@ -35,8 +41,6 @@ public class M4 extends ItemGun {
 
                 animation.animate();
                 GL11.glTranslatef(0.1f + animation.posX(), 0f + animation.posY(), 1f + animation.posZ());
-
-
             }
 
             if (type == IItemRenderer.ItemRenderType.INVENTORY) {
@@ -55,12 +59,30 @@ public class M4 extends ItemGun {
     }
 
     @Override
-    public void fire() {
+    public void fire(ItemStack gunStack) {
         animation = new Animation(0, 0, 0).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0, 0.2f);
+        Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + getSoundForShot(getAmmo(gunStack)), 0.5F, 1.0F);
+    }
+
+    @Override
+    public String getSoundForShot(ItemStack ammo) {
+        return "gun.m4.shot";
     }
 
     @Override
     public int getClipSize() {
         return 30;
+    }
+
+    @Override
+    public long getFireRate() {
+        return 65;
+    }
+
+    @Override
+    public List<ItemAmmo> validAmmo() {
+        List<ItemAmmo> validAmmo = Lists.newArrayList();
+        validAmmo.add(ModGun.ammoMap.get(Ammo556.class));
+        return validAmmo;
     }
 }
