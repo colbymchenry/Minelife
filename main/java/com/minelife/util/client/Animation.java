@@ -1,6 +1,4 @@
-package com.minelife.gun;
-
-import org.lwjgl.util.vector.Quaternion;
+package com.minelife.util.client;
 
 import javax.vecmath.Vector3d;
 import java.util.ArrayList;

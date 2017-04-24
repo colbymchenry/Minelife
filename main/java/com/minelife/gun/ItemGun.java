@@ -1,16 +1,16 @@
 package com.minelife.gun;
 
 import com.minelife.Minelife;
-import com.minelife.PlayerHelper;
+import com.minelife.util.PlayerHelper;
 import com.minelife.gun.client.RenderGun;
-import com.minelife.police.client.ModelBipedCustom;
+import com.minelife.gun.packet.PacketMouseClick;
+import com.minelife.util.client.render.ModelBipedCustom;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

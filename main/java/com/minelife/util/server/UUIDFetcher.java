@@ -1,4 +1,4 @@
-package com.minelife;
+package com.minelife.util.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

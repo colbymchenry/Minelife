@@ -1,4 +1,4 @@
-package com.minelife;
+package com.minelife.util;
 
 import java.io.File;
 import java.net.URL;

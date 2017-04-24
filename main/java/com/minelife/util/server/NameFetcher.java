@@ -1,4 +1,4 @@
-package com.minelife;
+package com.minelife.util.server;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

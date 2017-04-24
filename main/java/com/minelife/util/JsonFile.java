@@ -1,4 +1,4 @@
-package com.minelife;
+package com.minelife.util;
 
 import com.google.common.collect.Lists;
 import org.json.simple.JSONObject;

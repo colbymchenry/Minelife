@@ -1,10 +1,11 @@
 package com.minelife.gun;
 
 import com.google.common.collect.Maps;
-import com.minelife.ClassFinder;
+import com.minelife.util.ClassFinder;
 import com.minelife.CommonProxy;
 import com.minelife.SubMod;
-import com.minelife.gun.gun.M4;
+import com.minelife.gun.packet.PacketMouseClick;
+import com.minelife.gun.packet.PacketReload;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -15,7 +16,6 @@ import net.minecraft.item.Item;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ModGun extends SubMod {
 

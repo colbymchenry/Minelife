@@ -3,7 +3,7 @@ package com.minelife.economy.packet;
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.PacketPlaySound;
-import com.minelife.UUIDFetcher;
+import com.minelife.util.server.UUIDFetcher;
 import com.minelife.economy.ModEconomy;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;

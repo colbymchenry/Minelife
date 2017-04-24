@@ -1,11 +1,12 @@
 package com.minelife.gun.gun;
 
 import com.google.common.collect.Lists;
+import com.minelife.util.client.Animation;
 import com.minelife.Minelife;
-import com.minelife.PlayerHelper;
+import com.minelife.util.PlayerHelper;
 import com.minelife.gun.*;
 import com.minelife.gun.ammo.Ammo556;
-import com.minelife.police.client.ModelBipedCustom;
+import com.minelife.util.client.render.ModelBipedCustom;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;

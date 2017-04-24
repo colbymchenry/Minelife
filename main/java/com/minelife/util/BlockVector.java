@@ -1,4 +1,4 @@
-package com.minelife.gun;
+package com.minelife.util;
 
 import java.util.Map;
 

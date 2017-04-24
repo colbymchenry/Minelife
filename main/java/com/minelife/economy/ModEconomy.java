@@ -2,7 +2,7 @@ package com.minelife.economy;
 
 import com.minelife.CommonProxy;
 import com.minelife.Minelife;
-import com.minelife.PlayerHelper;
+import com.minelife.util.PlayerHelper;
 import com.minelife.SubMod;
 import com.minelife.economy.packet.*;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
