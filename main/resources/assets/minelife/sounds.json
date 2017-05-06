@@ -11,8 +11,12 @@
     "category": "neutral",
     "sounds": ["minelife:atm/error"]
   },
-  "gun.m4.shot": {
+  "gun.M4A4.shot": {
     "category": "neutral",
-    "sounds": ["minelife:guns/m4_shot"]
+    "sounds": ["minelife:guns/M4A4"]
+  },
+  "gun.Barrett.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/Barrett"]
   }
 }

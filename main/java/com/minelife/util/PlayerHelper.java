@@ -1,11 +1,11 @@
 package com.minelife.util;
 
-import com.google.common.collect.Lists;
-import com.minelife.gun.EntityShotEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFurnace;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -13,11 +13,10 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,87 +40,65 @@ public class PlayerHelper {
 
         Vec3 currentPosVec = Vec3.createVectorHelper(player.posX, player.posY + player.eyeHeight, player.posZ);
         Block block;
-        for(int i = 0; i < range; i++) {
+        for (int i = 0; i < range; i++) {
             currentPosVec = currentPosVec.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
 
             player.worldObj.spawnParticle("smoke", currentPosVec.xCoord, currentPosVec.yCoord, currentPosVec.zCoord, 0.0F, 0.0F, 0.0F);
 
             block = player.worldObj.getBlock((int) currentPosVec.xCoord, (int) currentPosVec.yCoord, (int) currentPosVec.zCoord);
 
-            if(block != null &&
-                    block != Blocks.air &&
-                    block != Blocks.grass &&
-                    block != Blocks.tallgrass &&
-                    block != Blocks.water &&
-                    block != Blocks.flowing_water &&
-                    block != Blocks.double_plant) {
-                return null;
+            if (block != null && block.getMaterial() != Material.air) {
+                block.setBlockBoundsBasedOnState(player.worldObj, (int) currentPosVec.xCoord, (int) currentPosVec.yCoord, (int) currentPosVec.zCoord);
+                AxisAlignedBB axisalignedbb = block.getCollisionBoundingBoxFromPool(player.worldObj, (int) currentPosVec.xCoord, (int) currentPosVec.yCoord, (int) currentPosVec.zCoord);
+
+                if (axisalignedbb != null && axisalignedbb.isVecInside(Vec3.createVectorHelper(currentPosVec.xCoord, currentPosVec.yCoord, currentPosVec.zCoord))) {
+                    if (block != Blocks.air &&
+                            block != Blocks.grass &&
+                            block != Blocks.tallgrass &&
+                            block != Blocks.water &&
+                            block != Blocks.flowing_water &&
+                            block != Blocks.double_plant &&
+                            block != Blocks.red_flower &&
+                            block != Blocks.yellow_flower) {
+                        return null;
+                    }
+                }
             }
 
             for (EntityLivingBase entity1 : surrounding_entities) {
                 if (entity1.canBeCollidedWith() && entity1 != player) {
-                  if(currentPosVec.xCoord >= entity1.boundingBox.minX && currentPosVec.xCoord <= entity1.boundingBox.maxX
-                          && currentPosVec.yCoord >= entity1.boundingBox.minY && currentPosVec.yCoord <= entity1.boundingBox.maxY
-                          && currentPosVec.zCoord >= entity1.boundingBox.minZ && currentPosVec.zCoord <= entity1.boundingBox.maxZ) {
-                      return entity1;
-                  }
+                    if (entity1.boundingBox.isVecInside(Vec3.createVectorHelper(currentPosVec.xCoord, currentPosVec.yCoord, currentPosVec.zCoord))) {
+                        return entity1;
+                    }
                 }
             }
 
         }
 
-//        for (EntityLivingBase entity : surrounding_entities) {
-//            if (entity != player) {
-//                double minX = (entity.boundingBox.minX - player.posX) / lookVec.xCoord;
-//                double maxX = (entity.boundingBox.maxX - player.posX) / lookVec.xCoord;
-//
-//                double minY = (entity.boundingBox.minY - (player.posY + player.eyeHeight)) / lookVec.yCoord;
-//                double maxY = (entity.boundingBox.maxY - (player.posY + player.eyeHeight)) / lookVec.yCoord;
-//
-//                double minZ = (entity.boundingBox.minZ - player.posZ) / lookVec.zCoord;
-//                double maxZ = (entity.boundingBox.maxZ - player.posZ) / lookVec.zCoord;
-//
-//                if (lookVec.xCoord < 0) {
-//                    double min_x = minX;
-//                    minX = maxX;
-//                    maxX = min_x;
-//                }
-//
-//                if (lookVec.yCoord < 0) {
-//                    double min_y = minY;
-//                    minY = maxY;
-//                    maxY = min_y;
-//                }
-//
-//                if (lookVec.zCoord < 0) {
-//                    double min_z = minZ;
-//                    minZ = maxZ;
-//                    maxZ = min_z;
-//                }
-//
-//                double largestMinValue = minX;
-//
-//                if (minZ > minX && minZ > minY) {
-//                    largestMinValue = minZ;
-//                } else if (minY > minX && minY > minZ) {
-//                    largestMinValue = minY;
-//                }
-//
-//                double smallestMaxValue = maxX;
-//
-//                if (maxZ < maxX && maxZ < maxY) {
-//                    smallestMaxValue = maxZ;
-//                } else if (maxY < maxX && maxY < maxZ) {
-//                    smallestMaxValue = maxY;
-//                }
-//
-//                if (smallestMaxValue > largestMinValue) {
-//                    return entity;
-//                }
-//            }
-//        }
-
         return null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static final void zoom(double amount) {
+
+        if(amount < 1) amount = 1;
+
+        EntityRenderer entRenderer = Minecraft.getMinecraft().entityRenderer;
+        try {
+            Class<?> c = entRenderer.getClass();
+            Field f = c.getDeclaredField("cameraZoom");
+            f.setAccessible(true);
+            // f.setAccessible(true); // solution
+            f.setDouble(entRenderer, amount); // IllegalAccessException
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
     }
 
 }

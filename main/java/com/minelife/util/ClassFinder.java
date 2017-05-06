@@ -21,11 +21,14 @@ public class ClassFinder {
         if (scannedUrl == null) {
             throw new IllegalArgumentException(String.format(BAD_PACKAGE_ERROR, scannedPath, scannedPackage));
         }
+
         File scannedDir = new File(scannedUrl.getFile());
         List<Class<?>> classes = new ArrayList<Class<?>>();
+
         for (File file : scannedDir.listFiles()) {
             classes.addAll(find(file, scannedPackage));
         }
+
         return classes;
     }
 

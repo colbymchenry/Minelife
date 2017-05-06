@@ -1,6 +1,6 @@
 package com.minelife.gun.packet;
 
-import com.minelife.gun.ItemGun;
+import com.minelife.gun.BaseGun;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -27,8 +27,8 @@ public class PacketReload implements IMessage {
         public IMessage onMessage(PacketReload message, MessageContext ctx) {
             EntityPlayer player = ctx.getServerHandler().playerEntity;
             ItemStack heldItem = player.getHeldItem();
-            if(heldItem != null && heldItem.getItem() instanceof ItemGun) {
-                ItemGun.reload(player, heldItem);
+            if(heldItem != null && heldItem.getItem() instanceof BaseGun) {
+                BaseGun.reload(player, heldItem);
             }
             return null;
         }
