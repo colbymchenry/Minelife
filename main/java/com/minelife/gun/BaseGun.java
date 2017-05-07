@@ -39,7 +39,15 @@ public abstract class BaseGun extends Item {
 
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean inHand) {
-        if (!world.isRemote) return;
+        if (!world.isRemote) {
+            if(stack.hasTagCompound() && stack.stackTagCompound.hasKey("reloadTime")) {
+                if(System.currentTimeMillis() > stack.stackTagCompound.getLong("reloadTime")) {
+                    reload((EntityPlayer) entity, stack);
+                    stack.stackTagCompound.removeTag("reloadTime");
+                }
+            }
+            return;
+        }
         if (!(entity instanceof EntityPlayer)) return;
         getClientHandler().onUpdate(stack, world, (EntityPlayer) entity, slot, inHand);
     }

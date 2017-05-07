@@ -1,6 +1,7 @@
 package com.minelife.gun;
 
 import com.google.common.collect.Maps;
+import com.minelife.gun.ammos.AmmoAK47;
 import com.minelife.gun.ammos.AmmoAWP;
 import com.minelife.gun.ammos.AmmoBarrett;
 import com.minelife.gun.ammos.AmmoM4A4;
@@ -19,6 +20,7 @@ public class AmmoRegistry {
         registerAmmo(AmmoM4A4.class);
         registerAmmo(AmmoBarrett.class);
         registerAmmo(AmmoAWP.class);
+        registerAmmo(AmmoAK47.class);
     }
 
     private static final void registerAmmo(Class<? extends BaseAmmo> ammoClass) {

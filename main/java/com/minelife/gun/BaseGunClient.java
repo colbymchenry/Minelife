@@ -7,6 +7,7 @@ import com.minelife.util.client.Animation;
 import com.minelife.util.client.render.ModelBipedCustom;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -53,6 +54,7 @@ public abstract class BaseGunClient {
             nextFire = System.currentTimeMillis() + gun.getFireRate();
             Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
             shootBullet();
+            Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":gun." + gun.getName() + ".shot", 5F, 1.0F);
             PlayerHelper.getTargetEntity(holder, 50);
         }
     }

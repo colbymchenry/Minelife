@@ -16,7 +16,7 @@ public class GunBarrett extends BaseGun {
 
     @Override
     public int getFireRate() {
-        return 800;
+        return 3200;
     }
 
     @Override

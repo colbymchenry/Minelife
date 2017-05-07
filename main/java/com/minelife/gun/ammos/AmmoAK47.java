@@ -1,4 +1,10 @@
 package com.minelife.gun.ammos;
 
-public class AmmoAK47 {
+import com.minelife.gun.BaseAmmo;
+
+public class AmmoAK47 extends BaseAmmo {
+    @Override
+    public String getName() {
+        return "AK47";
+    }
 }

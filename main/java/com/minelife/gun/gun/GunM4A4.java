@@ -26,7 +26,7 @@ public class GunM4A4 extends BaseGun {
 
     @Override
     public int getReloadTime() {
-        return 10;
+        return 5000;
     }
 
     @Override

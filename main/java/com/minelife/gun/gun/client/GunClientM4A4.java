@@ -77,7 +77,6 @@ public class GunClientM4A4 extends BaseGunClient {
     @Override
     public void shootBullet() {
         setAnimation(new Animation(0, 0, 0).translateTo((float) (Math.random() / 3f), (float) (Math.random() / 3f), (float) (Math.random() / 3f), 0.18f).translateTo(0, 0, 0, 0.2f));
-        Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":gun." + getGun().getName() + ".shot", 5F, 1.0F);
     }
 
 }

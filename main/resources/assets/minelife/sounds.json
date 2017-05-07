@@ -13,10 +13,26 @@
   },
   "gun.M4A4.shot": {
     "category": "neutral",
-    "sounds": ["minelife:guns/M4A4"]
+    "sounds": ["minelife:gun/M4A4"]
+  },
+  "gun.M4A4.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:gun/M4A4_RELOAD"]
   },
   "gun.Barrett.shot": {
     "category": "neutral",
-    "sounds": ["minelife:guns/Barrett"]
+    "sounds": ["minelife:gun/Barrett"]
+  },
+  "gun.AWP.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:gun/AWP"]
+  },
+  "gun.AK47.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:gun/AK47"]
+  },
+  "gun.AK47.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:gun/AK47_RELOAD"]
   }
 }

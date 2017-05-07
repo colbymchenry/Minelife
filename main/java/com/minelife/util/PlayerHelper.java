@@ -43,7 +43,7 @@ public class PlayerHelper {
         for (int i = 0; i < range; i++) {
             currentPosVec = currentPosVec.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
 
-            player.worldObj.spawnParticle("smoke", currentPosVec.xCoord, currentPosVec.yCoord, currentPosVec.zCoord, 0.0F, 0.0F, 0.0F);
+            player.worldObj.spawnParticle("smoke", currentPosVec.xCoord, currentPosVec.yCoord - 0.2f, currentPosVec.zCoord, 0.0F, 0.0F, 0.0F);
 
             block = player.worldObj.getBlock((int) currentPosVec.xCoord, (int) currentPosVec.yCoord, (int) currentPosVec.zCoord);
 

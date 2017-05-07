@@ -2,6 +2,7 @@ package com.minelife.gun;
 
 import com.google.common.collect.Maps;
 import com.minelife.gun.client.RenderGun;
+import com.minelife.gun.gun.GunAK47;
 import com.minelife.gun.gun.GunAWP;
 import com.minelife.gun.gun.GunBarrett;
 import com.minelife.gun.gun.GunM4A4;
@@ -23,6 +24,7 @@ public class GunRegistry {
         registerGun(GunM4A4.class, event);
         registerGun(GunBarrett.class, event);
         registerGun(GunAWP.class, event);
+        registerGun(GunAK47.class, event);
     }
 
     private static final void registerGun(Class<? extends BaseGun> gunClass, FMLPreInitializationEvent event) {

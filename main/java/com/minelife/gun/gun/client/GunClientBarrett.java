@@ -87,7 +87,6 @@ public class GunClientBarrett extends BaseGunClient {
     @Override
     public void shootBullet() {
         setAnimation(new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0f, 0.2f));
-        Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":gun." + getGun().getName() + ".shot", 5F, 1.0F);
     }
 
     @Override
