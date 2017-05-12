@@ -40,7 +40,7 @@ public class GunClientM4A4 extends BaseGunClient {
             }
 
             if (type == IItemRenderer.ItemRenderType.INVENTORY) {
-                GL11.glScalef(0.6f, 0.6f, 0.6f);
+                GL11.glScalef(0.2f, 0.2f, 0.2f);
                 GL11.glTranslatef(0.5f, -1.25f, 0f);
             }
 

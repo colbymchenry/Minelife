@@ -2,6 +2,7 @@ package com.minelife.gun;
 
 import com.minelife.Minelife;
 import com.minelife.gun.server.EntityShotEvent;
+import com.minelife.gun.server.ServerProxy;
 import com.minelife.util.PlayerHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -12,6 +13,7 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -75,7 +77,7 @@ public abstract class BaseGun extends Item {
 
         player.worldObj.playSoundToNearExcept(player, Minelife.MOD_ID + ":gun." + getName() + ".shot", 0.5F, 1.0F);
 
-        EntityLivingBase target = PlayerHelper.getTargetEntity(player, 50);
+        EntityLivingBase target = PlayerHelper.getTargetEntity(player, 75);
 
         if (target != null)
             MinecraftForge.EVENT_BUS.post(new EntityShotEvent(player, target, player.getHeldItem()));
@@ -92,6 +94,8 @@ public abstract class BaseGun extends Item {
     public abstract int getClipSize();
 
     public abstract BaseAmmo getAmmoType();
+
+    public abstract boolean isFullAuto();
 
     @SideOnly(Side.CLIENT)
     protected abstract Class<?extends BaseGunClient> getClientHandlerClass();

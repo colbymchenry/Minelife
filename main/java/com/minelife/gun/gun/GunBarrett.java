@@ -16,7 +16,7 @@ public class GunBarrett extends BaseGun {
 
     @Override
     public int getFireRate() {
-        return 3200;
+        return 400;
     }
 
     @Override
@@ -37,6 +37,11 @@ public class GunBarrett extends BaseGun {
     @Override
     public BaseAmmo getAmmoType() {
         return AmmoRegistry.get(AmmoBarrett.class);
+    }
+
+    @Override
+    public boolean isFullAuto() {
+        return false;
     }
 
     @Override

@@ -2,10 +2,7 @@ package com.minelife.gun;
 
 import com.google.common.collect.Maps;
 import com.minelife.gun.client.RenderGun;
-import com.minelife.gun.gun.GunAK47;
-import com.minelife.gun.gun.GunAWP;
-import com.minelife.gun.gun.GunBarrett;
-import com.minelife.gun.gun.GunM4A4;
+import com.minelife.gun.gun.*;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -25,6 +22,8 @@ public class GunRegistry {
         registerGun(GunBarrett.class, event);
         registerGun(GunAWP.class, event);
         registerGun(GunAK47.class, event);
+        registerGun(GunDesertEagle.class, event);
+        registerGun(GunMagnum.class, event);
     }
 
     private static final void registerGun(Class<? extends BaseGun> gunClass, FMLPreInitializationEvent event) {

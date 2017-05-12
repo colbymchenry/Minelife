@@ -23,9 +23,17 @@
     "category": "neutral",
     "sounds": ["minelife:gun/Barrett"]
   },
+  "gun.Barrett.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:gun/Barrett_RELOAD"]
+  },
   "gun.AWP.shot": {
     "category": "neutral",
     "sounds": ["minelife:gun/AWP"]
+  },
+  "gun.AWP.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:gun/AWP_RELOAD"]
   },
   "gun.AK47.shot": {
     "category": "neutral",
@@ -34,5 +42,21 @@
   "gun.AK47.reload": {
     "category": "neutral",
     "sounds": ["minelife:gun/AK47_RELOAD"]
+  },
+  "gun.Magnum.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:gun/Magnum"]
+  },
+  "gun.Magnum.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:gun/Magnum_RELOAD"]
+  },
+  "gun.DesertEagle.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:gun/DesertEagle"]
+  },
+  "gun.DesertEagle.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:gun/DesertEagle_RELOAD"]
   }
 }

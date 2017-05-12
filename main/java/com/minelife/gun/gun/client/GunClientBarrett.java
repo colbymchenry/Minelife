@@ -3,6 +3,8 @@ package com.minelife.gun.gun.client;
 import com.minelife.Minelife;
 import com.minelife.gun.BaseGun;
 import com.minelife.gun.BaseGunClient;
+import com.minelife.gun.GunRegistry;
+import com.minelife.gun.gun.GunAWP;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.Animation;
 import com.minelife.util.client.render.ModelBipedCustom;
@@ -46,7 +48,7 @@ public class GunClientBarrett extends BaseGunClient {
             }
 
             if (type == IItemRenderer.ItemRenderType.INVENTORY) {
-                GL11.glScalef(0.6f, 0.6f, 0.6f);
+                GL11.glScalef(0.2f, 0.2f, 0.2f);
                 GL11.glTranslatef(0.5f, -1.25f, 0f);
             }
 
@@ -58,9 +60,10 @@ public class GunClientBarrett extends BaseGunClient {
             }
 
             if (zoom && getAnimation().getActions().isEmpty() && type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
-                PlayerHelper.zoom(8.0D);
+                PlayerHelper.zoom(6.0D);
             } else {
                 getModel().renderAll();
+                PlayerHelper.zoom(1.0D);
             }
         }
         GL11.glPopMatrix();
@@ -93,22 +96,28 @@ public class GunClientBarrett extends BaseGunClient {
     public void onUpdate(ItemStack stack, World world, EntityPlayer holder, int slot, boolean inHand) {
         super.onUpdate(stack, world, holder, slot, inHand);
 
-        if (Mouse.isButtonDown(1)) {
+        if (inHand && Mouse.isButtonDown(1)) {
             if(!rightMouseDown) {
-                if (!zoom)
+                if (!zoom) {
                     setAnimation(new Animation(0, 0, 0f).translateTo(-2.5f, 0f, 0f, 0.2f));
-                else
+                    PlayerHelper.zoom(6.0D);
+                    zoom = true;
+                } else {
                     setAnimation(new Animation(-2f, 0, 0f).translateTo(0f, 0f, 0f, 0.2f));
+                    PlayerHelper.zoom(1.0D);
+                    zoom = false;
+                }
 
                 rightMouseDown = true;
-                zoom = !zoom;
             }
         } else {
             rightMouseDown = false;
         }
 
-        if(!zoom)
-            PlayerHelper.zoom(1.0D);
+        if(!inHand) {
+            zoom = false;
+            setAnimation(new Animation(0f, 0f, 0f).translate(0f, 0f, 0f));
+        }
     }
 
     public boolean isZoom() {

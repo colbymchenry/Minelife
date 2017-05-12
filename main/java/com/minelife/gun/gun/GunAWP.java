@@ -39,6 +39,11 @@ public class GunAWP extends BaseGun {
     }
 
     @Override
+    public boolean isFullAuto() {
+        return false;
+    }
+
+    @Override
     protected Class<? extends BaseGunClient> getClientHandlerClass() {
         return GunClientAWP.class;
     }

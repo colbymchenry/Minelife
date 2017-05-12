@@ -35,7 +35,7 @@ public class PacketReload implements IMessage {
                 // prevent reloading if max ammo is already met
                 if(BaseGun.getCurrentClipHoldings(heldItem) == ((BaseGun) heldItem.getItem()).getClipSize()) return null;
 
-                player.worldObj.playSoundAtEntity(player, Minelife.MOD_ID + ":gun." + ((BaseGun) heldItem.getItem()).getName() + ".reload", 0.5F, 1.0F);
+                player.worldObj.playSoundAtEntity(player, Minelife.MOD_ID + ":gun." + ((BaseGun) heldItem.getItem()).getName() + ".reload", 5F, 1.0F);
 
                 NBTTagCompound tagCompound = heldItem.hasTagCompound() ? heldItem.stackTagCompound : new NBTTagCompound();
 

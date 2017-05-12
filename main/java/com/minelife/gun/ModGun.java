@@ -39,4 +39,9 @@ public class ModGun extends SubMod {
     public Class<? extends CommonProxy> getClientProxy() {
         return com.minelife.gun.client.ClientProxy.class;
     }
+
+    @Override
+    public Class<? extends CommonProxy> getServerProxy() {
+        return com.minelife.gun.server.ServerProxy.class;
+    }
 }

@@ -1,10 +1,7 @@
 package com.minelife.gun;
 
 import com.google.common.collect.Maps;
-import com.minelife.gun.ammos.AmmoAK47;
-import com.minelife.gun.ammos.AmmoAWP;
-import com.minelife.gun.ammos.AmmoBarrett;
-import com.minelife.gun.ammos.AmmoM4A4;
+import com.minelife.gun.ammos.*;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 import java.util.Map;
@@ -21,6 +18,8 @@ public class AmmoRegistry {
         registerAmmo(AmmoBarrett.class);
         registerAmmo(AmmoAWP.class);
         registerAmmo(AmmoAK47.class);
+        registerAmmo(AmmoDesertEagle.class);
+        registerAmmo(AmmoMagnum.class);
     }
 
     private static final void registerAmmo(Class<? extends BaseAmmo> ammoClass) {

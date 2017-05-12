@@ -25,6 +25,7 @@ public abstract class BaseGunClient {
     private final IModelCustom model;
     private final BaseGun gun;
     private Animation animation;
+    private boolean mouseDown = false;
 
     private long nextFire;
 
@@ -50,12 +51,32 @@ public abstract class BaseGunClient {
 
         if (BaseGun.getCurrentClipHoldings(stack) < 1) return;
 
-        if (Mouse.isButtonDown(0) && System.currentTimeMillis() > nextFire) {
-            nextFire = System.currentTimeMillis() + gun.getFireRate();
-            Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
-            shootBullet();
-            Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":gun." + gun.getName() + ".shot", 5F, 1.0F);
-            PlayerHelper.getTargetEntity(holder, 50);
+        if(Minecraft.getMinecraft().currentScreen != null) return;
+
+        if (Mouse.isButtonDown(0)) {
+            if (!gun.isFullAuto()) {
+                if (System.currentTimeMillis() > nextFire) {
+                    if (!mouseDown) {
+                        nextFire = System.currentTimeMillis() + gun.getFireRate();
+                        Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
+                        shootBullet();
+                        Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":gun." + gun.getName() + ".shot", 5F, 1.0F);
+                        PlayerHelper.getTargetEntity(holder, 11);
+                    }
+                }
+            } else {
+                if (System.currentTimeMillis() > nextFire) {
+                    nextFire = System.currentTimeMillis() + gun.getFireRate();
+                    Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
+                    shootBullet();
+                    Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":gun." + gun.getName() + ".shot", 5F, 1.0F);
+                    PlayerHelper.getTargetEntity(holder, 11);
+                }
+            }
+
+            mouseDown = true;
+        } else {
+            mouseDown = false;
         }
     }
 
@@ -72,7 +93,7 @@ public abstract class BaseGunClient {
     }
 
     public Animation getAnimation() {
-        if(animation == null) setAnimation(new Animation(0, 0, 0));
+        if (animation == null) setAnimation(new Animation(0, 0, 0));
         return animation;
     }
 

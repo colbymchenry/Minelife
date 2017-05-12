@@ -40,6 +40,11 @@ public class GunM4A4 extends BaseGun {
     }
 
     @Override
+    public boolean isFullAuto() {
+        return true;
+    }
+
+    @Override
     protected Class<? extends BaseGunClient> getClientHandlerClass() {
         return GunClientM4A4.class;
     }
