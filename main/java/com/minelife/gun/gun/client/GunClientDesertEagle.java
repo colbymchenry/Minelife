@@ -77,7 +77,7 @@ public class GunClientDesertEagle extends BaseGunClient {
 
     @Override
     public void shootBullet() {
-        setAnimation(new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.x, 35, 6.5f).rotateTo(Animation.EnumRotation.x, 0, 4.5f));
+        setAnimation(new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.x, 65, 6.5f).rotateTo(Animation.EnumRotation.x, 0, 4.5f));
     }
 
 }
