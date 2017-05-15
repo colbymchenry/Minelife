@@ -6,6 +6,7 @@ import com.minelife.gun.server.ServerProxy;
 import com.minelife.util.PlayerHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,6 +17,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.List;
 
@@ -28,6 +30,8 @@ public abstract class BaseGun extends Item {
         setUnlocalizedName(getName());
         setCreativeTab(ModGun.tabGuns);
     }
+
+    // TODO: Disable block breaking
 
     @Override
     public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {

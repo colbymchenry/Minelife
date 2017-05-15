@@ -4,7 +4,7 @@ import com.minelife.gun.AmmoRegistry;
 import com.minelife.gun.BaseAmmo;
 import com.minelife.gun.BaseGun;
 import com.minelife.gun.BaseGunClient;
-import com.minelife.gun.ammos.AmmoBarrett;
+import com.minelife.gun.ammo.AmmoBarrett;
 import com.minelife.gun.gun.client.GunClientBarrett;
 
 public class GunBarrett extends BaseGun {

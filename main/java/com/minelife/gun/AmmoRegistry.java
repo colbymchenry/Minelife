@@ -1,7 +1,7 @@
 package com.minelife.gun;
 
 import com.google.common.collect.Maps;
-import com.minelife.gun.ammos.*;
+import com.minelife.gun.ammo.*;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 import java.util.Map;

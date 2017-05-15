@@ -4,7 +4,7 @@ import com.minelife.gun.AmmoRegistry;
 import com.minelife.gun.BaseAmmo;
 import com.minelife.gun.BaseGun;
 import com.minelife.gun.BaseGunClient;
-import com.minelife.gun.ammos.AmmoAWP;
+import com.minelife.gun.ammo.AmmoAWP;
 import com.minelife.gun.gun.client.GunClientAWP;
 
 public class GunAWP extends BaseGun {
