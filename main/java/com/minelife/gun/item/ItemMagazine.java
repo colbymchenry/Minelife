@@ -11,4 +11,6 @@ public class ItemMagazine extends Item {
         setTextureName(Minelife.MOD_ID + ":gunparts/" + gun.getName() + "_Magazine");
     }
 
+
+
 }

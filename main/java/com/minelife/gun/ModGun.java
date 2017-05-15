@@ -3,9 +3,7 @@ package com.minelife.gun;
 import com.minelife.CommonProxy;
 import com.minelife.SubMod;
 import com.minelife.gun.block.BlockZincOre;
-import com.minelife.gun.item.ItemGunmetal;
-import com.minelife.gun.item.ItemZincIngot;
-import com.minelife.gun.item.ItemZincPlate;
+import com.minelife.gun.item.*;
 import com.minelife.gun.packet.PacketMouseClick;
 import com.minelife.gun.packet.PacketReload;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -56,6 +54,17 @@ public class ModGun extends SubMod {
         );
 
         GameRegistry.addShapelessRecipe(new ItemStack(ItemZincPlate.instance), new ItemStack(ForgeHammer.getItem(), 1, OreDictionary.WILDCARD_VALUE), ItemZincIngot.instance);
+
+        ItemGrip.registerRecipe();
+        ItemTrigger.registerRecipe();
+        ItemPistolBarrel.registerRecipe();
+        ItemRifleStock.registerRecipe();
+        ItemRifleBarrel.registerRecipe();
+        ItemSniperBarrel.registerRecipe();
+        ItemSniperScope.registerRecipe();
+        ItemPistolFrame.registerRecipe();
+        ItemRifleFrame.registerRecipe();
+        ItemSniperFrame.registerRecipe();
     }
 
     @Override
@@ -70,6 +79,16 @@ public class ModGun extends SubMod {
         GameRegistry.registerItem(new ItemZincPlate(), "zincPlate");
         GameRegistry.registerItem(new ItemZincIngot(), "zincIngot");
         GameRegistry.registerItem(new ItemGunmetal(), "gunmetal");
+        GameRegistry.registerItem(new ItemGrip(), "grip");
+        GameRegistry.registerItem(new ItemTrigger(), "trigger");
+        GameRegistry.registerItem(new ItemPistolBarrel(), "pistolBarrel");
+        GameRegistry.registerItem(new ItemPistolFrame(), "pistolFrame");
+        GameRegistry.registerItem(new ItemRifleBarrel(), "rifleBarrel");
+        GameRegistry.registerItem(new ItemRifleFrame(), "rifleFrame");
+        GameRegistry.registerItem(new ItemRifleStock(), "rifleStock");
+        GameRegistry.registerItem(new ItemSniperBarrel(), "sniperBarrel");
+        GameRegistry.registerItem(new ItemSniperFrame(), "sniperFrame");
+        GameRegistry.registerItem(new ItemSniperScope(), "sniperScope");
     }
 
     @Override
