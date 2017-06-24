@@ -31,8 +31,6 @@ public abstract class BaseGun extends Item {
         setCreativeTab(ModGun.tabGuns);
     }
 
-    // TODO: Disable block breaking
-
     @Override
     public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
         return true;
@@ -108,6 +106,8 @@ public abstract class BaseGun extends Item {
     public final BaseGunClient getClientHandler() {
         return clientHandler;
     }
+
+    public abstract void registerRecipe();
 
     /**
      * ---------------------------- STATIC METHODS -----------------------------

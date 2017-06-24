@@ -10,11 +10,8 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
-import ic2.api.recipe.Recipes;
-import ic2.core.IC2;
 import ic2.core.Ic2Items;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,29 +39,20 @@ public class ModGun extends SubMod {
     public void init(FMLInitializationEvent event) {
 //       Recipes.macerator.addRecipe(new RecipeInputItemStack(yourInputItemStack, amount), null, yourItemStackOutput);
         GameRegistry.registerWorldGenerator(new ZincGenerator(), 0);
-        GameRegistry.addSmelting(BlockZincOre.instance, new ItemStack(ItemZincIngot.instance, 1), 1F);
+        GameRegistry.addSmelting(BlockZincOre.getBlock(), new ItemStack(ItemZincIngot.getItem(), 1), 1F);
 
-        GameRegistry.addRecipe(new ItemStack(ItemGunmetal.instance),
+        GameRegistry.addRecipe(new ItemStack(ItemGunmetal.getItem()),
                 "CCC",
                 "ZZZ",
                 "TTT",
                 'C', Ic2Items.platecopper,
-                'Z', ItemZincPlate.instance,
+                'Z', ItemZincPlate.getItem(),
                 'T', Ic2Items.platetin
         );
 
-        GameRegistry.addShapelessRecipe(new ItemStack(ItemZincPlate.instance), new ItemStack(ForgeHammer.getItem(), 1, OreDictionary.WILDCARD_VALUE), ItemZincIngot.instance);
+        GameRegistry.addShapelessRecipe(new ItemStack(ItemZincPlate.getItem()), new ItemStack(ForgeHammer.getItem(), 1, OreDictionary.WILDCARD_VALUE), ItemZincIngot.getItem());
 
-        ItemGrip.registerRecipe();
-        ItemTrigger.registerRecipe();
-        ItemPistolBarrel.registerRecipe();
-        ItemRifleStock.registerRecipe();
-        ItemRifleBarrel.registerRecipe();
-        ItemSniperBarrel.registerRecipe();
-        ItemSniperScope.registerRecipe();
-        ItemPistolFrame.registerRecipe();
-        ItemRifleFrame.registerRecipe();
-        ItemSniperFrame.registerRecipe();
+        ItemGunPart.registerRecipes();
     }
 
     @Override
@@ -72,23 +60,15 @@ public class ModGun extends SubMod {
         registerPacket(PacketMouseClick.Handler.class, PacketMouseClick.class, Side.SERVER);
         registerPacket(PacketReload.Handler.class, PacketReload.class, Side.SERVER);
 
+        GameRegistry.registerBlock(BlockZincOre.getBlock(), "zincOre");
+        GameRegistry.registerItem(ItemGunmetal.getItem(), "gunMetal");
+        GameRegistry.registerItem(ItemZincIngot.getItem(), "zincIngot");
+        GameRegistry.registerItem(ItemZincPlate.getItem(), "zincPlate");
+
+        ItemGunPart.registerParts();
+
         AmmoRegistry.registerAmmos();
         GunRegistry.registerGuns(event);
-
-        GameRegistry.registerBlock(new BlockZincOre(), "zincOre");
-        GameRegistry.registerItem(new ItemZincPlate(), "zincPlate");
-        GameRegistry.registerItem(new ItemZincIngot(), "zincIngot");
-        GameRegistry.registerItem(new ItemGunmetal(), "gunmetal");
-        GameRegistry.registerItem(new ItemGrip(), "grip");
-        GameRegistry.registerItem(new ItemTrigger(), "trigger");
-        GameRegistry.registerItem(new ItemPistolBarrel(), "pistolBarrel");
-        GameRegistry.registerItem(new ItemPistolFrame(), "pistolFrame");
-        GameRegistry.registerItem(new ItemRifleBarrel(), "rifleBarrel");
-        GameRegistry.registerItem(new ItemRifleFrame(), "rifleFrame");
-        GameRegistry.registerItem(new ItemRifleStock(), "rifleStock");
-        GameRegistry.registerItem(new ItemSniperBarrel(), "sniperBarrel");
-        GameRegistry.registerItem(new ItemSniperFrame(), "sniperFrame");
-        GameRegistry.registerItem(new ItemSniperScope(), "sniperScope");
     }
 
     @Override

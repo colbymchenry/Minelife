@@ -6,12 +6,17 @@ import net.minecraft.item.Item;
 
 public class ItemGunmetal extends Item {
 
-    public static ItemGunmetal instance;
+    private static ItemGunmetal instance;
 
-    public ItemGunmetal() {
+    private ItemGunmetal() {
         setUnlocalizedName("gunmetal");
         setTextureName(Minelife.MOD_ID + ":gunmetal");
         setCreativeTab(ModGun.tabGuns);
-        instance = this;
+    }
+
+    public static final ItemGunmetal getItem() {
+        if(instance == null) instance = new ItemGunmetal();
+
+        return instance;
     }
 }

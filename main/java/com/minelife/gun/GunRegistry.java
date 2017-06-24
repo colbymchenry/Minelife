@@ -1,6 +1,7 @@
 package com.minelife.gun;
 
 import com.google.common.collect.Maps;
+import com.minelife.Minelife;
 import com.minelife.gun.client.RenderGun;
 import com.minelife.gun.gun.*;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -9,6 +10,7 @@ import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Created by Colby McHenry on 5/5/2017.
@@ -30,6 +32,7 @@ public class GunRegistry {
         try {
             BaseGun gunInstance = gunClass.newInstance();
             GameRegistry.registerItem(gunInstance, "gun." + gunInstance.getName());
+            gunInstance.registerRecipe();
 
             if(event.getSide() == Side.CLIENT) {
                 try {
@@ -41,8 +44,10 @@ public class GunRegistry {
             }
 
             GUNS.put(gunClass, gunInstance);
+            System.out.println(gunInstance.getName() + " registered!");
         } catch (Exception e) {
             e.printStackTrace();
+            Minelife.getLogger().log(Level.SEVERE, "", e);
         }
     }
 

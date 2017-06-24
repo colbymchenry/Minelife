@@ -4,22 +4,17 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-public class ItemRifleFrame extends Item {
+public class ItemRifleFrame extends ItemGunPart {
 
-    public static ItemRifleFrame instance;
-
-    public ItemRifleFrame() {
-        instance = this;
-    }
-
-    public static void registerRecipe() {
-        GameRegistry.addRecipe(new ItemStack(ItemRifleFrame.instance),
+    @Override
+    public void registerRecipe() {
+        GameRegistry.addRecipe(new ItemStack(this),
                 "STB",
                 " G ",
-                'S', ItemRifleStock.instance,
-                'T', ItemTrigger.instance,
-                'B', ItemRifleBarrel.instance,
-                'G', ItemGrip.instance);
+                'S', ItemGunPart.rifleStock,
+                'T', ItemGunPart.trigger,
+                'B', ItemGunPart.rifleBarrel,
+                'G', ItemGunPart.grip);
     }
 
 }

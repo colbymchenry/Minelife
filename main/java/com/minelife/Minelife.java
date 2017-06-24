@@ -15,8 +15,9 @@ import lib.PatPeter.SQLibrary.Database;
 
 import java.io.File;
 import java.util.List;
+import java.util.logging.Logger;
 
-@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION)
+@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="after:BuildCraft|Transport")
 public class Minelife {
 
     public static final String MOD_ID = "minelife", VERSION = "2017.1", NAME = "Minelife";
@@ -58,6 +59,10 @@ public class Minelife {
 
     public static final File getDirectory() {
         return new File(System.getProperty("user.dir"), MOD_ID);
+    }
+
+    public static final Logger getLogger() {
+        return Logger.getLogger("Minecraft");
     }
 
 }

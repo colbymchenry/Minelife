@@ -49,4 +49,9 @@ public class GunM4A4 extends BaseGun {
         return GunClientM4A4.class;
     }
 
+    @Override
+    public void registerRecipe() {
+
+    }
+
 }

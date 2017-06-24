@@ -49,4 +49,10 @@ public class GunBarrett extends BaseGun {
         return GunClientBarrett.class;
     }
 
+    @Override
+    public void registerRecipe() {
+
+    }
+
+
 }

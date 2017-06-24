@@ -47,4 +47,11 @@ public class GunAWP extends BaseGun {
     protected Class<? extends BaseGunClient> getClientHandlerClass() {
         return GunClientAWP.class;
     }
+
+    @Override
+    public void registerRecipe() {
+
+    }
+
+
 }

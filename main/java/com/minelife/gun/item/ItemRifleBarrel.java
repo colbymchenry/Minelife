@@ -5,18 +5,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 // two pistol barrels
-public class ItemRifleBarrel extends Item {
+public class ItemRifleBarrel extends ItemGunPart {
 
-    public static ItemRifleBarrel instance;
-
-    public ItemRifleBarrel() {
-        instance = this;
-    }
-
-    public static void registerRecipe() {
-        GameRegistry.addRecipe(new ItemStack(ItemRifleBarrel.instance),
+    @Override
+    public void registerRecipe() {
+        GameRegistry.addRecipe(new ItemStack(this),
                 "GGG",
-                'G', ItemPistolBarrel.instance);
+                'G',ItemGunPart.pistolBarrel);
     }
 
 }

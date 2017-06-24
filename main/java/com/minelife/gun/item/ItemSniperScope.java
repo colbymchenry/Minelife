@@ -6,21 +6,14 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-public class ItemSniperScope extends Item {
+public class ItemSniperScope extends ItemGunPart {
 
-    public static ItemSniperScope instance;
-
-    public ItemSniperScope() {
-        instance = this;
-        setUnlocalizedName("sniperScope");
-        setTextureName(Minelife.MOD_ID + ":gunparts/SniperScope");
-    }
-
-    public static void registerRecipe() {
-        GameRegistry.addRecipe(new ItemStack(ItemSniperScope.instance),
+    @Override
+    public void registerRecipe() {
+        GameRegistry.addRecipe(new ItemStack(this),
                 "GMG",
                 'G', Item.getItemFromBlock(Blocks.glass_pane),
-                'M', ItemGunmetal.instance);
+                'M', ItemGunmetal.getItem());
     }
 
 }

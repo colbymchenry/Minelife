@@ -6,12 +6,16 @@ import net.minecraft.item.Item;
 
 public class ItemZincPlate extends Item {
 
-    public static ItemZincPlate instance;
+    private static ItemZincPlate instance;
 
-    public ItemZincPlate() {
+    private ItemZincPlate() {
         setUnlocalizedName("zincPlate");
         setTextureName(Minelife.MOD_ID + ":zinc_plate");
-        instance = this;
         setCreativeTab(ModGun.tabGuns);
+    }
+
+    public static final ItemZincPlate getItem() {
+        if(instance == null) instance = new ItemZincPlate();
+        return instance;
     }
 }

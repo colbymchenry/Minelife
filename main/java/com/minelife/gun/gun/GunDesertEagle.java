@@ -47,4 +47,11 @@ public class GunDesertEagle extends BaseGun {
     protected Class<? extends BaseGunClient> getClientHandlerClass() {
         return GunClientDesertEagle.class;
     }
+
+    @Override
+    public void registerRecipe() {
+
+    }
+
+
 }

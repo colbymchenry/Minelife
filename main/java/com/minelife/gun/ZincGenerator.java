@@ -14,7 +14,7 @@ public class ZincGenerator implements IWorldGenerator {
     private WorldGenerator worldGenerator;
 
     public ZincGenerator() {
-        worldGenerator = new WorldGenMinable(BlockZincOre.instance, 8);
+        worldGenerator = new WorldGenMinable(BlockZincOre.getBlock(), 8);
     }
 
     @Override

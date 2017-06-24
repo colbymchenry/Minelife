@@ -7,9 +7,9 @@ import net.minecraft.block.material.Material;
 
 public class BlockZincOre extends Block {
 
-    public static BlockZincOre instance;
+    private static BlockZincOre instance;
 
-    public BlockZincOre() {
+    private BlockZincOre() {
         super(Material.iron);
         setBlockTextureName(Minelife.MOD_ID + ":zinc_ore");
         setHardness(3);
@@ -18,7 +18,11 @@ public class BlockZincOre extends Block {
 //        level: 0=wood; 1=stone; 2=iron; 3=diamond tool
         setHarvestLevel("pickaxe", 1);
         setCreativeTab(ModGun.tabGuns);
-        instance = this;
+    }
+
+    public static final BlockZincOre getBlock() {
+        if(instance == null) instance = new BlockZincOre();
+        return instance;
     }
 
 }

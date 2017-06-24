@@ -47,4 +47,10 @@ public class GunMagnum extends BaseGun{
     protected Class<? extends BaseGunClient> getClientHandlerClass() {
         return GunClientMagnum.class;
     }
+
+    @Override
+    public void registerRecipe() {
+
+    }
+
 }

@@ -6,13 +6,17 @@ import net.minecraft.item.Item;
 
 public class ItemZincIngot extends Item {
 
-    public static ItemZincIngot instance;
+    private static ItemZincIngot instance;
 
-    public ItemZincIngot() {
+    private ItemZincIngot() {
         setUnlocalizedName("zincIngot");
         setTextureName(Minelife.MOD_ID + ":zinc_ingot");
-        instance = this;
         setCreativeTab(ModGun.tabGuns);
+    }
+
+    public static final ItemZincIngot getItem() {
+        if(instance == null) instance = new ItemZincIngot();
+        return instance;
     }
 
 }
