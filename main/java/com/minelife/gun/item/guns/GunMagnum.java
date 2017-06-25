@@ -6,6 +6,8 @@ import com.minelife.gun.client.guns.GunClientMagnum;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.parts.ItemGunPart;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
@@ -36,8 +38,8 @@ public class GunMagnum extends ItemGun {
     }
 
     @Override
-    public ItemAmmo getAmmoType() {
-        return ItemAmmo.magnum;
+    public ItemAmmo getAmmo() {
+        return ItemAmmo.ammoPistol;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class GunMagnum extends ItemGun {
         return false;
     }
 
-    @Override
+    @SideOnly(Side.CLIENT)
     public ItemGunClient getClientHandler() {
         return ItemGunClient.magnum;
     }

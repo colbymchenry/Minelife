@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="after:BuildCraft|Transport")
+@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="after:BuildCraft|Transport;after:IC2")
 public class Minelife {
 
     public static final String MOD_ID = "minelife", VERSION = "2017.1", NAME = "Minelife";

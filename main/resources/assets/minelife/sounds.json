@@ -11,52 +11,52 @@
     "category": "neutral",
     "sounds": ["minelife:atm/error"]
   },
-  "gun.M4A4.shot": {
+  "guns.M4A4.shot": {
     "category": "neutral",
-    "sounds": ["minelife:gun/M4A4"]
+    "sounds": ["minelife:guns/M4A4"]
   },
-  "gun.M4A4.reload": {
+  "guns.M4A4.reload": {
     "category": "neutral",
-    "sounds": ["minelife:gun/M4A4_RELOAD"]
+    "sounds": ["minelife:guns/M4A4_RELOAD"]
   },
-  "gun.Barrett.shot": {
+  "guns.Barrett.shot": {
     "category": "neutral",
-    "sounds": ["minelife:gun/Barrett"]
+    "sounds": ["minelife:guns/Barrett"]
   },
-  "gun.Barrett.reload": {
+  "guns.Barrett.reload": {
     "category": "neutral",
-    "sounds": ["minelife:gun/Barrett_RELOAD"]
+    "sounds": ["minelife:guns/Barrett_RELOAD"]
   },
-  "gun.AWP.shot": {
+  "guns.AWP.shot": {
     "category": "neutral",
-    "sounds": ["minelife:gun/AWP"]
+    "sounds": ["minelife:guns/AWP"]
   },
-  "gun.AWP.reload": {
+  "guns.AWP.reload": {
     "category": "neutral",
-    "sounds": ["minelife:gun/AWP_RELOAD"]
+    "sounds": ["minelife:guns/AWP_RELOAD"]
   },
-  "gun.AK47.shot": {
+  "guns.AK47.shot": {
     "category": "neutral",
-    "sounds": ["minelife:gun/AK47"]
+    "sounds": ["minelife:guns/AK47"]
   },
-  "gun.AK47.reload": {
+  "guns.AK47.reload": {
     "category": "neutral",
-    "sounds": ["minelife:gun/AK47_RELOAD"]
+    "sounds": ["minelife:guns/AK47_RELOAD"]
   },
-  "gun.Magnum.shot": {
+  "guns.Magnum.shot": {
     "category": "neutral",
-    "sounds": ["minelife:gun/Magnum"]
+    "sounds": ["minelife:guns/Magnum"]
   },
-  "gun.Magnum.reload": {
+  "guns.Magnum.reload": {
     "category": "neutral",
-    "sounds": ["minelife:gun/Magnum_RELOAD"]
+    "sounds": ["minelife:guns/Magnum_RELOAD"]
   },
-  "gun.DesertEagle.shot": {
+  "guns.DesertEagle.shot": {
     "category": "neutral",
-    "sounds": ["minelife:gun/DesertEagle"]
+    "sounds": ["minelife:guns/DesertEagle"]
   },
-  "gun.DesertEagle.reload": {
+  "guns.DesertEagle.reload": {
     "category": "neutral",
-    "sounds": ["minelife:gun/DesertEagle_RELOAD"]
+    "sounds": ["minelife:guns/DesertEagle_RELOAD"]
   }
 }

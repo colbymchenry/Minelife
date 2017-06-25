@@ -6,6 +6,8 @@ import com.minelife.gun.client.guns.GunClientAWP;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.parts.ItemGunPart;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -37,8 +39,8 @@ public class GunAWP extends ItemGun {
     }
 
     @Override
-    public ItemAmmo getAmmoType() {
-        return ItemAmmo.awp;
+    public ItemAmmo getAmmo() {
+        return ItemAmmo.ammo556;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class GunAWP extends ItemGun {
         return false;
     }
 
-    @Override
+    @SideOnly(Side.CLIENT)
     public ItemGunClient getClientHandler() {
         return ItemGunClient.awp;
     }

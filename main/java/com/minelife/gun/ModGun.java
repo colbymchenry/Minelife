@@ -9,6 +9,7 @@ import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.item.parts.ItemGunPart;
 import com.minelife.gun.packet.PacketMouseClick;
 import com.minelife.gun.packet.PacketReload;
+import com.minelife.gun.packet.PacketSetAmmoType;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -60,6 +61,7 @@ public class ModGun extends SubMod {
     public void preInit(FMLPreInitializationEvent event) {
         registerPacket(PacketMouseClick.Handler.class, PacketMouseClick.class, Side.SERVER);
         registerPacket(PacketReload.Handler.class, PacketReload.class, Side.SERVER);
+        registerPacket(PacketSetAmmoType.Handler.class, PacketSetAmmoType.class, Side.SERVER);
 
         GameRegistry.registerBlock(BlockZincOre.getBlock(), "zincOre");
         GameRegistry.registerItem(ItemGunmetal.getItem(), "gunMetal");

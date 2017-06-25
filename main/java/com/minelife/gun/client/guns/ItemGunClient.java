@@ -1,6 +1,7 @@
 package com.minelife.gun.client.guns;
 
 import com.minelife.Minelife;
+import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketMouseClick;
 import com.minelife.util.PlayerHelper;

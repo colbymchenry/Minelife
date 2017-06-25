@@ -1,5 +1,6 @@
 package com.minelife.gun.item.guns;
 
+import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.gun.client.RenderGun;
 import com.minelife.gun.client.guns.ItemGunClient;
@@ -17,6 +18,8 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
@@ -134,7 +137,7 @@ public abstract class ItemGun extends Item {
 
     public abstract int getClipSize();
 
-    public abstract ItemAmmo getAmmoType();
+    public abstract ItemAmmo getAmmo();
 
     public abstract boolean isFullAuto();
 
@@ -147,6 +150,7 @@ public abstract class ItemGun extends Item {
      * ---------------------------- STATIC METHODS -----------------------------
      */
 
+    // TODO: Take into account ammo type
     public static final int getCurrentClipHoldings(ItemStack stack) {
         if (stack == null || !(stack.getItem() instanceof ItemGun)) return 0;
 
@@ -160,20 +164,50 @@ public abstract class ItemGun extends Item {
 
         NBTTagCompound stackData = !stack.hasTagCompound() ? new NBTTagCompound() : stack.stackTagCompound;
 
-        ItemStack ammoFromInventory = getAmmoFromInventory(player, stack);
+        ItemAmmo.AmmoType ammoType = stack.stackTagCompound != null && stack.stackTagCompound.hasKey("ammoType") ?
+                ItemAmmo.AmmoType.valueOf(stack.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.DEFAULT;
+
+        ItemStack[] ammoFromInventory = getAmmoFromInventory(player, stack, ammoType);
+
+        if(ammoFromInventory.length == 0) {
+            player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Could not find any " + ammoType.name().toLowerCase() + " rounds."));
+            return;
+        }
 
         if (ammoFromInventory != null) {
-            stackData.setInteger("ammo", ((ItemGun) stack.getItem()).getClipSize());
+
+            int maxAmmo = ((ItemGun) stack.getItem()).getClipSize();
+            int currentHoldings = getCurrentClipHoldings(stack);
+            int needed = maxAmmo - currentHoldings;
+            int insertingCount = 0;
+
+
+
+            for(ItemStack itemStack : ammoFromInventory) {
+                if(insertingCount < needed) {
+                    if(itemStack.stackSize - (needed - insertingCount) < 1) {
+                        insertingCount += itemStack.stackSize;
+                        itemStack.stackSize = 0;
+                    } else {
+                        itemStack.stackSize -= (needed - insertingCount);
+                        insertingCount += (needed - insertingCount);
+                    }
+                } else {
+                    break;
+                }
+            }
+
+            stackData.setInteger("ammo", currentHoldings + insertingCount);
 
             for (int i = 0; i < player.inventory.mainInventory.length; i++) {
-                if (ItemStack.areItemStacksEqual(player.inventory.mainInventory[i], ammoFromInventory)) {
-                    if(ammoFromInventory.stackSize == 1) {
-                        player.inventory.mainInventory[i] = null;
-                    } else {
-                        ammoFromInventory.stackSize -= 1;
-                        player.inventory.mainInventory[i] = ammoFromInventory;
+                for(ItemStack itemStack : ammoFromInventory) {
+                    if (ItemStack.areItemStacksEqual(player.inventory.mainInventory[i], itemStack)) {
+                        if (itemStack.stackSize < 1) {
+                            player.inventory.mainInventory[i] = null;
+                        } else {
+                            player.inventory.mainInventory[i] = itemStack;
+                        }
                     }
-                    break;
                 }
             }
         }
@@ -181,20 +215,31 @@ public abstract class ItemGun extends Item {
         stack.stackTagCompound = stackData;
     }
 
-    public static ItemStack getAmmoFromInventory(EntityPlayer player, ItemStack stack) {
+    public static ItemStack[] getAmmoFromInventory(EntityPlayer player, ItemStack stack, ItemAmmo.AmmoType ammoType) {
         if (stack == null || !(stack.getItem() instanceof ItemGun)) return null;
 
         ItemGun gun = (ItemGun) stack.getItem();
+        int maxAmmo = gun.getClipSize();
+        int needed = maxAmmo - getCurrentClipHoldings(stack);
+        int obtained = 0;
+
+        List<ItemStack> itemStacks = Lists.newArrayList();
 
         for (ItemStack itemStack : player.inventory.mainInventory) {
             if (itemStack != null && itemStack.getItem() instanceof ItemAmmo) {
-                if (gun.getAmmoType() == itemStack.getItem()) {
-                    return itemStack;
+                if (gun.getAmmo() == itemStack.getItem() && ammoType == ((ItemAmmo) itemStack.getItem()).getAmmoType()) {
+                    obtained += itemStack.stackSize;
+                    itemStacks.add(itemStack);
+                    if(obtained >= needed) {
+                        break;
+                    }
                 }
             }
         }
 
-        return null;
+
+
+        return itemStacks.toArray(new ItemStack[itemStacks.size()]);
     }
 
 }

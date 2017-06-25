@@ -7,12 +7,11 @@ import net.minecraft.item.Item;
 
 public abstract class ItemAmmo extends Item {
 
-    public static AmmoAK47 ak47;
-    public static AmmoAWP awp;
-    public static AmmoBarrett barrett;
-    public static AmmoDesertEagle desertEagle;
-    public static AmmoM4A4 m4A4;
-    public static AmmoMagnum magnum;
+    public static Ammo556 ammo556;
+    public static Ammo556Explosive ammo556Explosive;
+    public static Ammo556Incendiary ammo556Incendiary;
+    public static AmmoPistol ammoPistol;
+    public static AmmoPistolIncendiary ammoPistolIncendiary;
 
     public ItemAmmo() {
         setUnlocalizedName(getClass().getSimpleName());
@@ -23,23 +22,27 @@ public abstract class ItemAmmo extends Item {
 
     public abstract void registerRecipe();
 
+    public abstract AmmoType getAmmoType();
+
     public static final void registerAmmos() {
-        ak47 = new AmmoAK47();
-        awp = new AmmoAWP();
-        barrett = new AmmoBarrett();
-        desertEagle = new AmmoDesertEagle();
-        m4A4 = new AmmoM4A4();
-        magnum = new AmmoMagnum();
+        ammo556 = new Ammo556();
+        ammo556Explosive = new Ammo556Explosive();
+        ammo556Incendiary = new Ammo556Incendiary();
+        ammoPistol = new AmmoPistol();
+        ammoPistolIncendiary = new AmmoPistolIncendiary();
+        registerRecipes();
     }
 
     public static final void registerRecipes() {
-        ak47.registerRecipe();
-        awp.registerRecipe();
-        barrett.registerRecipe();
-        desertEagle.registerRecipe();
-        m4A4.registerRecipe();
-        magnum.registerRecipe();
-        registerRecipes();
+        ammo556.registerRecipe();
+        ammo556Explosive.registerRecipe();
+        ammo556Incendiary.registerRecipe();
+        ammoPistol.registerRecipe();
+        ammoPistolIncendiary.registerRecipe();
+    }
+
+    public enum AmmoType {
+        DEFAULT, EXPLOSIVE, INCENDIARY;
     }
 
 }
