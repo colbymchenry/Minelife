@@ -1,7 +1,7 @@
 package com.minelife.gun.packet;
 
 import com.minelife.Minelife;
-import com.minelife.gun.BaseGun;
+import com.minelife.gun.item.guns.ItemGun;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -29,17 +29,17 @@ public class PacketReload implements IMessage {
         public IMessage onMessage(PacketReload message, MessageContext ctx) {
             EntityPlayer player = ctx.getServerHandler().playerEntity;
             ItemStack heldItem = player.getHeldItem();
-            if(heldItem != null && heldItem.getItem() instanceof BaseGun) {
+            if(heldItem != null && heldItem.getItem() instanceof ItemGun) {
                 // prevent reloading if have no ammo
-                if(BaseGun.getAmmoFromInventory(player, heldItem) == null) return null;
+                if(ItemGun.getAmmoFromInventory(player, heldItem) == null) return null;
                 // prevent reloading if max ammo is already met
-                if(BaseGun.getCurrentClipHoldings(heldItem) == ((BaseGun) heldItem.getItem()).getClipSize()) return null;
+                if(ItemGun.getCurrentClipHoldings(heldItem) == ((ItemGun) heldItem.getItem()).getClipSize()) return null;
 
-                player.worldObj.playSoundAtEntity(player, Minelife.MOD_ID + ":gun." + ((BaseGun) heldItem.getItem()).getName() + ".reload", 5F, 1.0F);
+                player.worldObj.playSoundAtEntity(player, Minelife.MOD_ID + ":guns." + ((ItemGun) heldItem.getItem()).getName() + ".reload", 5F, 1.0F);
 
                 NBTTagCompound tagCompound = heldItem.hasTagCompound() ? heldItem.stackTagCompound : new NBTTagCompound();
 
-                tagCompound.setLong("reloadTime", System.currentTimeMillis() +  ((BaseGun) heldItem.getItem()).getReloadTime());
+                tagCompound.setLong("reloadTime", System.currentTimeMillis() +  ((ItemGun) heldItem.getItem()).getReloadTime());
 
                 heldItem.stackTagCompound = tagCompound;
             }

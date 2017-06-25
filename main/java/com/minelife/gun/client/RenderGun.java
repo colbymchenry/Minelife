@@ -1,7 +1,7 @@
 package com.minelife.gun.client;
 
-import com.minelife.gun.BaseGun;
-import com.minelife.gun.BaseGunClient;
+import com.minelife.gun.item.guns.ItemGun;
+import com.minelife.gun.client.guns.ItemGunClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
@@ -9,9 +9,9 @@ import org.lwjgl.opengl.GL11;
 
 public class RenderGun implements IItemRenderer {
 
-    private BaseGunClient client;
+    private ItemGunClient client;
 
-    public RenderGun(BaseGun gun) {
+    public RenderGun(ItemGun gun) {
         this.client = gun.getClientHandler();
     }
 

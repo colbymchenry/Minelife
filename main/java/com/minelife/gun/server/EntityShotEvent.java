@@ -1,7 +1,6 @@
 package com.minelife.gun.server;
 
-import com.minelife.gun.BaseGun;
-import com.minelife.gun.GunRegistry;
+import com.minelife.gun.item.guns.ItemGun;
 import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -19,11 +18,13 @@ public class EntityShotEvent extends Event {
         this.entityDamaged = entityDamaged;
         this.gun = gun;
 
+        if(!(gun.getItem() instanceof ItemGun)) return;
+
         if (this.isCanceled()) return;
 
-        if(BaseGun.getCurrentClipHoldings(gun) < 1) return;
+        if(ItemGun.getCurrentClipHoldings(gun) < 1) return;
 
-        this.damage = GunRegistry.get(gun.getItem().getClass()).getDamage();
+        this.damage = ((ItemGun) gun.getItem()).getDamage();
 
         entityDamaged.attackEntityFrom(DamageSource.causeMobDamage(entityShooter), this.damage);
     }

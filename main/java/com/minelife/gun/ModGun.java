@@ -4,6 +4,9 @@ import com.minelife.CommonProxy;
 import com.minelife.SubMod;
 import com.minelife.gun.block.BlockZincOre;
 import com.minelife.gun.item.*;
+import com.minelife.gun.item.ammos.ItemAmmo;
+import com.minelife.gun.item.guns.ItemGun;
+import com.minelife.gun.item.parts.ItemGunPart;
 import com.minelife.gun.packet.PacketMouseClick;
 import com.minelife.gun.packet.PacketReload;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -21,7 +24,7 @@ import static ic2.core.Ic2Items.ForgeHammer;
 
 public class ModGun extends SubMod {
 
-    public static final CreativeTabs tabGuns = new CreativeTabs("gun") {
+    public static final CreativeTabs tabGuns = new CreativeTabs("guns") {
         @Override
         public Item getTabIconItem() {
             return Items.diamond;
@@ -51,8 +54,6 @@ public class ModGun extends SubMod {
         );
 
         GameRegistry.addShapelessRecipe(new ItemStack(ItemZincPlate.getItem()), new ItemStack(ForgeHammer.getItem(), 1, OreDictionary.WILDCARD_VALUE), ItemZincIngot.getItem());
-
-        ItemGunPart.registerRecipes();
     }
 
     @Override
@@ -66,9 +67,8 @@ public class ModGun extends SubMod {
         GameRegistry.registerItem(ItemZincPlate.getItem(), "zincPlate");
 
         ItemGunPart.registerParts();
-
-        AmmoRegistry.registerAmmos();
-        GunRegistry.registerGuns(event);
+        ItemAmmo.registerAmmos();
+        ItemGun.registerGuns();
     }
 
     @Override

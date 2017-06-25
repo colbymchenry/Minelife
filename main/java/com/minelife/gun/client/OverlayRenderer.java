@@ -1,11 +1,10 @@
 package com.minelife.gun.client;
 
-import com.minelife.gun.BaseGun;
-import com.minelife.gun.GunRegistry;
-import com.minelife.gun.gun.GunAWP;
-import com.minelife.gun.gun.GunBarrett;
-import com.minelife.gun.gun.client.GunClientAWP;
-import com.minelife.gun.gun.client.GunClientBarrett;
+import com.minelife.gun.item.guns.ItemGun;
+import com.minelife.gun.item.guns.GunAWP;
+import com.minelife.gun.item.guns.GunBarrett;
+import com.minelife.gun.client.guns.GunClientAWP;
+import com.minelife.gun.client.guns.GunClientBarrett;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -24,26 +23,26 @@ public class OverlayRenderer {
         int x = scaledResolution.getScaledWidth() / 2;
         int y = scaledResolution.getScaledHeight() / 2;
 
-        BaseGun gun = player.getHeldItem() != null && player.getHeldItem().getItem() instanceof BaseGun ? (BaseGun) player.getHeldItem().getItem() : null;
+        ItemGun gun = player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemGun ? (ItemGun) player.getHeldItem().getItem() : null;
 
         if (event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
 
             if (gun != null) {
-                mc.fontRenderer.drawString(BaseGun.getCurrentClipHoldings(player.getHeldItem()) + "/" +
-                                ((BaseGun) player.getHeldItem().getItem()).getClipSize(),
+                mc.fontRenderer.drawString(ItemGun.getCurrentClipHoldings(player.getHeldItem()) + "/" +
+                                ((ItemGun) player.getHeldItem().getItem()).getClipSize(),
                         x + 40, y + 40, 0xFFFFFFFF);
 
                 /**
                  * START: Handle zooming for snipers
                  */
-                if (gun == GunRegistry.get(GunBarrett.class)) {
+                if (gun == ItemGun.barrett) {
                     if (((GunClientBarrett) gun.getClientHandler()).isZoom()) {
                         drawHollowCircle(x, y, 100);
                         event.setCanceled(true);
                     }
                 }
 
-                if (gun == GunRegistry.get(GunAWP.class)) {
+                if (gun == ItemGun.awp) {
                     if (((GunClientAWP) gun.getClientHandler()).isZoom()) {
                         drawHollowCircle(x, y, 100);
                         event.setCanceled(true);
@@ -58,13 +57,13 @@ public class OverlayRenderer {
 
         if(event.type == RenderGameOverlayEvent.ElementType.HOTBAR || event.type == RenderGameOverlayEvent.ElementType.FOOD ||
                 event.type == RenderGameOverlayEvent.ElementType.HEALTH || event.type == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
-            if (gun == GunRegistry.get(GunBarrett.class)) {
+            if (gun == ItemGun.barrett) {
                 if (((GunClientBarrett) gun.getClientHandler()).isZoom()) {
                     event.setCanceled(true);
                 }
             }
 
-            if (gun == GunRegistry.get(GunAWP.class)) {
+            if (gun == ItemGun.awp) {
                 if (((GunClientAWP) gun.getClientHandler()).isZoom()) {
                     event.setCanceled(true);
                 }
