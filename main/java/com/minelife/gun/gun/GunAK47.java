@@ -26,7 +26,7 @@ public class GunAK47 extends BaseGun {
 
     @Override
     public int getDamage() {
-        return 33;
+        return 22;
     }
 
     @Override
@@ -54,7 +54,6 @@ public class GunAK47 extends BaseGun {
         return GunClientAK47.class;
     }
 
-    // TODO: Other recipes for the other guns
     @Override
     public void registerRecipe() {
         GameRegistry.addRecipe(new ItemStack(this),
