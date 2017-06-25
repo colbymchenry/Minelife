@@ -109,13 +109,16 @@ public abstract class ItemGun extends Item {
 
         NBTTagCompound stackData = !stack.hasTagCompound() ? new NBTTagCompound() : stack.stackTagCompound;
 
+        ItemAmmo.AmmoType ammoType = stack.stackTagCompound != null && stack.stackTagCompound.hasKey("ammoType") ?
+                ItemAmmo.AmmoType.valueOf(stack.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.DEFAULT;
+
         boolean canFire = System.currentTimeMillis() > (!stackData.hasKey("nextFire") ? 0 : stackData.getLong("nextFire"))
                 && getCurrentClipHoldings(stack) > 0;
 
         if (!canFire) return;
 
         stackData.setLong("nextFire", System.currentTimeMillis() + getFireRate());
-        stackData.setInteger("ammo", getCurrentClipHoldings(stack) - 1);
+        stackData.setInteger("ammo." + ammoType.name(), getCurrentClipHoldings(stack) - 1);
 
         stack.stackTagCompound = stackData;
 
@@ -137,7 +140,7 @@ public abstract class ItemGun extends Item {
 
     public abstract int getClipSize();
 
-    public abstract ItemAmmo getAmmo();
+    public abstract List<ItemAmmo> getAmmo();
 
     public abstract boolean isFullAuto();
 
@@ -156,7 +159,10 @@ public abstract class ItemGun extends Item {
 
         NBTTagCompound stackData = !stack.hasTagCompound() ? new NBTTagCompound() : stack.stackTagCompound;
 
-        return stackData.hasKey("ammo") ? stackData.getInteger("ammo") : 0;
+        ItemAmmo.AmmoType ammoType = stack.stackTagCompound != null && stack.stackTagCompound.hasKey("ammoType") ?
+                ItemAmmo.AmmoType.valueOf(stack.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.DEFAULT;
+
+        return stackData.hasKey("ammo." + ammoType.name()) ? stackData.getInteger("ammo." + ammoType.name()) : 0;
     }
 
     public static final void reload(EntityPlayer player, ItemStack stack) {
@@ -197,7 +203,7 @@ public abstract class ItemGun extends Item {
                 }
             }
 
-            stackData.setInteger("ammo", currentHoldings + insertingCount);
+            stackData.setInteger("ammo." + ammoType.name(), currentHoldings + insertingCount);
 
             for (int i = 0; i < player.inventory.mainInventory.length; i++) {
                 for(ItemStack itemStack : ammoFromInventory) {
@@ -227,7 +233,7 @@ public abstract class ItemGun extends Item {
 
         for (ItemStack itemStack : player.inventory.mainInventory) {
             if (itemStack != null && itemStack.getItem() instanceof ItemAmmo) {
-                if (gun.getAmmo() == itemStack.getItem() && ammoType == ((ItemAmmo) itemStack.getItem()).getAmmoType()) {
+                if (gun.getAmmo().contains(itemStack.getItem()) && ammoType == ((ItemAmmo) itemStack.getItem()).getAmmoType()) {
                     obtained += itemStack.stackSize;
                     itemStacks.add(itemStack);
                     if(obtained >= needed) {

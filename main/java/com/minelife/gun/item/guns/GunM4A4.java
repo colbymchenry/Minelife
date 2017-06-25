@@ -2,7 +2,6 @@ package com.minelife.gun.item.guns;
 
 import buildcraft.BuildCraftCore;
 import com.minelife.gun.client.guns.ItemGunClient;
-import com.minelife.gun.client.guns.GunClientM4A4;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.parts.ItemGunPart;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -11,6 +10,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GunM4A4 extends ItemGun {
 
@@ -40,8 +42,12 @@ public class GunM4A4 extends ItemGun {
     }
 
     @Override
-    public ItemAmmo getAmmo() {
-        return ItemAmmo.ammo556;
+    public List<ItemAmmo> getAmmo() {
+        return new ArrayList<ItemAmmo>() {{
+            add(ItemAmmo.ammo556);
+            add(ItemAmmo.ammo556Explosive);
+            add(ItemAmmo.ammo556Incendiary);
+        }};
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.minelife.gun.item.guns;
 
 import buildcraft.BuildCraftCore;
 import com.minelife.gun.client.guns.ItemGunClient;
-import com.minelife.gun.client.guns.GunClientMagnum;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.parts.ItemGunPart;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -10,6 +9,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GunMagnum extends ItemGun {
     @Override
@@ -38,8 +40,11 @@ public class GunMagnum extends ItemGun {
     }
 
     @Override
-    public ItemAmmo getAmmo() {
-        return ItemAmmo.ammoPistol;
+    public List<ItemAmmo> getAmmo() {
+        return new ArrayList<ItemAmmo>() {{
+            add(ItemAmmo.ammoPistol);
+            add(ItemAmmo.ammoPistolIncendiary);
+        }};
     }
 
     @Override
