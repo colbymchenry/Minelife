@@ -42,7 +42,7 @@ public abstract class ItemAmmo extends Item {
     }
 
     public enum AmmoType {
-        DEFAULT, EXPLOSIVE, INCENDIARY;
+        NORMAL, EXPLOSIVE, INCENDIARY;
     }
 
 }

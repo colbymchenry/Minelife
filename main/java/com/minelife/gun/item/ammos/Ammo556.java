@@ -19,6 +19,6 @@ public class Ammo556 extends ItemAmmo {
 
     @Override
     public AmmoType getAmmoType() {
-        return AmmoType.DEFAULT;
+        return AmmoType.NORMAL;
     }
 }

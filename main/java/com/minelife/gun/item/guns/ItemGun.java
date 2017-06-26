@@ -110,7 +110,7 @@ public abstract class ItemGun extends Item {
         NBTTagCompound stackData = !stack.hasTagCompound() ? new NBTTagCompound() : stack.stackTagCompound;
 
         ItemAmmo.AmmoType ammoType = stack.stackTagCompound != null && stack.stackTagCompound.hasKey("ammoType") ?
-                ItemAmmo.AmmoType.valueOf(stack.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.DEFAULT;
+                ItemAmmo.AmmoType.valueOf(stack.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.NORMAL;
 
         boolean canFire = System.currentTimeMillis() > (!stackData.hasKey("nextFire") ? 0 : stackData.getLong("nextFire"))
                 && getCurrentClipHoldings(stack) > 0;
@@ -160,7 +160,7 @@ public abstract class ItemGun extends Item {
         NBTTagCompound stackData = !stack.hasTagCompound() ? new NBTTagCompound() : stack.stackTagCompound;
 
         ItemAmmo.AmmoType ammoType = stack.stackTagCompound != null && stack.stackTagCompound.hasKey("ammoType") ?
-                ItemAmmo.AmmoType.valueOf(stack.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.DEFAULT;
+                ItemAmmo.AmmoType.valueOf(stack.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.NORMAL;
 
         return stackData.hasKey("ammo." + ammoType.name()) ? stackData.getInteger("ammo." + ammoType.name()) : 0;
     }
@@ -171,7 +171,7 @@ public abstract class ItemGun extends Item {
         NBTTagCompound stackData = !stack.hasTagCompound() ? new NBTTagCompound() : stack.stackTagCompound;
 
         ItemAmmo.AmmoType ammoType = stack.stackTagCompound != null && stack.stackTagCompound.hasKey("ammoType") ?
-                ItemAmmo.AmmoType.valueOf(stack.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.DEFAULT;
+                ItemAmmo.AmmoType.valueOf(stack.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.NORMAL;
 
         ItemStack[] ammoFromInventory = getAmmoFromInventory(player, stack, ammoType);
 

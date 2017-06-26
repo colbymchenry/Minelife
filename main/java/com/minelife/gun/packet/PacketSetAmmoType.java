@@ -10,29 +10,26 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 
 public class PacketSetAmmoType implements IMessage {
 
-    // TODO: Implement client side
-    private int slot;
     private ItemAmmo.AmmoType ammoType;
 
     public PacketSetAmmoType(){}
 
-    public PacketSetAmmoType(int slot, ItemAmmo.AmmoType ammoType) {
-        this.slot = slot;
+    public PacketSetAmmoType(ItemAmmo.AmmoType ammoType) {
         this.ammoType = ammoType;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        slot = buf.readInt();
         ammoType = ItemAmmo.AmmoType.valueOf(ByteBufUtils.readUTF8String(buf));
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(slot);
         ByteBufUtils.writeUTF8String(buf, ammoType.name());
     }
 
@@ -42,17 +39,24 @@ public class PacketSetAmmoType implements IMessage {
         public IMessage onMessage(PacketSetAmmoType message, MessageContext ctx) {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
 
-            ItemStack stack = player.inventory.mainInventory[message.slot];
+            ItemStack stack = player.getHeldItem();
 
-            if(stack == null) return null;
+            if(stack == null) {
+                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You are not holding a gun."));
+                return null;
+            }
 
-            if(!(stack.getItem() instanceof ItemAmmo)) return null;
+            if(!(stack.getItem() instanceof ItemGun)) {
+                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You are not holding a gun."));
+                return null;
+            }
 
             NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
-
             tagCompound.setString("ammoType", message.ammoType.name());
-
             stack.stackTagCompound = tagCompound;
+
+            player.addChatComponentMessage(new ChatComponentText("Ammo type changed to " +
+                    EnumChatFormatting.UNDERLINE + message.ammoType.name().toLowerCase() + EnumChatFormatting.RESET + " for this gun."));
             return null;
         }
     }

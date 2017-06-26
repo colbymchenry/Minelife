@@ -18,6 +18,6 @@ public class AmmoPistol extends ItemAmmo {
 
     @Override
     public AmmoType getAmmoType() {
-        return AmmoType.DEFAULT;
+        return AmmoType.NORMAL;
     }
 }

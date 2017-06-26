@@ -3,7 +3,6 @@ package com.minelife.gun.packet;
 import com.minelife.Minelife;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
-import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -37,7 +36,7 @@ public class PacketReload implements IMessage {
             if(heldItem != null && heldItem.getItem() instanceof ItemGun) {
 
                 ItemAmmo.AmmoType ammoType = heldItem.stackTagCompound != null && heldItem.stackTagCompound.hasKey("ammoType") ?
-                        ItemAmmo.AmmoType.valueOf(heldItem.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.DEFAULT;
+                        ItemAmmo.AmmoType.valueOf(heldItem.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.NORMAL;
 
                 // prevent reloading if have no ammo
                 if(ItemGun.getAmmoFromInventory(player, heldItem, ammoType).length == 0) {
