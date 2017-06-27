@@ -125,7 +125,7 @@ public abstract class ItemGun extends Item {
 
         player.worldObj.playSoundToNearExcept(player, Minelife.MOD_ID + ":guns." + getName() + ".shot", 0.5F, 1.0F);
 
-        PlayerHelper.TargetResult target = PlayerHelper.getTarget(player, 75);
+        PlayerHelper.TargetResult target = PlayerHelper.getTarget(player, 75, "smoke");
 
         if(target.getBlock() != null) {
             if(ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {

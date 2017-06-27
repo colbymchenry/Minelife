@@ -42,7 +42,7 @@ public class PlayerHelper {
 
     public static List<Vec3> VECTORS = Lists.newArrayList();
 
-    public static TargetResult getTarget(EntityPlayer player, int range) {
+    public static TargetResult getTarget(EntityPlayer player, int range, String effect) {
         TargetResult result = new TargetResult();
 
         List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(new Block[]{Blocks.tallgrass, Blocks.water,
@@ -57,8 +57,8 @@ public class PlayerHelper {
         for (int i = 0; i < range; i++) {
             currentPosVec = currentPosVec.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
 
-            if (i < 10)
-                player.worldObj.spawnParticle("smoke", currentPosVec.xCoord, currentPosVec.yCoord - 0.2f, currentPosVec.zCoord, 0.0F, 0.0F, 0.0F);
+            if (i < 10 && effect != null && !effect.isEmpty())
+                player.worldObj.spawnParticle(effect, currentPosVec.xCoord, currentPosVec.yCoord - 0.2f, currentPosVec.zCoord, 0.0F, 0.0F, 0.0F);
 
             // may have to move the yCoord down by 0.2f for everything to make it work right, we'll see
 
@@ -90,6 +90,10 @@ public class PlayerHelper {
         }
 
         return result;
+    }
+
+    public static TargetResult getTarget(EntityPlayer player, int range) {
+        return getTarget(player, range, null);
     }
 
     @SideOnly(Side.CLIENT)
