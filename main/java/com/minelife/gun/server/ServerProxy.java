@@ -2,6 +2,7 @@ package com.minelife.gun.server;
 
 import com.minelife.CommonProxy;
 import com.minelife.gun.item.guns.ItemGun;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.item.ItemStack;
@@ -13,6 +14,8 @@ public class ServerProxy extends CommonProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new TickListener());
+        FMLCommonHandler.instance().bus().register(new TickListener());
     }
 
     @SubscribeEvent

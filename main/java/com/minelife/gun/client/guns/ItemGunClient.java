@@ -1,7 +1,6 @@
 package com.minelife.gun.client.guns;
 
 import com.minelife.Minelife;
-import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketMouseClick;
 import com.minelife.util.PlayerHelper;
@@ -69,7 +68,7 @@ public abstract class ItemGunClient {
                         Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
                         shootBullet();
                         Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":guns." + gun.getName() + ".shot", 5F, 1.0F);
-                        PlayerHelper.getTargetEntity(holder, 11);
+                        PlayerHelper.getTarget(holder, 11);
                     }
                 }
             } else {
@@ -78,7 +77,7 @@ public abstract class ItemGunClient {
                     Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
                     shootBullet();
                     Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":guns." + gun.getName() + ".shot", 5F, 1.0F);
-                    PlayerHelper.getTargetEntity(holder, 11);
+                    PlayerHelper.getTarget(holder, 11);
                 }
             }
 

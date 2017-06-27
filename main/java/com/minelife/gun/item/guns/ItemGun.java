@@ -124,10 +124,25 @@ public abstract class ItemGun extends Item {
 
         player.worldObj.playSoundToNearExcept(player, Minelife.MOD_ID + ":guns." + getName() + ".shot", 0.5F, 1.0F);
 
-        EntityLivingBase target = PlayerHelper.getTargetEntity(player, 75);
+        PlayerHelper.TargetResult target = PlayerHelper.getTarget(player, 75);
 
-        if (target != null)
-            MinecraftForge.EVENT_BUS.post(new EntityShotEvent(player, target, player.getHeldItem()));
+        if(target.getBlock() != null) {
+            if(ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
+                player.worldObj.createExplosion(player, target.getBlockVector().getX(), target.getBlockVector().getY(), target.getBlockVector().getZ(), 4.0F, false);
+            } else if (ammoType == ItemAmmo.AmmoType.INCENDIARY) {
+            }
+        }
+
+        if (target.getEntity() != null) {
+
+            if(ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
+                player.worldObj.createExplosion(player, target.getEntity().posX, target.getEntity().posY, target.getEntity().posZ, 4.0F, false);
+            } else if (ammoType == ItemAmmo.AmmoType.INCENDIARY) {
+                target.getEntity().setFire(6);
+            }
+
+            MinecraftForge.EVENT_BUS.post(new EntityShotEvent(player, target.getEntity(), player.getHeldItem()));
+        }
     }
 
     public abstract String getName();

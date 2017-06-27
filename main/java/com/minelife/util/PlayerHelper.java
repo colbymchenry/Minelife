@@ -1,5 +1,6 @@
 package com.minelife.util;
 
+import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -15,10 +16,12 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldServer;
 
+import javax.vecmath.Vector3d;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,10 +40,13 @@ public class PlayerHelper {
         return null;
     }
 
-    public static EntityLivingBase getTargetEntity(EntityPlayer player, int range) {
+    public static List<Vec3> VECTORS = Lists.newArrayList();
 
-        List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(new Block[]{Blocks.air, Blocks.grass,
-                Blocks.tallgrass, Blocks.water, Blocks.flowing_water, Blocks.double_plant, Blocks.red_flower, Blocks.yellow_flower}));
+    public static TargetResult getTarget(EntityPlayer player, int range) {
+        TargetResult result = new TargetResult();
+
+        List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(new Block[]{Blocks.tallgrass, Blocks.water,
+                Blocks.flowing_water, Blocks.double_plant, Blocks.red_flower, Blocks.yellow_flower}));
 
         AxisAlignedBB surrounding_check = AxisAlignedBB.getBoundingBox(player.posX - range, player.posY - range, player.posZ - range, player.posX + range, player.posY + range, player.posZ + range);
         List<EntityLivingBase> surrounding_entities = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check);
@@ -54,26 +60,36 @@ public class PlayerHelper {
             if (i < 10)
                 player.worldObj.spawnParticle("smoke", currentPosVec.xCoord, currentPosVec.yCoord - 0.2f, currentPosVec.zCoord, 0.0F, 0.0F, 0.0F);
 
-            block = player.worldObj.getBlock((int) currentPosVec.xCoord, (int) currentPosVec.yCoord, (int) currentPosVec.zCoord);
+            // may have to move the yCoord down by 0.2f for everything to make it work right, we'll see
+
+            int x = MathHelper.floor_double(currentPosVec.xCoord);
+            int y = MathHelper.floor_double(currentPosVec.yCoord);
+            int z = MathHelper.floor_double(currentPosVec.zCoord);
+            block = player.worldObj.getBlock(x, y, z);
 
             if (block != null && block != Blocks.air) {
-                block.setBlockBoundsBasedOnState(player.worldObj, (int) currentPosVec.xCoord, (int) currentPosVec.yCoord, (int) currentPosVec.zCoord);
-                AxisAlignedBB axisalignedbb = block.getCollisionBoundingBoxFromPool(player.worldObj, (int) currentPosVec.xCoord, (int) currentPosVec.yCoord, (int) currentPosVec.zCoord);
+                block.setBlockBoundsBasedOnState(player.worldObj, x, y, z);
+                AxisAlignedBB axisalignedbb = block.getCollisionBoundingBoxFromPool(player.worldObj, x, y, z);
 
                 if (axisalignedbb != null && axisalignedbb.isVecInside(Vec3.createVectorHelper(currentPosVec.xCoord, currentPosVec.yCoord, currentPosVec.zCoord))) {
-                    if (blackListedBlocks.contains(block)) return null;
+                    if (blackListedBlocks.contains(block)) return result;
+                    else {
+                        result.blockVector = new BlockVector(currentPosVec.xCoord, currentPosVec.yCoord, currentPosVec.zCoord);
+                        result.block = block;
+                        return result;
+                    }
                 }
             }
 
             for(EntityLivingBase e : surrounding_entities) {
-                if(e != player && e.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(currentPosVec))
-                    return e;
+                if(e != player && e.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(currentPosVec)) {
+                    result.entity = e;
+                    return result;
+                }
             }
         }
 
-
-
-        return null;
+        return result;
     }
 
     @SideOnly(Side.CLIENT)
@@ -96,6 +112,24 @@ public class PlayerHelper {
             e.printStackTrace();
         } catch (SecurityException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static class TargetResult {
+        protected Block block;
+        protected BlockVector blockVector;
+        protected EntityLivingBase entity;
+
+        public EntityLivingBase getEntity() {
+            return entity;
+        }
+
+        public BlockVector getBlockVector() {
+            return blockVector;
+        }
+
+        public Block getBlock() {
+            return block;
         }
     }
 
