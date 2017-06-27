@@ -14,6 +14,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -130,6 +131,9 @@ public abstract class ItemGun extends Item {
             if(ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
                 player.worldObj.createExplosion(player, target.getBlockVector().getX(), target.getBlockVector().getY(), target.getBlockVector().getZ(), 4.0F, false);
             } else if (ammoType == ItemAmmo.AmmoType.INCENDIARY) {
+                if(player.worldObj.getBlock(target.getBlockVector().getBlockX(), target.getBlockVector().getBlockY() + 1, target.getBlockVector().getBlockZ()) == Blocks.air) {
+                    player.worldObj.setBlock(target.getBlockVector().getBlockX(), target.getBlockVector().getBlockY() + 1, target.getBlockVector().getBlockZ(), Blocks.fire);
+                }
             }
         }
 
