@@ -172,7 +172,6 @@ public abstract class ItemGun extends Item {
      * ---------------------------- STATIC METHODS -----------------------------
      */
 
-    // TODO: Take into account ammo type
     public static final int getCurrentClipHoldings(ItemStack stack) {
         if (stack == null || !(stack.getItem() instanceof ItemGun)) return 0;
 

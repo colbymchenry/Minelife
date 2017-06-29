@@ -15,10 +15,6 @@ public class RegionBase {
     protected int[] min, max;
     protected String world;
 
-    /**
-     * ------------------------------ GETTERS --------------------------------
-     */
-
     public UUID getUUID() {
         return uuid;
     }
@@ -44,10 +40,6 @@ public class RegionBase {
         return null;
     }
 
-    /**
-     * ---------------------------- SETTERS -------------------------------
-     */
-
     public void setMin(int[] coords) throws SQLException {
         this.min = coords;
         Minelife.SQLITE.query("UPDATE regions SET minX='" + coords[0] + "', minY='" + coords[1] + "', minZ='" + coords[2] + "' WHERE uuid='" + this.uuid.toString() + "'");
@@ -57,10 +49,6 @@ public class RegionBase {
         this.max = coords;
         Minelife.SQLITE.query("UPDATE regions SET maxX='" + coords[0] + "', maxY='" + coords[1] + "', maxZ='" + coords[2] + "' WHERE uuid='" + this.uuid.toString() + "'");
     }
-
-    /**
-     * ---------------------------- BOOLEAN CHECKS -----------------------------
-     */
 
     public boolean doesContain(int x, int y, int z) {
         return this.min[0] <= x && this.max[0] >= x && this.min[1] <= y && this.max[1] >= y && this.min[2] <= z && this.max[2] >= z;

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.minelife.economy.ModEconomy;
 import com.minelife.gun.ModGun;
 import com.minelife.police.ModPolice;
+import com.minelife.region.ModRegion;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -17,7 +18,7 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="after:BuildCraft|Transport;after:IC2")
+@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="after:BuildCraft|Transport;after:IC2;after:WorldEdit")
 public class Minelife {
 
     public static final String MOD_ID = "minelife", VERSION = "2017.1", NAME = "Minelife";
@@ -35,6 +36,7 @@ public class Minelife {
         MODS.add(new ModEconomy());
         MODS.add(new ModPolice());
         MODS.add(new ModGun());
+        MODS.add(new ModRegion());
     }
 
     @Mod.EventHandler
