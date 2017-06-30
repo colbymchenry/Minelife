@@ -29,7 +29,7 @@ public class Region extends RegionBase implements Comparable<Region> {
         this.world = result.getString("world");
     }
 
-    public static void createRegion(String world, int[] min, int[] max) throws Exception {
+    public static Region createRegion(String world, int[] min, int[] max) throws Exception {
         AxisAlignedBB axisAlignedBB = AxisAlignedBB.getBoundingBox(min[0], min[1], min[2], max[0], max[1], max[2]);
 
         Region foundRegion = REGIONS.stream().filter(region -> region.getAxisAlignedBB().intersectsWith(axisAlignedBB)).findFirst().orElse(null);
@@ -43,7 +43,11 @@ public class Region extends RegionBase implements Comparable<Region> {
                 "'" + min[0] + "', '" + min[1] + "', '" + min[2] + "', " +
                 "'" + max[0] + "', '" + max[1] + "', '" + max[2] + "')");
 
-        REGIONS.add(new Region(regionID));
+        Region toReturn;
+
+        REGIONS.add(toReturn = new Region(regionID));
+
+        return toReturn;
     }
 
     public static void deleteRegion(UUID uuid) throws SQLException {

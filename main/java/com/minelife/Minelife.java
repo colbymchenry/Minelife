@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.minelife.economy.ModEconomy;
 import com.minelife.gun.ModGun;
 import com.minelife.police.ModPolice;
+import com.minelife.realestate.ModRealEstate;
 import com.minelife.region.ModRegion;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -37,6 +38,7 @@ public class Minelife {
         MODS.add(new ModPolice());
         MODS.add(new ModGun());
         MODS.add(new ModRegion());
+        MODS.add(new ModRealEstate());
     }
 
     @Mod.EventHandler

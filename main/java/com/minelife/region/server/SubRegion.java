@@ -30,7 +30,7 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
         this.world = parentRegion.getWorld();
     }
 
-    public static void createSubRegion(Region parentRegion, int[] min, int[] max) throws Exception {
+    public static SubRegion createSubRegion(Region parentRegion, int[] min, int[] max) throws Exception {
         AxisAlignedBB subRegionBounds = AxisAlignedBB.getBoundingBox(min[0], min[1], min[2], max[0], max[1], max[2]);
         AxisAlignedBB parentRegionBounds = parentRegion.getAxisAlignedBB();
         UUID subRegionID = UUID.randomUUID();
@@ -51,7 +51,10 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
                 "'" + min[0] + "', '" + min[1] + "', '" + min[2] + "', " +
                 "'" + max[0] + "', '" + max[1] + "', '" + max[2] + "')");
 
-        SUB_REGIONS.add(new SubRegion(subRegionID));
+        SubRegion toReturn;
+
+        SUB_REGIONS.add(toReturn = new SubRegion(subRegionID));
+        return toReturn;
     }
 
     public static void deleteSubRegion(UUID uuid) throws SQLException {
