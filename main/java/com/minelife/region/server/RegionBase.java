@@ -2,6 +2,7 @@ package com.minelife.region.server;
 
 import com.minelife.Minelife;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -52,6 +53,10 @@ public class RegionBase {
 
     public boolean doesContain(int x, int y, int z) {
         return this.min[0] <= x && this.max[0] >= x && this.min[1] <= y && this.max[1] >= y && this.min[2] <= z && this.max[2] >= z;
+    }
+
+    public AxisAlignedBB getAxisAlignedBB() {
+        return AxisAlignedBB.getBoundingBox(min[0], min[1], min[2], max[0], max[1], max[2]);
     }
 
 }

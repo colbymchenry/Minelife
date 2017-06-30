@@ -4,8 +4,6 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.forge.ForgeWorld;
 import com.sk89q.worldedit.forge.ForgeWorldEdit;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 
 public class WorldEditHook {
 

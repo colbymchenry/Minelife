@@ -1,6 +1,7 @@
 package com.minelife.region.server;
 
 import com.google.common.collect.Lists;
+import com.minelife.Minelife;
 import com.minelife.WorldEditHook;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -10,6 +11,7 @@ import net.minecraft.util.EnumChatFormatting;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
 
 public class CommandRegion implements ICommand {
 
@@ -37,41 +39,43 @@ public class CommandRegion implements ICommand {
             return;
         }
 
-        if (args[0].equalsIgnoreCase("create")) {
-            com.sk89q.worldedit.regions.Region selection = WorldEditHook.getSelection(player);
+        try {
+            if (args[0].equalsIgnoreCase("create")) {
+                com.sk89q.worldedit.regions.Region selection = WorldEditHook.getSelection(player);
 
-            if (selection == null || selection.getMinimumPoint() == null || selection.getMaximumPoint() == null) {
-                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: No valid selection was made."));
-                return;
-            }
+                if (selection == null || selection.getMinimumPoint() == null || selection.getMaximumPoint() == null) {
+                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: No valid selection was made."));
+                    return;
+                }
 
-            int[] min = new int[]{selection.getMinimumPoint().getBlockX(), selection.getMinimumPoint().getBlockY(), selection.getMinimumPoint().getBlockZ()};
-            int[] max = new int[]{selection.getMaximumPoint().getBlockX(), selection.getMaximumPoint().getBlockY(), selection.getMaximumPoint().getBlockZ()};
-
-            try {
-                if (args.length < 2)
+                int[] min = new int[]{selection.getMinimumPoint().getBlockX(), selection.getMinimumPoint().getBlockY(), selection.getMinimumPoint().getBlockZ()};
+                int[] max = new int[]{selection.getMaximumPoint().getBlockX(), selection.getMaximumPoint().getBlockY(), selection.getMaximumPoint().getBlockZ()};
+                if (args.length < 2) {
                     Region.createRegion(sender.getEntityWorld().getWorldInfo().getWorldName(), min, max);
-                else if (args[1].equalsIgnoreCase("-s"))
+                    player.addChatComponentMessage(new ChatComponentText("Region created."));
+                } else if (args[1].equalsIgnoreCase("-s")) {
                     SubRegion.createSubRegion(Region.getRegionAt(player.getEntityWorld(), selection.getCenter().getBlockX(),
                             selection.getCenter().getBlockY(), selection.getCenter().getBlockZ()), min, max);
-                else
+                    player.addChatComponentMessage(new ChatComponentText("SubRegion created."));
+                } else {
                     player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
-            } catch (Exception e) {
-                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: " + e.getMessage()));
-            }
-        } else if (args[0].equalsIgnoreCase("delete")) {
-            try {
-                if (args.length < 2)
+                }
+            } else if (args[0].equalsIgnoreCase("delete")) {
+                if (args.length < 2) {
                     Region.deleteRegion(Region.getRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUUID());
-                else if (args[1].equalsIgnoreCase("-s"))
+                    player.addChatComponentMessage(new ChatComponentText("Region deleted."));
+                } else if (args[1].equalsIgnoreCase("-s")) {
                     SubRegion.deleteSubRegion(SubRegion.getSubRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUUID());
-                else
+                    player.addChatComponentMessage(new ChatComponentText("SubRegion deleted."));
+                } else {
                     player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
-            } catch (SQLException e) {
-                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error: " + e.getMessage()));
+                }
+            } else {
+                player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
             }
-        } else {
-            player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
+        } catch (Exception e) {
+            player.addChatComponentMessage(new ChatComponentText("ERROR: " + e.getMessage()));
+            Minelife.getLogger().log(Level.WARNING, "", e);
         }
     }
 

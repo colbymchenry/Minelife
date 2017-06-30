@@ -21,7 +21,7 @@ public class ServerProxy extends CommonProxy {
          * This creates the SQL table that will store all the player's balances
          */
         try {
-            Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36) NOT NULL, balanceBank LONG NORMAL 0, balanceWallet LONG NORMAL 0, pin VARCHAR(4) NOT NULL NORMAL '')");
+            Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36) NOT NULL, balanceBank LONG DEFAULT 0, balanceWallet LONG DEFAULT 0, pin VARCHAR(4) NOT NULL DEFAULT '')");
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -2,6 +2,7 @@ package com.minelife.region.server;
 
 import com.minelife.Minelife;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -28,26 +29,21 @@ public class Region extends RegionBase implements Comparable<Region> {
         this.world = result.getString("world");
     }
 
-
-    /**
-     * -------------------------- STATIC HANDLERS -------------------------------
-     */
-
     public static void createRegion(String world, int[] min, int[] max) throws Exception {
-        ResultSet result = Minelife.SQLITE.query("SELECT * FROM regions WHERE world='" + world + "' AND " +
-                "minX <= '" + min[0] + "' AND " +
-                "minY <= '" + min[1] + "' AND " +
-                "minZ <= '" + min[2] + "' AND " +
-                "maxX >= '" + max[0] + "' AND " +
-                "maxY >= '" + max[1] + "' AND " +
-                "maxZ >= '" + max[2] + "'");
+        AxisAlignedBB axisAlignedBB = AxisAlignedBB.getBoundingBox(min[0], min[1], min[2], max[0], max[1], max[2]);
 
-        if (result.next()) throw new Exception("Overlapping another region.");
+        Region foundRegion = REGIONS.stream().filter(region -> region.getAxisAlignedBB().intersectsWith(axisAlignedBB)).findFirst().orElse(null);
 
-        Minelife.SQLITE.query("INSERT INTO regions (world, minX, minY, minZ, maxX, maxY, maxZ) " +
-                "VALUES ('" + world + "', " +
+        if (foundRegion != null) throw new Exception("Overlapping another region.");
+
+        UUID regionID = UUID.randomUUID();
+
+        Minelife.SQLITE.query("INSERT INTO regions (uuid, world, minX, minY, minZ, maxX, maxY, maxZ) " +
+                "VALUES ('" + regionID.toString() + "', '" + world + "', " +
                 "'" + min[0] + "', '" + min[1] + "', '" + min[2] + "', " +
                 "'" + max[0] + "', '" + max[1] + "', '" + max[2] + "')");
+
+        REGIONS.add(new Region(regionID));
     }
 
     public static void deleteRegion(UUID uuid) throws SQLException {
