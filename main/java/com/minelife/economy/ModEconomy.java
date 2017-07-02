@@ -3,10 +3,12 @@ package com.minelife.economy;
 import com.minelife.CommonProxy;
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
+import com.minelife.economy.server.CommandEconomy;
 import com.minelife.util.PlayerHelper;
 import com.minelife.SubMod;
 import com.minelife.economy.packet.*;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
@@ -32,6 +34,12 @@ public class ModEconomy extends SubMod {
         registerPacket(PacketDeposit.Handler.class, PacketDeposit.class, Side.SERVER);
         registerPacket(PacketWithdraw.Handler.class, PacketWithdraw.class, Side.SERVER);
         registerPacket(PacketTransferMoney.Handler.class, PacketTransferMoney.class, Side.SERVER);
+    }
+
+    @Override
+    public void serverStarting(FMLServerStartingEvent event)
+    {
+        event.registerServerCommand(new CommandEconomy());
     }
 
     @Override

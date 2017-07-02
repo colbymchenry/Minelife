@@ -1,7 +1,10 @@
 package com.minelife.economy.server;
 
+import com.minelife.permission.ModPermission;
+import com.minelife.permission.Player;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.List;
 
@@ -28,13 +31,17 @@ public class CommandEconomy implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args)
     {
-
+        // TODO:
     }
 
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender)
     {
-        return false;
+        if(!(sender instanceof EntityPlayer)) return true;
+
+        Player player = ModPermission.get(((EntityPlayer) sender).getUniqueID());
+
+        return player.hasPermission("economy");
     }
 
     @Override

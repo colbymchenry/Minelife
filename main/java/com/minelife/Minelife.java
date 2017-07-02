@@ -3,6 +3,7 @@ package com.minelife;
 import com.google.common.collect.Lists;
 import com.minelife.economy.ModEconomy;
 import com.minelife.gun.ModGun;
+import com.minelife.permission.ModPermission;
 import com.minelife.police.ModPolice;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.region.ModRegion;
@@ -38,6 +39,7 @@ public class Minelife {
     public static String default_error_message = EnumChatFormatting.RED + "Sorry, something went wrong. Notify a staff member.";
 
     public Minelife() {
+        MODS.add(new ModPermission());
         MODS.add(new ModEconomy());
         MODS.add(new ModPolice());
         MODS.add(new ModGun());
