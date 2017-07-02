@@ -1,5 +1,6 @@
-package com.minelife;
+package com.minelife.util;
 
+import com.minelife.Minelife;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;

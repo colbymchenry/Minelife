@@ -21,7 +21,7 @@ public class ServerProxy extends CommonProxy {
 
             Region.initRegions();
             SubRegion.initSubRegions();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             Minelife.getLogger().log(Level.SEVERE, "", e);
         }

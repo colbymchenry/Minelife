@@ -1,5 +1,6 @@
 package com.minelife.region.server;
 
+import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
@@ -34,7 +35,7 @@ public class Region extends RegionBase implements Comparable<Region> {
 
         Region foundRegion = REGIONS.stream().filter(region -> region.getAxisAlignedBB().intersectsWith(axisAlignedBB)).findFirst().orElse(null);
 
-        if (foundRegion != null) throw new Exception("Overlapping another region.");
+        if (foundRegion != null) throw new CustomMessageException("Overlapping another region.");
 
         UUID regionID = UUID.randomUUID();
 

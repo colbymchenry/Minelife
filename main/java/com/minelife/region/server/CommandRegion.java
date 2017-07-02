@@ -1,15 +1,15 @@
 package com.minelife.region.server;
 
 import com.google.common.collect.Lists;
+import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
-import com.minelife.WorldEditHook;
+import com.minelife.util.WorldEditHook;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -74,8 +74,15 @@ public class CommandRegion implements ICommand {
                 player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));
             }
         } catch (Exception e) {
-            player.addChatComponentMessage(new ChatComponentText("ERROR: " + e.getMessage()));
-            Minelife.getLogger().log(Level.WARNING, "", e);
+            if(e instanceof CustomMessageException)
+            {
+                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + e.getMessage()));
+            } else
+            {
+                player.addChatComponentMessage(new ChatComponentText(Minelife.default_error_message));
+                e.printStackTrace();
+                Minelife.getLogger().log(Level.WARNING, "", e);
+            }
         }
     }
 

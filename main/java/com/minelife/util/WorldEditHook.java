@@ -1,4 +1,4 @@
-package com.minelife;
+package com.minelife.util;
 
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.forge.ForgeWorld;

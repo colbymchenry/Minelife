@@ -1,5 +1,6 @@
 package com.minelife.region.server;
 
+import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -16,12 +17,12 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
 
     private Region parentRegion;
 
-    private SubRegion(UUID uuid) throws SQLException {
+    private SubRegion(UUID uuid) throws Exception {
         this.uuid = uuid;
 
         ResultSet result = Minelife.SQLITE.query("SELECT * FROM subregions WHERE uuid='" + this.uuid.toString() + "'");
 
-        if(!result.next()) throw new SQLException("No subregion exists with that UUID.");
+        if(!result.next()) throw new CustomMessageException("No subregion exists with that UUID.");
 
         this.min = new int[]{result.getInt("minX"), result.getInt("minY"), result.getInt("minZ")};
         this.max = new int[]{result.getInt("maxX"), result.getInt("maxY"), result.getInt("maxZ")};
@@ -37,12 +38,12 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
 
         if(parentRegionBounds.minX > subRegionBounds.minX ||parentRegionBounds.minY > subRegionBounds.minY || parentRegionBounds.minZ > subRegionBounds.minZ ||
                 parentRegionBounds.maxX < subRegionBounds.maxX || parentRegionBounds.maxY < subRegionBounds.maxY || parentRegionBounds.maxZ < subRegionBounds.maxZ) {
-            throw new Exception("The SubRegion falls outside of the Region.");
+            throw new CustomMessageException("The SubRegion falls outside of the Region.");
         }
 
         SubRegion sub_region = SUB_REGIONS.stream().filter(subRegion -> subRegion.getAxisAlignedBB().intersectsWith(subRegionBounds)).findFirst().orElse(null);
         if(sub_region != null) {
-            throw new Exception("Overlapping another SubRegion.");
+            throw new CustomMessageException("Overlapping another SubRegion.");
         }
 
 
@@ -70,7 +71,7 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
         return SUB_REGIONS.stream().filter(subRegion -> subRegion.doesContain(x, y, z)).findFirst().orElse(null);
     }
 
-    public static void initSubRegions() throws SQLException {
+    public static void initSubRegions() throws Exception {
         ResultSet result = Minelife.SQLITE.query("SELECT * FROM subregions");
 
         while (result.next())

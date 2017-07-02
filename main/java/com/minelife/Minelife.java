@@ -6,6 +6,7 @@ import com.minelife.gun.ModGun;
 import com.minelife.police.ModPolice;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.region.ModRegion;
+import com.minelife.util.PacketPlaySound;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -14,6 +15,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import lib.PatPeter.SQLibrary.Database;
+import net.minecraft.util.EnumChatFormatting;
 
 import java.io.File;
 import java.util.List;
@@ -32,6 +34,8 @@ public class Minelife {
     public static Database SQLITE;
 
     public static final List<SubMod> MODS = Lists.newArrayList();
+
+    public static String default_error_message = EnumChatFormatting.RED + "Sorry, something went wrong. Notify a staff member.";
 
     public Minelife() {
         MODS.add(new ModEconomy());
@@ -61,11 +65,11 @@ public class Minelife {
         MODS.stream().forEach(mod -> mod.serverStarting(event));
     }
 
-    public static final File getDirectory() {
-        return new File(System.getProperty("user.dir"), MOD_ID);
+    public static File getDirectory() {
+        return new File(System.getProperty("user.dir") + File.separator + "config", MOD_ID);
     }
 
-    public static final Logger getLogger() {
+    public static Logger getLogger() {
         return Logger.getLogger("Minecraft");
     }
 

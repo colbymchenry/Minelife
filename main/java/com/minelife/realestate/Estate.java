@@ -1,6 +1,7 @@
 package com.minelife.realestate;
 
 import com.google.common.collect.Lists;
+import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.region.server.Region;
 import cpw.mods.fml.relauncher.Side;
@@ -54,7 +55,7 @@ public class Estate {
 
         // check if we intersect with any regions
         Region intersectingRegion = Region.REGIONS.stream().filter(region -> region.getAxisAlignedBB().intersectsWith(bounds)).findFirst().orElse(null);
-        if (intersectingRegion != null) throw new Exception("This chunk intersects with a region");
+        if (intersectingRegion != null) throw new CustomMessageException(ModRealEstate.getMessage("Message_Intersects"));
 
         String worldName = world.getWorldInfo().getWorldName();
         int[] min = {x, 0, z};
