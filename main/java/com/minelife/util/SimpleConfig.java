@@ -21,16 +21,12 @@ public class SimpleConfig {
     public SimpleConfig(File file) throws Exception
     {
         this.file = file;
-        if (this.file.getParentFile().exists() && this.file.getParentFile().isDirectory())
-        {
+        if (this.file.getParentFile().exists() && this.file.getParentFile().isDirectory()) {
             this.createConfigFile();
-        } else
-        {
-            if (this.file.getParentFile().mkdirs())
-            {
+        } else {
+            if (this.file.getParentFile().mkdirs()) {
                 this.createConfigFile();
-            } else
-            {
+            } else {
                 Minelife.getLogger().log(Level.SEVERE, "Config: " + file.getName() + " failed to create directories.");
             }
         }
@@ -38,13 +34,10 @@ public class SimpleConfig {
 
     private void createConfigFile() throws IOException
     {
-        if(!this.file.exists())
-        {
-            if (this.file.createNewFile())
-            {
+        if (!this.file.exists()) {
+            if (this.file.createNewFile()) {
                 Minelife.getLogger().log(Level.INFO, "Config: " + file.getName() + " created!");
-            } else
-            {
+            } else {
                 Minelife.getLogger().log(Level.SEVERE, "Config: " + file.getName() + " failed to create file.");
             }
         }
@@ -54,12 +47,10 @@ public class SimpleConfig {
     {
         Map<String, Object> options = Maps.newHashMap();
 
-        try
-        {
+        try {
             List<String> lines = Files.readAllLines(Paths.get(this.file.getAbsolutePath()));
             lines.forEach(line -> options.put(line.split("=")[0], line.replaceFirst(line.split("=")[0] + "=", "")));
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
             Minelife.getLogger().log(Level.SEVERE, "", e);
         }
@@ -73,11 +64,28 @@ public class SimpleConfig {
 
         options.forEach((k, v) -> lines.add(k + "=" + v.toString()));
 
-        try
-        {
-            Files.write(Paths.get(this.file.getAbsolutePath()),lines, Charset.forName("UTF-8"));
-        } catch (IOException e)
-        {
+        try {
+            Files.write(Paths.get(this.file.getAbsolutePath()), lines, Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            Minelife.getLogger().log(Level.SEVERE, "", e);
+        }
+    }
+
+    public void setDefaults(Map<String, Object> defaults)
+    {
+        Map<String, Object> options = getOptions();
+        List<String> lines = Lists.newArrayList();
+
+        for(String key : defaults.keySet()) {
+            if(!options.containsKey(key)) options.put(key, defaults.get(key));
+        }
+
+        options.forEach((k, v) -> lines.add(k + "=" + v.toString()));
+
+        try {
+            Files.write(Paths.get(this.file.getAbsolutePath()), lines, Charset.forName("UTF-8"));
+        } catch (IOException e) {
             e.printStackTrace();
             Minelife.getLogger().log(Level.SEVERE, "", e);
         }

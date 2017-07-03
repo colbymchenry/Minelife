@@ -7,19 +7,26 @@ import com.minelife.economy.server.CommandEconomy;
 import com.minelife.util.PlayerHelper;
 import com.minelife.SubMod;
 import com.minelife.economy.packet.*;
+import com.minelife.util.SimpleConfig;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.UUID;
 
 public class ModEconomy extends SubMod {
 
+    @SideOnly(Side.SERVER)
+    public static SimpleConfig config;
+
     @Override
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(FMLPreInitializationEvent event)
+    {
         GameRegistry.registerTileEntity(TileEntityATM.class, "tileATM");
         GameRegistry.registerBlock(BlockATM.INSTANCE, BlockATM.NAME);
         GameRegistry.registerBlock(BlockATMTop.INSTANCE, BlockATMTop.NAME);
@@ -43,16 +50,19 @@ public class ModEconomy extends SubMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxy() {
+    public Class<? extends CommonProxy> getClientProxy()
+    {
         return com.minelife.economy.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxy() {
+    public Class<? extends CommonProxy> getServerProxy()
+    {
         return com.minelife.economy.server.ServerProxy.class;
     }
 
-    public static final void deposit(UUID player, long amount, boolean wallet) throws Exception {
+    public static final void deposit(UUID player, long amount, boolean wallet) throws Exception
+    {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
         long balance = getBalance(player, wallet);
@@ -66,7 +76,8 @@ public class ModEconomy extends SubMod {
             Minelife.NETWORK.sendTo(new PacketBalanceResult(getBalance(player, false), getBalance(player, true)), PlayerHelper.getPlayer(player));
     }
 
-    public static final void withdraw(UUID player, long amount, boolean wallet) throws Exception {
+    public static final void withdraw(UUID player, long amount, boolean wallet) throws Exception
+    {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
         long balance = getBalance(player, wallet);
@@ -85,7 +96,25 @@ public class ModEconomy extends SubMod {
             Minelife.NETWORK.sendTo(new PacketBalanceResult(getBalance(player, false), getBalance(player, true)), PlayerHelper.getPlayer(player));
     }
 
-    public static final long getBalance(UUID player, boolean wallet) throws Exception {
+    public static final void set(UUID player, long amount, boolean wallet) throws Exception
+    {
+        if (!playerExists(player)) throw new CustomMessageException("Player not found.");
+
+        /**
+         * Make sure the player balance cannot go below zero (cannot go into debt)
+         */
+        if (amount < 0) throw new CustomMessageException("GuiBalance cannot be less than zero.");
+
+        String column = wallet ? "balanceWallet" : "balanceBank";
+        Minelife.SQLITE.query("UPDATE players SET " + column + "='" + amount + "'");
+
+        // update client
+        if (PlayerHelper.getPlayer(player) != null)
+            Minelife.NETWORK.sendTo(new PacketBalanceResult(getBalance(player, false), getBalance(player, true)), PlayerHelper.getPlayer(player));
+    }
+
+    public static final long getBalance(UUID player, boolean wallet) throws Exception
+    {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
         String table = wallet ? "balanceWallet" : "balanceBank";
@@ -95,13 +124,15 @@ public class ModEconomy extends SubMod {
         return 0;
     }
 
-    public static final void setPin(UUID player, String pin) throws Exception {
+    public static final void setPin(UUID player, String pin) throws Exception
+    {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
         Minelife.SQLITE.query("UPDATE players SET pin='" + pin + "' WHERE uuid='" + player.toString() + "'");
     }
 
-    public static final String getPin(UUID player) throws Exception {
+    public static final String getPin(UUID player) throws Exception
+    {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
         ResultSet result = Minelife.SQLITE.query("SELECT pin AS pin FROM players WHERE uuid='" + player.toString() + "'");
@@ -110,7 +141,8 @@ public class ModEconomy extends SubMod {
         return null;
     }
 
-    public static final boolean playerExists(UUID player) {
+    public static final boolean playerExists(UUID player)
+    {
         try {
             ResultSet result = Minelife.SQLITE.query("SELECT * FROM players WHERE uuid='" + player.toString() + "'");
             if (result.next()) return true;
@@ -119,6 +151,13 @@ public class ModEconomy extends SubMod {
         }
 
         return false;
+    }
+
+    public static final String getMessage(String key)
+    {
+        Map<String, Object> options = config.getOptions();
+        if(!options.containsKey(key)) return "Message not found.";
+        return (String) options.get(key);
     }
 
 }

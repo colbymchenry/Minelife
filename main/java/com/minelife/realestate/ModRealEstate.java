@@ -41,13 +41,6 @@ public class ModRealEstate extends SubMod {
     public static int getPricePerChunk()
     {
         Map<String, Object> options = config.getOptions();
-
-        if (!options.containsKey("PricePerChunk"))
-        {
-            options.put("PricePerChunk", 100);
-            config.setOptions(options);
-        }
-
         return Integer.parseInt((String) options.get("PricePerChunk"));
     }
 

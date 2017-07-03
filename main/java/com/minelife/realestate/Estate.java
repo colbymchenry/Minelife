@@ -14,19 +14,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class Estate {
 
     private static final List<Estate> ESTATES = Lists.newArrayList();
 
     private Region region;
-    private UUID uuid;
+    private UUID uuid, owner;
 
     private Estate(UUID uuid) throws SQLException
     {
         this.uuid = uuid;
         ResultSet result = Minelife.SQLITE.query("SELECT * FROM RealEstate_Estates WHERE uuid='" + uuid.toString() + "';");
         this.region = Region.getRegion(UUID.fromString(result.getString("region")));
+        this.owner = result.getString("owner") != null && !result.getString("owner").isEmpty() ? UUID.fromString(result.getString("owner")) : null;
     }
 
     public UUID getUUID()
@@ -37,6 +39,20 @@ public class Estate {
     public Region getRegion()
     {
         return region;
+    }
+
+    public UUID getOwner()
+    {
+        return owner;
+    }
+
+    public void setOwner(UUID player) {
+        try {
+            Minelife.SQLITE.query("UPDATE RealEstate_Estates SET owner='" + player.toString() + "' WHERE uuid='" + uuid.toString() + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Minelife.getLogger().log(Level.SEVERE, "", e);
+        }
     }
 
     @SideOnly(Side.SERVER)
@@ -70,5 +86,10 @@ public class Estate {
         ESTATES.add(estate);
 
         return estate;
+    }
+
+    @SideOnly(Side.SERVER)
+    public static Estate getEstate(World world, int x, int z) {
+        return ESTATES.stream().filter(estate -> estate.getRegion().doesContain(x, 50, z)).findFirst().orElse(null);
     }
 }
