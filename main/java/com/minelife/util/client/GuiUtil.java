@@ -1,7 +1,9 @@
 package com.minelife.util.client;
 
+import com.sun.prism.impl.VertexBuffer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import org.lwjgl.opengl.GL11;
 
@@ -48,6 +50,17 @@ public class GuiUtil {
         GL11.glDepthMask(true);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glPopMatrix();
+    }
+
+    public static void drawImage(int x, int y, int width, int height)
+    {
+        Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.addVertexWithUV(x, y + height, 0, 0.0, 1.0);
+        tessellator.addVertexWithUV(x + width, y + height, 0, 1.0, 1.0);
+        tessellator.addVertexWithUV(x + width, y, 0, 1.0, 0.0);
+        tessellator.addVertexWithUV(x, y, 0, 0.0, 0.0);
+        tessellator.draw();
     }
 
 }

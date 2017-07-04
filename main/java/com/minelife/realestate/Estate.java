@@ -4,8 +4,11 @@ import com.google.common.collect.Lists;
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.region.server.Region;
+import com.minelife.region.server.RegionBase;
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -22,6 +25,8 @@ public class Estate {
 
     private Region region;
     private UUID uuid, owner;
+
+    private Estate() {}
 
     private Estate(UUID uuid) throws SQLException
     {
@@ -46,7 +51,8 @@ public class Estate {
         return owner;
     }
 
-    public void setOwner(UUID player) {
+    public void setOwner(UUID player)
+    {
         try {
             Minelife.SQLITE.query("UPDATE RealEstate_Estates SET owner='" + player.toString() + "' WHERE uuid='" + uuid.toString() + "'");
         } catch (SQLException e) {
@@ -71,7 +77,8 @@ public class Estate {
 
         // check if we intersect with any regions
         Region intersectingRegion = Region.REGIONS.stream().filter(region -> region.getAxisAlignedBB().intersectsWith(bounds)).findFirst().orElse(null);
-        if (intersectingRegion != null) throw new CustomMessageException(ModRealEstate.getMessage("Message_Intersects"));
+        if (intersectingRegion != null)
+            throw new CustomMessageException(ModRealEstate.getMessage("Message_Intersects"));
 
         String worldName = world.getWorldInfo().getWorldName();
         int[] min = {x, 0, z};
@@ -89,7 +96,31 @@ public class Estate {
     }
 
     @SideOnly(Side.SERVER)
-    public static Estate getEstate(World world, int x, int z) {
+    public static Estate getEstate(World world, int x, int z)
+    {
         return ESTATES.stream().filter(estate -> estate.getRegion().doesContain(x, 50, z)).findFirst().orElse(null);
+    }
+
+    @SideOnly(Side.SERVER)
+    public static Estate getEstate(UUID uuid)
+    {
+        return ESTATES.stream().filter(estate -> estate.getUUID().equals(uuid)).findFirst().orElse(null);
+    }
+
+    public void toBytes(ByteBuf buf)
+    {
+        ByteBufUtils.writeUTF8String(buf, getUUID().toString());
+        ByteBufUtils.writeUTF8String(buf, getOwner() != null ? getOwner().toString() : "");
+        getRegion().toBytes(buf);
+    }
+
+    public static Estate fromBytes(ByteBuf buf)
+    {
+        Estate estate = new Estate();
+        estate.uuid = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+        String owner = ByteBufUtils.readUTF8String(buf);
+        if(!owner.isEmpty()) estate.owner = UUID.fromString(owner);
+        estate.region = (Region) RegionBase.fromBytes(buf);
+        return estate;
     }
 }

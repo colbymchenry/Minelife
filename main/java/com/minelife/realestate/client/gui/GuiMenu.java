@@ -2,6 +2,7 @@ package com.minelife.realestate.client.gui;
 
 import com.minelife.Minelife;
 import com.minelife.realestate.client.packet.PacketBuyChunk;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -32,6 +33,10 @@ public class GuiMenu extends BaseGui {
     {
         switch (btn.id)
         {
+            case 0: {
+                Minecraft.getMinecraft().displayGuiScreen(new GuiSell());
+                break;
+            }
             case 4: {
                 Minelife.NETWORK.sendToServer(new PacketBuyChunk());
                 break;

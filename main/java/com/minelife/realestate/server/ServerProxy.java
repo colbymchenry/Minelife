@@ -32,6 +32,8 @@ public class ServerProxy extends CommonProxy {
             ModRealEstate.config.setDefaults(defaults);
 
             Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS RealEstate_Estates (uuid VARCHAR(36) NOT NULL, region VARCHAR(36) NOT NULL, owner VARCHAR(36) NOT NULL);");
+            Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS RealEstate_Listings (uuid VARCHAR(36) NOT NULL, estate VARCHAR(36) NOT NULL, price LONG, renting BOOLEAN, datePublished VARCHAR(36));");
+            Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS RealEstate_Renting (uuid VARCHAR(36) NOT NULL, estate VARCHAR(36) NOT NULL, price LONG, player VARCHAR(36), billingDate VARCHAR(36));");
             Estate.initEstates();
         } catch (Exception e)
         {

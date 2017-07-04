@@ -1,6 +1,8 @@
 package com.minelife.region.server;
 
 import com.minelife.Minelife;
+import cpw.mods.fml.common.network.ByteBufUtils;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -57,6 +59,28 @@ public class RegionBase {
 
     public AxisAlignedBB getAxisAlignedBB() {
         return AxisAlignedBB.getBoundingBox(min[0], min[1], min[2], max[0], max[1], max[2]);
+    }
+
+    public void toBytes(ByteBuf buf)
+    {
+        ByteBufUtils.writeUTF8String(buf, uuid.toString());
+        buf.writeInt(min[0]);
+        buf.writeInt(min[1]);
+        buf.writeInt(min[2]);
+        buf.writeInt(max[0]);
+        buf.writeInt(max[1]);
+        buf.writeInt(max[2]);
+        ByteBufUtils.writeUTF8String(buf, world);
+    }
+
+    public static RegionBase fromBytes(ByteBuf buf)
+    {
+        RegionBase region = new RegionBase();
+        region.uuid = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+        region.min = new int[]{buf.readInt(), buf.readInt(), buf.readInt()};
+        region.max = new int[]{buf.readInt(), buf.readInt(), buf.readInt()};
+        region.world = ByteBufUtils.readUTF8String(buf);
+        return region;
     }
 
 }
