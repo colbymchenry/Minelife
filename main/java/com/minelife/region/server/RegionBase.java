@@ -2,6 +2,8 @@ package com.minelife.region.server;
 
 import com.minelife.Minelife;
 import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
@@ -34,6 +36,7 @@ public class RegionBase {
         return world;
     }
 
+    @SideOnly(Side.SERVER)
     public World getEntityWorld() {
         for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
             if(worldServer.getWorldInfo().getWorldName().equalsIgnoreCase(this.world))

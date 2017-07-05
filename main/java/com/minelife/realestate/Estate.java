@@ -74,6 +74,9 @@ public class Estate {
     {
         int x = chunk.xPosition * 16;
         int z = chunk.zPosition * 16;
+
+        System.out.println(x + "," + z);
+
         AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(x, 0, z, x + 16, 256, z + 16);
 
         // check if we intersect with any regions

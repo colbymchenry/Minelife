@@ -39,6 +39,12 @@ public class ModRealEstate extends SubMod {
         return com.minelife.realestate.server.ServerProxy.class;
     }
 
+    @Override
+    public Class<? extends CommonProxy> getClientProxy()
+    {
+        return com.minelife.realestate.client.ClientProxy.class;
+    }
+
     @SideOnly(Side.SERVER)
     public static int getPricePerChunk()
     {

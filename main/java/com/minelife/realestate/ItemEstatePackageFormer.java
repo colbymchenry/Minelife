@@ -11,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
@@ -50,20 +51,18 @@ public class ItemEstatePackageFormer extends Item {
 
         List<Estate> estates = Lists.newArrayList();
 
-
         if (tagCompound.hasKey("estates")) {
             StringToList<Estate> stringToList = new StringToList<Estate>(tagCompound.getString("estates")) {
                 @Override
                 public Estate parse(String s)
                 {
-                    return Estate.getEstate(UUID.fromString(s));
+                    return Estate.getEstate(UUID.fromString(s.split(";")[0]));
                 }
             };
 
-           stringToList.getList().add(estate);
            estates.addAll(stringToList.getList());
 
-           if(estates.stream().filter(e -> e.getUUID().equals(estate.getUUID())).findFirst().orElse(null) == null) {
+           if(estates.stream().filter(e -> e.getUUID().equals(estate.getUUID())).findFirst().orElse(null) != null) {
                player.addChatComponentMessage(new ChatComponentText("That estate has already been added to this package."));
                return false;
            }
@@ -75,7 +74,7 @@ public class ItemEstatePackageFormer extends Item {
             @Override
             public String toString(Estate o)
             {
-                return o.getUUID().toString();
+                return o.getUUID().toString() + ";" + o.getRegion().getMin()[0] + "," + o.getRegion().getMin()[2];
             }
         };
 
@@ -86,4 +85,32 @@ public class ItemEstatePackageFormer extends Item {
         return true;
     }
 
+    @Override
+    public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean val)
+    {
+        NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+
+        List<String> estates = Lists.newArrayList();
+
+        if (tagCompound.hasKey("estates")) {
+            StringToList<String> stringToList = new StringToList<String>(tagCompound.getString("estates")) {
+                @Override
+                public String parse(String s)
+                {
+                    if(!s.contains(";")) {
+                        return "ERROR";
+                    }
+                    return s.split(";")[1];
+                }
+            };
+
+            estates.addAll(stringToList.getList());
+        }
+
+        list.add(EnumChatFormatting.GOLD + "---- ESTATES ----");
+        int i = 1;
+        for (String estate : estates) {
+            list.add(EnumChatFormatting.GOLD.toString() + (i++) + ". " + EnumChatFormatting.RED + "x=" + estate.split(",")[0] + " y=" + estate.split(",")[1]);
+        }
+    }
 }
