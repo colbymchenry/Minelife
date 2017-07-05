@@ -2,8 +2,10 @@ package com.minelife.realestate.client.gui;
 
 import com.minelife.Minelife;
 import com.minelife.realestate.client.packet.PacketBuyChunk;
+import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.util.EnumChatFormatting;
 
 public class GuiMenu extends BaseGui {
@@ -26,6 +28,7 @@ public class GuiMenu extends BaseGui {
         {
             this.drawHint(mouseX, mouseY, EnumChatFormatting.GOLD + "Current Rate: " + EnumChatFormatting.RED + "$" + this.pricePerChunk);
         }
+
     }
 
     @Override

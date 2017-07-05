@@ -3,6 +3,8 @@ package com.minelife.realestate;
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 
 import java.sql.ResultSet;

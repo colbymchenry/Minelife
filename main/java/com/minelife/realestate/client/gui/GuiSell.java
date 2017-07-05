@@ -59,6 +59,7 @@ public class GuiSell extends BaseGui {
         private GuiTextField titleField, priceField;
         private com.minelife.util.client.GuiTextField description;
         private GuiTickBox forRent, allowPlacement, allowBreaking, allowGuests;
+        private CustomButton sellBtn;
 
         public Content(int xPosition, int yPosition, int width, int height)
         {
@@ -70,16 +71,19 @@ public class GuiSell extends BaseGui {
             this.description = new com.minelife.util.client.GuiTextField(calcX(175) - this.xPosition, this.titleField.yPosition + 50, 175, 50);
             this.priceField = new GuiTextField(mc.fontRenderer, calcX(100) - this.xPosition, this.description.getBounds().getY() + this.description.getBounds().getHeight() + 30, 100, 20);
 
-            this.forRent = new GuiTickBox(fontRendererObj.getStringWidth("For Rent") + 10, this.priceField.yPosition + 50, "For Rent", false);
-            this.allowPlacement = new GuiTickBox(fontRendererObj.getStringWidth("Allow Placement")+ 10, this.forRent.yPosition + 30, "Allow Placement", false);
-            this.allowBreaking = new GuiTickBox(fontRendererObj.getStringWidth("Allow Breaking")+ 10, this.allowPlacement.yPosition + 30, "Allow Breaking", false);
-            this.allowGuests = new GuiTickBox(fontRendererObj.getStringWidth("Allow Guests")+ 10, this.allowBreaking.yPosition + 30, "Allow Guests", false);
+            int tickboxPosX = width - 50;
+            this.forRent = new GuiTickBox(mc, tickboxPosX, this.priceField.yPosition + 50, false);
+            this.allowPlacement = new GuiTickBox(mc, tickboxPosX, this.forRent.yPosition + 30, false);
+            this.allowBreaking = new GuiTickBox(mc, tickboxPosX, this.allowPlacement.yPosition + 30, false);
+            this.allowGuests = new GuiTickBox(mc, tickboxPosX, this.allowBreaking.yPosition + 30, false);
+
+            this.sellBtn = new CustomButton(0, (width - mc.fontRenderer.getStringWidth("Sell") + 4) / 2, getObjectHeight(0) - 30, mc.fontRenderer.getStringWidth("Sell") + 20, 20, "Sell");
         }
 
         @Override
         public int getObjectHeight(int index)
         {
-            return 400;
+            return 375;
         }
 
         @Override
@@ -92,10 +96,16 @@ public class GuiSell extends BaseGui {
             mc.fontRenderer.drawString("Description", calcX(mc.fontRenderer.getStringWidth("Description")) - this.xPosition, this.description.getBounds().getY() - 15, 0xFFFFFF);
             this.description.drawTextBox();
 
-            this.forRent.draw(mc, mouseX, mouseY);
-            this.allowPlacement.draw(mc, mouseX, mouseY);
-            this.allowBreaking.draw(mc, mouseX, mouseY);
-            this.allowGuests.draw(mc, mouseX, mouseY);
+            mc.fontRenderer.drawString("For Rent", 10, this.forRent.yPosition + 5, 0xFFFFFF);
+            this.forRent.draw();
+            mc.fontRenderer.drawString("Allow Placement", 10, this.allowPlacement.yPosition + 5, 0xFFFFFF);
+            this.allowPlacement.draw();
+            mc.fontRenderer.drawString("Allow Breaking", 10, this.allowBreaking.yPosition + 5, 0xFFFFFF);
+            this.allowBreaking.draw();
+            mc.fontRenderer.drawString("Allow Guests", 10, this.allowGuests.yPosition + 5, 0xFFFFFF);
+            this.allowGuests.draw();
+
+            this.sellBtn.drawButton(mc, mouseX, mouseY);
         }
 
         @Override
@@ -115,6 +125,11 @@ public class GuiSell extends BaseGui {
             this.allowPlacement.mouseClicked(mouseX, mouseY);
             this.allowBreaking.mouseClicked(mouseX, mouseY);
             this.allowGuests.mouseClicked(mouseX, mouseY);
+
+            if(sellBtn.mousePressed(mc, mouseX, mouseY))
+            {
+
+            }
         }
 
         @Override

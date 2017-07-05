@@ -14,29 +14,25 @@ public class GuiTickBox extends Gui {
     private static final int WIDTH = 36, HEIGHT = 18;
 
     public int xPosition, yPosition;
-    private String key;
     private boolean value;
+    private Minecraft mc;
 
     public boolean enabled = true;
 
-    public GuiTickBox(int xPosition, int yPosition, String key, boolean value) {
+    public GuiTickBox(Minecraft mc, int xPosition, int yPosition, boolean value) {
+        this.mc = mc;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
-        this.key = key;
         this.value = value;
     }
 
-    public void draw(Minecraft mc, int mouseX, int mouseY) {
+    public void draw() {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4f(1f, 1f, 1f, !enabled ? 155f/255f : 1f);
         GL11.glEnable(GL11.GL_BLEND);
 
         mc.getTextureManager().bindTexture(value ? switchOn : switchOff);
         GuiUtil.drawImage(xPosition, yPosition, WIDTH, HEIGHT);
-
-        int stringWidth = mc.fontRenderer.getStringWidth(key + ":");
-        mc.fontRenderer.drawStringWithShadow(key + ":", xPosition - stringWidth - 2,
-                yPosition + ((HEIGHT - mc.fontRenderer.FONT_HEIGHT) / 2), 0xFFFFFF);
     }
 
     public boolean mouseClicked(int mouseX, int mouseY) {
@@ -52,7 +48,4 @@ public class GuiTickBox extends Gui {
         return value;
     }
 
-    public String getKey() {
-        return key;
-    }
 }
