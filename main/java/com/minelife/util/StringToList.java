@@ -4,9 +4,6 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
-/**
- * Created by colby on 1/7/2017.
- */
 public abstract class StringToList<E> {
 
     private String[] array;
@@ -16,17 +13,14 @@ public abstract class StringToList<E> {
         array = ArrayUtil.fromString(s);
     }
 
-    public StringToList<E> run() {
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] != null && !array[i].isEmpty())
-                if (parse(array[i]) != null)
-                    list.add(parse(array[i]));
-        }
-
-        return this;
-    }
-
     public List<E> getList() {
+        if(list.isEmpty()) {
+            for (int i = 0; i < array.length; i++) {
+                if (array[i] != null && !array[i].isEmpty())
+                    if (parse(array[i]) != null)
+                        list.add(parse(array[i]));
+            }
+        }
         return list;
     }
 

@@ -47,7 +47,7 @@ public class PacketBuyChunk implements IMessage {
 
                 if(playerBalance < ModRealEstate.getPricePerChunk()) throw new CustomMessageException(ModRealEstate.getMessage("BuyChunkMessage_Funds"));
 
-                Estate.createEstate(player.getEntityWorld(), player.getEntityWorld().getChunkFromBlockCoords((int) player.posX, (int) player.posY));
+                Estate.createEstate(player.getEntityWorld(), player.getEntityWorld().getChunkFromBlockCoords((int) player.posX, (int) player.posY), player.getUniqueID());
 
                 ModEconomy.withdraw(player.getUniqueID(), ModRealEstate.getPricePerChunk(), false);
 

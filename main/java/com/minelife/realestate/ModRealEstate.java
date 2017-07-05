@@ -8,6 +8,7 @@ import com.minelife.realestate.server.PacketOpenGui;
 import com.minelife.util.SimpleConfig;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -23,6 +24,7 @@ public class ModRealEstate extends SubMod {
     {
         registerPacket(PacketOpenGui.Handler.class, PacketOpenGui.class, Side.CLIENT);
         registerPacket(PacketBuyChunk.Handler.class, PacketBuyChunk.class, Side.SERVER);
+        GameRegistry.registerItem(new ItemEstatePackageFormer(), "EstatePackageFormer");
     }
 
     @Override

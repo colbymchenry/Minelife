@@ -13,10 +13,16 @@ public abstract class ListToString<E> {
         this.list = list;
     }
 
-    public ListToString<E> run() {
+    public List<String> getList() {
         for(E e : list) strings.add(toString(e));
 
-        return this;
+        return strings;
+    }
+
+    public String getListAsString() {
+        strings.clear();
+        List<String> stringList = getList();
+        return ArrayUtil.toString(stringList.toArray(new String[stringList.size()]));
     }
 
     public abstract String toString(E o);

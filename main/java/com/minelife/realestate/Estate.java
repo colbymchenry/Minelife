@@ -68,8 +68,9 @@ public class Estate {
         while (result.next()) ESTATES.add(new Estate(UUID.fromString(result.getString("uuid"))));
     }
 
+    // TODO: Fix z Position being way off.
     @SideOnly(Side.SERVER)
-    public static Estate createEstate(World world, Chunk chunk) throws Exception
+    public static Estate createEstate(World world, Chunk chunk, UUID owner) throws Exception
     {
         int x = chunk.xPosition * 16;
         int z = chunk.zPosition * 16;
@@ -87,7 +88,7 @@ public class Estate {
         Region region = Region.createRegion(worldName, min, max);
         UUID estateUUID = UUID.randomUUID();
 
-        Minelife.SQLITE.query("INSERT INTO RealEstate_Estates (uuid, region) VALUES ('" + estateUUID.toString() + "', '" + region.getUUID().toString() + "');");
+        Minelife.SQLITE.query("INSERT INTO RealEstate_Estates (uuid, region, owner) VALUES ('" + estateUUID.toString() + "', '" + region.getUUID().toString() + "', '" + owner.toString() + "');");
 
         Estate estate = new Estate(estateUUID);
         ESTATES.add(estate);
