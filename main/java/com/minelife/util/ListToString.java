@@ -14,13 +14,14 @@ public abstract class ListToString<E> {
     }
 
     public List<String> getList() {
+        strings.clear();
+
         for(E e : list) strings.add(toString(e));
 
         return strings;
     }
 
     public String getListAsString() {
-        strings.clear();
         List<String> stringList = getList();
         return ArrayUtil.toString(stringList.toArray(new String[stringList.size()]));
     }
@@ -28,6 +29,7 @@ public abstract class ListToString<E> {
     public abstract String toString(E o);
 
     public String getString() {
+        List<String> strings = getList();
         return ArrayUtil.toString(strings.toArray(new String[strings.size()]));
     }
 }

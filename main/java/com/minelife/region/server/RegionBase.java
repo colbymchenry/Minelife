@@ -10,18 +10,17 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
 public class RegionBase {
 
-    protected UUID uuid;
+    protected UUID regionUniqueID;
     protected int[] min, max;
     protected String world;
 
-    public UUID getUUID() {
-        return uuid;
+    public UUID getUniqueID() {
+        return regionUniqueID;
     }
 
     public int[] getMin() {
@@ -48,12 +47,12 @@ public class RegionBase {
 
     public void setMin(int[] coords) throws SQLException {
         this.min = coords;
-        Minelife.SQLITE.query("UPDATE regions SET minX='" + coords[0] + "', minY='" + coords[1] + "', minZ='" + coords[2] + "' WHERE uuid='" + this.uuid.toString() + "'");
+        Minelife.SQLITE.query("UPDATE regions SET minX='" + coords[0] + "', minY='" + coords[1] + "', minZ='" + coords[2] + "' WHERE regionUniqueID='" + this.regionUniqueID.toString() + "'");
     }
 
     public void setMax(int[] coords) throws SQLException {
         this.max = coords;
-        Minelife.SQLITE.query("UPDATE regions SET maxX='" + coords[0] + "', maxY='" + coords[1] + "', maxZ='" + coords[2] + "' WHERE uuid='" + this.uuid.toString() + "'");
+        Minelife.SQLITE.query("UPDATE regions SET maxX='" + coords[0] + "', maxY='" + coords[1] + "', maxZ='" + coords[2] + "' WHERE regionUniqueID='" + this.regionUniqueID.toString() + "'");
     }
 
     public boolean doesContain(int x, int y, int z) {
@@ -66,7 +65,7 @@ public class RegionBase {
 
     public void toBytes(ByteBuf buf)
     {
-        ByteBufUtils.writeUTF8String(buf, uuid.toString());
+        ByteBufUtils.writeUTF8String(buf, regionUniqueID.toString());
         buf.writeInt(min[0]);
         buf.writeInt(min[1]);
         buf.writeInt(min[2]);
@@ -79,7 +78,7 @@ public class RegionBase {
     public static RegionBase fromBytes(ByteBuf buf)
     {
         RegionBase region = new RegionBase();
-        region.uuid = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+        region.regionUniqueID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
         region.min = new int[]{buf.readInt(), buf.readInt(), buf.readInt()};
         region.max = new int[]{buf.readInt(), buf.readInt(), buf.readInt()};
         region.world = ByteBufUtils.readUTF8String(buf);

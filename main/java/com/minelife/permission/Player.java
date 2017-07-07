@@ -134,7 +134,7 @@ public class Player {
             JSONObject object = (JSONObject) listIterator.next();
             try
             {
-                if (object.get("uuid") != null && UUID.fromString(String.valueOf(object.get("uuid"))).equals(player))
+                if (object.get("regionUniqueID") != null && UUID.fromString(String.valueOf(object.get("regionUniqueID"))).equals(player))
                     return object;
             } catch (Exception e)
             {
@@ -154,7 +154,7 @@ public class Player {
             // add players array and add player into it
             JSONArray newArray = new JSONArray();
             JSONObject playerObject = new JSONObject();
-            playerObject.put("uuid", player.toString());
+            playerObject.put("regionUniqueID", player.toString());
             newArray.add(playerObject);
             ServerProxy.JSON_OBJECT.put("players", newArray);
             ServerProxy.JSON_FILE.write(ServerProxy.JSON_OBJECT);
@@ -162,7 +162,7 @@ public class Player {
         }
 
         JSONObject playerObject = new JSONObject();
-        playerObject.put("uuid", player.toString());
+        playerObject.put("regionUniqueID", player.toString());
         jsonArray.add(playerObject);
 
         ServerProxy.JSON_FILE.write(ServerProxy.JSON_OBJECT);

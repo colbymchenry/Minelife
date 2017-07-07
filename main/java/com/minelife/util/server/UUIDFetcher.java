@@ -44,7 +44,7 @@ public final class UUIDFetcher {
                 return null;
             }
 
-            // converts uuid from no dashes to having dashes
+            // converts regionUniqueID from no dashes to having dashes
             uuid = uuid.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5");
 
             CACHE.put(UUID.fromString(uuid), name);

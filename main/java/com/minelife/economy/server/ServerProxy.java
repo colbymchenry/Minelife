@@ -26,15 +26,14 @@ public class ServerProxy extends CommonProxy {
          * This creates the SQL table that will store all the player's balances
          */
         try {
-            Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36) NOT NULL, balanceBank LONG DEFAULT 0, balanceWallet LONG DEFAULT 0, pin VARCHAR(4) NOT NULL DEFAULT '')");
+            Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS players (regionUniqueID VARCHAR(36) NOT NULL, balanceBank LONG DEFAULT 0, balanceWallet LONG DEFAULT 0, pin VARCHAR(4) NOT NULL DEFAULT '')");
 
             ModEconomy.config = new SimpleConfig(new File(Minelife.getDirectory(), "economy_config.txt"));
-            Map<String, Object> defaults = Maps.newHashMap();
-            defaults.put("Message_Balance", EnumChatFormatting.GOLD + "Balance: " + EnumChatFormatting.RED + "$%b");
-            defaults.put("Message_Set", EnumChatFormatting.GOLD + "%p's %w has been set to " + EnumChatFormatting.RED + "$%b");
-            defaults.put("Message_Deposit", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " deposited into %p's %w.");
-            defaults.put("Message_Withdraw", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " withdrawn from %p's %w.");
-            ModEconomy.config.setDefaults(defaults);
+            ModEconomy.config.addDefault("Message_Balance", EnumChatFormatting.GOLD + "Balance: " + EnumChatFormatting.RED + "$%b");
+            ModEconomy.config.addDefault("Message_Set", EnumChatFormatting.GOLD + "%p's %w has been set to " + EnumChatFormatting.RED + "$%b");
+            ModEconomy.config.addDefault("Message_Deposit", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " deposited into %p's %w.");
+            ModEconomy.config.addDefault("Message_Withdraw", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " withdrawn from %p's %w.");
+            ModEconomy.config.setDefaults();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -48,7 +47,7 @@ public class ServerProxy extends CommonProxy {
         if(ModEconomy.playerExists(event.player.getUniqueID())) return;
 
         try {
-            Minelife.SQLITE.query("INSERT INTO players (uuid) VALUES ('" + event.player.getUniqueID().toString() + "')");
+            Minelife.SQLITE.query("INSERT INTO players (regionUniqueID) VALUES ('" + event.player.getUniqueID().toString() + "')");
         } catch (SQLException e) {
             e.printStackTrace();
         }

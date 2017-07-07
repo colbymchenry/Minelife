@@ -18,6 +18,8 @@ public class SimpleConfig {
 
     private File file;
 
+    private Map<String, Object> defaults = Maps.newHashMap();
+
     public SimpleConfig(File file) throws Exception
     {
         this.file = file;
@@ -72,7 +74,11 @@ public class SimpleConfig {
         }
     }
 
-    public void setDefaults(Map<String, Object> defaults)
+    public void addDefault(String key, Object value) {
+        defaults.put(key, value);
+    }
+
+    public void setDefaults()
     {
         Map<String, Object> options = getOptions();
         List<String> lines = Lists.newArrayList();

@@ -54,7 +54,7 @@ public class CommandRegion implements ICommand {
                     Region.createRegion(sender.getEntityWorld().getWorldInfo().getWorldName(), min, max);
                     player.addChatComponentMessage(new ChatComponentText("Region created."));
                 } else if (args[1].equalsIgnoreCase("-s")) {
-                    SubRegion.createSubRegion(Region.getRegionAt(player.getEntityWorld(), selection.getCenter().getBlockX(),
+                    SubRegion.createSubRegion(Region.getRegionAt(player.getEntityWorld().getWorldInfo().getWorldName(), selection.getCenter().getBlockX(),
                             selection.getCenter().getBlockY(), selection.getCenter().getBlockZ()), min, max);
                     player.addChatComponentMessage(new ChatComponentText("SubRegion created."));
                 } else {
@@ -62,10 +62,10 @@ public class CommandRegion implements ICommand {
                 }
             } else if (args[0].equalsIgnoreCase("delete")) {
                 if (args.length < 2) {
-                    Region.deleteRegion(Region.getRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUUID());
+                    Region.deleteRegion(Region.getRegionAt(player.getEntityWorld().getWorldInfo().getWorldName(), (int) player.posX, (int) player.posY, (int) player.posZ).getUniqueID());
                     player.addChatComponentMessage(new ChatComponentText("Region deleted."));
                 } else if (args[1].equalsIgnoreCase("-s")) {
-                    SubRegion.deleteSubRegion(SubRegion.getSubRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUUID());
+                    SubRegion.deleteSubRegion(SubRegion.getSubRegionAt(player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ).getUniqueID());
                     player.addChatComponentMessage(new ChatComponentText("SubRegion deleted."));
                 } else {
                     player.addChatComponentMessage(new ChatComponentText(getCommandUsage(sender)));

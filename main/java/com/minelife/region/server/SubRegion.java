@@ -18,9 +18,9 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
     private Region parentRegion;
 
     private SubRegion(UUID uuid) throws Exception {
-        this.uuid = uuid;
+        this.regionUniqueID = uuid;
 
-        ResultSet result = Minelife.SQLITE.query("SELECT * FROM subregions WHERE uuid='" + this.uuid.toString() + "'");
+        ResultSet result = Minelife.SQLITE.query("SELECT * FROM subregions WHERE regionUniqueID='" + this.regionUniqueID.toString() + "'");
 
         if(!result.next()) throw new CustomMessageException("No subregion exists with that UUID.");
 
@@ -29,6 +29,11 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
 
         this.parentRegion = Region.getRegion(UUID.fromString(result.getString("parentregionuuid")));
         this.world = parentRegion.getWorld();
+    }
+
+    public Region getParentRegion()
+    {
+        return parentRegion;
     }
 
     public static SubRegion createSubRegion(Region parentRegion, int[] min, int[] max) throws Exception {
@@ -43,12 +48,12 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
 
         SubRegion sub_region = SUB_REGIONS.stream().filter(subRegion -> subRegion.getAxisAlignedBB().intersectsWith(subRegionBounds)).findFirst().orElse(null);
         if(sub_region != null) {
-            throw new CustomMessageException("Overlapping another SubRegion.");
+            throw new CustomMessageException("Intersecting another SubRegion.");
         }
 
 
-        Minelife.SQLITE.query("INSERT INTO subregions (uuid, parentregionuuid, world, minX, minY, minZ, maxX, maxY, maxZ) " +
-                "VALUES ('" + subRegionID.toString() + "', '" + parentRegion.getUUID().toString() + "', '" + parentRegion.getWorld() + "', " +
+        Minelife.SQLITE.query("INSERT INTO subregions (regionUniqueID, parentregionuuid, world, minX, minY, minZ, maxX, maxY, maxZ) " +
+                "VALUES ('" + subRegionID.toString() + "', '" + parentRegion.getUniqueID().toString() + "', '" + parentRegion.getWorld() + "', " +
                 "'" + min[0] + "', '" + min[1] + "', '" + min[2] + "', " +
                 "'" + max[0] + "', '" + max[1] + "', '" + max[2] + "')");
 
@@ -59,12 +64,12 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
     }
 
     public static void deleteSubRegion(UUID uuid) throws SQLException {
-        Minelife.SQLITE.query("DELETE FROM subregions WHERE uuid='" + uuid.toString() + "'");
+        Minelife.SQLITE.query("DELETE FROM subregions WHERE regionUniqueID='" + uuid.toString() + "'");
         SUB_REGIONS.remove(SubRegion.getSubRegion(uuid));
     }
 
     public static SubRegion getSubRegion(UUID uuid) {
-        return SUB_REGIONS.stream().filter(subRegion -> subRegion.uuid.equals(uuid)).findFirst().orElse(null);
+        return SUB_REGIONS.stream().filter(subRegion -> subRegion.regionUniqueID.equals(uuid)).findFirst().orElse(null);
     }
 
     public static SubRegion getSubRegionAt(World world, int x, int y, int z) {
@@ -75,11 +80,16 @@ public class SubRegion extends RegionBase implements Comparable<SubRegion> {
         ResultSet result = Minelife.SQLITE.query("SELECT * FROM subregions");
 
         while (result.next())
-            SUB_REGIONS.add(new SubRegion(UUID.fromString(result.getString("uuid"))));
+            SUB_REGIONS.add(new SubRegion(UUID.fromString(result.getString("regionUniqueID"))));
+    }
+
+    public static SubRegion getIntersectingRegion(AxisAlignedBB axisAlignedBB)
+    {
+        return SUB_REGIONS.stream().filter(region -> region.getAxisAlignedBB().intersectsWith(axisAlignedBB)).findFirst().orElse(null);
     }
 
     @Override
     public int compareTo(SubRegion o) {
-        return o.parentRegion.getUUID().equals(this.parentRegion.getUUID()) ? 0 : 1;
+        return o.parentRegion.getUniqueID().equals(this.parentRegion.getUniqueID()) ? 0 : 1;
     }
 }
