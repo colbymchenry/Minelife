@@ -8,6 +8,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
+import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
@@ -100,7 +101,7 @@ public class Region implements Comparable<Region> {
         region.regionUniqueID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
         region.world = ByteBufUtils.readUTF8String(buf);
         region.bounds = AxisAlignedBB.getBoundingBox(buf.readDouble(), buf.readDouble(), buf.readDouble(),
-        buf.readDouble(), buf.readDouble(), buf.readDouble());
+                buf.readDouble(), buf.readDouble(), buf.readDouble());
         return region;
     }
 
@@ -148,18 +149,34 @@ public class Region implements Comparable<Region> {
     public static void delete(UUID regionUniqueID) throws SQLException
     {
         Region region = getRegionFromUUID(regionUniqueID);
+        region.getEntityWorld().setBlock((int) region.getBounds().minX, (int) region.getBounds().minY, (int) region.getBounds().minZ, Blocks.gold_block);
         Minelife.SQLITE.query("DELETE FROM regions WHERE uuid='" + regionUniqueID.toString() + "'");
-        if (region != null) REGIONS.remove(region);
+        REGIONS.remove(region);
     }
 
     public static Region getIntersectingRegion(String world, AxisAlignedBB bounds)
     {
         Region containingRegion = getContainingRegion(world, bounds);
 
-        if (containingRegion != null)
-            return REGIONS.stream().filter(region -> !region.equals(containingRegion) && region.getBounds().intersectsWith(bounds) && region.getWorldName().equalsIgnoreCase(world)).findFirst().orElse(null);
-        else
+        if (containingRegion != null) {
+            List<Region> parentRegions = Lists.newArrayList();
+
+            if(!containingRegion.isSubRegion())
+                return REGIONS.stream().filter(region -> !region.equals(containingRegion) && region.getBounds().intersectsWith(bounds) && region.getWorldName().equalsIgnoreCase(world)).findFirst().orElse(null);
+
+            Region parentRegion = containingRegion.getParentRegion();
+
+            parentRegions.add(containingRegion);
+
+            while(parentRegion != null) {
+                parentRegions.add(parentRegion);
+                parentRegion = parentRegion.getParentRegion();
+            }
+
+            return REGIONS.stream().filter(region -> !parentRegions.contains(region) && region.getBounds().intersectsWith(bounds) && region.getWorldName().equalsIgnoreCase(world)).findFirst().orElse(null);
+        } else {
             return REGIONS.stream().filter(region -> region.getBounds().intersectsWith(bounds) && region.getWorldName().equalsIgnoreCase(world)).findFirst().orElse(null);
+        }
     }
 
     public static Region getContainingRegion(String world, AxisAlignedBB bounds)
@@ -167,36 +184,15 @@ public class Region implements Comparable<Region> {
         List<Region> regions = Lists.newArrayList();
         for (Region r : REGIONS) {
             if (r.getBounds().isVecInside(Vec3.createVectorHelper(bounds.minX, bounds.minY, bounds.minZ)) &&
-                    r.getBounds().isVecInside(Vec3.createVectorHelper(bounds.maxX, bounds.maxY, bounds.maxX)) &&
+                    r.getBounds().isVecInside(Vec3.createVectorHelper(bounds.maxX, bounds.maxY, bounds.maxZ)) &&
                     world.equalsIgnoreCase(r.getWorldName())) {
                 regions.add(r);
             }
         }
 
-        Region closestRegion = regions.get(0);
-        for (Region r : regions) {
-            int minXOffset = (int) Math.abs(Math.abs(bounds.minX) - Math.abs(r.getBounds().minX));
-            int minYOffset = (int) Math.abs(Math.abs(bounds.minY) - Math.abs(r.getBounds().minY));
-            int minZOffset = (int) Math.abs(Math.abs(bounds.minZ) - Math.abs(r.getBounds().minZ));
-            int maxXOffset = (int) Math.abs(Math.abs(bounds.maxX) - Math.abs(r.getBounds().maxX));
-            int maxYOffset = (int) Math.abs(Math.abs(bounds.maxY) - Math.abs(r.getBounds().maxY));
-            int maxZOffset = (int) Math.abs(Math.abs(bounds.maxZ) - Math.abs(r.getBounds().maxZ));
+        if (regions.isEmpty()) return null;
 
-            int closestRegionMinXOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().minX) - Math.abs(r.getBounds().minX));
-            int closestRegionMinYOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().minY) - Math.abs(r.getBounds().minY));
-            int closestRegionMinZOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().minZ) - Math.abs(r.getBounds().minZ));
-            int closestRegionMaxXOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().maxX) - Math.abs(r.getBounds().maxX));
-            int closestRegionMaxYOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().maxY) - Math.abs(r.getBounds().maxY));
-            int closestRegionMaxZOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().maxZ) - Math.abs(r.getBounds().maxZ));
-
-            if (minXOffset < closestRegionMinXOffset && maxXOffset < closestRegionMaxXOffset &&
-                    minYOffset < closestRegionMinYOffset && maxYOffset < closestRegionMaxYOffset &&
-                    minZOffset < closestRegionMinZOffset && maxZOffset < closestRegionMaxZOffset) {
-                closestRegion = r;
-            }
-        }
-
-        return closestRegion;
+        return getClosest(regions, Vec3.createVectorHelper(bounds.minX, bounds.minY, bounds.minZ));
     }
 
     public static Region getRegionAt(String world, Vec3 vec3)
@@ -208,32 +204,21 @@ public class Region implements Comparable<Region> {
             }
         }
 
+        if (regions.isEmpty()) return null;
+
+        return getClosest(regions, vec3);
+    }
+
+    private static Region getClosest(List<Region> regions, Vec3 vec) {
         Region closestRegion = regions.get(0);
         for (Region r : regions) {
-            int minXOffset = (int) Math.abs(Math.abs(r.getBounds().minX) - Math.abs(vec3.xCoord));
-            int minYOffset = (int) Math.abs(Math.abs(r.getBounds().minY) - Math.abs(vec3.yCoord));
-            int minZOffset = (int) Math.abs(Math.abs(r.getBounds().minZ) - Math.abs(vec3.zCoord));
-            int maxXOffset = (int) Math.abs(Math.abs(r.getBounds().maxX) - Math.abs(vec3.xCoord));
-            int maxYOffset = (int) Math.abs(Math.abs(r.getBounds().maxY) - Math.abs(vec3.yCoord));
-            int maxZOffset = (int) Math.abs(Math.abs(r.getBounds().maxZ) - Math.abs(vec3.zCoord));
-
-            int closestRegionMinXOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().minX) - Math.abs(vec3.xCoord));
-            int closestRegionMinYOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().minY) - Math.abs(vec3.yCoord));
-            int closestRegionMinZOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().minZ) - Math.abs(vec3.zCoord));
-            int closestRegionMaxXOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().maxX) - Math.abs(vec3.xCoord));
-            int closestRegionMaxYOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().maxY) - Math.abs(vec3.yCoord));
-            int closestRegionMaxZOffset = (int) Math.abs(Math.abs(closestRegion.getBounds().maxZ) - Math.abs(vec3.zCoord));
-
-            if (minXOffset < closestRegionMinXOffset && maxXOffset < closestRegionMaxXOffset &&
-                    minYOffset < closestRegionMinYOffset && maxYOffset < closestRegionMaxYOffset &&
-                    minZOffset < closestRegionMinZOffset && maxZOffset < closestRegionMaxZOffset) {
-                closestRegion = r;
-            }
+            double distance = Vec3.createVectorHelper(r.getBounds().minX, r.getBounds().minY, r.getBounds().minZ).distanceTo(vec);
+            double closestRegionDistance = Vec3.createVectorHelper(closestRegion.getBounds().minX, closestRegion.getBounds().minY, closestRegion.getBounds().minZ).distanceTo(vec);
+            if (distance < closestRegionDistance) closestRegion = r;
         }
 
         return closestRegion;
     }
-
 
     public static Region getRegionFromUUID(UUID regionUniqueID)
     {

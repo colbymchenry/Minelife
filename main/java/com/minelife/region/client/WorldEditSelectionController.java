@@ -1,7 +1,9 @@
-package com.minelife.realestate;
+package com.minelife.region.client;
 
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
+import com.minelife.permission.ModPermission;
+import com.minelife.realestate.SelectionController;
 import com.minelife.util.client.GuiUtil;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -14,11 +16,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -26,7 +27,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import java.util.Map;
 import java.util.UUID;
 
-public class SelectionController {
+public class WorldEditSelectionController {
 
     public static Vec3 pos1, pos2;
 
@@ -35,9 +36,7 @@ public class SelectionController {
     {
         ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
 
-        if (heldItem == null || heldItem.getItem() != Selector.getInstance()) return;
-
-        // TODO: gold for main selection, red for sub selections, purple for current selection
+        if (heldItem == null || heldItem.getItem() != Items.wooden_axe) return;
 
         if (pos1 != null && pos2 != null) {
             Region bounds = new CuboidRegion(new Vector(pos1.xCoord, pos1.yCoord, pos1.zCoord), new Vector(pos2.xCoord, pos2.yCoord, pos2.zCoord));
@@ -66,19 +65,19 @@ public class SelectionController {
         @SubscribeEvent
         public void onClick(PlayerInteractEvent event)
         {
-            if (event.entityPlayer.getHeldItem() == null || event.entityPlayer.getHeldItem().getItem() != Selector.getInstance())
+            if (event.entityPlayer.getHeldItem() == null || event.entityPlayer.getHeldItem().getItem() != Items.wooden_axe)
                 return;
+
+            if (!ModPermission.get(event.entityPlayer.getUniqueID()).hasPermission("worldedit")) return;
 
             if (event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
                 pos1Map.put(event.entityPlayer.getUniqueID(), Vec3.createVectorHelper(event.x, event.y, event.z));
-                event.entityPlayer.addChatComponentMessage(new ChatComponentText("Pos1 set"));
             } else if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
                 pos2Map.put(event.entityPlayer.getUniqueID(), Vec3.createVectorHelper(event.x, event.y, event.z));
-                event.entityPlayer.addChatComponentMessage(new ChatComponentText("Pos2 set"));
             }
 
             if (pos1Map.containsKey(event.entityPlayer.getUniqueID()) && pos2Map.containsKey(event.entityPlayer.getUniqueID())) {
-                Minelife.NETWORK.sendTo(new PacketSelection(
+                Minelife.NETWORK.sendTo(new WorldEditSelectionController.PacketSelection(
                         pos1Map.get(event.entityPlayer.getUniqueID()),
                         pos2Map.get(event.entityPlayer.getUniqueID())), (EntityPlayerMP) event.entityPlayer);
             }
@@ -118,35 +117,16 @@ public class SelectionController {
             buf.writeDouble(pos2.zCoord);
         }
 
-        public static class Handler implements IMessageHandler<PacketSelection, IMessage> {
+        public static class Handler implements IMessageHandler<WorldEditSelectionController.PacketSelection, IMessage> {
 
             @SideOnly(Side.CLIENT)
-            public IMessage onMessage(PacketSelection message, MessageContext ctx)
+            public IMessage onMessage(WorldEditSelectionController.PacketSelection message, MessageContext ctx)
             {
-                SelectionController.pos1 = message.pos1;
-                SelectionController.pos2 = message.pos2;
+                WorldEditSelectionController.pos1 = message.pos1;
+                WorldEditSelectionController.pos2 = message.pos2;
                 return null;
             }
         }
-    }
-
-    public static class Selector extends Item {
-
-        private static Selector instance;
-
-        private Selector()
-        {
-            setCreativeTab(CreativeTabs.tabTools);
-            setUnlocalizedName("Selector");
-            setTextureName(Minelife.MOD_ID + ":Selector");
-        }
-
-        public static Selector getInstance()
-        {
-            instance = instance == null ? new Selector() : instance;
-            return instance;
-        }
-
     }
 
 }
