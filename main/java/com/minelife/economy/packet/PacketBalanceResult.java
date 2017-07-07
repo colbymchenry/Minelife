@@ -1,5 +1,6 @@
 package com.minelife.economy.packet;
 
+import com.minelife.economy.ModEconomy;
 import com.minelife.economy.client.OnScreenRenderer;
 import com.minelife.economy.client.gui.GuiBalance;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -38,11 +39,8 @@ public class PacketBalanceResult implements IMessage {
 
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketBalanceResult message, MessageContext ctx) {
-            OnScreenRenderer.WALLET = message.balanceWallet;
-
-            if(Minecraft.getMinecraft().currentScreen != null && Minecraft.getMinecraft().currentScreen instanceof GuiBalance)
-                ((GuiBalance)Minecraft.getMinecraft().currentScreen).setBalance(message.balanceBank);
-
+            ModEconomy.BALANCE_WALLET_CLIENT = message.balanceWallet;
+            ModEconomy.BALANCE_BANK_CLIENT = message.balanceBank;
             return null;
         }
 

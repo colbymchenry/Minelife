@@ -24,6 +24,9 @@ public class ModEconomy extends SubMod {
     @SideOnly(Side.SERVER)
     public static SimpleConfig config;
 
+    public static long BALANCE_WALLET_CLIENT = 0;
+    public static long BALANCE_BANK_CLIENT = 0;
+
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -86,7 +89,7 @@ public class ModEconomy extends SubMod {
         /**
          * Make sure the player balance cannot go below zero (cannot go into debt)
          */
-        if (balance < 0) throw new CustomMessageException("GuiBalance cannot be less than zero.");
+        if (balance < 0) throw new CustomMessageException("Balance cannot be less than zero.");
 
         String column = wallet ? "balanceWallet" : "balanceBank";
         Minelife.SQLITE.query("UPDATE players SET " + column + "='" + balance + "'");
@@ -103,10 +106,10 @@ public class ModEconomy extends SubMod {
         /**
          * Make sure the player balance cannot go below zero (cannot go into debt)
          */
-        if (amount < 0) throw new CustomMessageException("GuiBalance cannot be less than zero.");
+        if (amount < 0) throw new CustomMessageException("Balance cannot be less than zero.");
 
         String column = wallet ? "balanceWallet" : "balanceBank";
-        Minelife.SQLITE.query("UPDATE players SET " + column + "='" + amount + "'");
+        Minelife.SQLITE.query("UPDATE players SET " + column + "='" + amount + "' WHERE uuid='" + player.toString() + "'");
 
         // update client
         if (PlayerHelper.getPlayer(player) != null)
@@ -118,7 +121,7 @@ public class ModEconomy extends SubMod {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
         String table = wallet ? "balanceWallet" : "balanceBank";
-        ResultSet result = Minelife.SQLITE.query("SELECT " + table + " AS balance FROM players WHERE regionUniqueID='" + player.toString() + "'");
+        ResultSet result = Minelife.SQLITE.query("SELECT " + table + " AS balance FROM players WHERE uuid='" + player.toString() + "'");
         if (result.next()) return result.getLong("balance");
 
         return 0;
@@ -128,14 +131,14 @@ public class ModEconomy extends SubMod {
     {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
-        Minelife.SQLITE.query("UPDATE players SET pin='" + pin + "' WHERE regionUniqueID='" + player.toString() + "'");
+        Minelife.SQLITE.query("UPDATE players SET pin='" + pin + "' WHERE uuid='" + player.toString() + "'");
     }
 
     public static final String getPin(UUID player) throws Exception
     {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
-        ResultSet result = Minelife.SQLITE.query("SELECT pin AS pin FROM players WHERE regionUniqueID='" + player.toString() + "'");
+        ResultSet result = Minelife.SQLITE.query("SELECT pin AS pin FROM players WHERE uuid='" + player.toString() + "'");
         if (result.next()) return result.getString("pin");
 
         return null;
@@ -144,7 +147,7 @@ public class ModEconomy extends SubMod {
     public static final boolean playerExists(UUID player)
     {
         try {
-            ResultSet result = Minelife.SQLITE.query("SELECT * FROM players WHERE regionUniqueID='" + player.toString() + "'");
+            ResultSet result = Minelife.SQLITE.query("SELECT * FROM players WHERE uuid='" + player.toString() + "'");
             if (result.next()) return true;
         } catch (SQLException e) {
             e.printStackTrace();

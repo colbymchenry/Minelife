@@ -2,6 +2,7 @@ package com.minelife.realestate.client;
 
 import com.minelife.CommonProxy;
 import com.minelife.realestate.SelectionController;
+import com.minelife.realestate.ZoneInfoController;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -11,5 +12,6 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent event)
     {
         MinecraftForge.EVENT_BUS.register(new SelectionController());
+        MinecraftForge.EVENT_BUS.register(new ZoneInfoController.ZoneRenderer());
     }
 }

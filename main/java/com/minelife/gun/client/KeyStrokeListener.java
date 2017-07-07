@@ -14,8 +14,8 @@ import org.lwjgl.input.Keyboard;
 
 public class KeyStrokeListener {
 
-    private KeyBinding keyReload = new KeyBinding("key." + Minelife.MOD_ID + ".guns.reload", Keyboard.KEY_R, "key." + Minelife.MOD_ID + ".guns");
-    private KeyBinding keyChangeAmmo = new KeyBinding("key." + Minelife.MOD_ID + ".guns.changeAmmo", Keyboard.KEY_Q, "key." + Minelife.MOD_ID + ".guns");
+    private KeyBinding keyReload = new KeyBinding("key." + Minelife.MOD_ID + ".guns.reload", Keyboard.KEY_R, Minelife.NAME);
+    private KeyBinding keyChangeAmmo = new KeyBinding("key." + Minelife.MOD_ID + ".guns.changeAmmo", Keyboard.KEY_Q, Minelife.NAME);
 
     public KeyStrokeListener() {
         ClientRegistry.registerKeyBinding(keyReload);

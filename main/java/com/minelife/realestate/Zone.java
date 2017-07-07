@@ -163,7 +163,11 @@ public class Zone implements Comparable<Zone> {
 
     public static Zone getZone(World world, Vec3 pos)
     {
-        return ZONES.stream().filter(zone -> zone.getRegion().isVecInside(Vec3.createVectorHelper(pos.xCoord, pos.yCoord, pos.zCoord))).findFirst().orElse(null);
+        Region region = Region.getRegionAt(world.getWorldInfo().getWorldName(), pos);
+
+        if(region == null) return null;
+
+        return ZONES.stream().filter(zone -> zone.getRegion().equals(region)).findFirst().orElse(null);
     }
 
     public static Zone getZone(Region region)

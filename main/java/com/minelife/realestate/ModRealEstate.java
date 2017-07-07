@@ -2,8 +2,10 @@ package com.minelife.realestate;
 
 import com.minelife.CommonProxy;
 import com.minelife.SubMod;
+import com.minelife.realestate.server.CommandClaim;
 import com.minelife.util.SimpleConfig;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -18,6 +20,16 @@ public class ModRealEstate extends SubMod {
     {
         GameRegistry.registerItem(SelectionController.Selector.getInstance(), "Selector");
         registerPacket(SelectionController.PacketSelection.Handler.class, SelectionController.PacketSelection.class, Side.CLIENT);
+        registerPacket(ZoneInfoController.PacketRequestZoneInfo.Handler.class, ZoneInfoController.PacketRequestZoneInfo.class, Side.SERVER);
+        registerPacket(ZoneInfoController.PacketRespondZoneInfo.Handler.class, ZoneInfoController.PacketRespondZoneInfo.class, Side.CLIENT);
+        registerPacket(ZoneInfoController.PacketUpdateZoneStatus.Handler.class, ZoneInfoController.PacketUpdateZoneStatus.class, Side.CLIENT);
+        registerPacket(SelectionController.PacketPricePerBlock.Handler.class, SelectionController.PacketPricePerBlock.class, Side.CLIENT);
+    }
+
+    @Override
+    public void serverStarting(FMLServerStartingEvent event)
+    {
+        event.registerServerCommand(new CommandClaim());
     }
 
     @Override
