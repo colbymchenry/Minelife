@@ -58,6 +58,7 @@ public class CommandClaim implements ICommand {
 
             ModEconomy.withdraw(((EntityPlayerMP) sender).getUniqueID(), total, true);
 
+            ((EntityPlayerMP) sender).addChatComponentMessage(new ChatComponentText("$" + total + " withdrawn from your account."));
             ((EntityPlayerMP) sender).addChatComponentMessage(new ChatComponentText("Land claimed!"));
         }catch(Exception e) {
             if(e instanceof CustomMessageException) {
