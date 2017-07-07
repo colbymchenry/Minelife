@@ -3,8 +3,6 @@ package com.minelife.realestate;
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.region.server.Region;
-import com.minelife.region.server.RegionBase;
-import com.minelife.region.server.SubRegion;
 import com.minelife.util.ArrayUtil;
 import com.minelife.util.ListToString;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -24,16 +22,16 @@ public class Zone implements Comparable<Zone> {
 
     private static final Set<Zone> ZONES = new TreeSet<>();
 
-    private RegionBase region;
+    private Region region;
     private UUID owner;
     private Set<Member> members = new TreeSet<>();
 
     private boolean publicBreaking, publicPlacing, publicInteracting;
 
-    protected Zone(RegionBase region) throws SQLException
+    private Zone(Region region) throws SQLException
     {
         this.region = region;
-        ResultSet result = Minelife.SQLITE.query("SELECT * FROM RealEstate_" + (region instanceof Region ? "Zones" : "SubZones") + " WHERE region='" + region.getUniqueID().toString() + "'");
+        ResultSet result = Minelife.SQLITE.query("SELECT * FROM RealEstate_Zones WHERE region='" + region.getUniqueID().toString() + "'");
         owner = UUID.fromString(result.getString("owner"));
         for (String member : ArrayUtil.fromString(result.getString("members")))
             members.add(new Member(this, UUID.fromString(member.split(",")[0])));
@@ -51,7 +49,7 @@ public class Zone implements Comparable<Zone> {
         return owner;
     }
 
-    public RegionBase getRegion()
+    public Region getRegion()
     {
         return region;
     }
@@ -96,8 +94,9 @@ public class Zone implements Comparable<Zone> {
         this.publicInteracting = publicInteracting;
     }
 
-    public boolean isSubRegion() {
-        return getRegion() instanceof SubRegion;
+    public boolean isSubRegion()
+    {
+        return getRegion().isSubRegion();
     }
 
     public void save() throws SQLException
@@ -138,7 +137,7 @@ public class Zone implements Comparable<Zone> {
         zone.publicBreaking = buf.readBoolean();
         zone.publicPlacing = buf.readBoolean();
         zone.publicInteracting = buf.readBoolean();
-        zone.region = RegionBase.fromBytes(buf);
+        zone.region = Region.fromBytes(buf);
         int members = buf.readInt();
         for (int i = 0; i < members; i++) zone.members.add(Member.fromBytes(buf));
         return zone;
@@ -152,16 +151,8 @@ public class Zone implements Comparable<Zone> {
         int maxX = (int) Math.max(pos1.xCoord, pos2.xCoord);
         int maxY = (int) Math.max(pos1.yCoord, pos2.yCoord);
         int maxZ = (int) Math.max(pos1.zCoord, pos2.zCoord);
-        int[] minArray = new int[]{minX, minY, minZ};
-        int[] maxArray = new int[]{maxX, maxY, maxZ};
 
-        RegionBase region = Region.getIntersectingRegion(AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ));
-
-        if (region != null) {
-            region = SubRegion.createSubRegion((Region) region, minArray, maxArray);
-        } else {
-            region = Region.createRegion(world.getWorldInfo().getWorldName(), minArray, maxArray);
-        }
+        Region region = Region.create(world.getWorldInfo().getWorldName(), AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ));
 
         Minelife.SQLITE.query("INSERT INTO RealEstate_Zones (region, owner) VALUES ('" + region.getUniqueID().toString() + "', '" + owner.toString() + "')");
 
@@ -172,12 +163,12 @@ public class Zone implements Comparable<Zone> {
 
     public static Zone getZone(World world, Vec3 pos)
     {
-        return ZONES.stream().filter(zone -> zone.getRegion().doesContain((int) pos.xCoord, (int) pos.yCoord, (int) pos.zCoord)).findFirst().orElse(null);
+        return ZONES.stream().filter(zone -> zone.getRegion().isVecInside(Vec3.createVectorHelper(pos.xCoord, pos.yCoord, pos.zCoord))).findFirst().orElse(null);
     }
 
-    public static Zone getZone(RegionBase region)
+    public static Zone getZone(Region region)
     {
-        return ZONES.stream().filter(zone -> zone.getRegion().getUniqueID().equals(region.getUniqueID())).findFirst().orElse(null);
+        return ZONES.stream().filter(zone -> zone.getRegion().equals(region)).findFirst().orElse(null);
     }
 
     public static void deleteZone(UUID regionUniqueID) throws SQLException
@@ -186,8 +177,7 @@ public class Zone implements Comparable<Zone> {
         Zone toRemove = ZONES.stream().filter(zone -> zone.getRegion().getUniqueID().equals(regionUniqueID)).findFirst().orElse(null);
         if (toRemove != null)
             ZONES.remove(toRemove);
-        Region.deleteRegion(regionUniqueID);
-        SubRegion.deleteSubRegion(regionUniqueID);
+        Region.delete(regionUniqueID);
     }
 
     public static void initZones() throws SQLException
@@ -196,17 +186,10 @@ public class Zone implements Comparable<Zone> {
 
         while (result.next()) {
             UUID uniqueID = UUID.fromString(result.getString("region"));
-            boolean createdZone = false;
 
-            if (SubRegion.getSubRegion(uniqueID) != null) {
-                ZONES.add(new Zone(SubRegion.getSubRegion(uniqueID)));
-                createdZone = true;
-            } else if (Region.getRegion(uniqueID) != null) {
-                ZONES.add(new Zone(Region.getRegion(uniqueID)));
-                createdZone = true;
-            }
-
-            if (!createdZone) {
+            if (Region.getRegionFromUUID(uniqueID) != null) {
+                ZONES.add(new Zone(Region.getRegionFromUUID(uniqueID)));
+            } else {
                 deleteZone(UUID.fromString(result.getString("region")));
             }
         }
