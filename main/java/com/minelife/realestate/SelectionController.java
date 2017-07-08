@@ -94,6 +94,7 @@ public class SelectionController {
         public static Map<UUID, Vec3> pos1Map = Maps.newHashMap();
         public static Map<UUID, Vec3> pos2Map = Maps.newHashMap();
 
+        // TODO: Didn't work on server rejoin
         @SubscribeEvent
         public void onClick(PlayerInteractEvent event)
         {

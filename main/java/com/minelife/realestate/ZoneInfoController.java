@@ -159,6 +159,7 @@ public class ZoneInfoController {
         @SubscribeEvent
         public void onPlayerTick(TickEvent.PlayerTickEvent event)
         {
+            // TODO: Not working correctly when at max vec of region
             Zone zone = Zone.getZone(event.player.getEntityWorld(),
                     Vec3.createVectorHelper(event.player.posX, event.player.posY, event.player.posZ));
 
