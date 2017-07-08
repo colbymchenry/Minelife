@@ -47,12 +47,13 @@ public class CommandClaim implements ICommand {
             Vec3 pos1 = SelectionController.ServerSelector.pos1Map.get(((EntityPlayerMP) sender).getUniqueID());
             Vec3 pos2 = SelectionController.ServerSelector.pos2Map.get(((EntityPlayerMP) sender).getUniqueID());
 
-            if(pos1 == null || pos2 == null) throw new CustomMessageException("Incomplete selection.");
+            if (pos1 == null || pos2 == null) throw new CustomMessageException("Incomplete selection.");
 
             Region bounds = new CuboidRegion(new Vector(pos1.xCoord, pos1.yCoord, pos1.zCoord), new Vector(pos2.xCoord, pos2.yCoord, pos2.zCoord));
             long total = (bounds.getArea() * Integer.parseInt("" + ModRealEstate.config.getOptions().get("PricePerBlock")));
 
-            if(ModEconomy.getBalance(((EntityPlayerMP) sender).getUniqueID(), true) < total) throw new CustomMessageException("Insufficient funds.");
+            if (ModEconomy.getBalance(((EntityPlayerMP) sender).getUniqueID(), true) < total)
+                throw new CustomMessageException("Insufficient funds.");
 
             Zone.createZone(sender.getEntityWorld(), pos1, pos2, ((EntityPlayerMP) sender).getUniqueID());
 
@@ -60,8 +61,8 @@ public class CommandClaim implements ICommand {
 
             ((EntityPlayerMP) sender).addChatComponentMessage(new ChatComponentText("$" + total + " withdrawn from your account."));
             ((EntityPlayerMP) sender).addChatComponentMessage(new ChatComponentText("Land claimed!"));
-        }catch(Exception e) {
-            if(e instanceof CustomMessageException) {
+        } catch (Exception e) {
+            if (e instanceof CustomMessageException) {
                 sender.addChatMessage(new ChatComponentText(e.getMessage()));
             } else {
                 e.printStackTrace();

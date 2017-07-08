@@ -7,6 +7,7 @@ import com.minelife.realestate.SelectionController.ServerSelector;
 import com.minelife.realestate.Zone;
 import com.minelife.realestate.ZoneInfoController;
 import com.minelife.util.SimpleConfig;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -43,6 +44,7 @@ public class ServerProxy extends CommonProxy {
         }
 
         MinecraftForge.EVENT_BUS.register(new ServerSelector());
-        MinecraftForge.EVENT_BUS.register(new ZoneInfoController.PlayerTickListener());
+        MinecraftForge.EVENT_BUS.register(new LandController());
+        FMLCommonHandler.instance().bus().register(new ZoneInfoController.PlayerTickListener());
     }
 }

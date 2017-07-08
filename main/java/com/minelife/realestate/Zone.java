@@ -5,6 +5,8 @@ import com.minelife.Minelife;
 import com.minelife.region.server.Region;
 import com.minelife.util.ArrayUtil;
 import com.minelife.util.ListToString;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.AxisAlignedBB;
@@ -33,8 +35,10 @@ public class Zone implements Comparable<Zone> {
         this.region = region;
         ResultSet result = Minelife.SQLITE.query("SELECT * FROM RealEstate_Zones WHERE region='" + region.getUniqueID().toString() + "'");
         owner = UUID.fromString(result.getString("owner"));
-        for (String member : ArrayUtil.fromString(result.getString("members")))
-            members.add(new Member(this, UUID.fromString(member.split(",")[0])));
+        for (String member : ArrayUtil.fromString(result.getString("members"))) {
+            if (!member.isEmpty())
+                members.add(new Member(this, UUID.fromString(member.split(",")[0])));
+        }
         publicBreaking = result.getBoolean("publicBreaking");
         publicPlacing = result.getBoolean("publicPlacing");
         publicInteracting = result.getBoolean("publicInteracting");
@@ -151,8 +155,11 @@ public class Zone implements Comparable<Zone> {
         int maxX = (int) Math.max(pos1.xCoord, pos2.xCoord);
         int maxY = (int) Math.max(pos1.yCoord, pos2.yCoord);
         int maxZ = (int) Math.max(pos1.zCoord, pos2.zCoord);
+        CuboidRegion cuboidRegion = new CuboidRegion(new Vector(pos1.xCoord, pos1.yCoord, pos1.zCoord), new Vector(pos2.xCoord, pos2.yCoord, pos2.zCoord));
 
-        Region region = Region.create(world.getWorldInfo().getWorldName(), AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ));
+        Region region = Region.create(world.getWorldInfo().getWorldName(),
+                AxisAlignedBB.getBoundingBox(cuboidRegion.getMinimumPoint().getBlockX(),cuboidRegion.getMinimumPoint().getBlockY(),cuboidRegion.getMinimumPoint().getBlockZ(),
+                        cuboidRegion.getMaximumPoint().getBlockX(),cuboidRegion.getMaximumPoint().getBlockY(),cuboidRegion.getMaximumPoint().getBlockZ()));
 
         Minelife.SQLITE.query("INSERT INTO RealEstate_Zones (region, owner) VALUES ('" + region.getUniqueID().toString() + "', '" + owner.toString() + "')");
 
@@ -194,7 +201,7 @@ public class Zone implements Comparable<Zone> {
             if (Region.getRegionFromUUID(uniqueID) != null) {
                 ZONES.add(new Zone(Region.getRegionFromUUID(uniqueID)));
             } else {
-                deleteZone(UUID.fromString(result.getString("region")));
+                deleteZone(uniqueID);
             }
         }
     }

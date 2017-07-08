@@ -3,11 +3,12 @@ package com.minelife.region.server;
 import com.google.common.collect.Lists;
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
@@ -125,21 +126,23 @@ public class Region implements Comparable<Region> {
         if (parentRegion != null) {
             //check if intersects with another SubRegion
             if (Region.getIntersectingRegion(world, bounds) != null)
-                throw new CustomMessageException("Intersecting with another region.");
+                throw new CustomMessageException("Intersecting with another region2.");
         } else {
             // If we have an intersecting region do not create a region
             if (Region.getIntersectingRegion(world, bounds) != null)
-                throw new CustomMessageException("Intersecting with another region.");
+                throw new CustomMessageException("Intersecting with another region1.");
         }
 
         UUID regionUniqueID = UUID.randomUUID();
+
+        CuboidRegion cuboidRegion = new CuboidRegion(new Vector(bounds.minX, bounds.minY, bounds.minZ), new Vector(bounds.maxX, bounds.maxY, bounds.maxZ));
 
         // create region
         Minelife.SQLITE.query("INSERT INTO regions (uuid, world, minX, minY, minZ, maxX, maxY, maxZ) VALUES (" +
                 "'" + regionUniqueID.toString() + "'," +
                 "'" + world + "'," +
-                "'" + ((int) bounds.minX) + "', '" + ((int) bounds.minY) + "', '" + ((int) bounds.minZ) + "'," +
-                "'" + ((int) bounds.maxX) + "', '" + ((int) bounds.maxY) + "', '" + ((int) bounds.maxZ) + "')");
+                "'" + cuboidRegion.getMinimumPoint().getBlockX() + "', '" + cuboidRegion.getMinimumPoint().getBlockY() + "', '" + cuboidRegion.getMinimumPoint().getBlockZ() + "'," +
+                "'" +  cuboidRegion.getMaximumPoint().getBlockX() + "', '" +  cuboidRegion.getMaximumPoint().getBlockY()  + "', '" +  cuboidRegion.getMaximumPoint().getBlockZ()  + "')");
 
         Region region = new Region(regionUniqueID);
         REGIONS.add(region);
@@ -149,8 +152,8 @@ public class Region implements Comparable<Region> {
     public static void delete(UUID regionUniqueID) throws SQLException
     {
         Region region = getRegionFromUUID(regionUniqueID);
-        region.getEntityWorld().setBlock((int) region.getBounds().minX, (int) region.getBounds().minY, (int) region.getBounds().minZ, Blocks.gold_block);
         Minelife.SQLITE.query("DELETE FROM regions WHERE uuid='" + regionUniqueID.toString() + "'");
+        region.getEntityWorld().setBlock((int) region.getBounds().minX, (int) region.getBounds().minY, (int) region.getBounds().minZ, Blocks.diamond_block);
         REGIONS.remove(region);
     }
 
@@ -159,29 +162,63 @@ public class Region implements Comparable<Region> {
         Region containingRegion = getContainingRegion(world, bounds);
 
         if (containingRegion != null) {
-            List<Region> parentRegions = Lists.newArrayList();
+            Set<Region> parentRegions = new TreeSet<>();
 
-            if(!containingRegion.isSubRegion())
-                return REGIONS.stream().filter(region -> !region.equals(containingRegion) && region.getBounds().intersectsWith(bounds) && region.getWorldName().equalsIgnoreCase(world)).findFirst().orElse(null);
+            if (!containingRegion.isSubRegion()) {
+                for (Region r : REGIONS) {
+                    if (!r.equals(containingRegion)) {
+                        CuboidRegion cuboidRegion = new CuboidRegion(new Vector(r.getBounds().minX, r.getBounds().minY, r.getBounds().minZ),
+                                new Vector(r.getBounds().maxX, r.getBounds().maxY, r.getBounds().maxZ));
 
-            Region parentRegion = containingRegion.getParentRegion();
+                        boolean intersects = bounds.maxX >= cuboidRegion.getMinimumPoint().getBlockX() && bounds.minX <= cuboidRegion.getMaximumPoint().getBlockX() ? (bounds.maxY >= cuboidRegion.getMinimumPoint().getBlockY() && bounds.minY <= cuboidRegion.getMaximumPoint().getBlockY() ? bounds.maxZ >= cuboidRegion.getMinimumPoint().getBlockZ() && bounds.minZ <= cuboidRegion.getMaximumPoint().getBlockZ() : false) : false;
+
+                        if (intersects && r.getWorldName().equalsIgnoreCase(world)) return r;
+                    }
+                }
+
+                return null;
+            }
+
 
             parentRegions.add(containingRegion);
+            Region parentRegion = containingRegion.getParentRegion();
 
-            while(parentRegion != null) {
+            parentRegion.getEntityWorld().setBlock((int) parentRegion.getBounds().minX, (int) parentRegion.getBounds().maxY, (int) parentRegion.getBounds().minZ, Blocks.diamond_block);
+            containingRegion.getEntityWorld().setBlock((int) containingRegion.getBounds().minX, (int) containingRegion.getBounds().maxY, (int) containingRegion.getBounds().minZ, Blocks.gold_block);
+
+            while (parentRegion != null) {
                 parentRegions.add(parentRegion);
                 parentRegion = parentRegion.getParentRegion();
             }
 
-            return REGIONS.stream().filter(region -> !parentRegions.contains(region) && region.getBounds().intersectsWith(bounds) && region.getWorldName().equalsIgnoreCase(world)).findFirst().orElse(null);
+            for (Region r : REGIONS) {
+                if (!parentRegions.contains(r)) {
+                    CuboidRegion cuboidRegion = new CuboidRegion(new Vector(r.getBounds().minX, r.getBounds().minY, r.getBounds().minZ),
+                            new Vector(r.getBounds().maxX, r.getBounds().maxY, r.getBounds().maxZ));
+
+                    boolean intersects = bounds.maxX >= cuboidRegion.getMinimumPoint().getBlockX() && bounds.minX <= cuboidRegion.getMaximumPoint().getBlockX() ? (bounds.maxY >= cuboidRegion.getMinimumPoint().getBlockY() && bounds.minY <= cuboidRegion.getMaximumPoint().getBlockY() ? bounds.maxZ >= cuboidRegion.getMinimumPoint().getBlockZ() && bounds.minZ <= cuboidRegion.getMaximumPoint().getBlockZ() : false) : false;
+
+                    if (intersects && r.getWorldName().equalsIgnoreCase(world)) return r;
+                }
+            }
+
+            return null;
         } else {
-            return REGIONS.stream().filter(region -> region.getBounds().intersectsWith(bounds) && region.getWorldName().equalsIgnoreCase(world)).findFirst().orElse(null);
+            for (Region r : REGIONS) {
+                CuboidRegion cuboidRegion = new CuboidRegion(new Vector(r.getBounds().minX, r.getBounds().minY, r.getBounds().minZ),
+                        new Vector(r.getBounds().maxX, r.getBounds().maxY, r.getBounds().maxZ));
+
+                boolean intersects = bounds.maxX >= cuboidRegion.getMinimumPoint().getBlockX() && bounds.minX <= cuboidRegion.getMaximumPoint().getBlockX() ? (bounds.maxY >= cuboidRegion.getMinimumPoint().getBlockY() && bounds.minY <= cuboidRegion.getMaximumPoint().getBlockY() ? bounds.maxZ >= cuboidRegion.getMinimumPoint().getBlockZ() && bounds.minZ <= cuboidRegion.getMaximumPoint().getBlockZ() : false) : false;
+
+                if (intersects && r.getWorldName().equalsIgnoreCase(world)) return r;
+            }
+            return null;
         }
     }
 
     public static Region getContainingRegion(String world, AxisAlignedBB bounds)
     {
-        List<Region> regions = Lists.newArrayList();
+        Set<Region> regions = new TreeSet<>();
         for (Region r : REGIONS) {
             if (r.getBounds().isVecInside(Vec3.createVectorHelper(bounds.minX, bounds.minY, bounds.minZ)) &&
                     r.getBounds().isVecInside(Vec3.createVectorHelper(bounds.maxX, bounds.maxY, bounds.maxZ)) &&
@@ -197,9 +234,11 @@ public class Region implements Comparable<Region> {
 
     public static Region getRegionAt(String world, Vec3 vec3)
     {
-        List<Region> regions = Lists.newArrayList();
+        Set<Region> regions = new TreeSet<>();
         for (Region r : REGIONS) {
-            if (r.getBounds().isVecInside(vec3) && r.getWorldName().equalsIgnoreCase(world)) {
+            CuboidRegion cuboidRegion = new CuboidRegion(new Vector(r.getBounds().minX, r.getBounds().minY, r.getBounds().minZ),
+                    new Vector(r.getBounds().maxX, r.getBounds().maxY, r.getBounds().maxZ));
+            if (cuboidRegion.contains(new Vector(vec3.xCoord, vec3.yCoord, vec3.zCoord)) && r.getWorldName().equalsIgnoreCase(world)) {
                 regions.add(r);
             }
         }
@@ -209,8 +248,9 @@ public class Region implements Comparable<Region> {
         return getClosest(regions, vec3);
     }
 
-    private static Region getClosest(List<Region> regions, Vec3 vec) {
-        Region closestRegion = regions.get(0);
+    private static Region getClosest(Set<Region> regions, Vec3 vec)
+    {
+        Region closestRegion = (Region) regions.toArray()[0];
         for (Region r : regions) {
             double distance = Vec3.createVectorHelper(r.getBounds().minX, r.getBounds().minY, r.getBounds().minZ).distanceTo(vec);
             double closestRegionDistance = Vec3.createVectorHelper(closestRegion.getBounds().minX, closestRegion.getBounds().minY, closestRegion.getBounds().minZ).distanceTo(vec);
