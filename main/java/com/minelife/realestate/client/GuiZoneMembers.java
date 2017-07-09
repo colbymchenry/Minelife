@@ -15,6 +15,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
     private Content content;
     private Zone zone;
 
+    // TODO: Need to add AddMember section at the bottom of the list
     public GuiZoneMembers(Zone zone)
     {
         super(200, 200);
