@@ -66,6 +66,16 @@ public class Member implements Comparable<Member> {
         return allowInteracting;
     }
 
+    public String getName()
+    {
+        return memberName;
+    }
+
+    public UUID getUniqueID()
+    {
+        return memberUniqueID;
+    }
+
     @Override
     public int compareTo(Member o)
     {

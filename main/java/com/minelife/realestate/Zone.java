@@ -29,6 +29,7 @@ public class Zone implements Comparable<Zone> {
     private Set<Member> members = new TreeSet<>();
 
     private boolean publicBreaking, publicPlacing, publicInteracting;
+    private String intro, outro;
 
     private Zone(Region region) throws SQLException
     {
@@ -42,6 +43,8 @@ public class Zone implements Comparable<Zone> {
         publicBreaking = result.getBoolean("publicBreaking");
         publicPlacing = result.getBoolean("publicPlacing");
         publicInteracting = result.getBoolean("publicInteracting");
+        intro = result.getString("intro");
+        outro = result.getString("outro");
     }
 
     private Zone()
@@ -56,6 +59,16 @@ public class Zone implements Comparable<Zone> {
     public Region getRegion()
     {
         return region;
+    }
+
+    public String getIntro()
+    {
+        return intro;
+    }
+
+    public String getOutro()
+    {
+        return outro;
     }
 
     public boolean isPublicBreaking()
@@ -120,12 +133,16 @@ public class Zone implements Comparable<Zone> {
                 "members='" + memberListToString.getString() + "' AND " +
                 "publicBreaking='" + (isPublicBreaking() ? 1 : 0) + "' AND " +
                 "publicPlacing='" + (isPublicPlacing() ? 1 : 0) + "' AND " +
-                "publicInteracting='" + (isPublicInteracting() ? 1 : 0) + "'");
+                "publicInteracting='" + (isPublicInteracting() ? 1 : 0) + "' AND " +
+                "intro='" + getIntro() + "' AND " +
+                "outro='" + getOutro() + "'");
     }
 
     public void toBytes(ByteBuf buf)
     {
         ByteBufUtils.writeUTF8String(buf, getOwner().toString());
+        ByteBufUtils.writeUTF8String(buf, getIntro());
+        ByteBufUtils.writeUTF8String(buf, getOutro());
         buf.writeBoolean(isPublicBreaking());
         buf.writeBoolean(isPublicPlacing());
         buf.writeBoolean(isPublicInteracting());
@@ -138,6 +155,8 @@ public class Zone implements Comparable<Zone> {
     {
         Zone zone = new Zone();
         zone.owner = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+        zone.intro = ByteBufUtils.readUTF8String(buf);
+        zone.outro = ByteBufUtils.readUTF8String(buf);
         zone.publicBreaking = buf.readBoolean();
         zone.publicPlacing = buf.readBoolean();
         zone.publicInteracting = buf.readBoolean();
@@ -149,12 +168,6 @@ public class Zone implements Comparable<Zone> {
 
     public static Zone createZone(World world, Vec3 pos1, Vec3 pos2, UUID owner) throws Exception
     {
-        int minX = (int) Math.min(pos1.xCoord, pos2.xCoord);
-        int minY = (int) Math.min(pos1.yCoord, pos2.yCoord);
-        int minZ = (int) Math.min(pos1.zCoord, pos2.zCoord);
-        int maxX = (int) Math.max(pos1.xCoord, pos2.xCoord);
-        int maxY = (int) Math.max(pos1.yCoord, pos2.yCoord);
-        int maxZ = (int) Math.max(pos1.zCoord, pos2.zCoord);
         CuboidRegion cuboidRegion = new CuboidRegion(new Vector(pos1.xCoord, pos1.yCoord, pos1.zCoord), new Vector(pos2.xCoord, pos2.yCoord, pos2.zCoord));
 
         Region region = Region.create(world.getWorldInfo().getWorldName(),

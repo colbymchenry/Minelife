@@ -2,11 +2,15 @@ package com.minelife.realestate;
 
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
+import com.minelife.realestate.client.GuiZoneInfo;
 import com.minelife.region.server.Region;
 import com.minelife.util.client.GuiUtil;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.util.eventbus.Subscribe;
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -49,13 +53,13 @@ public class ZoneInfoController {
         @Override
         public void fromBytes(ByteBuf buf)
         {
-            zone.toBytes(buf);
+            zone = Zone.fromBytes(buf);
         }
 
         @Override
         public void toBytes(ByteBuf buf)
         {
-            zone = Zone.fromBytes(buf);
+            zone.toBytes(buf);
         }
 
         public static class Handler implements IMessageHandler<PacketRespondZoneInfo, IMessage> {
@@ -64,6 +68,7 @@ public class ZoneInfoController {
             public IMessage onMessage(PacketRespondZoneInfo message, MessageContext ctx)
             {
                 ZoneInfoController.clientZone = message.zone;
+                Minecraft.getMinecraft().displayGuiScreen(new GuiZoneInfo(message.zone));
                 ZoneRenderer.pos1 = Vec3.createVectorHelper(
                         message.zone.getRegion().getBounds().minX,
                         message.zone.getRegion().getBounds().minY,
@@ -152,6 +157,7 @@ public class ZoneInfoController {
         }
     }
 
+    // TODO: Fix: player joins inside of zone the click 'i' message does not appear until they leave and walk back in
     public static class PlayerTickListener {
 
         private static Map<UUID, Zone> inZone = Maps.newHashMap();
@@ -159,9 +165,13 @@ public class ZoneInfoController {
         @SubscribeEvent
         public void onPlayerTick(TickEvent.PlayerTickEvent event)
         {
-            // TODO: Not working correctly when at max vec of region
             Zone zone = Zone.getZone(event.player.getEntityWorld(),
-                    Vec3.createVectorHelper(event.player.posX, event.player.posY, event.player.posZ));
+                    Vec3.createVectorHelper(event.player.posX - 1, event.player.posY, event.player.posZ - 1));
+
+            if(zone == null) {
+                zone = Zone.getZone(event.player.getEntityWorld(),
+                        Vec3.createVectorHelper(event.player.posX, event.player.posY, event.player.posZ));
+            }
 
             if (inZone.containsKey(event.player.getUniqueID())) {
                 if (zone == null) {
@@ -191,6 +201,7 @@ public class ZoneInfoController {
             }
         }
 
+        // TODO: Render if toggled in ZoneInfo gui
         @SubscribeEvent
         public void render(RenderWorldLastEvent event)
         {
@@ -218,7 +229,16 @@ public class ZoneInfoController {
     }
 
     public static class KeyListener {
-        private KeyBinding keyZoneInfo = new KeyBinding("key." + Minelife.MOD_ID + ".zone.info", Keyboard.KEY_R, Minelife.NAME);
+        private KeyBinding keyZoneInfo = new KeyBinding("key." + Minelife.MOD_ID + ".zone.info", Keyboard.KEY_I, Minelife.NAME);
+
+        public KeyListener() {
+            ClientRegistry.registerKeyBinding(keyZoneInfo);
+        }
+
+        @SubscribeEvent
+        public void onKeyPress(InputEvent.KeyInputEvent event) {
+            if(keyZoneInfo.isPressed()) Minelife.NETWORK.sendToServer(new PacketRequestZoneInfo());
+        }
     }
 
 }

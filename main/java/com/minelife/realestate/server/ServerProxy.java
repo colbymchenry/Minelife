@@ -36,7 +36,9 @@ public class ServerProxy extends CommonProxy {
                     "members TEXT NOT NULL DEFAULT '[]', " +
                     "publicPlacing BOOLEAN NOT NULL DEFAULT '0', " +
                     "publicBreaking BOOLEAN NOT NULL DEFAULT '0', " +
-                    "publicInteracting BOOLEAN NOT NULL DEFAULT '0')");
+                    "publicInteracting BOOLEAN NOT NULL DEFAULT '0', " +
+                    "intro TEXT NOT NULL DEFAULT '', " +
+                    "outro TEXT NOT NULL DEFAULT '')");
             Zone.initZones();
         } catch (SQLException e) {
             e.printStackTrace();
