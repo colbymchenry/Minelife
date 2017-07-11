@@ -75,7 +75,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
     {
         super.initGui();
         content = new Content(this.xPosition, this.yPosition, this.bgWidth, this.bgHeight);
-        addField = new GuiTextField(this.xPosition, this.yPosition + this.bgHeight, this.bgWidth - 55, 20);
+        addField = new GuiTextField(this.xPosition, this.yPosition + this.bgHeight, this.bgWidth - 55, 12);
         addBtn = new CustomZoneBtn(0, this.addField.getBounds().getX() + this.addField.getBounds().getWidth() + 5, this.addField.getBounds().getY(), 50, 20, "Add");
     }
 
