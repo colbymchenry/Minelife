@@ -34,7 +34,7 @@ public class Minelife {
 
     public static Database SQLITE;
 
-    public static final List<SubMod> MODS = Lists.newArrayList();
+    public static final List<AbstractMod> MODS = Lists.newArrayList();
 
     public static String default_error_message = EnumChatFormatting.RED + "Sorry, something went wrong. Notify a staff member.";
 
@@ -51,7 +51,7 @@ public class Minelife {
     public void preInit(FMLPreInitializationEvent event) {
         NETWORK = new SimpleNetworkWrapper(MOD_ID);
 
-        SubMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
+        AbstractMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
         MODS.stream().forEach(mod -> mod.preInit(event));
         PROXY.preInit(event);
     }

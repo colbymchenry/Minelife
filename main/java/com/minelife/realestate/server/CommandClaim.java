@@ -84,7 +84,6 @@ public class CommandClaim implements ICommand {
         return Lists.newArrayList();
     }
 
-    // TODO
     @Override
     public boolean isUsernameIndex(String[] args, int index)
     {

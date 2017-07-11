@@ -1,7 +1,7 @@
 package com.minelife.gun;
 
 import com.minelife.CommonProxy;
-import com.minelife.SubMod;
+import com.minelife.AbstractMod;
 import com.minelife.gun.block.BlockZincOre;
 import com.minelife.gun.item.*;
 import com.minelife.gun.item.ammos.ItemAmmo;
@@ -23,7 +23,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import static ic2.core.Ic2Items.ForgeHammer;
 
-public class ModGun extends SubMod {
+public class ModGun extends AbstractMod {
 
     public static final CreativeTabs tabGuns = new CreativeTabs("guns") {
         @Override

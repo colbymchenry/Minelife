@@ -16,6 +16,7 @@ public class Member implements Comparable<Member> {
     private UUID memberUniqueID;
     private String memberName;
     private boolean allowPlacing, allowBreaking, allowInteracting;
+    private boolean isManager;
 
     public Member(Zone zone, UUID memberUniqueID) throws SQLException
     {
@@ -32,6 +33,7 @@ public class Member implements Comparable<Member> {
                 this.allowPlacing = Boolean.parseBoolean(data[1]);
                 this.allowBreaking = Boolean.parseBoolean(data[2]);
                 this.allowInteracting = Boolean.parseBoolean(data[3]);
+                this.isManager = Boolean.parseBoolean(data[4]);
                 break;
             }
         }
@@ -43,7 +45,7 @@ public class Member implements Comparable<Member> {
 
     @Override
     public String toString() {
-        return memberUniqueID.toString() + "," + allowPlacing + "," + allowBreaking + "," + allowInteracting;
+        return memberUniqueID.toString() + "," + allowPlacing + "," + allowBreaking + "," + allowInteracting + "," + isManager;
     }
 
     public Zone getZone()
@@ -64,6 +66,31 @@ public class Member implements Comparable<Member> {
     public boolean isAllowInteracting()
     {
         return allowInteracting;
+    }
+
+    public boolean isManager()
+    {
+        return isManager;
+    }
+
+    public void setAllowPlacing(boolean allowPlacing)
+    {
+        this.allowPlacing = allowPlacing;
+    }
+
+    public void setAllowBreaking(boolean allowBreaking)
+    {
+        this.allowBreaking = allowBreaking;
+    }
+
+    public void setAllowInteracting(boolean allowInteracting)
+    {
+        this.allowInteracting = allowInteracting;
+    }
+
+    public void setManager(boolean manager)
+    {
+        isManager = manager;
     }
 
     public String getName()
@@ -88,6 +115,7 @@ public class Member implements Comparable<Member> {
         buf.writeBoolean(isAllowPlacing());
         buf.writeBoolean(isAllowBreaking());
         buf.writeBoolean(isAllowInteracting());
+        buf.writeBoolean(isManager());
     }
 
     public static Member fromBytes(ByteBuf buf) {
@@ -97,6 +125,7 @@ public class Member implements Comparable<Member> {
         member.allowPlacing = buf.readBoolean();
         member.allowBreaking = buf.readBoolean();
         member.allowInteracting = buf.readBoolean();
+        member.isManager = buf.readBoolean();
         return member;
     }
 }

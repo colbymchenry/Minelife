@@ -1,7 +1,7 @@
 package com.minelife.police;
 
 import com.minelife.CommonProxy;
-import com.minelife.SubMod;
+import com.minelife.AbstractMod;
 import com.minelife.police.client.ClientProxy;
 import com.minelife.police.packet.PacketArrestPlayer;
 import com.minelife.util.client.render.ModelBipedCustom;
@@ -12,7 +12,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 
-public class ModPolice extends SubMod {
+public class ModPolice extends AbstractMod {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {

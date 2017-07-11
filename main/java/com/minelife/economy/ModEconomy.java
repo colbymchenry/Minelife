@@ -5,7 +5,7 @@ import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.economy.server.CommandEconomy;
 import com.minelife.util.PlayerHelper;
-import com.minelife.SubMod;
+import com.minelife.AbstractMod;
 import com.minelife.economy.packet.*;
 import com.minelife.util.SimpleConfig;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 
-public class ModEconomy extends SubMod {
+public class ModEconomy extends AbstractMod {
 
     @SideOnly(Side.SERVER)
     public static SimpleConfig config;

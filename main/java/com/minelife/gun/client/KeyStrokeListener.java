@@ -1,5 +1,6 @@
 package com.minelife.gun.client;
 
+import com.minelife.KeyBindings;
 import com.minelife.Minelife;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketReload;
@@ -14,21 +15,13 @@ import org.lwjgl.input.Keyboard;
 
 public class KeyStrokeListener {
 
-    private KeyBinding keyReload = new KeyBinding("key." + Minelife.MOD_ID + ".guns.reload", Keyboard.KEY_R, Minelife.NAME);
-    private KeyBinding keyChangeAmmo = new KeyBinding("key." + Minelife.MOD_ID + ".guns.changeAmmo", Keyboard.KEY_Q, Minelife.NAME);
-
-    public KeyStrokeListener() {
-        ClientRegistry.registerKeyBinding(keyReload);
-        ClientRegistry.registerKeyBinding(keyChangeAmmo);
-    }
-
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (keyReload.isPressed()) {
+        if (KeyBindings.keyReload.isPressed()) {
             Minelife.NETWORK.sendToServer(new PacketReload());
         }
 
-        if (keyChangeAmmo.isPressed()) {
+        if (KeyBindings.keyChangeAmmo.isPressed()) {
             EntityPlayer player = Minecraft.getMinecraft().thePlayer;
             ItemGun gun = player.getHeldItem() != null && player.getHeldItem().getItem() instanceof com.minelife.gun.item.guns.ItemGun ? (ItemGun) player.getHeldItem().getItem() : null;
             if (gun == null) return;

@@ -1,14 +1,14 @@
 package com.minelife.region;
 
 import com.minelife.CommonProxy;
-import com.minelife.SubMod;
+import com.minelife.AbstractMod;
 import com.minelife.region.client.WorldEditSelectionController;
 import com.minelife.region.server.CommandRegion;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 
-public class ModRegion extends SubMod {
+public class ModRegion extends AbstractMod {
 
     @Override
     public Class<? extends CommonProxy> getServerProxy() {

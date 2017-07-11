@@ -36,11 +36,10 @@ public class ServerProxy extends CommonProxy {
     }
 
     private void initSQLite() {
-        Logger logger = Logger.getLogger("Minecraft");
         String prefix = "[" + Minelife.NAME + "]";
         String directory = Minelife.getDirectory().getAbsolutePath();
         String dbName = Minelife.MOD_ID;
-        Minelife.SQLITE = new SQLite(logger, prefix, directory, dbName);
+        Minelife.SQLITE = new SQLite(Minelife.getLogger(), prefix, directory, dbName);
         Minelife.SQLITE.open();
     }
 

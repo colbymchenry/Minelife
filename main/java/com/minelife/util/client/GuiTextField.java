@@ -3,7 +3,9 @@ package com.minelife.util.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.Tessellator;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Rectangle;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class GuiTextField extends Gui {
     private boolean focused = false;
     private boolean unicodeFlag = false;
     private boolean enabled = true;
+    private int cursorCounter;
 
     public GuiTextField(int x, int y, int width, int height) {
         bounds = new Rectangle(x, y, width, height);
@@ -137,7 +140,7 @@ public class GuiTextField extends Gui {
     }
 
     public void update() {
-
+        ++this.cursorCounter;
     }
 
     public void initGui() {
@@ -180,7 +183,26 @@ public class GuiTextField extends Gui {
 
             int x = bounds.getX() + strWidth;
             int y = bounds.getY() + (line * fontRenderer.FONT_HEIGHT);
-            Gui.drawRect(x, y - 1, x + 1, y + 1 + this.fontRenderer.FONT_HEIGHT, -3092272);
+
+            boolean drawCursor = this.isFocused() && this.cursorCounter / 6 % 2 == 0;
+
+            if(drawCursor) {
+                Tessellator tessellator = Tessellator.instance;
+                GL11.glColor4f(0.0F, 0.0F, 255.0F, 255.0F);
+                GL11.glDisable(GL11.GL_TEXTURE_2D);
+                GL11.glEnable(GL11.GL_COLOR_LOGIC_OP);
+                GL11.glLogicOp(GL11.GL_OR_REVERSE);
+                tessellator.startDrawingQuads();
+                tessellator.addVertex((double)x, (double)y + 1 + this.fontRenderer.FONT_HEIGHT, 0.0D);
+                tessellator.addVertex((double)x + 1, (double)y + this.fontRenderer.FONT_HEIGHT, 0.0D);
+                tessellator.addVertex((double)x + 1, (double)y - 1, 0.0D);
+                tessellator.addVertex((double)x, (double)y - 1, 0.0D);
+                tessellator.draw();
+                GL11.glDisable(GL11.GL_COLOR_LOGIC_OP);
+                GL11.glEnable(GL11.GL_TEXTURE_2D);
+            }
+
+//            Gui.drawRect(x, y - 1, x + 1, y + 1 + this.fontRenderer.FONT_HEIGHT, -3092272);
         } catch (Exception e) {
         }
 
@@ -195,6 +217,7 @@ public class GuiTextField extends Gui {
 
     public void setFocused(boolean focused) {
         this.focused = focused;
+        this.cursorCounter = 0;
     }
 
     public boolean isFocused() {

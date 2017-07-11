@@ -1,6 +1,7 @@
 package com.minelife.realestate;
 
 import com.google.common.collect.Maps;
+import com.minelife.KeyBindings;
 import com.minelife.Minelife;
 import com.minelife.realestate.client.GuiZoneInfo;
 import com.minelife.region.server.Region;
@@ -229,15 +230,10 @@ public class ZoneInfoController {
     }
 
     public static class KeyListener {
-        private KeyBinding keyZoneInfo = new KeyBinding("key." + Minelife.MOD_ID + ".zone.info", Keyboard.KEY_I, Minelife.NAME);
-
-        public KeyListener() {
-            ClientRegistry.registerKeyBinding(keyZoneInfo);
-        }
 
         @SubscribeEvent
         public void onKeyPress(InputEvent.KeyInputEvent event) {
-            if(keyZoneInfo.isPressed()) Minelife.NETWORK.sendToServer(new PacketRequestZoneInfo());
+            if(KeyBindings.keyZoneInfo.isPressed()) Minelife.NETWORK.sendToServer(new PacketRequestZoneInfo());
         }
     }
 

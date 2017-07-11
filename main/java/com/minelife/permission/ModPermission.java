@@ -1,14 +1,14 @@
 package com.minelife.permission;
 
 import com.minelife.CommonProxy;
-import com.minelife.SubMod;
+import com.minelife.AbstractMod;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.UUID;
 
-public class ModPermission extends SubMod {
+public class ModPermission extends AbstractMod {
 
     @Override
     public void serverStarting(FMLServerStartingEvent event) {
