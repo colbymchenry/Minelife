@@ -50,10 +50,10 @@ public class ServerProxy extends CommonProxy {
     public void onLogin(PlayerEvent.PlayerLoggedInEvent event)
     {
         try {
-            if (ModEconomy.playerExists(event.player.getUniqueID()))
-                Minelife.NETWORK.sendTo(new PacketBalanceResult(ModEconomy.getBalance(event.player.getUniqueID(), false), ModEconomy.getBalance(event.player.getUniqueID(), true)), (EntityPlayerMP) event.player);
-            else
+            if (!ModEconomy.playerExists(event.player.getUniqueID()))
                 Minelife.SQLITE.query("INSERT INTO players (uuid) VALUES ('" + event.player.getUniqueID().toString() + "')");
+
+            Minelife.NETWORK.sendTo(new PacketBalanceResult(ModEconomy.getBalance(event.player.getUniqueID(), false), ModEconomy.getBalance(event.player.getUniqueID(), true)), (EntityPlayerMP) event.player);
         } catch (Exception e) {
             e.printStackTrace();
             Minelife.getLogger().log(Level.SEVERE, "", e);

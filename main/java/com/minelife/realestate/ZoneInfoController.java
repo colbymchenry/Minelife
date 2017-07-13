@@ -167,15 +167,13 @@ public class ZoneInfoController {
         public void onPlayerTick(TickEvent.PlayerTickEvent event)
         {
             Zone zone = Zone.getZone(event.player.getEntityWorld(),
-                    Vec3.createVectorHelper(event.player.posX - 1, event.player.posY, event.player.posZ - 1));
-
-            if(zone == null) {
-                zone = Zone.getZone(event.player.getEntityWorld(),
-                        Vec3.createVectorHelper(event.player.posX, event.player.posY, event.player.posZ));
-            }
+                    Vec3.createVectorHelper(event.player.posX, event.player.posY, event.player.posZ));
 
             if (inZone.containsKey(event.player.getUniqueID())) {
                 if (zone == null) {
+                    zone = inZone.get(event.player.getUniqueID());
+                    if (zone.getOutro() != null || !zone.getOutro().isEmpty())
+                        event.player.addChatComponentMessage(new ChatComponentText(zone.getOutro()));
                     inZone.remove(event.player.getUniqueID());
                     Minelife.NETWORK.sendTo(new PacketUpdateZoneStatus(false), (EntityPlayerMP) event.player);
                 }
@@ -183,6 +181,8 @@ public class ZoneInfoController {
                 if (zone != null) {
                     inZone.put(event.player.getUniqueID(), zone);
                     Minelife.NETWORK.sendTo(new PacketUpdateZoneStatus(true), (EntityPlayerMP) event.player);
+                    if (zone.getIntro() != null || !zone.getIntro().isEmpty())
+                        event.player.addChatComponentMessage(new ChatComponentText(zone.getIntro()));
                 }
             }
         }

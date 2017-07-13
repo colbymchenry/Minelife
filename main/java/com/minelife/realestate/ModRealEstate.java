@@ -2,6 +2,7 @@ package com.minelife.realestate;
 
 import com.minelife.CommonProxy;
 import com.minelife.AbstractMod;
+import com.minelife.realestate.client.GuiZoneInfo;
 import com.minelife.realestate.client.GuiZoneMembers;
 import com.minelife.realestate.server.CommandClaim;
 import com.minelife.util.SimpleConfig;
@@ -27,6 +28,8 @@ public class ModRealEstate extends AbstractMod {
         registerPacket(SelectionController.PacketPricePerBlock.Handler.class, SelectionController.PacketPricePerBlock.class, Side.CLIENT);
         registerPacket(GuiZoneMembers.PacketModifyMembers.Handler.class, GuiZoneMembers.PacketModifyMembers.class, Side.SERVER);
         registerPacket(GuiZoneMembers.PacketModifyMember.Handler.class, GuiZoneMembers.PacketModifyMember.class, Side.SERVER);
+        registerPacket(GuiZoneInfo.PacketModifyZone.Handler.class, GuiZoneInfo.PacketModifyZone.class, Side.SERVER);
+        registerPacket(GuiZoneMembers.PacketUpdateMembersList.Handler.class, GuiZoneMembers.PacketUpdateMembersList.class, Side.CLIENT);
     }
 
     @Override

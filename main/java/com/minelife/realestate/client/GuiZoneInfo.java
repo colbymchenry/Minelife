@@ -1,13 +1,27 @@
 package com.minelife.realestate.client;
 
+import com.minelife.CustomMessageException;
+import com.minelife.Minelife;
 import com.minelife.realestate.Zone;
 import com.minelife.util.client.GuiScrollList;
 import com.minelife.util.client.GuiTickBox;
+import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.Vec3;
 import org.lwjgl.input.Mouse;
+
+import java.util.logging.Level;
 
 public class GuiZoneInfo extends AbstractZoneGui {
 
@@ -81,9 +95,15 @@ public class GuiZoneInfo extends AbstractZoneGui {
             this.allowBreaking = new GuiTickBox(mc, tickboxPosX, this.allowPlacement.yPosition + 30, zone.isPublicBreaking());
             this.allowInteracting = new GuiTickBox(mc, tickboxPosX, this.allowBreaking.yPosition + 30, zone.isPublicInteracting());
 
-            this.saveBtn = new CustomZoneBtn(0, calcX( mc.fontRenderer.getStringWidth("Save") + 15) - this.xPosition, getObjectHeight(0) - 30, mc.fontRenderer.getStringWidth("Save") + 20, 20, "Save");
+            this.saveBtn = new CustomZoneBtn(0, calcX(mc.fontRenderer.getStringWidth("Save") + 15) - this.xPosition, getObjectHeight(0) - 30, mc.fontRenderer.getStringWidth("Save") + 20, 20, "Save");
             this.membersBtn = new CustomZoneBtn(0, this.bounds.getWidth() - 75, this.allowInteracting.yPosition + 50, mc.fontRenderer.getStringWidth("Members") + 20, 20, "Members");
             this.boundsBtn = new CustomZoneBtn(0, 10, this.membersBtn.yPosition, mc.fontRenderer.getStringWidth("View Bounds") + 20, 20, "View Bounds");
+
+            this.introField.setEnabled(zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
+            this.outroField.setEnabled(zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
+            this.allowPlacement.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer);
+            this.allowBreaking.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer);
+            this.allowInteracting.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer);
         }
 
         @Override
@@ -129,9 +149,15 @@ public class GuiZoneInfo extends AbstractZoneGui {
             this.allowBreaking.mouseClicked(mouseX, mouseY);
             this.allowInteracting.mouseClicked(mouseX, mouseY);
 
-            // TODO: Test
-            if(this.membersBtn.mousePressed(mc, mouseX, mouseY))
+            if (this.membersBtn.mousePressed(mc, mouseX, mouseY)) {
                 Minecraft.getMinecraft().displayGuiScreen(new GuiZoneMembers(zone));
+                return;
+            }
+
+            if(this.saveBtn.mousePressed(mc, mouseX, mouseY)) {
+                Minelife.NETWORK.sendToServer(new PacketModifyZone(this.introField.getText(), this.outroField.getText(),
+                        this.allowPlacement.getValue(), this.allowBreaking.getValue(), this.allowInteracting.getValue()));
+            }
         }
 
         @Override
@@ -154,5 +180,79 @@ public class GuiZoneInfo extends AbstractZoneGui {
 
     }
 
+    public static class PacketModifyZone implements IMessage {
+
+        private String intro, outro;
+        private boolean allowPlacement, allowBreaking, allowInteracting;
+
+        public PacketModifyZone()
+        {
+        }
+
+        public PacketModifyZone(String intro, String outro, boolean allowPlacement, boolean allowBreaking, boolean allowInteracting)
+        {
+            this.intro = intro;
+            this.outro = outro;
+            this.allowPlacement = allowPlacement;
+            this.allowBreaking = allowBreaking;
+            this.allowInteracting = allowInteracting;
+        }
+
+        @Override
+        public void fromBytes(ByteBuf buf)
+        {
+            allowPlacement = buf.readBoolean();
+            allowBreaking = buf.readBoolean();
+            allowInteracting = buf.readBoolean();
+            intro = ByteBufUtils.readUTF8String(buf);
+            outro = ByteBufUtils.readUTF8String(buf);
+        }
+
+        @Override
+        public void toBytes(ByteBuf buf)
+        {
+            buf.writeBoolean(allowPlacement);
+            buf.writeBoolean(allowBreaking);
+            buf.writeBoolean(allowInteracting);
+            ByteBufUtils.writeUTF8String(buf, intro);
+            ByteBufUtils.writeUTF8String(buf, outro);
+        }
+
+        public static class Handler implements IMessageHandler<PacketModifyZone, IMessage> {
+
+            @SideOnly(Side.SERVER)
+            public IMessage onMessage(PacketModifyZone message, MessageContext ctx)
+            {
+                EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+                Zone zone = Zone.getZone(player.getEntityWorld(), Vec3.createVectorHelper(player.posX, player.posY, player.posZ));
+
+                try {
+                    if (zone == null) throw new CustomMessageException("Zone not found at your location.");
+
+                    if (!zone.hasManagerAuthority(player))
+                        throw new CustomMessageException(EnumChatFormatting.RED + "You do not have permission to modify this zone.");
+
+                    zone.setPublicBreaking(message.allowBreaking);
+                    zone.setPublicInteracting(message.allowInteracting);
+                    zone.setPublicPlacing(message.allowPlacement);
+                    zone.setIntro(message.intro);
+                    zone.setOutro(message.outro);
+                    zone.save();
+
+                    player.addChatComponentMessage(new ChatComponentText("Zone updated!"));
+                } catch (Exception e) {
+                    if (e instanceof CustomMessageException) {
+                        player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
+                    } else {
+                        e.printStackTrace();
+                        Minelife.getLogger().log(Level.SEVERE, "", e);
+                        player.addChatComponentMessage(new ChatComponentText(Minelife.default_error_message));
+                    }
+                }
+                return null;
+            }
+
+        }
+    }
 
 }

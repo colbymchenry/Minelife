@@ -9,6 +9,8 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -91,6 +93,16 @@ public class Zone implements Comparable<Zone> {
         return members;
     }
 
+    public Member getMember(UUID playerUUID)
+    {
+        return getMembers().stream().filter(member -> member.getUniqueID().equals(playerUUID)).findFirst().orElse(null);
+    }
+
+    public Member getMember(EntityPlayer player)
+    {
+        return getMember(player.getUniqueID());
+    }
+
     public void setOwner(UUID owner)
     {
         this.owner = owner;
@@ -111,9 +123,41 @@ public class Zone implements Comparable<Zone> {
         this.publicInteracting = publicInteracting;
     }
 
+    public void setIntro(String intro)
+    {
+        this.intro = intro;
+    }
+
+    public void setOutro(String outro)
+    {
+        this.outro = outro;
+    }
+
+    public boolean hasManagerAuthority(EntityPlayer player)
+    {
+        if (player.getUniqueID().equals(getOwner())) return true;
+        Member member = getMember(player);
+        return member != null && member.isManager();
+    }
+
     public boolean isSubRegion()
     {
         return getRegion().isSubRegion();
+    }
+
+    public boolean canBreak(EntityPlayer player)
+    {
+        return isPublicBreaking() || getOwner().equals(player.getUniqueID()) || (getMember(player) != null && getMember(player).isAllowBreaking());
+    }
+
+    public boolean canPlace(EntityPlayer player)
+    {
+        return isPublicPlacing() || getOwner().equals(player.getUniqueID()) || (getMember(player) != null && getMember(player).isAllowPlacing());
+    }
+
+    public boolean canInteract(EntityPlayer player)
+    {
+        return isPublicInteracting() || getOwner().equals(player.getUniqueID()) || (getMember(player) != null && getMember(player).isAllowInteracting());
     }
 
     public void save() throws SQLException
@@ -127,15 +171,17 @@ public class Zone implements Comparable<Zone> {
                 return o.toString();
             }
         };
-
+        System.out.println(memberList.size());
+        System.out.println(memberListToString.getString());
         Minelife.SQLITE.query("UPDATE RealEstate_Zones SET " +
-                "owner='" + (getOwner() == null ? "NULL" : getOwner().toString()) + "' AND " +
-                "members='" + memberListToString.getString() + "' AND " +
-                "publicBreaking='" + (isPublicBreaking() ? 1 : 0) + "' AND " +
-                "publicPlacing='" + (isPublicPlacing() ? 1 : 0) + "' AND " +
-                "publicInteracting='" + (isPublicInteracting() ? 1 : 0) + "' AND " +
-                "intro='" + getIntro() + "' AND " +
-                "outro='" + getOutro() + "'");
+                "owner='" + (getOwner() == null ? "NULL" : getOwner().toString()) + "', " +
+                "members='" + memberListToString.getString() + "', " +
+                "publicBreaking='" + (isPublicBreaking() ? 1 : 0) + "', " +
+                "publicPlacing='" + (isPublicPlacing() ? 1 : 0) + "', " +
+                "publicInteracting='" + (isPublicInteracting() ? 1 : 0) + "', " +
+                "intro='" + getIntro() + "', " +
+                "outro='" + getOutro() + "' " +
+                "WHERE region='" + getRegion().getUniqueID().toString() + "'");
     }
 
     public void toBytes(ByteBuf buf)
@@ -171,8 +217,8 @@ public class Zone implements Comparable<Zone> {
         CuboidRegion cuboidRegion = new CuboidRegion(new Vector(pos1.xCoord, pos1.yCoord, pos1.zCoord), new Vector(pos2.xCoord, pos2.yCoord, pos2.zCoord));
 
         Region region = Region.create(world.getWorldInfo().getWorldName(),
-                AxisAlignedBB.getBoundingBox(cuboidRegion.getMinimumPoint().getBlockX(),cuboidRegion.getMinimumPoint().getBlockY(),cuboidRegion.getMinimumPoint().getBlockZ(),
-                        cuboidRegion.getMaximumPoint().getBlockX(),cuboidRegion.getMaximumPoint().getBlockY(),cuboidRegion.getMaximumPoint().getBlockZ()));
+                AxisAlignedBB.getBoundingBox(cuboidRegion.getMinimumPoint().getBlockX(), cuboidRegion.getMinimumPoint().getBlockY(), cuboidRegion.getMinimumPoint().getBlockZ(),
+                        cuboidRegion.getMaximumPoint().getBlockX(), cuboidRegion.getMaximumPoint().getBlockY(), cuboidRegion.getMaximumPoint().getBlockZ()));
 
         Minelife.SQLITE.query("INSERT INTO RealEstate_Zones (region, owner) VALUES ('" + region.getUniqueID().toString() + "', '" + owner.toString() + "')");
 
@@ -185,9 +231,17 @@ public class Zone implements Comparable<Zone> {
     {
         Region region = Region.getRegionAt(world.getWorldInfo().getWorldName(), pos);
 
-        if(region == null) return null;
+        if (region == null) {
+            region = Region.getRegionAt(world.getWorldInfo().getWorldName(), Vec3.createVectorHelper(pos.xCoord - 1, pos.yCoord, pos.zCoord - 1));
+        }
 
-        return ZONES.stream().filter(zone -> zone.getRegion().equals(region)).findFirst().orElse(null);
+        if (region == null) {
+            return null;
+        }
+
+        final Region fRegion = region;
+
+        return ZONES.stream().filter(zone -> zone.getRegion().equals(fRegion)).findFirst().orElse(null);
     }
 
     public static Zone getZone(Region region)

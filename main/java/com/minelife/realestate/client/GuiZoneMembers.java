@@ -8,6 +8,7 @@ import com.minelife.realestate.Zone;
 import com.minelife.util.client.GuiScrollList;
 import com.minelife.util.client.GuiTextField;
 import com.minelife.util.client.GuiTickBox;
+import com.minelife.util.client.GuiUtil;
 import com.minelife.util.server.UUIDFetcher;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -23,6 +24,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -35,9 +37,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
     private Content content;
     private Zone zone;
     private GuiTextField addField;
-    private CustomZoneBtn addBtn;
 
-    // TODO: Need to test
     public GuiZoneMembers(Zone zone)
     {
         super(200, 200);
@@ -50,7 +50,13 @@ public class GuiZoneMembers extends AbstractZoneGui {
         this.drawBackground();
         content.draw(mouseX, mouseY, Mouse.getDWheel());
         addField.drawTextBox();
-        addBtn.drawButton(mc, mouseX, mouseY);
+
+        if (addField.isFocused()) {
+            fontRendererObj.setUnicodeFlag(true);
+            fontRendererObj.drawString("(Press Enter)",
+                    addField.getBounds().getX() + addField.getBounds().getWidth() + 5, addField.getBounds().getY(), 0xFFFFFF);
+            fontRendererObj.setUnicodeFlag(false);
+        }
     }
 
     @Override
@@ -59,15 +65,16 @@ public class GuiZoneMembers extends AbstractZoneGui {
         super.keyTyped(c, keyCode);
         content.keyTyped(c, keyCode);
         addField.textboxKeyTyped(c, keyCode);
+
+        if (keyCode == Keyboard.KEY_RETURN) {
+            Minelife.NETWORK.sendToServer(new PacketModifyMembers(addField.getText(), true));
+        }
     }
 
     @Override
     protected void mouseClicked(int x, int y, int btn)
     {
         addField.mouseClicked(x, y);
-        if (addBtn.mousePressed(mc, x, y)) {
-            Minelife.NETWORK.sendToServer(new PacketModifyMembers(addField.getText(), true));
-        }
     }
 
     @Override
@@ -75,8 +82,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
     {
         super.initGui();
         content = new Content(this.xPosition, this.yPosition, this.bgWidth, this.bgHeight);
-        addField = new GuiTextField(this.xPosition, this.yPosition + this.bgHeight, this.bgWidth - 55, 12);
-        addBtn = new CustomZoneBtn(0, this.addField.getBounds().getX() + this.addField.getBounds().getWidth() + 5, this.addField.getBounds().getY(), 50, 20, "Add");
+        addField = new GuiTextField(this.xPosition + 1, this.yPosition + this.bgWidth + 4, this.bgWidth - 55, 9);
     }
 
     @Override
@@ -98,19 +104,25 @@ public class GuiZoneMembers extends AbstractZoneGui {
             super(xPosition, yPosition, width, height);
 
             for (Member member : zone.getMembers()) {
-                int y = 14;
-                managerMap.put(member, new GuiTickBox(mc, 100, y += 12, member.isManager()));
-                placeMap.put(member, new GuiTickBox(mc, 100, y += 12, member.isAllowPlacing()));
-                breakMap.put(member, new GuiTickBox(mc, 100, y += 12, member.isAllowPlacing()));
-                interactMap.put(member, new GuiTickBox(mc, 100, y += 12, member.isAllowPlacing()));
-                removeMap.put(member, new RemoveBtn(bgWidth - 65, 2));
+                int y = 2;
+                managerMap.put(member, new GuiTickBox(mc, 100, y += 20, member.isManager()));
+                placeMap.put(member, new GuiTickBox(mc, 100, y += 20, member.isAllowPlacing()));
+                breakMap.put(member, new GuiTickBox(mc, 100, y += 20, member.isAllowPlacing()));
+                interactMap.put(member, new GuiTickBox(mc, 100, y += 20, member.isAllowPlacing()));
+                removeMap.put(member, new RemoveBtn(bgWidth - 24, 2));
             }
+
+            managerMap.forEach((member, guiTickBox) -> guiTickBox.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
+            placeMap.forEach((member, guiTickBox) -> guiTickBox.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
+            breakMap.forEach((member, guiTickBox) -> guiTickBox.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
+            interactMap.forEach((member, guiTickBox) -> guiTickBox.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
+            removeMap.forEach((member, removeBtn) -> removeBtn.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
         }
 
         @Override
         public int getObjectHeight(int index)
         {
-            return 50;
+            return 100;
         }
 
         @Override
@@ -118,17 +130,20 @@ public class GuiZoneMembers extends AbstractZoneGui {
         {
             Member member = (Member) zone.getMembers().toArray()[index];
 
-            mc.fontRenderer.drawString(member.getName(), 10, 2, 0xFFFFFF);
-            removeMap.get(member).drawButton(mc, mouseX, mouseY);
+            mc.fontRenderer.drawString(member.getName(), 10, 6, 0xFFFFFF);
+
             int x = 20;
-            mc.fontRenderer.drawString("Manager", x, managerMap.get(member).yPosition, 0xFFFFFF);
-            mc.fontRenderer.drawString("Place", x, placeMap.get(member).yPosition, 0xFFFFFF);
-            mc.fontRenderer.drawString("Break", x, breakMap.get(member).yPosition, 0xFFFFFF);
-            mc.fontRenderer.drawString("Interact", x, interactMap.get(member).yPosition, 0xFFFFFF);
+            int textYOffset = ((18 - fontRendererObj.FONT_HEIGHT) / 2);
+
+            mc.fontRenderer.drawString("Manager", x, managerMap.get(member).yPosition + textYOffset, 0xFFFFFF);
+            mc.fontRenderer.drawString("Place", x, placeMap.get(member).yPosition + textYOffset, 0xFFFFFF);
+            mc.fontRenderer.drawString("Break", x, breakMap.get(member).yPosition + textYOffset, 0xFFFFFF);
+            mc.fontRenderer.drawString("Interact", x, interactMap.get(member).yPosition + textYOffset, 0xFFFFFF);
             managerMap.get(member).draw();
             placeMap.get(member).draw();
             breakMap.get(member).draw();
             interactMap.get(member).draw();
+            removeMap.get(member).drawButton(mc, mouseX, mouseY);
         }
 
         @Override
@@ -178,7 +193,23 @@ public class GuiZoneMembers extends AbstractZoneGui {
                 GL11.glColor4f(1, 1, 1, 1);
                 GL11.glEnable(GL11.GL_BLEND);
                 mc.getTextureManager().bindTexture(texture);
-                this.drawTexturedModalRect(xPosition, yPosition, 0, 0, 16, 16);
+                float scale = 1f;
+
+                if (mouseX >= xPosition && mouseX <= xPosition + 16 && mouseY >= yPosition && mouseY <= yPosition + 16) {
+                    scale = 1.25f;
+                }
+
+                GL11.glPushMatrix();
+                {
+                    GL11.glTranslatef(xPosition, yPosition, zLevel);
+                    if (scale > 1f) {
+                        GL11.glTranslatef(8, 8, 0);
+                        GL11.glScalef(scale, scale, scale);
+                        GL11.glTranslatef(-8, -8, 0);
+                    }
+                    GuiUtil.drawImage(0, 0, 16, 16);
+                }
+                GL11.glPopMatrix();
             }
         }
 
@@ -224,13 +255,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
                 try {
                     if (zone == null) throw new CustomMessageException("There is no zone here.");
 
-                    boolean isManager = false;
-
-                    for (Member member : zone.getMembers())
-                        if (member.getUniqueID().equals(player.getUniqueID()) && member.isManager())
-                            isManager = true;
-
-                    if (!zone.getOwner().equals(player.getUniqueID()) && !isManager)
+                    if (!zone.hasManagerAuthority(player))
                         throw new CustomMessageException("You do not have permission to modify members.");
 
                     UUID playerUUID = UUIDFetcher.get(message.player);
@@ -241,12 +266,15 @@ public class GuiZoneMembers extends AbstractZoneGui {
                         zone.getMembers().add(new Member(zone, playerUUID));
                     else
                         zone.getMembers().remove(new Member(zone, playerUUID));
+
                     zone.save();
 
                     if (message.add)
                         player.addChatComponentMessage(new ChatComponentText("Player added as a new member!"));
                     else
                         player.addChatComponentMessage(new ChatComponentText("Member removed!"));
+
+                    Minelife.NETWORK.sendTo(new PacketUpdateMembersList(zone), player);
                 } catch (Exception e) {
                     if (e instanceof CustomMessageException)
                         player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
@@ -298,14 +326,8 @@ public class GuiZoneMembers extends AbstractZoneGui {
                 try {
                     if (zone == null) throw new CustomMessageException("There is no zone here.");
 
-                    boolean isManager = false;
-
-                    for (Member member : zone.getMembers())
-                        if (member.getUniqueID().equals(player.getUniqueID()) && member.isManager())
-                            isManager = true;
-
-                    if (!zone.getOwner().equals(player.getUniqueID()) && !isManager)
-                        throw new CustomMessageException("You do not have permission to modify members.");
+                    if (!zone.hasManagerAuthority(player))
+                        throw new CustomMessageException(EnumChatFormatting.RED + "You do not have permission to modify members.");
 
                     zone.getMembers().remove(message.member);
                     zone.getMembers().add(message.member);
@@ -318,6 +340,44 @@ public class GuiZoneMembers extends AbstractZoneGui {
                         Minelife.getLogger().log(Level.SEVERE, "", e);
                         player.addChatComponentMessage(new ChatComponentText(Minelife.default_error_message));
                     }
+                }
+                return null;
+            }
+        }
+    }
+
+    public static class PacketUpdateMembersList implements IMessage {
+
+        private Zone zone;
+
+        public PacketUpdateMembersList()
+        {
+        }
+
+        public PacketUpdateMembersList(Zone zone)
+        {
+            this.zone = zone;
+        }
+
+        @Override
+        public void fromBytes(ByteBuf buf)
+        {
+            zone = Zone.fromBytes(buf);
+        }
+
+        @Override
+        public void toBytes(ByteBuf buf)
+        {
+            zone.toBytes(buf);
+        }
+
+        public static class Handler implements IMessageHandler<PacketUpdateMembersList, IMessage> {
+
+            @SideOnly(Side.CLIENT)
+            public IMessage onMessage(PacketUpdateMembersList message, MessageContext ctx)
+            {
+                if (Minecraft.getMinecraft().currentScreen != null && Minecraft.getMinecraft().currentScreen instanceof GuiZoneMembers) {
+                    Minecraft.getMinecraft().displayGuiScreen(new GuiZoneMembers(message.zone));
                 }
                 return null;
             }
