@@ -6,6 +6,9 @@ import com.minelife.realestate.client.GuiZoneInfo;
 import com.minelife.realestate.client.GuiZoneMembers;
 import com.minelife.realestate.client.GuiZoneSell;
 import com.minelife.realestate.server.CommandClaim;
+import com.minelife.realestate.sign.BlockForSaleSign;
+import com.minelife.realestate.sign.ItemForSaleSign;
+import com.minelife.realestate.sign.TileEntityForSaleSign;
 import com.minelife.util.SimpleConfig;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -33,10 +36,10 @@ public class ModRealEstate extends AbstractMod {
         registerPacket(GuiZoneMembers.PacketUpdateMembersList.Handler.class, GuiZoneMembers.PacketUpdateMembersList.class, Side.CLIENT);
         registerPacket(GuiZoneSell.PacketSellZone.Handler.class, GuiZoneSell.PacketSellZone.class, Side.SERVER);
 
-        GameRegistry.registerItem(SaleSign.Item.getInstance(), "SaleSign");
-        GameRegistry.registerTileEntity(SaleSign.TileEntity.class, "SaleSignTileEntity");
-        GameRegistry.registerBlock(SaleSign.Block.getInstance(true), "SaleSign_Standing");
-        GameRegistry.registerBlock(SaleSign.Block.getInstance(false), "SaleSign_Wall");
+        GameRegistry.registerItem(ItemForSaleSign.getItem(), "ForSaleSign");
+        GameRegistry.registerTileEntity(TileEntityForSaleSign.class, "ForSaleSign");
+        GameRegistry.registerBlock(BlockForSaleSign.getBlock(true), "ForSaleSign_Standing");
+        GameRegistry.registerBlock(BlockForSaleSign.getBlock(false), "ForSaleSign_Wall");
     }
 
     @Override

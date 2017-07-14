@@ -1,9 +1,10 @@
 package com.minelife.realestate.client;
 
 import com.minelife.CommonProxy;
-import com.minelife.realestate.SaleSign;
 import com.minelife.realestate.SelectionController;
 import com.minelife.realestate.ZoneInfoController;
+import com.minelife.realestate.sign.TileEntityForSaleSign;
+import com.minelife.realestate.sign.TileEntityForSaleSignRenderer;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -17,6 +18,6 @@ public class ClientProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(new SelectionController());
         MinecraftForge.EVENT_BUS.register(new ZoneInfoController.ZoneRenderer());
         FMLCommonHandler.instance().bus().register(new ZoneInfoController.KeyListener());
-        ClientRegistry.bindTileEntitySpecialRenderer(SaleSign.TileEntity.class, new SaleSign.Renderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityForSaleSign.class, new TileEntityForSaleSignRenderer());
     }
 }
