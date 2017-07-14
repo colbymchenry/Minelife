@@ -64,7 +64,9 @@ public class GuiZoneMembers extends AbstractZoneGui {
     {
         super.keyTyped(c, keyCode);
         content.keyTyped(c, keyCode);
-        addField.textboxKeyTyped(c, keyCode);
+
+        if (keyCode != Keyboard.KEY_SPACE)
+            addField.textboxKeyTyped(c, keyCode);
 
         if (keyCode == Keyboard.KEY_RETURN) {
             Minelife.NETWORK.sendToServer(new PacketModifyMembers(addField.getText(), true));
@@ -233,7 +235,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
         @Override
         public void fromBytes(ByteBuf buf)
         {
-            player = ByteBufUtils.readUTF8String(buf);
+            player = ByteBufUtils.readUTF8String(buf).trim();
             add = buf.readBoolean();
         }
 

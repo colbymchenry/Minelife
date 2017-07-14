@@ -171,8 +171,6 @@ public class Zone implements Comparable<Zone> {
                 return o.toString();
             }
         };
-        System.out.println(memberList.size());
-        System.out.println(memberListToString.getString());
         Minelife.SQLITE.query("UPDATE RealEstate_Zones SET " +
                 "owner='" + (getOwner() == null ? "NULL" : getOwner().toString()) + "', " +
                 "members='" + memberListToString.getString() + "', " +
