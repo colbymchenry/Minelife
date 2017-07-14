@@ -3,6 +3,7 @@ package com.minelife.realestate.server;
 import com.minelife.CommonProxy;
 import com.minelife.Minelife;
 import com.minelife.realestate.ModRealEstate;
+import com.minelife.realestate.SaleSign;
 import com.minelife.realestate.SelectionController.ServerSelector;
 import com.minelife.realestate.Zone;
 import com.minelife.realestate.ZoneInfoController;
@@ -48,5 +49,6 @@ public class ServerProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(new ServerSelector());
         MinecraftForge.EVENT_BUS.register(new LandController());
         FMLCommonHandler.instance().bus().register(new ZoneInfoController.PlayerTickListener());
+        MinecraftForge.EVENT_BUS.register(new SaleSign.Listener());
     }
 }

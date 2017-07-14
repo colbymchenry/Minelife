@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class ZoneForSale {
 
@@ -13,6 +14,7 @@ public class ZoneForSale {
     public int daysToPay;
     public boolean breaking, placing, interacting;
     public boolean addMembers;
+    public UUID owner;
 
     private ZoneForSale()
     {
@@ -27,6 +29,8 @@ public class ZoneForSale {
         placing = result.getBoolean("placing");
         interacting = result.getBoolean("interacting");
         addMembers = result.getBoolean("addMembers");
+        if (result.getString("owner") != null && !result.getString("owner").isEmpty())
+            owner = UUID.fromString(result.getString("owner"));
     }
 
     public ZoneForSale(Zone zone, boolean forRent, int daysToPay, boolean breaking, boolean placing, boolean interacting, boolean addMembers)
@@ -51,7 +55,8 @@ public class ZoneForSale {
                     "breaking='" + (breaking ? 1 : 0) + "', " +
                     "placing='" + (placing ? 1 : 0) + "', " +
                     "interacting='" + (interacting ? 1 : 0) + "', " +
-                    "addMembers='" + (addMembers ? 1 : 0) + "' " +
+                    "addMembers='" + (addMembers ? 1 : 0) + "', " +
+                    "owner='" + (owner != null ? owner.toString() : "") + "' " +
                     "WHERE zone='" + zone.getRegion().getUniqueID().toString() + "'");
         } else {
             Minelife.SQLITE.query("INSERT INTO RealEstate_ForSale (zone, forRent, daysToPay, breaking, placing, interacting, addMembers) VALUES " +
@@ -61,7 +66,8 @@ public class ZoneForSale {
         }
     }
 
-    public static boolean hasListing(Zone zone) {
+    public static boolean hasListing(Zone zone)
+    {
         ZoneForSale zoneForSale;
         try {
             zoneForSale = new ZoneForSale(zone);

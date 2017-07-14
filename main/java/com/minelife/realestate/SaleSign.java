@@ -1,6 +1,9 @@
 package com.minelife.realestate;
 
+import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
+import com.sk89q.worldedit.util.eventbus.Subscribe;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockContainer;
@@ -8,17 +11,23 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.util.*;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.event.world.BlockEvent;
 import org.lwjgl.opengl.GL11;
 
+import java.sql.SQLException;
 import java.util.Random;
+import java.util.logging.Level;
 
 public class SaleSign {
 
@@ -179,6 +188,7 @@ public class SaleSign {
         {
             this.maxStackSize = 16;
             this.setCreativeTab(CreativeTabs.tabDecorations);
+            this.setTextureName(Minelife.MOD_ID + ":SaleSign");
         }
 
         public static Item getInstance()
@@ -245,12 +255,91 @@ public class SaleSign {
     // TODO: Fix break texture and item texture
     public static class TileEntity extends net.minecraft.tileentity.TileEntity {
 
+        private boolean forSale, forRent, sold;
+
+        @Override
+        public void readFromNBT(NBTTagCompound tag)
+        {
+            super.readFromNBT(tag);
+            forSale = tag.getBoolean("forSale");
+            forRent = tag.getBoolean("forRent");
+            sold = tag.getBoolean("sold");
+        }
+
+        @Override
+        public void writeToNBT(NBTTagCompound tag)
+        {
+            super.writeToNBT(tag);
+            tag.setBoolean("forSale", forSale);
+            tag.setBoolean("forRent", forRent);
+            tag.setBoolean("sold", sold);
+        }
+
+        @Override
+        public void updateEntity()
+        {
+            super.updateEntity();
+            if(!worldObj.isRemote) return;
+
+            Zone zone = Zone.getZone(worldObj, Vec3.createVectorHelper(this.xCoord, this.yCoord, this.zCoord));
+            if(zone == null) {
+                worldObj.getBlock(xCoord, yCoord, zCoord).dropBlockAsItem(worldObj, xCoord, yCoord, zCoord, worldObj.getBlockMetadata(xCoord, yCoord, zCoord), 0);
+                worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+            } else {
+                if(ZoneForSale.hasListing(zone)) {
+                    try {
+                        ZoneForSale zoneForSale = new ZoneForSale(zone);
+                        if(zoneForSale.owner != null) {
+                            forRent = false;
+                            forSale = false;
+                            sold = true;
+                            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+                            this.markDirty();
+                        } else {
+                            if(zoneForSale.forRent) {
+                                forRent = true;
+                                forSale = false;
+                            } else {
+                                forSale = true;
+                                forRent = false;
+                            }
+                            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+                            this.markDirty();
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    forSale = false;
+                    forRent = false;
+                    sold = false;
+                    worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+                    this.markDirty();
+                }
+            }
+        }
+
+        @Override
+        public Packet getDescriptionPacket()
+        {
+            NBTTagCompound tagCompound = new NBTTagCompound();
+            this.writeToNBT(tagCompound);
+            return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+        }
+
+        @Override
+        public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt)
+        {
+            this.readFromNBT(pkt.func_148857_g());
+        }
     }
 
     @SideOnly(Side.CLIENT)
     public static class Renderer extends TileEntitySpecialRenderer {
 
         private static final ResourceLocation textureForRent = new ResourceLocation(Minelife.MOD_ID, "textures/blocks/SaleSign_ForRent.png");
+        private static final ResourceLocation textureForSale = new ResourceLocation(Minelife.MOD_ID, "textures/blocks/SaleSign_ForSale.png");
+        private static final ResourceLocation textureSold = new ResourceLocation(Minelife.MOD_ID, "textures/blocks/SaleSign_Sold.png");
         private final ModelSign modelSign = new ModelSign();
 
         @Override
@@ -288,10 +377,36 @@ public class SaleSign {
                 this.modelSign.signStick.showModel = false;
             }
 
-            this.bindTexture(textureForRent);
+            TileEntity tileEntity = (TileEntity) p_147500_1_;
+
+            this.bindTexture(tileEntity.forRent ? textureForRent : tileEntity.forSale ? textureForSale : textureSold);
             GL11.glPushMatrix();
             GL11.glScalef(f1, -f1, -f1);
             this.modelSign.renderSign();
         }
+    }
+
+    public static class Listener {
+
+        @SubscribeEvent
+        public void onPlace(BlockEvent.PlaceEvent event) {
+            if(!(event.block instanceof SaleSign.Block)) return;
+
+            Zone zone = Zone.getZone(event.world, Vec3.createVectorHelper(event.x, event.y, event.z));
+
+            // TODO: Finish this
+            try {
+                if (zone == null) throw new CustomMessageException("Could not find a zone there.");
+            }catch(Exception e) {
+                if(e instanceof CustomMessageException) {
+                    event.player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
+                } else {
+                    e.printStackTrace();
+                    Minelife.getLogger().log(Level.SEVERE, "", e);
+                    event.player.addChatComponentMessage(new ChatComponentText(Minelife.default_error_message));
+                }
+            }
+        }
+
     }
 }
