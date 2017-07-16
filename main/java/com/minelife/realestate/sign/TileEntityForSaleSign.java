@@ -1,14 +1,24 @@
 package com.minelife.realestate.sign;
 
+import com.google.common.collect.Lists;
+import com.minelife.realestate.Member;
+import com.minelife.util.ListToString;
+import com.minelife.util.StringToList;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+
 public class TileEntityForSaleSign extends TileEntity {
 
-    private boolean occupied;
+    private Set<Member> members = new TreeSet<>();
+    private UUID renter;
     private boolean rentable;
     private long price;
     private long billingPeriod;
@@ -17,20 +27,41 @@ public class TileEntityForSaleSign extends TileEntity {
     public void writeToNBT(NBTTagCompound tagCompound)
     {
         super.writeToNBT(tagCompound);
-        tagCompound.setBoolean("occupied", occupied);
+        tagCompound.setString("renter", renter != null ? renter.toString() : "");
         tagCompound.setBoolean("rentable", rentable);
         tagCompound.setLong("price", price);
         tagCompound.setLong("billingPeriod", billingPeriod);
+
+        // write members
+        List<Member> memberList = Lists.newArrayList();
+        memberList.addAll(members);
+        ListToString<Member> listToString = new ListToString<Member>(memberList) {
+            @Override
+            public String toString(Member o)
+            {
+                return o.toString();
+            }
+        };
+        tagCompound.setString("members", listToString.getListAsString());
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tagCompound)
     {
         super.readFromNBT(tagCompound);
-        occupied = tagCompound.getBoolean("occupied");
+        renter = !tagCompound.getString("renter").isEmpty() ? UUID.fromString(tagCompound.getString("renter")) : null;
         rentable = tagCompound.getBoolean("rentable");
         price = tagCompound.getLong("price");
         billingPeriod = tagCompound.getLong("billingPeriod");
+
+        // read members
+        members.addAll(new StringToList<Member>(tagCompound.getString("members")) {
+            @Override
+            public Member parse(String s)
+            {
+                return Member.fromString(s);
+            }
+        }.getList());
     }
 
     @Override
@@ -46,11 +77,6 @@ public class TileEntityForSaleSign extends TileEntity {
         NBTTagCompound tagCompound = new NBTTagCompound();
         writeToNBT(tagCompound);
         return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
-    }
-
-    public void setOccupied(boolean occupied)
-    {
-        this.occupied = occupied;
     }
 
     public void setRentable(boolean rentable)
@@ -73,7 +99,18 @@ public class TileEntityForSaleSign extends TileEntity {
 
     public boolean isOccupied()
     {
-        return occupied;
+        return renter != null;
+    }
+
+    public UUID getRenter()
+    {
+        return renter;
+    }
+
+    public void setRenter(UUID renter)
+    {
+        this.renter = renter;
+        sync();
     }
 
     public boolean isRentable()
@@ -89,6 +126,11 @@ public class TileEntityForSaleSign extends TileEntity {
     public long getBillingPeriod()
     {
         return billingPeriod;
+    }
+
+    public Set<Member> getMembers()
+    {
+        return members;
     }
 
     public void sync() {

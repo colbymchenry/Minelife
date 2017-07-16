@@ -3,6 +3,7 @@ package com.minelife.realestate.server;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.realestate.Zone;
+import com.minelife.realestate.ZonePermission;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.block.Block;
@@ -26,7 +27,7 @@ public class LandController {
         Zone zone = Zone.getZone(event.world, Vec3.createVectorHelper(event.x, event.y, event.z));
 
         if (zone != null) {
-            if (!zone.canBreak(event.getPlayer())) {
+            if (!zone.canPlayer(ZonePermission.BREAK, event.getPlayer())) {
                 event.setCanceled(true);
                 event.getPlayer().addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You are not allowed to break blocks here."));
             }
@@ -39,7 +40,7 @@ public class LandController {
         Zone zone = Zone.getZone(event.world, Vec3.createVectorHelper(event.x, event.y, event.z));
 
         if (zone != null) {
-            if (!zone.canPlace(event.player)) {
+            if (!zone.canPlayer(ZonePermission.PLACE, event.player)) {
                 event.setCanceled(true);
                 event.player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You are not allowed to place blocks here."));
             }
@@ -68,7 +69,7 @@ public class LandController {
         blacklist.add(Blocks.cauldron);
 
         if (zone != null) {
-            if (!zone.canInteract(event.entityPlayer)) {
+            if (!zone.canPlayer(ZonePermission.INTERACT, event.entityPlayer)) {
                 if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
                     event.entityPlayer.addChatComponentMessage(new ChatComponentText(event.world.getBlock(event.x, event.y, event.z).getClass().getName()));
                     Block block = event.world.getBlock(event.x, event.y, event.z);

@@ -9,6 +9,7 @@ import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
@@ -62,6 +63,11 @@ public class Region implements Comparable<Region> {
                 return worldServer;
         }
         return null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public World getEntityWorldClient() {
+        return Minecraft.getMinecraft().theWorld;
     }
 
     public AxisAlignedBB getBounds()
@@ -235,6 +241,16 @@ public class Region implements Comparable<Region> {
     public static Region getRegionAt(String world, Vec3 vec3)
     {
         Set<Region> regions = new TreeSet<>();
+        for (Region r : REGIONS) {
+            CuboidRegion cuboidRegion = new CuboidRegion(new Vector(r.getBounds().minX, r.getBounds().minY, r.getBounds().minZ),
+                    new Vector(r.getBounds().maxX, r.getBounds().maxY, r.getBounds().maxZ));
+            if (cuboidRegion.contains(new Vector(vec3.xCoord, vec3.yCoord, vec3.zCoord)) && r.getWorldName().equalsIgnoreCase(world)) {
+                regions.add(r);
+            }
+        }
+
+        vec3 = Vec3.createVectorHelper(vec3.xCoord - 1, vec3.yCoord - 1, vec3.zCoord - 1);
+
         for (Region r : REGIONS) {
             CuboidRegion cuboidRegion = new CuboidRegion(new Vector(r.getBounds().minX, r.getBounds().minY, r.getBounds().minZ),
                     new Vector(r.getBounds().maxX, r.getBounds().maxY, r.getBounds().maxZ));

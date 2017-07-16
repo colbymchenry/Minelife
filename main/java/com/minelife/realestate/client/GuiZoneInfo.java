@@ -3,6 +3,7 @@ package com.minelife.realestate.client;
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.realestate.Zone;
+import com.minelife.realestate.ZonePermission;
 import com.minelife.util.client.GuiScrollList;
 import com.minelife.util.client.GuiTickBox;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -91,9 +92,9 @@ public class GuiZoneInfo extends AbstractZoneGui {
             this.outroField.setText(zone.getOutro());
 
             int tickboxPosX = width - 50;
-            this.allowPlacement = new GuiTickBox(mc, tickboxPosX, this.outroField.yPosition + 70, zone.isPublicPlacing());
-            this.allowBreaking = new GuiTickBox(mc, tickboxPosX, this.allowPlacement.yPosition + 30, zone.isPublicBreaking());
-            this.allowInteracting = new GuiTickBox(mc, tickboxPosX, this.allowBreaking.yPosition + 30, zone.isPublicInteracting());
+            this.allowPlacement = new GuiTickBox(mc, tickboxPosX, this.outroField.yPosition + 70, zone.canPublic(ZonePermission.PLACE));
+            this.allowBreaking = new GuiTickBox(mc, tickboxPosX, this.allowPlacement.yPosition + 30, zone.canPublic(ZonePermission.BREAK));
+            this.allowInteracting = new GuiTickBox(mc, tickboxPosX, this.allowBreaking.yPosition + 30, zone.canPublic(ZonePermission.INTERACT));
 
             this.saveBtn = new CustomZoneBtn(0, calcX(mc.fontRenderer.getStringWidth("Save") + 15) - this.xPosition, getObjectHeight(0) - 30, mc.fontRenderer.getStringWidth("Save") + 20, 20, "Save");
             this.membersBtn = new CustomZoneBtn(0, this.bounds.getWidth() - 75, this.allowInteracting.yPosition + 50, mc.fontRenderer.getStringWidth("Members") + 20, 20, "Members");
@@ -154,7 +155,7 @@ public class GuiZoneInfo extends AbstractZoneGui {
                 return;
             }
 
-            if(this.saveBtn.mousePressed(mc, mouseX, mouseY)) {
+            if (this.saveBtn.mousePressed(mc, mouseX, mouseY)) {
                 Minelife.NETWORK.sendToServer(new PacketModifyZone(this.introField.getText(), this.outroField.getText(),
                         this.allowPlacement.getValue(), this.allowBreaking.getValue(), this.allowInteracting.getValue()));
             }
@@ -232,9 +233,9 @@ public class GuiZoneInfo extends AbstractZoneGui {
                     if (!zone.hasManagerAuthority(player))
                         throw new CustomMessageException(EnumChatFormatting.RED + "You do not have permission to modify this zone.");
 
-                    zone.setPublicBreaking(message.allowBreaking);
-                    zone.setPublicInteracting(message.allowInteracting);
-                    zone.setPublicPlacing(message.allowPlacement);
+                    zone.setPublicPermission(ZonePermission.BREAK, message.allowBreaking);
+                    zone.setPublicPermission(ZonePermission.INTERACT, message.allowInteracting);
+                    zone.setPublicPermission(ZonePermission.PLACE, message.allowPlacement);
                     zone.setIntro(message.intro);
                     zone.setOutro(message.outro);
                     zone.save();

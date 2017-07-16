@@ -1,10 +1,12 @@
 package com.minelife.realestate.client;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.realestate.Member;
 import com.minelife.realestate.Zone;
+import com.minelife.realestate.ZonePermission;
 import com.minelife.util.client.GuiScrollList;
 import com.minelife.util.client.GuiTextField;
 import com.minelife.util.client.GuiTickBox;
@@ -28,8 +30,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class GuiZoneMembers extends AbstractZoneGui {
@@ -95,30 +96,26 @@ public class GuiZoneMembers extends AbstractZoneGui {
 
     private class Content extends GuiScrollList {
 
-        private Map<Member, GuiTickBox> managerMap = Maps.newHashMap();
-        private Map<Member, GuiTickBox> placeMap = Maps.newHashMap();
-        private Map<Member, GuiTickBox> breakMap = Maps.newHashMap();
-        private Map<Member, GuiTickBox> interactMap = Maps.newHashMap();
+        private Map<Member, List<GuiTickBox>> permissionsMap = Maps.newHashMap();
         private Map<Member, RemoveBtn> removeMap = Maps.newHashMap();
+        private Set<Member> members = new TreeSet<>();
 
         public Content(int xPosition, int yPosition, int width, int height)
         {
             super(xPosition, yPosition, width, height);
 
-            for (Member member : zone.getMembers()) {
+
+            members = zone.getOwner().equals(Minecraft.getMinecraft().thePlayer.getUniqueID()) ? zone.getMembers() : zone.isForSale(Side.CLIENT) && !zone.getForSaleSign(Side.CLIENT).isOccupied() && zone.getForSaleSign(Side.CLIENT).getRenter().equals(Minecraft.getMinecraft().thePlayer.getUniqueID()) ? zone.getForSaleSign(Side.CLIENT).getMembers() : zone.getMembers();
+
+            for (Member member : members) {
                 int y = 2;
-                managerMap.put(member, new GuiTickBox(mc, 100, y += 20, member.isManager()));
-                placeMap.put(member, new GuiTickBox(mc, 100, y += 20, member.isAllowPlacing()));
-                breakMap.put(member, new GuiTickBox(mc, 100, y += 20, member.isAllowPlacing()));
-                interactMap.put(member, new GuiTickBox(mc, 100, y += 20, member.isAllowPlacing()));
+                List<GuiTickBox> tickBoxes = Lists.newArrayList();
+                for(ZonePermission permission : ZonePermission.values())
+                    tickBoxes.add(new GuiTickBox(mc, 100, y+=20, member.canMember(permission), permission.name()));
+                tickBoxes.forEach(tickBox -> tickBox.enabled = member.canMember(ZonePermission.MANAGER));
+                permissionsMap.put(member, tickBoxes);
                 removeMap.put(member, new RemoveBtn(bgWidth - 24, 2));
             }
-
-            managerMap.forEach((member, guiTickBox) -> guiTickBox.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
-            placeMap.forEach((member, guiTickBox) -> guiTickBox.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
-            breakMap.forEach((member, guiTickBox) -> guiTickBox.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
-            interactMap.forEach((member, guiTickBox) -> guiTickBox.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
-            removeMap.forEach((member, removeBtn) -> removeBtn.enabled = zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
         }
 
         @Override
@@ -130,49 +127,35 @@ public class GuiZoneMembers extends AbstractZoneGui {
         @Override
         public void drawObject(int index, int mouseX, int mouseY, boolean isHovering)
         {
-            Member member = (Member) zone.getMembers().toArray()[index];
+            Member member = (Member) members.toArray()[index];
 
             mc.fontRenderer.drawString(member.getName(), 10, 6, 0xFFFFFF);
 
             int x = 20;
             int textYOffset = ((18 - fontRendererObj.FONT_HEIGHT) / 2);
 
-            mc.fontRenderer.drawString("Manager", x, managerMap.get(member).yPosition + textYOffset, 0xFFFFFF);
-            mc.fontRenderer.drawString("Place", x, placeMap.get(member).yPosition + textYOffset, 0xFFFFFF);
-            mc.fontRenderer.drawString("Break", x, breakMap.get(member).yPosition + textYOffset, 0xFFFFFF);
-            mc.fontRenderer.drawString("Interact", x, interactMap.get(member).yPosition + textYOffset, 0xFFFFFF);
-            managerMap.get(member).draw();
-            placeMap.get(member).draw();
-            breakMap.get(member).draw();
-            interactMap.get(member).draw();
+            permissionsMap.get(member).forEach(guiTickBox -> mc.fontRenderer.drawString(guiTickBox.key, x, guiTickBox.yPosition + textYOffset, 0xFFFFFF));
+            permissionsMap.get(member).forEach(GuiTickBox::draw);
             removeMap.get(member).drawButton(mc, mouseX, mouseY);
         }
 
         @Override
         public int getSize()
         {
-            return zone.getMembers().size();
+            return members.size();
         }
 
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick)
         {
-            Member member = (Member) zone.getMembers().toArray()[index];
+            Member member = (Member) members.toArray()[index];
             if (removeMap.get(member).mousePressed(mc, mouseX, mouseY)) {
                 Minelife.NETWORK.sendToServer(new PacketModifyMembers(member.getName(), false));
-                return;
+            } else {
+                permissionsMap.get(member).forEach(guiTickBox -> guiTickBox.mouseClicked(mouseX, mouseY));
+                permissionsMap.get(member).forEach(guiTickBox -> member.setPermission(ZonePermission.valueOf(guiTickBox.key), guiTickBox.getValue()));
+                Minelife.NETWORK.sendToServer(new PacketModifyMember(member));
             }
-            managerMap.get(member).mouseClicked(mouseX, mouseY);
-            placeMap.get(member).mouseClicked(mouseX, mouseY);
-            breakMap.get(member).mouseClicked(mouseX, mouseY);
-            interactMap.get(member).mouseClicked(mouseX, mouseY);
-
-            member.setManager(managerMap.get(member).getValue());
-            member.setAllowPlacing(placeMap.get(member).getValue());
-            member.setAllowBreaking(breakMap.get(member).getValue());
-            member.setAllowInteracting(interactMap.get(member).getValue());
-
-            Minelife.NETWORK.sendToServer(new PacketModifyMember(member));
         }
 
         @Override
@@ -219,7 +202,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
 
     // TODO: Add way to delete zone
     // TODO: Add functionality for "View Bounds" in GuiInfo
-    // TODO: Don't allow manager to delete manager and don't allow them to delete the zone
+    // TODO: don't allow managers to delete the zone
     public static class PacketModifyMembers implements IMessage {
 
         private String player;
@@ -269,8 +252,19 @@ public class GuiZoneMembers extends AbstractZoneGui {
 
                     if (message.add)
                         zone.getMembers().add(new Member(zone, playerUUID));
-                    else
-                        zone.getMembers().remove(new Member(zone, playerUUID));
+                    else {
+                        // a lot of if's here to prevent a manger from removing another manager
+                        if(zone.getMember(playerUUID) != null) {
+                            if(zone.getMember(player) != null) {
+                                if(zone.getMember(player).canMember(ZonePermission.MANAGER)) {
+                                    if(zone.getMember(playerUUID).canMember(ZonePermission.MANAGER)) {
+                                        throw new CustomMessageException("Manager cannot remove a manager.");
+                                    }
+                                }
+                            }
+                        }
+                        zone.getMembers().remove(zone.getMember(playerUUID));
+                    }
 
                     zone.save();
 
@@ -333,6 +327,11 @@ public class GuiZoneMembers extends AbstractZoneGui {
 
                     if (!zone.hasManagerAuthority(player))
                         throw new CustomMessageException(EnumChatFormatting.RED + "You do not have permission to modify members.");
+
+                    if(zone.getMember(player) != null && zone.getMember(player).canMember(ZonePermission.MANAGER)) {
+                        if(zone.getMember(message.member.getUniqueID()).canMember(ZonePermission.MANAGER))
+                            throw new CustomMessageException("You cannot modify another managers permissions.");
+                    }
 
                     zone.getMembers().remove(message.member);
                     zone.getMembers().add(message.member);

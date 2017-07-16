@@ -1,13 +1,17 @@
 package com.minelife.realestate;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.minelife.Minelife;
+import com.minelife.realestate.sign.TileEntityForSaleSign;
 import com.minelife.region.server.Region;
 import com.minelife.util.ArrayUtil;
 import com.minelife.util.ListToString;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -17,10 +21,7 @@ import net.minecraft.world.World;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 
 public class Zone implements Comparable<Zone> {
 
@@ -29,8 +30,7 @@ public class Zone implements Comparable<Zone> {
     private Region region;
     private UUID owner;
     private Set<Member> members = new TreeSet<>();
-
-    private boolean publicBreaking, publicPlacing, publicInteracting;
+    private Set<ZonePermission> publicPermissions = new TreeSet<>();
     private String intro, outro;
 
     private Zone(Region region) throws SQLException
@@ -42,9 +42,7 @@ public class Zone implements Comparable<Zone> {
             if (!member.isEmpty())
                 members.add(new Member(this, UUID.fromString(member.split(",")[0])));
         }
-        publicBreaking = result.getBoolean("publicBreaking");
-        publicPlacing = result.getBoolean("publicPlacing");
-        publicInteracting = result.getBoolean("publicInteracting");
+
         intro = result.getString("intro");
         outro = result.getString("outro");
     }
@@ -63,6 +61,11 @@ public class Zone implements Comparable<Zone> {
         return region;
     }
 
+    public UUID getUniqueID()
+    {
+        return region.getUniqueID();
+    }
+
     public String getIntro()
     {
         return intro;
@@ -73,19 +76,9 @@ public class Zone implements Comparable<Zone> {
         return outro;
     }
 
-    public boolean isPublicBreaking()
+    public boolean canPublic(ZonePermission permission)
     {
-        return publicBreaking;
-    }
-
-    public boolean isPublicPlacing()
-    {
-        return publicPlacing;
-    }
-
-    public boolean isPublicInteracting()
-    {
-        return publicInteracting;
+        return this.publicPermissions.contains(permission);
     }
 
     public Set<Member> getMembers()
@@ -108,19 +101,12 @@ public class Zone implements Comparable<Zone> {
         this.owner = owner;
     }
 
-    public void setPublicBreaking(boolean publicBreaking)
+    public void setPublicPermission(ZonePermission permission, boolean value)
     {
-        this.publicBreaking = publicBreaking;
-    }
-
-    public void setPublicPlacing(boolean publicPlacing)
-    {
-        this.publicPlacing = publicPlacing;
-    }
-
-    public void setPublicInteracting(boolean publicInteracting)
-    {
-        this.publicInteracting = publicInteracting;
+        if (value)
+            this.publicPermissions.add(permission);
+        else
+            this.publicPermissions.remove(permission);
     }
 
     public void setIntro(String intro)
@@ -137,7 +123,7 @@ public class Zone implements Comparable<Zone> {
     {
         if (player.getUniqueID().equals(getOwner())) return true;
         Member member = getMember(player);
-        return member != null && member.isManager();
+        return member != null && member.canMember(ZonePermission.MANAGER);
     }
 
     public boolean isSubRegion()
@@ -145,19 +131,25 @@ public class Zone implements Comparable<Zone> {
         return getRegion().isSubRegion();
     }
 
-    public boolean canBreak(EntityPlayer player)
+    public boolean canPlayer(ZonePermission permission, EntityPlayer player)
     {
-        return isPublicBreaking() || getOwner().equals(player.getUniqueID()) || (getMember(player) != null && getMember(player).isAllowBreaking());
+        return canPublic(permission) || getOwner().equals(player.getUniqueID()) || (getMember(player) != null && getMember(player).canMember(permission));
     }
 
-    public boolean canPlace(EntityPlayer player)
+    public boolean hasForSaleSign(Side side)
     {
-        return isPublicPlacing() || getOwner().equals(player.getUniqueID()) || (getMember(player) != null && getMember(player).isAllowPlacing());
+        World world = side == Side.CLIENT ? region.getEntityWorldClient() : region.getEntityWorld();
+        return world.loadedTileEntityList.stream().filter(tile -> tile instanceof TileEntityForSaleSign && (region.getBounds().isVecInside(Vec3.createVectorHelper(((TileEntityForSaleSign) tile).xCoord, ((TileEntityForSaleSign) tile).yCoord, ((TileEntityForSaleSign) tile).zCoord)) || getRegion().isVecInside(Vec3.createVectorHelper(((TileEntityForSaleSign) tile).xCoord - 1, ((TileEntityForSaleSign) tile).yCoord - 1, ((TileEntityForSaleSign) tile).zCoord - 1)))).findFirst().orElse(null) != null;
     }
 
-    public boolean canInteract(EntityPlayer player)
-    {
-        return isPublicInteracting() || getOwner().equals(player.getUniqueID()) || (getMember(player) != null && getMember(player).isAllowInteracting());
+    public TileEntityForSaleSign getForSaleSign(Side side) {
+        World world = side == Side.CLIENT ? region.getEntityWorldClient() : region.getEntityWorld();
+        return (TileEntityForSaleSign) world.loadedTileEntityList.stream().filter(tile -> tile instanceof TileEntityForSaleSign && (region.getBounds().isVecInside(Vec3.createVectorHelper(((TileEntityForSaleSign) tile).xCoord, ((TileEntityForSaleSign) tile).yCoord, ((TileEntityForSaleSign) tile).zCoord)) || getRegion().isVecInside(Vec3.createVectorHelper(((TileEntityForSaleSign) tile).xCoord - 1, ((TileEntityForSaleSign) tile).yCoord - 1, ((TileEntityForSaleSign) tile).zCoord - 1)))).findFirst().orElse(null);
+    }
+
+    public boolean isForSale(Side side) {
+        TileEntityForSaleSign tileEntityForSaleSign = getForSaleSign(side);
+        return tileEntityForSaleSign != null && !tileEntityForSaleSign.isOccupied();
     }
 
     public void save() throws SQLException
@@ -171,12 +163,14 @@ public class Zone implements Comparable<Zone> {
                 return o.toString();
             }
         };
+        final StringBuilder permissions = new StringBuilder();
+        this.publicPermissions.forEach(permission -> permissions.append(permission.name()).append(","));
+        if (permissions.toString().contains(","))
+            permissions.deleteCharAt(permissions.length() - 1);
         Minelife.SQLITE.query("UPDATE RealEstate_Zones SET " +
                 "owner='" + (getOwner() == null ? "NULL" : getOwner().toString()) + "', " +
                 "members='" + memberListToString.getString() + "', " +
-                "publicBreaking='" + (isPublicBreaking() ? 1 : 0) + "', " +
-                "publicPlacing='" + (isPublicPlacing() ? 1 : 0) + "', " +
-                "publicInteracting='" + (isPublicInteracting() ? 1 : 0) + "', " +
+                "publicBreaking='" + permissions.toString() + "', " +
                 "intro='" + getIntro() + "', " +
                 "outro='" + getOutro() + "' " +
                 "WHERE region='" + getRegion().getUniqueID().toString() + "'");
@@ -187,9 +181,8 @@ public class Zone implements Comparable<Zone> {
         ByteBufUtils.writeUTF8String(buf, getOwner().toString());
         ByteBufUtils.writeUTF8String(buf, getIntro());
         ByteBufUtils.writeUTF8String(buf, getOutro());
-        buf.writeBoolean(isPublicBreaking());
-        buf.writeBoolean(isPublicPlacing());
-        buf.writeBoolean(isPublicInteracting());
+        buf.writeInt(publicPermissions.size());
+        publicPermissions.forEach(permission -> ByteBufUtils.writeUTF8String(buf, permission.name()));
         getRegion().toBytes(buf);
         buf.writeInt(members.size());
         members.forEach(member -> member.toBytes(buf));
@@ -201,9 +194,11 @@ public class Zone implements Comparable<Zone> {
         zone.owner = UUID.fromString(ByteBufUtils.readUTF8String(buf));
         zone.intro = ByteBufUtils.readUTF8String(buf);
         zone.outro = ByteBufUtils.readUTF8String(buf);
-        zone.publicBreaking = buf.readBoolean();
-        zone.publicPlacing = buf.readBoolean();
-        zone.publicInteracting = buf.readBoolean();
+
+        int permCount = buf.readInt();
+        for (int i = 0; i < permCount; i++)
+            zone.publicPermissions.add(ZonePermission.valueOf(ByteBufUtils.readUTF8String(buf)));
+
         zone.region = Region.fromBytes(buf);
         int members = buf.readInt();
         for (int i = 0; i < members; i++) zone.members.add(Member.fromBytes(buf));
@@ -228,10 +223,6 @@ public class Zone implements Comparable<Zone> {
     public static Zone getZone(World world, Vec3 pos)
     {
         Region region = Region.getRegionAt(world.getWorldInfo().getWorldName(), pos);
-
-        if (region == null) {
-            region = Region.getRegionAt(world.getWorldInfo().getWorldName(), Vec3.createVectorHelper(pos.xCoord - 1, pos.yCoord, pos.zCoord - 1));
-        }
 
         if (region == null) {
             return null;

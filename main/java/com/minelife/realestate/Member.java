@@ -8,6 +8,8 @@ import io.netty.buffer.ByteBuf;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 public class Member implements Comparable<Member> {
@@ -15,8 +17,7 @@ public class Member implements Comparable<Member> {
     private Zone zone;
     private UUID memberUniqueID;
     private String memberName;
-    private boolean allowPlacing, allowBreaking, allowInteracting;
-    private boolean isManager;
+    private Set<ZonePermission> permissions = new TreeSet<>();
 
     public Member(Zone zone, UUID memberUniqueID) throws SQLException
     {
@@ -28,12 +29,13 @@ public class Member implements Comparable<Member> {
         String[] members = ArrayUtil.fromString(result.getString("members"));
 
         for (String member : members) {
-            String[] data = member.split(",");
-            if(data[0].equalsIgnoreCase(memberUniqueID.toString())) {
-                this.allowPlacing = Boolean.parseBoolean(data[1]);
-                this.allowBreaking = Boolean.parseBoolean(data[2]);
-                this.allowInteracting = Boolean.parseBoolean(data[3]);
-                this.isManager = Boolean.parseBoolean(data[4]);
+            String[] data = member.split(";");
+            if (data[0].equalsIgnoreCase(memberUniqueID.toString())) {
+                if (data[1].contains(",")) {
+                    for (String s : data[1].split(",")) {
+                        if (!s.isEmpty()) permissions.add(ZonePermission.valueOf(s));
+                    }
+                }
                 break;
             }
         }
@@ -41,11 +43,29 @@ public class Member implements Comparable<Member> {
         this.memberName = NameFetcher.get(memberUniqueID);
     }
 
-    private Member() {}
+    private Member()
+    {
+    }
 
     @Override
-    public String toString() {
-        return memberUniqueID.toString() + "," + allowPlacing + "," + allowBreaking + "," + allowInteracting + "," + isManager;
+    public String toString()
+    {
+        StringBuilder permissions = new StringBuilder();
+        this.permissions.forEach(permission -> permissions.append(permission.name()).append(","));
+        if (permissions.toString().contains(","))
+            permissions.deleteCharAt(permissions.length() - 1);
+        return memberUniqueID.toString() + ";" + permissions.toString();
+    }
+
+    public static Member fromString(String s) {
+        Member member = new Member();
+        String[] data = s.split(";");
+        member.memberUniqueID = UUID.fromString(data[0]);
+        String[] perms = data[1].split(",");
+        for (String perm : perms) {
+            member.permissions.add(ZonePermission.valueOf(perm));
+        }
+        return member;
     }
 
     public Zone getZone()
@@ -53,44 +73,17 @@ public class Member implements Comparable<Member> {
         return zone;
     }
 
-    public boolean isAllowPlacing()
+    public boolean canMember(ZonePermission permission)
     {
-        return allowPlacing;
+        return permissions.contains(permission);
     }
 
-    public boolean isAllowBreaking()
+    public void setPermission(ZonePermission permission, boolean value)
     {
-        return allowBreaking;
-    }
-
-    public boolean isAllowInteracting()
-    {
-        return allowInteracting;
-    }
-
-    public boolean isManager()
-    {
-        return isManager;
-    }
-
-    public void setAllowPlacing(boolean allowPlacing)
-    {
-        this.allowPlacing = allowPlacing;
-    }
-
-    public void setAllowBreaking(boolean allowBreaking)
-    {
-        this.allowBreaking = allowBreaking;
-    }
-
-    public void setAllowInteracting(boolean allowInteracting)
-    {
-        this.allowInteracting = allowInteracting;
-    }
-
-    public void setManager(boolean manager)
-    {
-        isManager = manager;
+        if (value)
+            permissions.add(permission);
+        else
+            permissions.remove(permission);
     }
 
     public String getName()
@@ -109,23 +102,23 @@ public class Member implements Comparable<Member> {
         return o.memberUniqueID.equals(memberUniqueID) ? 0 : 1;
     }
 
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(ByteBuf buf)
+    {
         ByteBufUtils.writeUTF8String(buf, memberUniqueID.toString());
         ByteBufUtils.writeUTF8String(buf, memberName);
-        buf.writeBoolean(isAllowPlacing());
-        buf.writeBoolean(isAllowBreaking());
-        buf.writeBoolean(isAllowInteracting());
-        buf.writeBoolean(isManager());
+        buf.writeInt(permissions.size());
+        permissions.forEach(permission -> ByteBufUtils.writeUTF8String(buf, permission.name()));
     }
 
-    public static Member fromBytes(ByteBuf buf) {
+    public static Member fromBytes(ByteBuf buf)
+    {
         Member member = new Member();
         member.memberUniqueID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
         member.memberName = ByteBufUtils.readUTF8String(buf);
-        member.allowPlacing = buf.readBoolean();
-        member.allowBreaking = buf.readBoolean();
-        member.allowInteracting = buf.readBoolean();
-        member.isManager = buf.readBoolean();
+        int permCount = buf.readInt();
+        for (int i = 0; i < permCount; i++) {
+            member.permissions.add(ZonePermission.valueOf(ByteBufUtils.readUTF8String(buf)));
+        }
         return member;
     }
 }

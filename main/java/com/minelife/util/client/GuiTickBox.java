@@ -18,12 +18,18 @@ public class GuiTickBox extends Gui {
     private Minecraft mc;
 
     public boolean enabled = true;
+    public String key;
 
     public GuiTickBox(Minecraft mc, int xPosition, int yPosition, boolean value) {
         this.mc = mc;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.value = value;
+    }
+
+    public GuiTickBox(Minecraft mc, int xPosition, int yPosition, boolean value, String key) {
+        this(mc, xPosition, yPosition, value);
+        this.key = key;
     }
 
     public void draw() {

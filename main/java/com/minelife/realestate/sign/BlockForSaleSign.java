@@ -1,11 +1,15 @@
 package com.minelife.realestate.sign;
 
+import com.minelife.realestate.Zone;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.BlockSign;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import org.apache.http.util.EntityUtils;
 
 import java.util.Random;
 
@@ -28,11 +32,14 @@ public class BlockForSaleSign extends BlockSign {
         }
     }
 
-    // TODO:
     @Override
-    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack heldItem)
+    public boolean canPlaceBlockAt(World world, int x, int y, int z)
     {
-        super.onBlockPlacedBy(world, x, y, z, entity, heldItem);
+        if(!world.isRemote) return true;
+        Zone zone = Zone.getZone(world, Vec3.createVectorHelper(x, y, z));
+        if(zone == null) return false;
+        if(zone.hasForSaleSign(Side.SERVER)) return false;
+        return true;
     }
 
     // TODO

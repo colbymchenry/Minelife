@@ -34,9 +34,7 @@ public class ServerProxy extends CommonProxy {
                     "region VARCHAR(36) NOT NULL, " +
                     "owner VARCHAR(36) NOT NULL, " +
                     "members TEXT NOT NULL DEFAULT '[]', " +
-                    "publicPlacing BOOLEAN NOT NULL DEFAULT '0', " +
-                    "publicBreaking BOOLEAN NOT NULL DEFAULT '0', " +
-                    "publicInteracting BOOLEAN NOT NULL DEFAULT '0', " +
+                    "publicPermissions TEXT NOT NULL DEFAULT '', " +
                     "intro TEXT NOT NULL DEFAULT '', " +
                     "outro TEXT NOT NULL DEFAULT '')");
             Zone.initZones();
