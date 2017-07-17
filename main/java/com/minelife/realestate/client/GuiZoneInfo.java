@@ -4,7 +4,7 @@ import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.realestate.Zone;
 import com.minelife.realestate.ZonePermission;
-import com.minelife.util.client.GuiScrollList;
+import com.minelife.util.client.GuiScrollableContent;
 import com.minelife.util.client.GuiTickBox;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -73,7 +73,7 @@ public class GuiZoneInfo extends AbstractZoneGui {
     {
     }
 
-    private class Content extends GuiScrollList {
+    private class Content extends GuiScrollableContent {
 
         private GuiTextField introField, outroField;
         private GuiTickBox allowPlacement, allowBreaking, allowInteracting;
@@ -123,11 +123,11 @@ public class GuiZoneInfo extends AbstractZoneGui {
 
             mc.fontRenderer.drawString(EnumChatFormatting.UNDERLINE + "Public Permissions", calcX(mc.fontRenderer.getStringWidth("Public Permissions")) - this.xPosition, this.allowPlacement.yPosition - 20, 0xFFFFFF);
             mc.fontRenderer.drawString("Allow Placement", 10, this.allowPlacement.yPosition + 5, 0xFFFFFF);
-            this.allowPlacement.draw();
+            this.allowPlacement.drawTickBox();
             mc.fontRenderer.drawString("Allow Breaking", 10, this.allowBreaking.yPosition + 5, 0xFFFFFF);
-            this.allowBreaking.draw();
+            this.allowBreaking.drawTickBox();
             mc.fontRenderer.drawString("Allow Interacting", 10, this.allowInteracting.yPosition + 5, 0xFFFFFF);
-            this.allowInteracting.draw();
+            this.allowInteracting.drawTickBox();
 
             this.saveBtn.drawButton(mc, mouseX, mouseY);
             this.membersBtn.drawButton(mc, mouseX, mouseY);
@@ -157,7 +157,7 @@ public class GuiZoneInfo extends AbstractZoneGui {
 
             if (this.saveBtn.mousePressed(mc, mouseX, mouseY)) {
                 Minelife.NETWORK.sendToServer(new PacketModifyZone(this.introField.getText(), this.outroField.getText(),
-                        this.allowPlacement.getValue(), this.allowBreaking.getValue(), this.allowInteracting.getValue()));
+                        this.allowPlacement.isChecked(), this.allowBreaking.isChecked(), this.allowInteracting.isChecked()));
             }
         }
 

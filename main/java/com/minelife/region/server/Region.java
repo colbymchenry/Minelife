@@ -19,10 +19,7 @@ import net.minecraft.world.WorldServer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 
 public class Region implements Comparable<Region> {
 
@@ -73,6 +70,10 @@ public class Region implements Comparable<Region> {
     public AxisAlignedBB getBounds()
     {
         return bounds;
+    }
+
+    public boolean contains(World world, double x, double y, double z) {
+        return Objects.equals(world.getWorldInfo().getWorldName(), this.world) && (bounds.isVecInside(Vec3.createVectorHelper(x, y, z)) || bounds.isVecInside(Vec3.createVectorHelper(x - 1, y - 1, z - 1)));
     }
 
     public Region getParentRegion()
@@ -241,16 +242,6 @@ public class Region implements Comparable<Region> {
     public static Region getRegionAt(String world, Vec3 vec3)
     {
         Set<Region> regions = new TreeSet<>();
-        for (Region r : REGIONS) {
-            CuboidRegion cuboidRegion = new CuboidRegion(new Vector(r.getBounds().minX, r.getBounds().minY, r.getBounds().minZ),
-                    new Vector(r.getBounds().maxX, r.getBounds().maxY, r.getBounds().maxZ));
-            if (cuboidRegion.contains(new Vector(vec3.xCoord, vec3.yCoord, vec3.zCoord)) && r.getWorldName().equalsIgnoreCase(world)) {
-                regions.add(r);
-            }
-        }
-
-        vec3 = Vec3.createVectorHelper(vec3.xCoord - 1, vec3.yCoord - 1, vec3.zCoord - 1);
-
         for (Region r : REGIONS) {
             CuboidRegion cuboidRegion = new CuboidRegion(new Vector(r.getBounds().minX, r.getBounds().minY, r.getBounds().minZ),
                     new Vector(r.getBounds().maxX, r.getBounds().maxY, r.getBounds().maxZ));

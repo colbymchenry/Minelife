@@ -8,7 +8,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Rectangle;
 
-public abstract class GuiScrollList extends Gui {
+public abstract class GuiScrollableContent extends Gui {
 
     public int xPosition, yPosition, width, height;
 
@@ -19,7 +19,7 @@ public abstract class GuiScrollList extends Gui {
     private long lastClickTime = 0L;
     protected boolean drawScrollbarOnTop = true;
 
-    public GuiScrollList(int xPosition, int yPosition, int width, int height) {
+    public GuiScrollableContent(int xPosition, int yPosition, int width, int height) {
         bounds = new Rectangle(this.xPosition = xPosition, this.yPosition = yPosition, this.width = width, this.height = height);
     }
 
@@ -142,7 +142,7 @@ public abstract class GuiScrollList extends Gui {
         GL11.glScissor((int) (left * scaleW), (int) (mc.displayHeight - (bottom * scaleH)),
                 (int) (listWidth * scaleW), (int) (viewHeight * scaleH));
 
-        // draw all of the content object by object
+        // drawTickBox all of the content object by object
         int totalHeight = 0;
         for (int i = 0; i < getSize(); i++) {
             GL11.glPushMatrix();

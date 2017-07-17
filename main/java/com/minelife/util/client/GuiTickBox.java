@@ -32,7 +32,7 @@ public class GuiTickBox extends Gui {
         this.key = key;
     }
 
-    public void draw() {
+    public void drawTickBox() {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4f(1f, 1f, 1f, !enabled ? 155f/255f : 1f);
         GL11.glEnable(GL11.GL_BLEND);
@@ -50,7 +50,7 @@ public class GuiTickBox extends Gui {
         return false;
     }
 
-    public boolean getValue() {
+    public boolean isChecked() {
         return value;
     }
 

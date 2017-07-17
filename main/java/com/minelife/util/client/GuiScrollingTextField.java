@@ -2,7 +2,7 @@ package com.minelife.util.client;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiScrollingTextField extends GuiScrollList {
+public class GuiScrollingTextField extends GuiScrollableContent {
 
     private GuiTextField textField;
 

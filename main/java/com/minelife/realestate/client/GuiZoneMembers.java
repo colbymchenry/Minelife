@@ -7,7 +7,7 @@ import com.minelife.Minelife;
 import com.minelife.realestate.Member;
 import com.minelife.realestate.Zone;
 import com.minelife.realestate.ZonePermission;
-import com.minelife.util.client.GuiScrollList;
+import com.minelife.util.client.GuiScrollableContent;
 import com.minelife.util.client.GuiTextField;
 import com.minelife.util.client.GuiTickBox;
 import com.minelife.util.client.GuiUtil;
@@ -94,7 +94,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
         addField.update();
     }
 
-    private class Content extends GuiScrollList {
+    private class Content extends GuiScrollableContent {
 
         private Map<Member, List<GuiTickBox>> permissionsMap = Maps.newHashMap();
         private Map<Member, RemoveBtn> removeMap = Maps.newHashMap();
@@ -135,7 +135,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
             int textYOffset = ((18 - fontRendererObj.FONT_HEIGHT) / 2);
 
             permissionsMap.get(member).forEach(guiTickBox -> mc.fontRenderer.drawString(guiTickBox.key, x, guiTickBox.yPosition + textYOffset, 0xFFFFFF));
-            permissionsMap.get(member).forEach(GuiTickBox::draw);
+            permissionsMap.get(member).forEach(GuiTickBox::drawTickBox);
             removeMap.get(member).drawButton(mc, mouseX, mouseY);
         }
 
@@ -153,7 +153,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
                 Minelife.NETWORK.sendToServer(new PacketModifyMembers(member.getName(), false));
             } else {
                 permissionsMap.get(member).forEach(guiTickBox -> guiTickBox.mouseClicked(mouseX, mouseY));
-                permissionsMap.get(member).forEach(guiTickBox -> member.setPermission(ZonePermission.valueOf(guiTickBox.key), guiTickBox.getValue()));
+                permissionsMap.get(member).forEach(guiTickBox -> member.setPermission(ZonePermission.valueOf(guiTickBox.key), guiTickBox.isChecked()));
                 Minelife.NETWORK.sendToServer(new PacketModifyMember(member));
             }
         }

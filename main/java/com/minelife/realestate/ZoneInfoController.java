@@ -158,7 +158,6 @@ public class ZoneInfoController {
         }
     }
 
-    // TODO: Fix: player joins inside of zone the click 'i' message does not appear until they leave and walk back in
     public static class PlayerTickListener {
 
         private static Map<UUID, Zone> inZone = Maps.newHashMap();
@@ -168,6 +167,11 @@ public class ZoneInfoController {
         {
             Zone zone = Zone.getZone(event.player.getEntityWorld(),
                     Vec3.createVectorHelper(event.player.posX, event.player.posY, event.player.posZ));
+
+            if(zone == null) {
+                zone = Zone.getZone(event.player.getEntityWorld(),
+                        Vec3.createVectorHelper(event.player.posX - 1, event.player.posY - 1, event.player.posZ - 1));
+            }
 
             if (inZone.containsKey(event.player.getUniqueID())) {
                 if (zone == null) {

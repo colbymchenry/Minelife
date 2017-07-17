@@ -1,6 +1,6 @@
 package com.minelife.notification;
 
-import com.minelife.util.client.GuiScrollList;
+import com.minelife.util.client.GuiScrollableContent;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Mouse;
@@ -58,7 +58,7 @@ public class GuiNotifications extends GuiScreen {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
-    public static class Content extends GuiScrollList {
+    public static class Content extends GuiScrollableContent {
 
         private Content(int xPosition, int yPosition, int width, int height)
         {

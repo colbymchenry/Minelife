@@ -15,6 +15,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -139,12 +140,24 @@ public class Zone implements Comparable<Zone> {
     public boolean hasForSaleSign(Side side)
     {
         World world = side == Side.CLIENT ? region.getEntityWorldClient() : region.getEntityWorld();
-        return world.loadedTileEntityList.stream().filter(tile -> tile instanceof TileEntityForSaleSign && (region.getBounds().isVecInside(Vec3.createVectorHelper(((TileEntityForSaleSign) tile).xCoord, ((TileEntityForSaleSign) tile).yCoord, ((TileEntityForSaleSign) tile).zCoord)) || getRegion().isVecInside(Vec3.createVectorHelper(((TileEntityForSaleSign) tile).xCoord - 1, ((TileEntityForSaleSign) tile).yCoord - 1, ((TileEntityForSaleSign) tile).zCoord - 1)))).findFirst().orElse(null) != null;
+        for (Object o : world.loadedTileEntityList) {
+            TileEntity tileEntity = (TileEntity) o;
+            if(tileEntity instanceof TileEntityForSaleSign) {
+                if(region.contains(world, tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord)) return true;
+            }
+        }
+        return false;
     }
 
     public TileEntityForSaleSign getForSaleSign(Side side) {
         World world = side == Side.CLIENT ? region.getEntityWorldClient() : region.getEntityWorld();
-        return (TileEntityForSaleSign) world.loadedTileEntityList.stream().filter(tile -> tile instanceof TileEntityForSaleSign && (region.getBounds().isVecInside(Vec3.createVectorHelper(((TileEntityForSaleSign) tile).xCoord, ((TileEntityForSaleSign) tile).yCoord, ((TileEntityForSaleSign) tile).zCoord)) || getRegion().isVecInside(Vec3.createVectorHelper(((TileEntityForSaleSign) tile).xCoord - 1, ((TileEntityForSaleSign) tile).yCoord - 1, ((TileEntityForSaleSign) tile).zCoord - 1)))).findFirst().orElse(null);
+        for (Object o : world.loadedTileEntityList) {
+            TileEntity tileEntity = (TileEntity) o;
+            if(tileEntity instanceof TileEntityForSaleSign) {
+                if(region.contains(world, tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord)) return (TileEntityForSaleSign) tileEntity;
+            }
+        }
+        return null;
     }
 
     public boolean isForSale(Side side) {

@@ -3,13 +3,10 @@ package com.minelife.realestate.sign;
 import com.minelife.realestate.Zone;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.BlockSign;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import org.apache.http.util.EntityUtils;
 
 import java.util.Random;
 
