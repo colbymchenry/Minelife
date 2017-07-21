@@ -34,8 +34,8 @@ public class GuiNotifications extends GuiScreen {
     {
         super.mouseClicked(mouseX, mouseY, mouseBtn);
         if (this.deleteBtn.mousePressed(mc, mouseX, mouseY)) {
-            AbstractNotification notification = AbstractNotification.getNotification(content.getSelected());
-            if (notification != null) AbstractNotification.notifications.remove(notification);
+            AbstractGuiNotification notification = AbstractGuiNotification.getNotification(content.getSelected());
+            if (notification != null) AbstractGuiNotification.notifications.remove(notification);
         }
     }
 
@@ -68,14 +68,14 @@ public class GuiNotifications extends GuiScreen {
         @Override
         public int getObjectHeight(int index)
         {
-            AbstractNotification notification = AbstractNotification.getNotification(index);
+            AbstractGuiNotification notification = AbstractGuiNotification.getNotification(index);
             return notification != null ? notification.getHeight() : 0;
         }
 
         @Override
         public void drawObject(int index, int mouseX, int mouseY, boolean isHovering)
         {
-            AbstractNotification notification = AbstractNotification.getNotification(index);
+            AbstractGuiNotification notification = AbstractGuiNotification.getNotification(index);
             if (notification == null) return;
             notification.drawNotification();
         }
@@ -83,17 +83,17 @@ public class GuiNotifications extends GuiScreen {
         @Override
         public int getSize()
         {
-            return AbstractNotification.notifications.size();
+            return AbstractGuiNotification.notifications.size();
         }
 
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick)
         {
             if (doubleClick) {
-                AbstractNotification notification = AbstractNotification.getNotification(index);
+                AbstractGuiNotification notification = AbstractGuiNotification.getNotification(index);
                 if (notification == null) return;
                 notification.onClick(mouseX, mouseY);
-                AbstractNotification.notifications.remove(notification);
+                AbstractGuiNotification.notifications.remove(notification);
             }
         }
 

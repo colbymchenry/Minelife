@@ -11,9 +11,9 @@ import java.util.TreeSet;
 
 public class NotificationOverlay {
 
-    static final Set<AbstractNotification> NOTIFICATION_QUE = new TreeSet<>();
+    static final Set<AbstractGuiNotification> NOTIFICATION_QUE = new TreeSet<>();
     private static Date nextQueTime;
-    private static AbstractNotification currentNotification;
+    private static AbstractGuiNotification currentNotification;
     private static double timeOfLastFrame = System.nanoTime() / 1e9;
     private static int notificationY;
 
@@ -64,9 +64,9 @@ public class NotificationOverlay {
         }
     }
 
-    private static AbstractNotification getNextNotification()
+    private static AbstractGuiNotification getNextNotification()
     {
-        return !NOTIFICATION_QUE.isEmpty() ? (AbstractNotification) NOTIFICATION_QUE.toArray()[0] : null;
+        return !NOTIFICATION_QUE.isEmpty() ? (AbstractGuiNotification) NOTIFICATION_QUE.toArray()[0] : null;
     }
 
 }

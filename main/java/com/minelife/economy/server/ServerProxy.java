@@ -3,6 +3,7 @@ package com.minelife.economy.server;
 import com.google.common.collect.Maps;
 import com.minelife.CommonProxy;
 import com.minelife.Minelife;
+import com.minelife.economy.Billing;
 import com.minelife.economy.ModEconomy;
 import com.minelife.economy.packet.PacketBalanceResult;
 import com.minelife.util.SimpleConfig;
@@ -44,6 +45,7 @@ public class ServerProxy extends CommonProxy {
 
         FMLCommonHandler.instance().bus().register(this);
         MinecraftForge.EVENT_BUS.register(this);
+        FMLCommonHandler.instance().bus().register(new Billing.TickHandler());
     }
 
     @SubscribeEvent

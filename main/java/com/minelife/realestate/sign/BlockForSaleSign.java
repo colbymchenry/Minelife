@@ -1,9 +1,11 @@
 package com.minelife.realestate.sign;
 
 import com.minelife.realestate.Zone;
+import com.minelife.realestate.client.GuiZonePurchase;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.BlockSign;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -32,7 +34,7 @@ public class BlockForSaleSign extends BlockSign {
     @Override
     public boolean canPlaceBlockAt(World world, int x, int y, int z)
     {
-        if(!world.isRemote) return true;
+        if(world.isRemote) return true;
         Zone zone = Zone.getZone(world, Vec3.createVectorHelper(x, y, z));
         if(zone == null) return false;
         if(zone.hasForSaleSign(Side.SERVER)) return false;
@@ -43,6 +45,10 @@ public class BlockForSaleSign extends BlockSign {
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float f, float f1, float f2)
     {
+        if(world.isRemote) return true;
+        TileEntityForSaleSign forSaleSign = (TileEntityForSaleSign) world.getTileEntity(x, y, z);
+        if(forSaleSign.isOccupied()) return false;
+        GuiZonePurchase.PacketOpenGuiZonePurchase.openFromServer(forSaleSign, (EntityPlayerMP) player);
         return super.onBlockActivated(world, x, y, z, player, side, f, f1, f2);
     }
 

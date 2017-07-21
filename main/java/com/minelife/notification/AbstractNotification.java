@@ -1,116 +1,67 @@
 package com.minelife.notification;
 
-import lib.PatPeter.SQLibrary.Database;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Rectangle;
+import com.minelife.Minelife;
+import com.minelife.util.NBTUtil;
+import cpw.mods.fml.common.network.ByteBufUtils;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.sql.ResultSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.sql.SQLException;
 import java.util.UUID;
 
-public abstract class AbstractNotification extends Gui implements Comparable<AbstractNotification> {
+public abstract class AbstractNotification {
 
-    protected static final Set<AbstractNotification> notifications = new TreeSet<>();
-
-    private UUID notificationUniqueID;
-
-    private static final ResourceLocation bgTexture = new ResourceLocation("minecraft", "textures/gui/achievement/achievement_background.png");
-
-    private static final Rectangle texTopCoords = new Rectangle(96, 202, 160, 4);
-    private static final Rectangle texMiddleCoords = new Rectangle(96, 212, 160, 9);
-    private static final Rectangle texBottomCoords = new Rectangle(96, 230, 160, 4);
+    private UUID uniqueID;
+    public NBTTagCompound tagCompound = new NBTTagCompound();
 
     public AbstractNotification()
     {
-        this(UUID.randomUUID());
     }
 
-    public AbstractNotification(UUID uuid)
+    public AbstractNotification(UUID uniqueID)
     {
-        this.notificationUniqueID = uuid;
-        notifications.add(this);
+        this.uniqueID = uniqueID;
+        writeToNBT(tagCompound);
     }
 
-    public void drawNotification()
+    public abstract void writeToNBT(NBTTagCompound tagCompound);
+
+    public abstract void readFromNBT(NBTTagCompound tagCompound);
+
+    public abstract Class<? extends AbstractGuiNotification> getGuiClass();
+
+    public UUID getUniqueID()
     {
-        drawBackground();
-        drawForeground();
+        return uniqueID;
     }
 
-    protected abstract void drawForeground();
-
-    protected abstract void onClick(int mouseX, int mouseY);
-
-    protected abstract int getHeight();
-
-    protected abstract void writeToDatabase(Database database);
-
-    protected abstract void readFromDatabase(ResultSet result);
-
-    protected final int getWidth()
+    public void writeToDB() throws SQLException
     {
-        return texTopCoords.getWidth();
+        writeToNBT(tagCompound);
+        ResultSet result = Minelife.SQLITE.query("SELECT * FROM notifications WHERE uuid='" + uniqueID.toString() + "'");
+        if (!result.next())
+            Minelife.SQLITE.query("INSERT INTO notifications (uuid, tagCompound) VALUES ('" + uniqueID.toString() + "', '" + tagCompound.toString() + "')");
     }
 
-    protected final void push()
+    public void readFromDB() throws SQLException
     {
-        NotificationOverlay.NOTIFICATION_QUE.add(this);
+        ResultSet result = Minelife.SQLITE.query("SELECT * FROM notifications WHERE uuid='" + uniqueID.toString() + "'");
+        if (result.next()) readFromNBT(NBTUtil.fromString(result.getString("tagCompound")));
     }
 
-    protected UUID getUniqueID()
+    public void toBytes(ByteBuf buf)
     {
-        return notificationUniqueID;
+        writeToNBT(tagCompound);
+        ByteBufUtils.writeUTF8String(buf, uniqueID.toString());
+        ByteBufUtils.writeTag(buf, tagCompound);
     }
 
-    protected void drawBackground()
+    public void fromBytes(ByteBuf buf)
     {
-        GL11.glColor4f(1, 1, 1, 1);
-        GL11.glEnable(GL11.GL_BLEND);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(bgTexture);
-
-        // draw top curve
-        drawTexturedModalRect(0, 0, texTopCoords.getX(), texTopCoords.getY(), texTopCoords.getWidth(), texTopCoords.getHeight());
-
-        // draw middle sections
-        int sections = getHeight() / texMiddleCoords.getHeight();
-
-        int middleY = texTopCoords.getHeight();
-        for (int section = 0; section < sections; section++)
-            drawTexturedModalRect(0, middleY += texMiddleCoords.getHeight(), texMiddleCoords.getX(), texMiddleCoords.getY(), texMiddleCoords.getWidth(), texMiddleCoords.getHeight());
-
-        // if the middle sections don't fit perfectly we draw the last middle section moved up some
-        if (getHeight() % texMiddleCoords.getHeight() != 0) {
-            // get the height of the middle section if we added one more
-            // middle section piece (it would be overlapping)
-            int totalHeight = (sections + 1) * texMiddleCoords.getHeight();
-            // subtract the difference in the total height of the middle section
-            // by the actual height, to get the needed adjustment, and translate up
-            middleY -= totalHeight - getHeight();
-            // draw the last section, also add a section back to the middle coords for the bottom curve pos
-            drawTexturedModalRect(0, middleY += texMiddleCoords.getHeight(), texMiddleCoords.getX(), texMiddleCoords.getY(), texMiddleCoords.getWidth(), texMiddleCoords.getHeight());
-        }
-
-        // draw bottom curve
-        drawTexturedModalRect(0, middleY, texBottomCoords.getX(), texBottomCoords.getY(), texBottomCoords.getWidth(), texBottomCoords.getHeight());
+        uniqueID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+        tagCompound = ByteBufUtils.readTag(buf);
+        readFromNBT(tagCompound);
     }
 
-    @Override
-    public int compareTo(AbstractNotification o)
-    {
-        return o.getUniqueID().equals(getUniqueID()) ? 0 : 1;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        return (obj instanceof AbstractNotification) && ((AbstractNotification) obj).getUniqueID().equals(getUniqueID());
-    }
-
-    public static final AbstractNotification getNotification(int index) {
-        return notifications.toArray().length > index ? (AbstractNotification) notifications.toArray()[index] : null;
-    }
 }

@@ -2,20 +2,21 @@ package com.minelife.realestate.sign;
 
 import com.google.common.collect.Lists;
 import com.minelife.realestate.Member;
+import com.minelife.realestate.Zone;
 import com.minelife.util.ListToString;
 import com.minelife.util.StringToList;
+import net.minecraft.client.renderer.texture.ITickable;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Vec3;
 
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 
-public class TileEntityForSaleSign extends TileEntity {
+public class TileEntityForSaleSign extends TileEntity implements ITickable {
 
     private Set<Member> members = new TreeSet<>();
     private UUID renter;
@@ -23,6 +24,10 @@ public class TileEntityForSaleSign extends TileEntity {
     private long price;
     private long billingPeriod;
     private boolean allowBreaking, allowPlacing, allowInteracting;
+    private long timeSync = 0L;
+    private Date billingDate;
+
+    // TODO: Billing, and to put the billing in the ATM, and what to do if the bill is not paid
 
     @Override
     public void writeToNBT(NBTTagCompound tagCompound)
@@ -173,8 +178,27 @@ public class TileEntityForSaleSign extends TileEntity {
         return members;
     }
 
+    public Member getMember(EntityPlayer player) {
+        return members.stream().filter(member -> member.getUniqueID().equals(player.getUniqueID())).findFirst().orElse(null);
+    }
+
     public void sync() {
         this.markDirty();
         this.worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+    }
+
+    @Override
+    public void tick()
+    {
+        if(timeSync == 0L) timeSync = System.currentTimeMillis() + 10000L;
+
+        // we check every 10 seconds to see if the sign is still in a zone
+        if(System.currentTimeMillis() > timeSync) {
+            timeSync = System.currentTimeMillis() + 10000L;
+            if(Zone.getZone(worldObj, Vec3.createVectorHelper(xCoord, yCoord, zCoord)) == null) {
+                BlockForSaleSign.getBlock(true).dropBlockAsItem(worldObj, xCoord, yCoord, zCoord, worldObj.getBlockMetadata(xCoord, yCoord, zCoord), 0);
+                worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+            }
+        }
     }
 }

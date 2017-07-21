@@ -49,4 +49,5 @@ public class ServerProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(new ListenerForSaleSign());
         FMLCommonHandler.instance().bus().register(new ZoneInfoController.PlayerTickListener());
     }
+
 }

@@ -1,11 +1,15 @@
 package com.minelife.util;
 
 
+import java.text.DecimalFormat;
+
 /**
  * Utils for casting number types to other number types
  */
 public final class NumberConversions {
     private NumberConversions() {}
+
+    public static DecimalFormat formatter = new DecimalFormat("#,###");
 
     public static int floor(double num) {
         final int floor = (int) num;

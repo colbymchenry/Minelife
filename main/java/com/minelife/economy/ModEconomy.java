@@ -3,6 +3,7 @@ package com.minelife.economy;
 import com.minelife.CommonProxy;
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
+import com.minelife.economy.client.gui.GuiBillPay;
 import com.minelife.economy.server.CommandEconomy;
 import com.minelife.util.PlayerHelper;
 import com.minelife.AbstractMod;
@@ -44,6 +45,8 @@ public class ModEconomy extends AbstractMod {
         registerPacket(PacketDeposit.Handler.class, PacketDeposit.class, Side.SERVER);
         registerPacket(PacketWithdraw.Handler.class, PacketWithdraw.class, Side.SERVER);
         registerPacket(PacketTransferMoney.Handler.class, PacketTransferMoney.class, Side.SERVER);
+        registerPacket(GuiBillPay.PacketRequestBills.Handler.class, GuiBillPay.PacketRequestBills.class, Side.SERVER);
+        registerPacket(GuiBillPay.PacketResponseBills.Handler.class, GuiBillPay.PacketResponseBills.class, Side.CLIENT);
     }
 
     @Override

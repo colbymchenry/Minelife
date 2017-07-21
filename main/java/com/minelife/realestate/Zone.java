@@ -134,7 +134,15 @@ public class Zone implements Comparable<Zone> {
 
     public boolean canPlayer(ZonePermission permission, EntityPlayer player)
     {
-        return canPublic(permission) || getOwner().equals(player.getUniqueID()) || (getMember(player) != null && getMember(player).canMember(permission));
+        if(getOwner().equals(player.getUniqueID()) || (getMember(player) != null && getMember(player).canMember(permission)))
+            return true;
+
+        // TODO: Test this shit
+        if(getForSaleSign(Side.SERVER) != null) {
+            TileEntityForSaleSign forSaleSign = getForSaleSign(Side.SERVER);
+            return (forSaleSign.getRenter() != null && forSaleSign.getRenter().equals(player.getUniqueID())) || (forSaleSign.getMember(player) != null && forSaleSign.getMember(player).canMember(permission));
+        }
+        return canPublic(permission);
     }
 
     public boolean hasForSaleSign(Side side)
