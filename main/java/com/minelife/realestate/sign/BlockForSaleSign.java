@@ -3,6 +3,7 @@ package com.minelife.realestate.sign;
 import com.minelife.realestate.Zone;
 import com.minelife.realestate.client.GuiZonePurchase;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockSign;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -52,7 +53,7 @@ public class BlockForSaleSign extends BlockSign {
         return super.onBlockActivated(world, x, y, z, player, side, f, f1, f2);
     }
 
-    @Override
+    @SideOnly(Side.CLIENT)
     public Item getItem(World p_149694_1_, int p_149694_2_, int p_149694_3_, int p_149694_4_)
     {
         return ItemForSaleSign.getItem();

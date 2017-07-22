@@ -8,6 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class EconomyNotification extends AbstractNotification {
 
+    // TODO
     public EconomyNotification() {}
 
     private String text;

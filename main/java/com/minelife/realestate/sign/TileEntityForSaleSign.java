@@ -5,7 +5,6 @@ import com.minelife.realestate.Member;
 import com.minelife.realestate.Zone;
 import com.minelife.util.ListToString;
 import com.minelife.util.StringToList;
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -16,7 +15,7 @@ import net.minecraft.util.Vec3;
 
 import java.util.*;
 
-public class TileEntityForSaleSign extends TileEntity implements ITickable {
+public class TileEntityForSaleSign extends TileEntity {
 
     private Set<Member> members = new TreeSet<>();
     private UUID renter;
@@ -188,14 +187,16 @@ public class TileEntityForSaleSign extends TileEntity implements ITickable {
     }
 
     @Override
-    public void tick()
+    public void updateEntity()
     {
-        if(timeSync == 0L) timeSync = System.currentTimeMillis() + 10000L;
+        if (worldObj.isRemote) return;
+
+        if (timeSync == 0L) timeSync = System.currentTimeMillis() + 10000L;
 
         // we check every 10 seconds to see if the sign is still in a zone
-        if(System.currentTimeMillis() > timeSync) {
+        if (System.currentTimeMillis() > timeSync) {
             timeSync = System.currentTimeMillis() + 10000L;
-            if(Zone.getZone(worldObj, Vec3.createVectorHelper(xCoord, yCoord, zCoord)) == null) {
+            if (Zone.getZone(worldObj, Vec3.createVectorHelper(xCoord, yCoord, zCoord)) == null) {
                 BlockForSaleSign.getBlock(true).dropBlockAsItem(worldObj, xCoord, yCoord, zCoord, worldObj.getBlockMetadata(xCoord, yCoord, zCoord), 0);
                 worldObj.setBlockToAir(xCoord, yCoord, zCoord);
             }

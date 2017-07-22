@@ -5,6 +5,11 @@ import com.minelife.Minelife;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -53,10 +58,20 @@ public class Billing {
         return billList;
     }
 
+    @SideOnly(Side.CLIENT)
+    public static void sendPayPacketToServer(UUID bill_UUID, long amount) {
+        Minelife.NETWORK.sendToServer(new PacketPayBill(bill_UUID, amount));
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void sendModifyPacketToServer(Bill bill) {
+        Minelife.NETWORK.sendToServer(new PacketModifyBill(bill));
+    }
+
     public static class Bill {
         private static DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
         private UUID uuid, player;
-        private boolean autoPay;
+        public boolean autoPay;
         private Date dueDate;
         private long amount, amountDue;
         private int days;
@@ -224,6 +239,7 @@ public class Billing {
             buf.writeLong(getAmount());
             buf.writeLong(getAmountDue());
             buf.writeInt(getDays());
+            buf.writeBoolean(isAutoPay());
             ByteBufUtils.writeUTF8String(buf, getMemo());
         }
 
@@ -239,6 +255,7 @@ public class Billing {
             bill.amount = buf.readLong();
             bill.amountDue = buf.readLong();
             bill.days = buf.readInt();
+            bill.autoPay = buf.readBoolean();
             bill.memo = ByteBufUtils.readUTF8String(buf);
             return bill;
         }
@@ -287,4 +304,92 @@ public class Billing {
 
     }
 
+    public static class PacketModifyBill implements IMessage {
+
+        private Bill bill;
+
+        public PacketModifyBill()
+        {
+        }
+
+        public PacketModifyBill(Bill bill)
+        {
+            this.bill = bill;
+        }
+
+        @Override
+        public void fromBytes(ByteBuf buf)
+        {
+            bill = Bill.fromBytes(buf);
+        }
+
+        @Override
+        public void toBytes(ByteBuf buf)
+        {
+            bill.toBytes(buf);
+        }
+
+        public static class Handler implements IMessageHandler<PacketModifyBill, IMessage> {
+
+            @SideOnly(Side.SERVER)
+            public IMessage onMessage(PacketModifyBill message, MessageContext ctx)
+            {
+                Bill bill = Billing.getBill(message.bill.getUniqueID());
+                if (bill != null) {
+                    bill.setAutoPay(message.bill.isAutoPay());
+                }
+                return null;
+            }
+        }
+    }
+
+    public static class PacketPayBill implements IMessage {
+
+        private UUID bill_UUID;
+        private long amount;
+
+        public PacketPayBill()
+        {
+        }
+
+        public PacketPayBill(UUID bill_UUID, long amount)
+        {
+            this.bill_UUID = bill_UUID;
+            this.amount = amount;
+        }
+
+        @Override
+        public void fromBytes(ByteBuf buf)
+        {
+            bill_UUID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+            amount = buf.readLong();
+        }
+
+        @Override
+        public void toBytes(ByteBuf buf)
+        {
+            ByteBufUtils.writeUTF8String(buf, bill_UUID.toString());
+            buf.writeLong(amount);
+        }
+
+        public static class Handler implements IMessageHandler<PacketPayBill, IMessage> {
+
+            @SideOnly(Side.SERVER)
+            public IMessage onMessage(PacketPayBill message, MessageContext ctx)
+            {
+                Bill bill = Billing.getBill(message.bill_UUID);
+
+                if (bill != null) {
+                    bill.pay(message.amount);
+                    try {
+                        ModEconomy.withdraw(ctx.getServerHandler().playerEntity.getUniqueID(), message.amount, false);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                return null;
+            }
+        }
+    }
 }

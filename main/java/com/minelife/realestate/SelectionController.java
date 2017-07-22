@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
 import com.minelife.economy.client.OnScreenRenderer;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiUtil;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.CuboidRegion;
@@ -50,7 +51,7 @@ public class SelectionController {
                 int centerY = (event.resolution.getScaledHeight() / 2) - 15;
                 fontRenderer.drawStringWithShadow(EnumChatFormatting.GOLD + "Cost per block: " + EnumChatFormatting.RED + "$" + pricePerBlock, centerX, centerY, 0xFFFFFF);
                 long total = (bounds.getArea() * pricePerBlock);
-                String totalStr = OnScreenRenderer.formatter.format(total);
+                String totalStr = NumberConversions.formatter.format(total);
                 if(ModEconomy.BALANCE_WALLET_CLIENT < total) {
                     fontRenderer.drawStringWithShadow(EnumChatFormatting.GOLD.toString() + EnumChatFormatting.STRIKETHROUGH.toString() + "Total: " + EnumChatFormatting.RED.toString() + EnumChatFormatting.STRIKETHROUGH.toString() + "$" + totalStr, centerX, centerY += 12, 0xFFFFFF);
                     fontRenderer.drawStringWithShadow(EnumChatFormatting.RED.toString() + EnumChatFormatting.BOLD.toString()  + "Insufficient funds.", centerX + 10, centerY += 12, 0xFFFFFF);

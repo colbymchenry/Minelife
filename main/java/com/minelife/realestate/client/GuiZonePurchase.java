@@ -2,6 +2,7 @@ package com.minelife.realestate.client;
 
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
+import com.minelife.economy.Billing;
 import com.minelife.economy.ModEconomy;
 import com.minelife.realestate.sign.TileEntityForSaleSign;
 import com.minelife.util.NumberConversions;
@@ -55,7 +56,7 @@ public class GuiZonePurchase extends AbstractZoneGui {
     {
         super.mouseClicked(mouseX, mouseY, btn);
         if (purchaseBtn.mousePressed(mc, mouseX, mouseY)) {
-            // TODO
+            Minelife.NETWORK.sendToServer(new PacketPurchaseZone(forSaleSign.xCoord, forSaleSign.yCoord, forSaleSign.zCoord));
         }
     }
 
@@ -112,6 +113,8 @@ public class GuiZonePurchase extends AbstractZoneGui {
 
                     TileEntityForSaleSign forSaleSign = (TileEntityForSaleSign) player.worldObj.getTileEntity(message.signX, message.signY, message.signZ);
 
+                    if(forSaleSign.isOccupied()) throw new CustomMessageException("This zone is already occupied.");
+
                     if(ModEconomy.getBalance(player.getUniqueID(), true) < forSaleSign.getPrice()) throw new CustomMessageException("Insufficient funds.");
 
                     if(forSaleSign.isRentable()) {
@@ -121,7 +124,10 @@ public class GuiZonePurchase extends AbstractZoneGui {
                         // TODO: Purchasing
                     }
 
+                    Billing.createBill((int) forSaleSign.getBillingPeriod(), forSaleSign.getPrice(), player, "Pay Rent for Zone", true);
+                    ModEconomy.withdraw(player.getUniqueID(), forSaleSign.getPrice(), true);
                     player.addChatComponentMessage(new ChatComponentText("Zone purchased!"));
+                    player.addChatComponentMessage(new ChatComponentText("You will be billed every " + forSaleSign.getBillingPeriod() + " days. You can manage your bills in the Bill Pay section at any ATM."));
                 } catch (Exception e) {
                     if (e instanceof CustomMessageException) {
                         player.addChatComponentMessage(new ChatComponentText(e.getMessage()));

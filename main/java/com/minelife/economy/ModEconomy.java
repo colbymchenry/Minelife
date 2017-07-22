@@ -47,6 +47,8 @@ public class ModEconomy extends AbstractMod {
         registerPacket(PacketTransferMoney.Handler.class, PacketTransferMoney.class, Side.SERVER);
         registerPacket(GuiBillPay.PacketRequestBills.Handler.class, GuiBillPay.PacketRequestBills.class, Side.SERVER);
         registerPacket(GuiBillPay.PacketResponseBills.Handler.class, GuiBillPay.PacketResponseBills.class, Side.CLIENT);
+        registerPacket(Billing.PacketModifyBill.Handler.class, Billing.PacketModifyBill.class, Side.SERVER);
+        registerPacket(Billing.PacketPayBill.Handler.class, Billing.PacketPayBill.class, Side.SERVER);
     }
 
     @Override

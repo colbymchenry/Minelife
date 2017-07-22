@@ -7,6 +7,7 @@ import com.minelife.economy.Billing;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiLoadingAnimation;
 import com.minelife.util.client.GuiScrollableContent;
+import com.minelife.util.client.GuiTextField;
 import com.minelife.util.client.GuiTickBox;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -15,6 +16,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.util.List;
@@ -52,7 +57,7 @@ public class GuiBillPay extends GuiATM {
     protected void keyTyped(char p_73869_1_, int p_73869_2_)
     {
         super.keyTyped(p_73869_1_, p_73869_2_);
-        if(content != null) content.keyTyped(p_73869_1_, p_73869_2_);
+        if (content != null) content.keyTyped(p_73869_1_, p_73869_2_);
     }
 
     @Override
@@ -69,12 +74,9 @@ public class GuiBillPay extends GuiATM {
 
     private class Content extends GuiScrollableContent {
 
-        private Map<Billing.Bill, GuiTickBox> tickBoxMap = Maps.newHashMap();
-
         private Content(int xPosition, int yPosition, int width, int height)
         {
             super(xPosition, yPosition, width, height);
-            billList.forEach(bill -> tickBoxMap.put(bill, new GuiTickBox(mc, 30, 36, bill.isAutoPay())));
         }
 
         @Override
@@ -90,8 +92,14 @@ public class GuiBillPay extends GuiATM {
             fontRendererObj.drawSplitString(bill.getMemo(), 2, 2, 0xFFFFFF, this.width);
             fontRendererObj.drawString("Date Due: " + bill.getDueDateAsString(), 2, 12, 0xFFFFFF);
             fontRendererObj.drawString("Amount Due: $" + NumberConversions.formatter.format(bill.getAmountDue()), 2, 24, 0xFFFFFF);
-            fontRendererObj.drawString("Auto Pay: ", 2, 36, 0xFFFFFF);
-            tickBoxMap.values().forEach(GuiTickBox::drawTickBox);
+            fontRendererObj.drawString("Auto Pay: " + (bill.isAutoPay() ? EnumChatFormatting.GREEN + "On" : EnumChatFormatting.RED + "Off"), 2, 36, 0xFFFFFF);
+            fontRendererObj.drawString("Pay", width - 25, 36, 0xFFFFFF);
+        }
+
+        @Override
+        public void drawSelectionBox(int index, int width, int height)
+        {
+
         }
 
         @Override
@@ -103,7 +111,73 @@ public class GuiBillPay extends GuiATM {
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick)
         {
-            // TODO: Pay bill
+            Billing.Bill bill = billList.get(index);
+            if (mouseX >= 2 && mouseX <= 2 + fontRendererObj.getStringWidth("Auto Pay: " + (bill.isAutoPay() ? "On" : "Off")) && mouseY >= 36 && mouseY <= 36 + fontRendererObj.FONT_HEIGHT) {
+                bill.autoPay = !bill.isAutoPay();
+                Billing.sendModifyPacketToServer(bill);
+            }
+
+            if (mouseX >= width - 25 && mouseX <= (width - 25) + fontRendererObj.getStringWidth("Pay") && mouseY >= 36 && mouseY <= 36 + fontRendererObj.FONT_HEIGHT) {
+                Minecraft.getMinecraft().displayGuiScreen(new GuiPayPopup(bill));
+            }
+        }
+    }
+
+    private class GuiPayPopup extends GuiATM {
+
+        private String amount = "0";
+        private Billing.Bill bill;
+
+        public GuiPayPopup(Billing.Bill bill)
+        {
+            this.bill = bill;
+        }
+
+        @Override
+        public void drawScreen(int mouseX, int mouseY, float partialTicks)
+        {
+            super.drawScreen(mouseX, mouseY, partialTicks);
+            drawLabel("Amount Due: $" + NumberConversions.formatter.format(bill.getAmountDue()), (this.width / 2), (this.height / 2), 2, 0xFF03438D);
+            drawLabel("$" + NumberConversions.formatter.format(Long.parseLong(amount)), (this.width / 2), (this.height / 2) + 30, 2, 0xFF03438D);
+        }
+
+        @Override
+        public void initGui()
+        {
+            super.initGui();
+            this.buttonList.clear();
+            this.buttonList.add(new ButtonATM(0, (this.width - 50) / 2, this.height - 30, 50, 20, "Pay", 2));
+        }
+
+        @Override
+        protected void keyTyped(char c, int i)
+        {
+            super.keyTyped(c, i);
+
+            if (i == Keyboard.KEY_BACK) {
+                if (amount.length() == 1)
+                    amount = "0";
+                else
+                    amount = amount.substring(0, amount.length() - 1);
+                return;
+            }
+
+            if (NumberConversions.isInt("" + c)) {
+                if (NumberConversions.isLong(amount + c)) {
+                    if(Long.parseLong(amount + c) <= bill.getAmountDue()) {
+                        amount += c;
+                    } else {
+                        setStatusMessage("Exceeding amount.");
+                    }
+                }
+            }
+        }
+
+        @Override
+        protected void actionPerformed(GuiButton btn)
+        {
+            super.actionPerformed(btn);
+            // TODO:
         }
     }
 
