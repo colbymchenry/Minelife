@@ -7,6 +7,7 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
+import net.royawesome.jlibnoise.module.modifier.Abs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -51,9 +52,8 @@ public class PacketSendNotification implements IMessage {
         {
             try {
                 AbstractGuiNotification guiNotification = message.notification.getGuiClass().getConstructor(AbstractNotification.class).newInstance(message.notification);
-                message.notification.writeToDB();
                 guiNotification.push();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | SQLException e) {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
             return null;

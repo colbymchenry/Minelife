@@ -1,17 +1,19 @@
 package com.minelife.notification;
 
+import com.google.common.collect.Lists;
+import com.minelife.util.client.GuiRemoveBtn;
 import com.minelife.util.client.GuiScrollableContent;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.util.List;
+
 public class GuiNotifications extends GuiScreen {
 
-    private int xPosition, yPosition, bgWidth = 200, bgHeight = 200;
+    private int xPosition, yPosition, bgWidth = 190, bgHeight = 200;
     private Content content;
-
-    private GuiButton deleteBtn;
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float f)
@@ -19,7 +21,6 @@ public class GuiNotifications extends GuiScreen {
         super.drawScreen(mouseX, mouseY, f);
         this.drawBackground();
         this.content.draw(mouseX, mouseY, Mouse.getDWheel());
-        this.deleteBtn.drawButton(mc, mouseX, mouseY);
     }
 
     @Override
@@ -30,22 +31,11 @@ public class GuiNotifications extends GuiScreen {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseBtn)
-    {
-        super.mouseClicked(mouseX, mouseY, mouseBtn);
-        if (this.deleteBtn.mousePressed(mc, mouseX, mouseY)) {
-            AbstractGuiNotification notification = AbstractGuiNotification.getNotification(content.getSelected());
-            if (notification != null) AbstractGuiNotification.notifications.remove(notification);
-        }
-    }
-
-    @Override
     public void initGui()
     {
         this.xPosition = (this.width - bgWidth) / 2;
         this.yPosition = (this.height - bgHeight) / 2;
         this.content = new Content(xPosition, yPosition, bgWidth, bgHeight);
-        this.deleteBtn = new GuiButton(0, xPosition + ((bgWidth - 75) / 2), yPosition + bgHeight + 10, 75, 20, "Delete");
     }
 
     private void drawBackground()
@@ -60,16 +50,19 @@ public class GuiNotifications extends GuiScreen {
 
     public static class Content extends GuiScrollableContent {
 
+        private List<GuiRemoveBtn> removeBtnList = Lists.newArrayList();
+
         private Content(int xPosition, int yPosition, int width, int height)
         {
             super(xPosition, yPosition, width, height);
+            AbstractGuiNotification.notifications.forEach(notification -> removeBtnList.add(new GuiRemoveBtn(width - 25, 2)));
         }
 
         @Override
         public int getObjectHeight(int index)
         {
             AbstractGuiNotification notification = AbstractGuiNotification.getNotification(index);
-            return notification != null ? notification.getHeight() : 0;
+            return notification != null ? (notification.getHeight() + 8) : 0;
         }
 
         @Override
@@ -78,6 +71,7 @@ public class GuiNotifications extends GuiScreen {
             AbstractGuiNotification notification = AbstractGuiNotification.getNotification(index);
             if (notification == null) return;
             notification.drawNotification();
+            removeBtnList.forEach(btn -> btn.drawButton(mc, mouseX, mouseY));
         }
 
         @Override
@@ -89,12 +83,19 @@ public class GuiNotifications extends GuiScreen {
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick)
         {
-            if (doubleClick) {
-                AbstractGuiNotification notification = AbstractGuiNotification.getNotification(index);
-                if (notification == null) return;
-                notification.onClick(mouseX, mouseY);
+            AbstractGuiNotification notification = AbstractGuiNotification.getNotification(index);
+            if (notification == null) return;
+            notification.onClick(mouseX, mouseY);
+
+            if (removeBtnList.get(index).mousePressed(mc, mouseX, mouseY)) {
                 AbstractGuiNotification.notifications.remove(notification);
             }
+        }
+
+        @Override
+        public void drawSelectionBox(int index, int width, int height)
+        {
+
         }
 
         @Override

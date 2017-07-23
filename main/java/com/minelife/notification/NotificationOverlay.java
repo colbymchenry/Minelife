@@ -1,6 +1,7 @@
 package com.minelife.notification;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.client.gui.achievement.GuiAchievement;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
 
@@ -20,48 +21,51 @@ public class NotificationOverlay {
     @SubscribeEvent
     public void onRenderGameOverlay(RenderGameOverlayEvent event)
     {
-        if (event.type != RenderGameOverlayEvent.ElementType.CROSSHAIRS) return;
+        if(event.type != RenderGameOverlayEvent.ElementType.CROSSHAIRS) return;
+
+        boolean new_notification = currentNotification == null;
 
         // get the next notification
         currentNotification = currentNotification == null ? getNextNotification() : currentNotification;
 
-        // if we don't have a notification to draw return
         if (currentNotification == null) return;
 
         // new notification is appearing, so set it up
-        notificationY = -1 * currentNotification.getHeight();
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, 5);
-        nextQueTime = calendar.getTime();
+        if(new_notification) {
+            notificationY = -1 * currentNotification.getHeight();
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.SECOND, 5);
+            nextQueTime = calendar.getTime();
+        }
 
-        int notificationX = event.resolution.getScaledWidth() - currentNotification.getWidth();
-        int speedY = 200;
-
+        int notificationX = event.resolution.getScaledWidth() - (currentNotification.getWidth() + 1);
         double time = System.nanoTime() / 1e9;
         double timePassed = time - timeOfLastFrame;
         timeOfLastFrame = time;
+        int speedY = 200;
 
-        if (Calendar.getInstance().getTime().after(nextQueTime))
+        if (Calendar.getInstance().getTime().after(nextQueTime)) {
             // subtract if current time is past next que time
             // that way we animate back out of the screen
             notificationY -= timePassed * speedY;
-        else
+
+            if(notificationY < (currentNotification.getHeight() + 80) * -1) {
+                NOTIFICATION_QUE.remove(currentNotification);
+                currentNotification = null;
+                return;
+            }
+        } else {
             // animate the notification down
             notificationY += timePassed * speedY;
+        }
 
         // stop the notification from going all the way down and off the screen
-        notificationY = notificationY >= 0 ? 0 : notificationY;
+        notificationY = notificationY >= 1 ? 1 : notificationY;
 
         GL11.glPushMatrix();
         GL11.glTranslatef(notificationX, notificationY, 400);
         currentNotification.drawNotification();
         GL11.glPopMatrix();
-
-        // notification has animated off the screen, so delete it and start the next one
-        if (notificationY <= currentNotification.getHeight() * -1) {
-            NOTIFICATION_QUE.remove(currentNotification);
-            currentNotification = null;
-        }
     }
 
     private static AbstractGuiNotification getNextNotification()

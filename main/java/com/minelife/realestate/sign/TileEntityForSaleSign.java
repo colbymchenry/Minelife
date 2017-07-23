@@ -24,7 +24,6 @@ public class TileEntityForSaleSign extends TileEntity {
     private long billingPeriod;
     private boolean allowBreaking, allowPlacing, allowInteracting;
     private long timeSync = 0L;
-    private Date billingDate;
 
     // TODO: Billing, and to put the billing in the ATM, and what to do if the bill is not paid
 

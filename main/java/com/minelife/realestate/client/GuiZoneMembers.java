@@ -7,10 +7,7 @@ import com.minelife.Minelife;
 import com.minelife.realestate.Member;
 import com.minelife.realestate.Zone;
 import com.minelife.realestate.ZonePermission;
-import com.minelife.util.client.GuiScrollableContent;
-import com.minelife.util.client.GuiTextField;
-import com.minelife.util.client.GuiTickBox;
-import com.minelife.util.client.GuiUtil;
+import com.minelife.util.client.*;
 import com.minelife.util.server.UUIDFetcher;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -97,7 +94,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
     private class Content extends GuiScrollableContent {
 
         private Map<Member, List<GuiTickBox>> permissionsMap = Maps.newHashMap();
-        private Map<Member, RemoveBtn> removeMap = Maps.newHashMap();
+        private Map<Member, GuiRemoveBtn> removeMap = Maps.newHashMap();
         private Set<Member> members = new TreeSet<>();
 
         public Content(int xPosition, int yPosition, int width, int height)
@@ -114,7 +111,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
                     tickBoxes.add(new GuiTickBox(mc, 100, y+=20, member.canMember(permission), permission.name()));
                 tickBoxes.forEach(tickBox -> tickBox.enabled = member.canMember(ZonePermission.MANAGER));
                 permissionsMap.put(member, tickBoxes);
-                removeMap.put(member, new RemoveBtn(bgWidth - 24, 2));
+                removeMap.put(member, new GuiRemoveBtn(bgWidth - 24, 2));
             }
         }
 
@@ -161,41 +158,6 @@ public class GuiZoneMembers extends AbstractZoneGui {
         @Override
         public void drawBackground()
         {
-        }
-
-        private class RemoveBtn extends GuiButton {
-
-            private ResourceLocation texture = new ResourceLocation(Minelife.MOD_ID, "textures/gui/x.png");
-
-            public RemoveBtn(int x, int y)
-            {
-                super(0, x, y, 16, 16, "");
-            }
-
-            @Override
-            public void drawButton(Minecraft mc, int mouseX, int mouseY)
-            {
-                GL11.glColor4f(1, 1, 1, 1);
-                GL11.glEnable(GL11.GL_BLEND);
-                mc.getTextureManager().bindTexture(texture);
-                float scale = 1f;
-
-                if (mouseX >= xPosition && mouseX <= xPosition + 16 && mouseY >= yPosition && mouseY <= yPosition + 16) {
-                    scale = 1.25f;
-                }
-
-                GL11.glPushMatrix();
-                {
-                    GL11.glTranslatef(xPosition, yPosition, zLevel);
-                    if (scale > 1f) {
-                        GL11.glTranslatef(8, 8, 0);
-                        GL11.glScalef(scale, scale, scale);
-                        GL11.glTranslatef(-8, -8, 0);
-                    }
-                    GuiUtil.drawImage(0, 0, 16, 16);
-                }
-                GL11.glPopMatrix();
-            }
         }
 
     }

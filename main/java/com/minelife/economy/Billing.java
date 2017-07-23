@@ -2,6 +2,8 @@ package com.minelife.economy;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
+import com.minelife.util.NumberConversions;
+import com.minelife.util.PlayerHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -59,12 +61,14 @@ public class Billing {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void sendPayPacketToServer(UUID bill_UUID, long amount) {
+    public static void sendPayPacketToServer(UUID bill_UUID, long amount)
+    {
         Minelife.NETWORK.sendToServer(new PacketPayBill(bill_UUID, amount));
     }
 
     @SideOnly(Side.CLIENT)
-    public static void sendModifyPacketToServer(Bill bill) {
+    public static void sendModifyPacketToServer(Bill bill)
+    {
         Minelife.NETWORK.sendToServer(new PacketModifyBill(bill));
     }
 
@@ -226,7 +230,7 @@ public class Billing {
         public void writeToDB()
         {
             try {
-                Minelife.SQLITE.query("UPDATE Economy_Bills SET dueDate='" + df.format(this.dueDate) + "', days='" + days + "', amount='" + amount + "', player='" + player.toString() + "', memo='" + memo + "', autoPay='" + (autoPay ? 1 : 0) + "' WHERE uuid='" + uuid.toString() + "'");
+                Minelife.SQLITE.query("UPDATE Economy_Bills SET dueDate='" + df.format(this.dueDate) + "', days='" + days + "', amount='" + amount + "', amountDue='" + amountDue + "', player='" + player.toString() + "', memo='" + memo + "', autoPay='" + (autoPay ? 1 : 0) + "' WHERE uuid='" + uuid.toString() + "'");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -283,11 +287,15 @@ public class Billing {
                             if (Calendar.getInstance().getTime().after(dueDate)) {
                                 Bill bill = Billing.getBill(UUID.fromString(result.getString("uuid")));
                                 bill.setAmountDue(bill.getAmountDue() + bill.getAmount());
-                                if(bill.autoPay) {
-                                    if(ModEconomy.getBalance(bill.getPlayer(), false) >= bill.amount) {
+                                if (bill.autoPay) {
+                                    if (ModEconomy.getBalance(bill.getPlayer(), false) >= bill.amount) {
                                         bill.pay(bill.getAmount());
                                         ModEconomy.withdraw(bill.getPlayer(), bill.getAmount(), false);
-                                        // TODO: Send notification to player
+                                        EconomyNotification notification = new EconomyNotification(bill.getPlayer(), "Bill paid: $" + NumberConversions.formatter.format(bill.getAmount()));
+                                        if (PlayerHelper.getPlayer(bill.getPlayer()) != null)
+                                            notification.sendTo(PlayerHelper.getPlayer(bill.getPlayer()));
+                                        else
+                                            notification.writeToDB();
                                     }
                                 }
                                 bill.incrementDueDate();
@@ -380,9 +388,14 @@ public class Billing {
                 Bill bill = Billing.getBill(message.bill_UUID);
 
                 if (bill != null) {
-                    bill.pay(message.amount);
                     try {
-                        ModEconomy.withdraw(ctx.getServerHandler().playerEntity.getUniqueID(), message.amount, false);
+                        if (message.amount > bill.getAmountDue()) {
+                            bill.pay(bill.getAmountDue());
+                            ModEconomy.withdraw(ctx.getServerHandler().playerEntity.getUniqueID(), bill.getAmountDue(), false);
+                        } else {
+                            bill.pay(message.amount);
+                            ModEconomy.withdraw(ctx.getServerHandler().playerEntity.getUniqueID(), message.amount, false);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

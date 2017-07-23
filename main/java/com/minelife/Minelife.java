@@ -3,6 +3,7 @@ package com.minelife;
 import com.google.common.collect.Lists;
 import com.minelife.economy.ModEconomy;
 import com.minelife.gun.ModGun;
+import com.minelife.notification.ModNotifications;
 import com.minelife.permission.ModPermission;
 import com.minelife.police.ModPolice;
 import com.minelife.realestate.ModRealEstate;
@@ -40,6 +41,7 @@ public class Minelife {
 
     public Minelife() {
         MODS.add(new ModPermission());
+        MODS.add(new ModNotifications());
         MODS.add(new ModEconomy());
         MODS.add(new ModPolice());
         MODS.add(new ModGun());
@@ -52,19 +54,19 @@ public class Minelife {
         NETWORK = new SimpleNetworkWrapper(MOD_ID);
 
         AbstractMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
-        MODS.stream().forEach(mod -> mod.preInit(event));
+        MODS.forEach(mod -> mod.preInit(event));
         PROXY.preInit(event);
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        MODS.stream().forEach(mod -> mod.init(event));
+        MODS.forEach(mod -> mod.init(event));
         PROXY.init(event);
     }
 
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
-        MODS.stream().forEach(mod -> mod.serverStarting(event));
+        MODS.forEach(mod -> mod.serverStarting(event));
     }
 
     public static File getDirectory() {

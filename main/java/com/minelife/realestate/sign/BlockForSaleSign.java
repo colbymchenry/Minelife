@@ -2,14 +2,18 @@ package com.minelife.realestate.sign;
 
 import com.minelife.realestate.Zone;
 import com.minelife.realestate.client.GuiZonePurchase;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockSign;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.event.world.BlockEvent;
 
 import java.util.Random;
 
@@ -20,6 +24,7 @@ public class BlockForSaleSign extends BlockSign {
     public BlockForSaleSign(boolean standing)
     {
         super(TileEntityForSaleSign.class, standing);
+        this.setBlockUnbreakable();
     }
 
     public static BlockForSaleSign getBlock(boolean standing) {
@@ -32,6 +37,12 @@ public class BlockForSaleSign extends BlockSign {
         }
     }
 
+    // prevents the block from falling like a normal sign if it has no post
+    @Override
+    public void onNeighborBlockChange(World p_149695_1_, int p_149695_2_, int p_149695_3_, int p_149695_4_, Block p_149695_5_)
+    {
+    }
+
     @Override
     public boolean canPlaceBlockAt(World world, int x, int y, int z)
     {
@@ -42,7 +53,6 @@ public class BlockForSaleSign extends BlockSign {
         return true;
     }
 
-    // TODO
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float f, float f1, float f2)
     {
@@ -64,4 +74,5 @@ public class BlockForSaleSign extends BlockSign {
     {
         return ItemForSaleSign.getItem();
     }
+
 }

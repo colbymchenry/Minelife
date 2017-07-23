@@ -6,6 +6,7 @@ import com.minelife.realestate.ModRealEstate;
 import com.minelife.realestate.SelectionController.ServerSelector;
 import com.minelife.realestate.Zone;
 import com.minelife.realestate.ZoneInfoController;
+import com.minelife.realestate.sign.BlockForSaleSign;
 import com.minelife.realestate.sign.ListenerForSaleSign;
 import com.minelife.util.SimpleConfig;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -38,6 +39,7 @@ public class ServerProxy extends CommonProxy {
                     "publicPermissions TEXT NOT NULL DEFAULT '', " +
                     "intro TEXT NOT NULL DEFAULT '', " +
                     "outro TEXT NOT NULL DEFAULT '')");
+
             Zone.initZones();
         } catch (SQLException e) {
             e.printStackTrace();

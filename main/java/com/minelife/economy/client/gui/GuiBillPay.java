@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.economy.Billing;
+import com.minelife.economy.ModEconomy;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiLoadingAnimation;
 import com.minelife.util.client.GuiScrollableContent;
@@ -61,6 +62,12 @@ public class GuiBillPay extends GuiATM {
     }
 
     @Override
+    protected void actionPerformed(GuiButton p_146284_1_)
+    {
+        Minecraft.getMinecraft().displayGuiScreen(new GuiMainMenu());
+    }
+
+    @Override
     public void initGui()
     {
         super.initGui();
@@ -70,6 +77,7 @@ public class GuiBillPay extends GuiATM {
         }
 
         content = new Content((this.width - 200) / 2, (this.height - 200) / 2, 200, 200);
+        this.buttonList.add(new ButtonATM(0, 2, this.height - 30 - 2, 75, 30, "Cancel", 2.0));
     }
 
     private class Content extends GuiScrollableContent {
@@ -147,11 +155,17 @@ public class GuiBillPay extends GuiATM {
             super.initGui();
             this.buttonList.clear();
             this.buttonList.add(new ButtonATM(0, (this.width - 50) / 2, this.height - 30, 50, 20, "Pay", 2));
+            this.buttonList.add(new ButtonATM(1, 2, this.height - 30 - 2, 75, 30, "Cancel", 2.0));
         }
 
         @Override
         protected void keyTyped(char c, int i)
         {
+            if (i == Keyboard.KEY_ESCAPE) {
+                Minecraft.getMinecraft().displayGuiScreen(new GuiBillPay());
+                return;
+            }
+
             super.keyTyped(c, i);
 
             if (i == Keyboard.KEY_BACK) {
@@ -164,10 +178,12 @@ public class GuiBillPay extends GuiATM {
 
             if (NumberConversions.isInt("" + c)) {
                 if (NumberConversions.isLong(amount + c)) {
-                    if(Long.parseLong(amount + c) <= bill.getAmountDue()) {
+                    if (Long.parseLong(amount + c) <= bill.getAmountDue() && Long.parseLong(amount + c) <= ModEconomy.BALANCE_BANK_CLIENT) {
                         amount += c;
-                    } else {
+                    } else if(Long.parseLong(amount + c) > bill.getAmountDue()){
                         setStatusMessage("Exceeding amount.");
+                    } else {
+                        setStatusMessage("Funds needed in bank account.");
                     }
                 }
             }
@@ -177,7 +193,16 @@ public class GuiBillPay extends GuiATM {
         protected void actionPerformed(GuiButton btn)
         {
             super.actionPerformed(btn);
-            // TODO:
+
+            if(btn.id == 1) {
+                Minecraft.getMinecraft().displayGuiScreen(new GuiBillPay());
+                return;
+            }
+
+            if (Long.parseLong(amount) > 0) {
+                Billing.sendPayPacketToServer(bill.getUniqueID(), Long.parseLong(amount));
+                Minecraft.getMinecraft().displayGuiScreen(new GuiBillPay());
+            }
         }
     }
 

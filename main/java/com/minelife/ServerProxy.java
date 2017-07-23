@@ -13,24 +13,20 @@ public class ServerProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent event) {
         initSQLite();
 
-        Minelife.MODS.stream().forEach(mod -> {
+        Minelife.MODS.forEach(mod -> {
             try {
                 mod.getServerProxy().newInstance().preInit(event);
-            } catch (InstantiationException e) {
-            } catch (IllegalAccessException e) {
-            } catch (NullPointerException e) {
+            } catch (InstantiationException | IllegalAccessException | NullPointerException ignored) {
             }
         });
     }
 
     @Override
     public void init(FMLInitializationEvent event) {
-        Minelife.MODS.stream().forEach(mod -> {
+        Minelife.MODS.forEach(mod -> {
             try {
                 mod.getServerProxy().newInstance().init(event);
-            } catch (InstantiationException e) {
-            } catch (IllegalAccessException e) {
-            } catch (NullPointerException e) {
+            } catch (InstantiationException | IllegalAccessException | NullPointerException ignored) {
             }
         });
     }

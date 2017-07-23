@@ -1,16 +1,14 @@
 package com.minelife.notification;
 
-import lib.PatPeter.SQLibrary.Database;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Rectangle;
 
-import java.sql.ResultSet;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
 
 public abstract class AbstractGuiNotification extends Gui implements Comparable<AbstractGuiNotification> {
 
@@ -22,10 +20,17 @@ public abstract class AbstractGuiNotification extends Gui implements Comparable<
     private static final Rectangle texMiddleCoords = new Rectangle(96, 212, 160, 9);
     private static final Rectangle texBottomCoords = new Rectangle(96, 230, 160, 4);
 
+    protected FontRenderer fontRenderer;
+    protected Minecraft mc;
+
     private AbstractNotification abstractNotification;
 
-    public AbstractGuiNotification(AbstractNotification abstractNotification) {
+    public AbstractGuiNotification(AbstractNotification abstractNotification)
+    {
         this.abstractNotification = abstractNotification;
+        this.mc = Minecraft.getMinecraft();
+        this.fontRenderer = mc.fontRenderer;
+        notifications.add(this);
     }
 
     public void drawNotification()
@@ -56,15 +61,20 @@ public abstract class AbstractGuiNotification extends Gui implements Comparable<
         GL11.glEnable(GL11.GL_BLEND);
         Minecraft.getMinecraft().getTextureManager().bindTexture(bgTexture);
 
+        int middleY = 0;
+
         // draw top curve
-        drawTexturedModalRect(0, 0, texTopCoords.getX(), texTopCoords.getY(), texTopCoords.getWidth(), texTopCoords.getHeight());
+        drawTexturedModalRect(0, middleY, texTopCoords.getX(), texTopCoords.getY(), texTopCoords.getWidth(), texTopCoords.getHeight());
+        middleY += texTopCoords.getHeight();
 
         // draw middle sections
         int sections = getHeight() / texMiddleCoords.getHeight();
 
-        int middleY = texTopCoords.getHeight();
-        for (int section = 0; section < sections; section++)
-            drawTexturedModalRect(0, middleY += texMiddleCoords.getHeight(), texMiddleCoords.getX(), texMiddleCoords.getY(), texMiddleCoords.getWidth(), texMiddleCoords.getHeight());
+
+        for (int section = 0; section < sections; section++) {
+            drawTexturedModalRect(0, middleY, texMiddleCoords.getX(), texMiddleCoords.getY(), texMiddleCoords.getWidth(), texMiddleCoords.getHeight());
+            middleY += texMiddleCoords.getHeight();
+        }
 
         // if the middle sections don't fit perfectly we draw the last middle section moved up some
         if (getHeight() % texMiddleCoords.getHeight() != 0) {
@@ -75,7 +85,8 @@ public abstract class AbstractGuiNotification extends Gui implements Comparable<
             // by the actual height, to get the needed adjustment, and translate up
             middleY -= totalHeight - getHeight();
             // draw the last section, also add a section back to the middle coords for the bottom curve pos
-            drawTexturedModalRect(0, middleY += texMiddleCoords.getHeight(), texMiddleCoords.getX(), texMiddleCoords.getY(), texMiddleCoords.getWidth(), texMiddleCoords.getHeight());
+            drawTexturedModalRect(0, middleY, texMiddleCoords.getX(), texMiddleCoords.getY(), texMiddleCoords.getWidth(), texMiddleCoords.getHeight());
+            middleY += texMiddleCoords.getHeight();
         }
 
         // draw bottom curve
@@ -94,7 +105,8 @@ public abstract class AbstractGuiNotification extends Gui implements Comparable<
         return (obj instanceof AbstractGuiNotification) && ((AbstractGuiNotification) obj).abstractNotification.getUniqueID().equals(abstractNotification.getUniqueID());
     }
 
-    public static final AbstractGuiNotification getNotification(int index) {
+    public static final AbstractGuiNotification getNotification(int index)
+    {
         return notifications.toArray().length > index ? (AbstractGuiNotification) notifications.toArray()[index] : null;
     }
 }

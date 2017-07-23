@@ -5,13 +5,22 @@ import com.minelife.notification.AbstractNotification;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
+
+import java.util.UUID;
 
 public class EconomyNotification extends AbstractNotification {
 
-    // TODO
-    public EconomyNotification() {}
-
     private String text;
+
+    public EconomyNotification(){}
+
+    public EconomyNotification(UUID player, String text) {
+        super();
+        this.playerUniqueID = player;
+        this.text = text;
+        this.writeToNBT(tagCompound);
+    }
 
     @Override
     public void readFromNBT(NBTTagCompound tagCompound)
@@ -45,19 +54,19 @@ public class EconomyNotification extends AbstractNotification {
         @Override
         protected void drawForeground()
         {
-
+            fontRenderer.drawString(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.UNDERLINE.toString() + "Billing", 5, 5, 0xFFFFFF);
+            fontRenderer.drawSplitString(economyNotification.text, 8, 18, getWidth(), 0xFFFFFF);
         }
 
         @Override
         protected void onClick(int mouseX, int mouseY)
         {
-
         }
 
         @Override
         protected int getHeight()
         {
-            return 0;
+            return fontRenderer.FONT_HEIGHT + (fontRenderer.listFormattedStringToWidth(economyNotification.text, getWidth()).size() * fontRenderer.FONT_HEIGHT + 5);
         }
     }
 }

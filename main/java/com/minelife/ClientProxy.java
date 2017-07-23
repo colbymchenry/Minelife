@@ -13,24 +13,20 @@ public class ClientProxy extends CommonProxy {
         initSQLite();
         KeyBindings.registerKeys();
 
-        Minelife.MODS.stream().forEach(mod -> {
+        Minelife.MODS.forEach(mod -> {
             try {
                 mod.getClientProxy().newInstance().preInit(event);
-            } catch (InstantiationException e) {
-            } catch (IllegalAccessException e) {
-            } catch (NullPointerException e) {
+            } catch (InstantiationException | IllegalAccessException | NullPointerException ignored) {
             }
         });
     }
 
     @Override
     public void init(FMLInitializationEvent event) {
-        Minelife.MODS.stream().forEach(mod -> {
+        Minelife.MODS.forEach(mod -> {
             try {
                 mod.getClientProxy().newInstance().init(event);
-            } catch (InstantiationException e) {
-            } catch (IllegalAccessException e) {
-            } catch (NullPointerException e) {
+            } catch (InstantiationException | IllegalAccessException | NullPointerException e) {
             }
         });
     }
