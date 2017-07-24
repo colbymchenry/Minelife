@@ -4,6 +4,7 @@ import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.realestate.sign.BlockForSaleSign;
 import com.minelife.realestate.sign.TileEntityForSaleSign;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiTextField;
 import com.minelife.util.client.GuiTickBox;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -55,6 +56,7 @@ public class GuiZoneSell extends AbstractZoneGui {
         allowBreaking.drawTickBox();
         allowInteracting.drawTickBox();
 
+        // TODO: Possible add "Grace Period" for past due bills
         fontRendererObj.drawString("For Rent?", this.xPosition + 10, forRent.yPosition + (18 - fontRendererObj.FONT_HEIGHT) / 2, 0xFFFFFF);
         fontRendererObj.drawString("Allow Breaking?", this.xPosition + 10, allowBreaking.yPosition + (18 - fontRendererObj.FONT_HEIGHT) / 2, 0xFFFFFF);
         fontRendererObj.drawString("Allow Placing?", this.xPosition + 10, allowPlacing.yPosition + (18 - fontRendererObj.FONT_HEIGHT) / 2, 0xFFFFFF);
@@ -65,12 +67,12 @@ public class GuiZoneSell extends AbstractZoneGui {
     protected void keyTyped(char c, int k)
     {
         super.keyTyped(c, k);
-        if (isLong("" + c))
+        if (NumberConversions.isLong("" + c))
             priceField.textboxKeyTyped(c, k);
         if (k == Keyboard.KEY_BACK)
             billingDurationField.textboxKeyTyped(c, k);
         else if (billingDurationField.getText().length() < 2)
-            if (isLong("" + c))
+            if (NumberConversions.isLong("" + c))
                 billingDurationField.textboxKeyTyped(c, k);
     }
 
@@ -86,8 +88,8 @@ public class GuiZoneSell extends AbstractZoneGui {
         allowBreaking.mouseClicked(x, y);
 
         if (sellBtn.mousePressed(mc, x, y)) {
-            long price = priceField.getText().isEmpty() ? 0 : isLong(priceField.getText()) ? Long.parseLong(priceField.getText()) : 0;
-            long billingDuration = billingDurationField.getText().isEmpty() ? 0 : isLong(billingDurationField.getText()) ? Long.parseLong(billingDurationField.getText()) : 0;
+            long price = priceField.getText().isEmpty() ? 0 : NumberConversions.isLong(priceField.getText()) ? Long.parseLong(priceField.getText()) : 0;
+            int billingDuration = billingDurationField.getText().isEmpty() ? 0 : NumberConversions.isInt(billingDurationField.getText()) ? Integer.parseInt(billingDurationField.getText()) : 0;
             Minelife.NETWORK.sendToServer(new PacketUpdateForSaleSign(signX, signY, signZ, price, billingDuration, forRent.isChecked(), allowBreaking.isChecked(), allowPlacing.isChecked(), allowInteracting.isChecked()));
         }
     }
@@ -108,6 +110,18 @@ public class GuiZoneSell extends AbstractZoneGui {
         allowBreaking.enabled = false;
         allowPlacing.enabled = false;
         allowInteracting.enabled = false;
+
+        if(Minecraft.getMinecraft().theWorld.getTileEntity(signX, signY, signZ) != null) {
+            if(Minecraft.getMinecraft().theWorld.getTileEntity(signX, signY, signZ) instanceof TileEntityForSaleSign) {
+                TileEntityForSaleSign forSaleSign = (TileEntityForSaleSign) Minecraft.getMinecraft().theWorld.getTileEntity(signX, signY, signZ);
+                priceField.setText("" + forSaleSign.getPrice());
+                forRent.setChecked(forSaleSign.isRentable());
+                billingDurationField.setText("" + forSaleSign.getBillingPeriod());
+                allowBreaking.setChecked(forSaleSign.isAllowBreaking());
+                allowPlacing.setChecked(forSaleSign.isAllowPlacing());
+                allowInteracting.setChecked(forSaleSign.isAllowInteracting());
+            }
+        }
     }
 
     @Override
@@ -120,16 +134,6 @@ public class GuiZoneSell extends AbstractZoneGui {
         allowBreaking.enabled = forRent.isChecked();
         allowPlacing.enabled = forRent.isChecked();
         allowInteracting.enabled = forRent.isChecked();
-    }
-
-    private boolean isLong(String s)
-    {
-        try {
-            Long.parseLong(s);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
     }
 
     public static class PacketOpenGuiZoneSell implements IMessage {
@@ -183,14 +187,15 @@ public class GuiZoneSell extends AbstractZoneGui {
     public static class PacketUpdateForSaleSign implements IMessage {
 
         private int x, y, z;
-        private long priceField, billingDurationField;
+        private long priceField;
+        private int billingDurationField;
         private boolean forRent, allowBreaking, allowPlacing, allowInteracting;
 
         public PacketUpdateForSaleSign()
         {
         }
 
-        public PacketUpdateForSaleSign(int x, int y, int z, long priceField, long billingDurationField, boolean forRent, boolean allowBreaking, boolean allowPlacing, boolean allowInteracting)
+        public PacketUpdateForSaleSign(int x, int y, int z, long priceField, int billingDurationField, boolean forRent, boolean allowBreaking, boolean allowPlacing, boolean allowInteracting)
         {
             this.x = x;
             this.y = y;
@@ -210,7 +215,7 @@ public class GuiZoneSell extends AbstractZoneGui {
             y = buf.readInt();
             z = buf.readInt();
             priceField = buf.readLong();
-            billingDurationField = buf.readLong();
+            billingDurationField = buf.readInt();
             forRent = buf.readBoolean();
             allowBreaking = buf.readBoolean();
             allowPlacing = buf.readBoolean();
@@ -224,7 +229,7 @@ public class GuiZoneSell extends AbstractZoneGui {
             buf.writeInt(y);
             buf.writeInt(z);
             buf.writeLong(priceField);
-            buf.writeLong(billingDurationField);
+            buf.writeInt(billingDurationField);
             buf.writeBoolean(forRent);
             buf.writeBoolean(allowBreaking);
             buf.writeBoolean(allowPlacing);

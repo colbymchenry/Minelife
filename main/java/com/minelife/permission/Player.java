@@ -50,10 +50,7 @@ public class Player {
             return false;
         }
 
-        MinecraftServer mcServer = FMLCommonHandler.instance().getMinecraftServerInstance();
-
-        UserListEntry userlistops = mcServer.getConfigurationManager().func_152603_m().func_152683_b(gameProfile);
-        if (userlistops != null) return true;
+        if(isOp()) return true;
 
         // the - + permission checks for permissions to exclude from inheritance
         if (g == null) return false;
@@ -186,5 +183,12 @@ public class Player {
             return String.valueOf(object.get("suffix")).replaceAll("&", String.valueOf('\u00a7'));
 
         return null;
+    }
+
+    public boolean isOp() {
+        MinecraftServer mcServer = FMLCommonHandler.instance().getMinecraftServerInstance();
+
+        UserListEntry userlistops = mcServer.getConfigurationManager().func_152603_m().func_152683_b(gameProfile);
+        return userlistops != null;
     }
 }

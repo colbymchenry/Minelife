@@ -162,9 +162,7 @@ public class GuiZoneMembers extends AbstractZoneGui {
 
     }
 
-    // TODO: Add way to delete zone
-    // TODO: Add functionality for "View Bounds" in GuiInfo
-    // TODO: don't allow managers to delete the zone
+
     public static class PacketModifyMembers implements IMessage {
 
         private String player;

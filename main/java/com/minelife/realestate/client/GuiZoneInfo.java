@@ -2,8 +2,10 @@ package com.minelife.realestate.client;
 
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
+import com.minelife.permission.ModPermission;
 import com.minelife.realestate.Zone;
 import com.minelife.realestate.ZonePermission;
+import com.minelife.region.server.Region;
 import com.minelife.util.client.GuiScrollableContent;
 import com.minelife.util.client.GuiTickBox;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -22,6 +24,8 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 import org.lwjgl.input.Mouse;
 
+import java.sql.SQLException;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class GuiZoneInfo extends AbstractZoneGui {
@@ -73,11 +77,12 @@ public class GuiZoneInfo extends AbstractZoneGui {
     {
     }
 
+    // TODO: Add functionality for "View Bounds" in GuiInfo
     private class Content extends GuiScrollableContent {
 
         private GuiTextField introField, outroField;
         private GuiTickBox allowPlacement, allowBreaking, allowInteracting;
-        private CustomZoneBtn saveBtn, membersBtn, boundsBtn;
+        private CustomZoneBtn saveBtn, membersBtn, boundsBtn, deleteBtn;
 
         public Content(int xPosition, int yPosition, int width, int height)
         {
@@ -96,9 +101,11 @@ public class GuiZoneInfo extends AbstractZoneGui {
             this.allowBreaking = new GuiTickBox(mc, tickboxPosX, this.allowPlacement.yPosition + 30, zone.canPublic(ZonePermission.BREAK));
             this.allowInteracting = new GuiTickBox(mc, tickboxPosX, this.allowBreaking.yPosition + 30, zone.canPublic(ZonePermission.INTERACT));
 
-            this.saveBtn = new CustomZoneBtn(0, calcX(mc.fontRenderer.getStringWidth("Save") + 15) - this.xPosition, getObjectHeight(0) - 30, mc.fontRenderer.getStringWidth("Save") + 20, 20, "Save");
+            this.saveBtn = new CustomZoneBtn(0, 10, getObjectHeight(0) - 30, mc.fontRenderer.getStringWidth("Save") + 20, 20, "Save");
             this.membersBtn = new CustomZoneBtn(0, this.bounds.getWidth() - 75, this.allowInteracting.yPosition + 50, mc.fontRenderer.getStringWidth("Members") + 20, 20, "Members");
             this.boundsBtn = new CustomZoneBtn(0, 10, this.membersBtn.yPosition, mc.fontRenderer.getStringWidth("View Bounds") + 20, 20, "View Bounds");
+            this.deleteBtn = new CustomZoneBtn(0, this.bounds.getWidth() - 75, this.saveBtn.yPosition, mc.fontRenderer.getStringWidth("Delete") + 20, 20, "Delete");
+            this.deleteBtn.enabled = zone.getOwner().equals(Minecraft.getMinecraft().thePlayer.getUniqueID());
 
             this.introField.setEnabled(zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
             this.outroField.setEnabled(zone.hasManagerAuthority(Minecraft.getMinecraft().thePlayer));
@@ -132,6 +139,7 @@ public class GuiZoneInfo extends AbstractZoneGui {
             this.saveBtn.drawButton(mc, mouseX, mouseY);
             this.membersBtn.drawButton(mc, mouseX, mouseY);
             this.boundsBtn.drawButton(mc, mouseX, mouseY);
+            this.deleteBtn.drawButton(mc, mouseX, mouseY);
         }
 
         @Override
@@ -158,6 +166,10 @@ public class GuiZoneInfo extends AbstractZoneGui {
             if (this.saveBtn.mousePressed(mc, mouseX, mouseY)) {
                 Minelife.NETWORK.sendToServer(new PacketModifyZone(this.introField.getText(), this.outroField.getText(),
                         this.allowPlacement.isChecked(), this.allowBreaking.isChecked(), this.allowInteracting.isChecked()));
+            }
+
+            if(this.deleteBtn.mousePressed(mc, mouseX, mouseY)) {
+                Minelife.NETWORK.sendToServer(new PacketDeleteZone(zone.getUniqueID()));
             }
         }
 
@@ -254,6 +266,57 @@ public class GuiZoneInfo extends AbstractZoneGui {
             }
 
         }
+    }
+
+    public static class PacketDeleteZone implements IMessage {
+
+        private UUID zoneUniqueID;
+
+        public PacketDeleteZone()
+        {
+        }
+
+        public PacketDeleteZone(UUID zoneUniqueID)
+        {
+            this.zoneUniqueID = zoneUniqueID;
+        }
+
+        @Override
+        public void fromBytes(ByteBuf buf)
+        {
+          zoneUniqueID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+        }
+
+        @Override
+        public void toBytes(ByteBuf buf)
+        {
+            ByteBufUtils.writeUTF8String(buf, zoneUniqueID.toString());
+        }
+
+        public static class Handler implements IMessageHandler<PacketDeleteZone, IMessage> {
+
+            @SideOnly(Side.SERVER)
+            public IMessage onMessage(PacketDeleteZone message, MessageContext ctx)
+            {
+                EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+                Zone zone = Zone.getZone(Region.getRegionFromUUID(message.zoneUniqueID));
+                if(zone != null) {
+                    if(!zone.getOwner().equals(player.getUniqueID()) && ModPermission.get(player.getUniqueID()).isOp()) {
+                        player.addChatComponentMessage(new ChatComponentText("Only the owner can delete the zone."));
+                        return null;
+                    }
+                    try {
+                        Zone.deleteZone(zone.getUniqueID());
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        Minelife.getLogger().log(Level.SEVERE, "", e);
+                        player.addChatComponentMessage(new ChatComponentText(Minelife.default_error_message));
+                    }
+                }
+                return null;
+            }
+        }
+
     }
 
 }

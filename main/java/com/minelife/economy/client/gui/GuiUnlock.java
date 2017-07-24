@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiButton;
 
 public class GuiUnlock extends GuiATM {
 
-    protected String pin = "";
+    public String pin = "";
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {

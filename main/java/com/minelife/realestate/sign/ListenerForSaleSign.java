@@ -60,10 +60,4 @@ public class ListenerForSaleSign {
             GuiZoneSell.PacketOpenGuiZoneSell.openFromServer(tileEntityForSaleSign, (EntityPlayerMP) player);
     }
 
-    @SubscribeEvent
-    public void onBlockBreak(BlockEvent.BreakEvent event)
-    {
-        // TODO: Nothing
-    }
-
 }

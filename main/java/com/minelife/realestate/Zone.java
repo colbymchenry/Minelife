@@ -3,6 +3,7 @@ package com.minelife.realestate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
+import com.minelife.economy.Billing;
 import com.minelife.realestate.sign.TileEntityForSaleSign;
 import com.minelife.region.server.Region;
 import com.minelife.util.ArrayUtil;
@@ -137,7 +138,6 @@ public class Zone implements Comparable<Zone> {
         if(getOwner().equals(player.getUniqueID()) || (getMember(player) != null && getMember(player).canMember(permission)))
             return true;
 
-        // TODO: Test this shit
         if(getForSaleSign(Side.SERVER) != null) {
             TileEntityForSaleSign forSaleSign = getForSaleSign(Side.SERVER);
             return (forSaleSign.getRenter() != null && forSaleSign.getRenter().equals(player.getUniqueID())) || (forSaleSign.getMember(player) != null && forSaleSign.getMember(player).canMember(permission));
@@ -263,8 +263,9 @@ public class Zone implements Comparable<Zone> {
     {
         Minelife.SQLITE.query("DELETE FROM RealEstate_Zones WHERE region='" + regionUniqueID.toString() + "'");
         Zone toRemove = ZONES.stream().filter(zone -> zone.getRegion().getUniqueID().equals(regionUniqueID)).findFirst().orElse(null);
-        if (toRemove != null)
+        if (toRemove != null) {
             ZONES.remove(toRemove);
+        }
         Region.delete(regionUniqueID);
     }
 

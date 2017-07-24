@@ -2,10 +2,7 @@ package com.minelife.realestate;
 
 import com.minelife.CommonProxy;
 import com.minelife.AbstractMod;
-import com.minelife.realestate.client.GuiZoneInfo;
-import com.minelife.realestate.client.GuiZoneMembers;
-import com.minelife.realestate.client.GuiZonePurchase;
-import com.minelife.realestate.client.GuiZoneSell;
+import com.minelife.realestate.client.*;
 import com.minelife.realestate.server.CommandClaim;
 import com.minelife.realestate.sign.BlockForSaleSign;
 import com.minelife.realestate.sign.ItemForSaleSign;
@@ -39,6 +36,8 @@ public class ModRealEstate extends AbstractMod {
         registerPacket(GuiZoneSell.PacketUpdateForSaleSign.Handler.class, GuiZoneSell.PacketUpdateForSaleSign.class, Side.SERVER);
         registerPacket(GuiZonePurchase.PacketPurchaseZone.Handler.class, GuiZonePurchase.PacketPurchaseZone.class, Side.SERVER);
         registerPacket(GuiZonePurchase.PacketOpenGuiZonePurchase.Handler.class, GuiZonePurchase.PacketOpenGuiZonePurchase.class, Side.CLIENT);
+        registerPacket(GuiZoneInfo.PacketDeleteZone.Handler.class, GuiZoneInfo.PacketDeleteZone.class, Side.SERVER);
+        registerPacket(GuiLandlordInfoPanel.PacketOpenGui.Handler.class, GuiLandlordInfoPanel.PacketOpenGui.class, Side.CLIENT);
 
         GameRegistry.registerItem(ItemForSaleSign.getItem(), "ForSaleSign");
         GameRegistry.registerTileEntity(TileEntityForSaleSign.class, "ForSaleSign");

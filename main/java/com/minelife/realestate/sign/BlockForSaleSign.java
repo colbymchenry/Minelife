@@ -1,7 +1,10 @@
 package com.minelife.realestate.sign;
 
+import com.minelife.economy.Billing;
 import com.minelife.realestate.Zone;
+import com.minelife.realestate.client.GuiLandlordInfoPanel;
 import com.minelife.realestate.client.GuiZonePurchase;
+import com.minelife.realestate.client.GuiZoneSell;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -11,6 +14,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.event.world.BlockEvent;
@@ -27,12 +31,14 @@ public class BlockForSaleSign extends BlockSign {
         this.setBlockUnbreakable();
     }
 
-    public static BlockForSaleSign getBlock(boolean standing) {
-        if(standing) {
-            if(BlockForSaleSign.standing == null) BlockForSaleSign.standing = new BlockForSaleSign(true);
+    // TODO: Don't allow renter to break it
+    public static BlockForSaleSign getBlock(boolean standing)
+    {
+        if (standing) {
+            if (BlockForSaleSign.standing == null) BlockForSaleSign.standing = new BlockForSaleSign(true);
             return BlockForSaleSign.standing;
         } else {
-            if(BlockForSaleSign.wall_mounted == null) BlockForSaleSign.wall_mounted = new BlockForSaleSign(false);
+            if (BlockForSaleSign.wall_mounted == null) BlockForSaleSign.wall_mounted = new BlockForSaleSign(false);
             return BlockForSaleSign.wall_mounted;
         }
     }
@@ -46,20 +52,34 @@ public class BlockForSaleSign extends BlockSign {
     @Override
     public boolean canPlaceBlockAt(World world, int x, int y, int z)
     {
-        if(world.isRemote) return true;
+        if (world.isRemote) return true;
         Zone zone = Zone.getZone(world, Vec3.createVectorHelper(x, y, z));
-        if(zone == null) return false;
-        if(zone.hasForSaleSign(Side.SERVER)) return false;
+        if (zone == null) return false;
+        if (zone.hasForSaleSign(Side.SERVER)) return false;
         return true;
     }
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float f, float f1, float f2)
     {
-        if(world.isRemote) return true;
+        if (world.isRemote) return true;
         TileEntityForSaleSign forSaleSign = (TileEntityForSaleSign) world.getTileEntity(x, y, z);
-        if(forSaleSign.isOccupied()) return false;
-        GuiZonePurchase.PacketOpenGuiZonePurchase.openFromServer(forSaleSign, (EntityPlayerMP) player);
+        Zone zone = Zone.getZone(world, Vec3.createVectorHelper(x, y, z));
+
+        if (forSaleSign.isOccupied()) {
+            if (zone != null && zone.getOwner() != null && zone.getOwner().equals(player.getUniqueID())) {
+                GuiLandlordInfoPanel.PacketOpenGui.openFromServer((EntityPlayerMP) player, x, y, z);
+            } else {
+                player.addChatComponentMessage(new ChatComponentText("You must be the owner to modify this zone lease."));
+            }
+        } else {
+            if (zone != null && zone.getOwner() != null && zone.getOwner().equals(player.getUniqueID())) {
+                GuiZoneSell.PacketOpenGuiZoneSell.openFromServer(forSaleSign, (EntityPlayerMP) player);
+            } else {
+                GuiZonePurchase.PacketOpenGuiZonePurchase.openFromServer(forSaleSign, (EntityPlayerMP) player);
+            }
+        }
+
         return super.onBlockActivated(world, x, y, z, player, side, f, f1, f2);
     }
 

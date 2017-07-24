@@ -1,6 +1,8 @@
 package com.minelife.economy.packet;
 
 import com.minelife.economy.client.gui.GuiATM;
+import com.minelife.economy.client.gui.GuiBillPay;
+import com.minelife.economy.client.gui.GuiUnlock;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -37,7 +39,17 @@ public class PacketUpdateATMGui implements IMessage {
         public IMessage onMessage(PacketUpdateATMGui message, MessageContext ctx) {
             if (Minecraft.getMinecraft().currentScreen instanceof GuiATM) {
                 GuiATM guiATM = (GuiATM) Minecraft.getMinecraft().currentScreen;
+
+                if(message.message.equalsIgnoreCase("billpay.success")) {
+                    Minecraft.getMinecraft().displayGuiScreen(new GuiBillPay());
+                    return null;
+                }
+
                 guiATM.setStatusMessage(message.message);
+
+                if(message.message.equalsIgnoreCase("Incorrect pin.")) {
+                    ((GuiUnlock) guiATM).pin = "";
+                }
             }
             return null;
         }

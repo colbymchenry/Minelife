@@ -4,6 +4,8 @@ import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.economy.Billing;
 import com.minelife.economy.ModEconomy;
+import com.minelife.realestate.Zone;
+import com.minelife.realestate.ZoneBillHandler;
 import com.minelife.realestate.sign.TileEntityForSaleSign;
 import com.minelife.util.NumberConversions;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -14,7 +16,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.Vec3;
 
 import java.util.logging.Level;
 
@@ -35,18 +39,22 @@ public class GuiZonePurchase extends AbstractZoneGui {
     {
         super.drawScreen(mouseX, mouseY, f);
         this.drawBackground();
-        String price = "Price: $" + NumberConversions.formatter.format(forSaleSign.getPrice());
-        String billingDuration = "Billed every " + forSaleSign.getBillingPeriod() + " days.";
 
+        if(forSaleSign.isRentable()) {
+            String billingDuration = "Billed every " + forSaleSign.getBillingPeriod() + " days.";
+            fontRendererObj.drawString(billingDuration, calcX(fontRendererObj.getStringWidth(billingDuration)), yPosition + 40, 0xFFFFFF);
+        }
+
+        String price = "Price: $" + NumberConversions.formatter.format(forSaleSign.getPrice());
         fontRendererObj.drawString(price, calcX(fontRendererObj.getStringWidth(price)), yPosition + 20, 0xFFFFFF);
-        fontRendererObj.drawString(billingDuration, calcX(fontRendererObj.getStringWidth(billingDuration)), yPosition + 40, 0xFFFFFF);
+
 
         fontRendererObj.drawString("Allow Breaking", xPosition + 5, yPosition + 60, 0xFFFFFF);
         fontRendererObj.drawString("Allow Placing", xPosition + 5, yPosition + 80, 0xFFFFFF);
         fontRendererObj.drawString("Allow Interacting", xPosition + 5, yPosition + 100, 0xFFFFFF);
-        fontRendererObj.drawString(forSaleSign.isAllowBreaking() ? "Yes" : "No", xPosition + bgWidth - 15, yPosition + 60, 0xFFFFFF);
-        fontRendererObj.drawString(forSaleSign.isAllowPlacing() ? "Yes" : "No", xPosition + bgWidth - 15, yPosition + 80, 0xFFFFFF);
-        fontRendererObj.drawString(forSaleSign.isAllowInteracting() ? "Yes" : "No", xPosition + bgWidth - 15, yPosition + 100, 0xFFFFFF);
+        fontRendererObj.drawString(forSaleSign.isAllowBreaking() ? "Yes" : "No", xPosition + bgWidth - 20, yPosition + 60, 0xFFFFFF);
+        fontRendererObj.drawString(forSaleSign.isAllowPlacing() ? "Yes" : "No", xPosition + bgWidth - 20, yPosition + 80, 0xFFFFFF);
+        fontRendererObj.drawString(forSaleSign.isAllowInteracting() ? "Yes" : "No", xPosition + bgWidth - 20, yPosition + 100, 0xFFFFFF);
 
         purchaseBtn.drawButton(mc, mouseX, mouseY);
     }
@@ -112,6 +120,9 @@ public class GuiZonePurchase extends AbstractZoneGui {
                         throw new CustomMessageException("For sale sign not found.");
 
                     TileEntityForSaleSign forSaleSign = (TileEntityForSaleSign) player.worldObj.getTileEntity(message.signX, message.signY, message.signZ);
+                    Zone zone = Zone.getZone(forSaleSign.getWorldObj(), Vec3.createVectorHelper(forSaleSign.xCoord, forSaleSign.yCoord, forSaleSign.zCoord));
+
+                    if(zone == null) throw new CustomMessageException("Zone not found here.");
 
                     if(forSaleSign.isOccupied()) throw new CustomMessageException("This zone is already occupied.");
 
@@ -120,14 +131,17 @@ public class GuiZonePurchase extends AbstractZoneGui {
                     if(forSaleSign.isRentable()) {
                         forSaleSign.getMembers().clear();
                         forSaleSign.setRenter(player.getUniqueID());
+                        Billing.Bill bill = Billing.createBill(forSaleSign.getBillingPeriod(), forSaleSign.getPrice(), player, "Pay Rent for Zone", true, new ZoneBillHandler(zone.getUniqueID()));
+                        player.addChatComponentMessage(new ChatComponentText("You will be billed every " + forSaleSign.getBillingPeriod() + " days. You can manage your bills in the Bill Pay section at any ATM."));
+                        bill.getBillHandler().pay(bill, bill.getAmount());
+                        bill.setAmountDue(bill.getAmount());
                     } else {
                         // TODO: Purchasing
+                        ModEconomy.withdraw(player.getUniqueID(), forSaleSign.getPrice(), true);
+                        ModEconomy.deposit(zone.getOwner(), forSaleSign.getPrice(), true);
+                        player.addChatComponentMessage(new ChatComponentText("Zone purchased!"));
                     }
 
-                    Billing.createBill((int) forSaleSign.getBillingPeriod(), forSaleSign.getPrice(), player, "Pay Rent for Zone", true);
-                    ModEconomy.withdraw(player.getUniqueID(), forSaleSign.getPrice(), true);
-                    player.addChatComponentMessage(new ChatComponentText("Zone purchased!"));
-                    player.addChatComponentMessage(new ChatComponentText("You will be billed every " + forSaleSign.getBillingPeriod() + " days. You can manage your bills in the Bill Pay section at any ATM."));
                 } catch (Exception e) {
                     if (e instanceof CustomMessageException) {
                         player.addChatComponentMessage(new ChatComponentText(e.getMessage()));

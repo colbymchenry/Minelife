@@ -2,6 +2,7 @@ package com.minelife.realestate.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.opengl.GL11;
 
 public class CustomZoneBtn extends GuiButton {
@@ -27,6 +28,6 @@ public class CustomZoneBtn extends GuiButton {
         GL11.glColor4f(1, 1, 1, 1);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-        mc.fontRenderer.drawString(displayString, xPosition + ((width - mc.fontRenderer.getStringWidth(displayString)) / 2), yPosition + ((height - mc.fontRenderer.FONT_HEIGHT) / 2) + 1, 0xFFFFFF);
+        mc.fontRenderer.drawString(!enabled ? EnumChatFormatting.STRIKETHROUGH + displayString : displayString, xPosition + ((width - mc.fontRenderer.getStringWidth(displayString)) / 2), yPosition + ((height - mc.fontRenderer.FONT_HEIGHT) / 2) + 1, 0xFFFFFF);
     }
 }

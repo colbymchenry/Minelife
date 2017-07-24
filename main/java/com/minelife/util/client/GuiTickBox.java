@@ -54,4 +54,8 @@ public class GuiTickBox extends Gui {
         return value;
     }
 
+    public void setChecked(boolean value) {
+        this.value = value;
+    }
+
 }

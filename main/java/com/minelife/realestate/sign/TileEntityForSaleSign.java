@@ -1,6 +1,7 @@
 package com.minelife.realestate.sign;
 
 import com.google.common.collect.Lists;
+import com.minelife.economy.Billing;
 import com.minelife.realestate.Member;
 import com.minelife.realestate.Zone;
 import com.minelife.util.ListToString;
@@ -21,11 +22,11 @@ public class TileEntityForSaleSign extends TileEntity {
     private UUID renter;
     private boolean rentable;
     private long price;
-    private long billingPeriod;
+    private int billingPeriod;
     private boolean allowBreaking, allowPlacing, allowInteracting;
     private long timeSync = 0L;
 
-    // TODO: Billing, and to put the billing in the ATM, and what to do if the bill is not paid
+    // TODO: what to do if the bill is not paid (suspend all privileges)
 
     @Override
     public void writeToNBT(NBTTagCompound tagCompound)
@@ -34,7 +35,7 @@ public class TileEntityForSaleSign extends TileEntity {
         tagCompound.setString("renter", renter != null ? renter.toString() : "");
         tagCompound.setBoolean("rentable", rentable);
         tagCompound.setLong("price", price);
-        tagCompound.setLong("billingPeriod", billingPeriod);
+        tagCompound.setInteger("billingPeriod", billingPeriod);
         tagCompound.setBoolean("allowBreaking", allowBreaking);
         tagCompound.setBoolean("allowPlacing", allowPlacing);
         tagCompound.setBoolean("allowInteracting", allowInteracting);
@@ -59,7 +60,7 @@ public class TileEntityForSaleSign extends TileEntity {
         renter = !tagCompound.getString("renter").isEmpty() ? UUID.fromString(tagCompound.getString("renter")) : null;
         rentable = tagCompound.getBoolean("rentable");
         price = tagCompound.getLong("price");
-        billingPeriod = tagCompound.getLong("billingPeriod");
+        billingPeriod = tagCompound.getInteger("billingPeriod");
         allowBreaking = tagCompound.getBoolean("allowBreaking");
         allowPlacing = tagCompound.getBoolean("allowPlacing");
         allowInteracting = tagCompound.getBoolean("allowInteracting");
@@ -95,7 +96,7 @@ public class TileEntityForSaleSign extends TileEntity {
         sync();
     }
 
-    public void setBillingPeriod(long billingPeriod)
+    public void setBillingPeriod(int billingPeriod)
     {
         this.billingPeriod = billingPeriod;
         sync();
@@ -166,7 +167,7 @@ public class TileEntityForSaleSign extends TileEntity {
         return price;
     }
 
-    public long getBillingPeriod()
+    public int getBillingPeriod()
     {
         return billingPeriod;
     }
@@ -176,11 +177,13 @@ public class TileEntityForSaleSign extends TileEntity {
         return members;
     }
 
-    public Member getMember(EntityPlayer player) {
+    public Member getMember(EntityPlayer player)
+    {
         return members.stream().filter(member -> member.getUniqueID().equals(player.getUniqueID())).findFirst().orElse(null);
     }
 
-    public void sync() {
+    public void sync()
+    {
         this.markDirty();
         this.worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
     }

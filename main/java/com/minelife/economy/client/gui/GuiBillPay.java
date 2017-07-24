@@ -32,7 +32,7 @@ public class GuiBillPay extends GuiATM {
     private Content content;
     private List<Billing.Bill> billList;
 
-    GuiBillPay()
+    public GuiBillPay()
     {
         Minelife.NETWORK.sendToServer(new PacketRequestBills());
     }
@@ -176,16 +176,8 @@ public class GuiBillPay extends GuiATM {
                 return;
             }
 
-            if (NumberConversions.isInt("" + c)) {
-                if (NumberConversions.isLong(amount + c)) {
-                    if (Long.parseLong(amount + c) <= bill.getAmountDue() && Long.parseLong(amount + c) <= ModEconomy.BALANCE_BANK_CLIENT) {
-                        amount += c;
-                    } else if(Long.parseLong(amount + c) > bill.getAmountDue()){
-                        setStatusMessage("Exceeding amount.");
-                    } else {
-                        setStatusMessage("Funds needed in bank account.");
-                    }
-                }
+            if (NumberConversions.isInt("" + c) && NumberConversions.isLong(amount + c)) {
+                amount += c;
             }
         }
 
@@ -194,7 +186,7 @@ public class GuiBillPay extends GuiATM {
         {
             super.actionPerformed(btn);
 
-            if(btn.id == 1) {
+            if (btn.id == 1) {
                 Minecraft.getMinecraft().displayGuiScreen(new GuiBillPay());
                 return;
             }

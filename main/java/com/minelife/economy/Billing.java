@@ -2,6 +2,8 @@ package com.minelife.economy;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
+import com.minelife.economy.packet.PacketUpdateATMGui;
+import com.minelife.util.NBTUtil;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.PlayerHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -13,8 +15,8 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,24 +27,25 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class Billing {
 
-    public static Bill createBill(int days, long amount, UUID player, String memo, boolean autoPay) throws Exception
+    public static Bill createBill(int days, long amount, UUID player, String memo, boolean autoPay, BillHandler billHandler) throws Exception
     {
-        return new Bill(days, amount, player, memo, autoPay);
+        return new Bill(days, amount, player, memo, autoPay, billHandler);
     }
 
-    public static Bill createBill(int days, long amount, EntityPlayer player, String memo, boolean autoPay) throws Exception
+    public static Bill createBill(int days, long amount, EntityPlayer player, String memo, boolean autoPay, BillHandler billHandler) throws Exception
     {
-        return Billing.createBill(days, amount, player.getUniqueID(), memo, autoPay);
+        return Billing.createBill(days, amount, player.getUniqueID(), memo, autoPay, billHandler);
     }
 
     public static Bill getBill(UUID uuid)
     {
         try {
             return new Bill(uuid);
-        } catch (SQLException | ParseException e) {
+        } catch (SQLException | ParseException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
@@ -58,6 +61,19 @@ public class Billing {
             e.printStackTrace();
         }
         return billList;
+    }
+
+    public static void deleteBill(UUID uuid)
+    {
+        try {
+            Bill bill = getBill(uuid);
+            if (bill != null && bill.billHandler != null) {
+                bill.billHandler.delete();
+            }
+            Minelife.SQLITE.query("DELETE FROM Economy_Bills WHERE uuid='" + uuid.toString() + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -80,12 +96,13 @@ public class Billing {
         private long amount, amountDue;
         private int days;
         private String memo;
+        private BillHandler billHandler;
 
         private Bill()
         {
         }
 
-        private Bill(UUID uuid) throws SQLException, ParseException
+        private Bill(UUID uuid) throws SQLException, ParseException, ClassNotFoundException, IllegalAccessException, InstantiationException
         {
             ResultSet result = Minelife.SQLITE.query("SELECT * FROM Economy_Bills WHERE uuid='" + uuid.toString() + "'");
             if (!result.next()) throw new SQLException("Not found.");
@@ -98,14 +115,18 @@ public class Billing {
             this.memo = result.getString("memo");
             this.amountDue = result.getLong("amountDue");
             this.autoPay = result.getBoolean("autoPay");
+            this.billHandler = (BillHandler) Class.forName(result.getString("handler")).newInstance();
+            this.billHandler.bill = this;
+            this.billHandler.readFromNBT(NBTUtil.fromString(result.getString("tagCompound")));
         }
 
-        private Bill(int days, long amount, UUID player, String memo, boolean autoPay) throws Exception
+        private Bill(int days, long amount, UUID player, String memo, boolean autoPay, BillHandler billHandler) throws Exception
         {
             if (days <= 0) throw new Exception("Days cannot be less than 1.");
             if (amount <= 0) throw new Exception("Amount cannot be less than 1.");
             if (player == null) throw new Exception("Player cannot be null.");
             if (memo == null || memo.isEmpty()) throw new Exception("Must have a memo.");
+            if (billHandler == null) throw new Exception("Must have a handler.");
 
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DATE, days);
@@ -116,9 +137,18 @@ public class Billing {
             this.memo = memo;
             this.amountDue = amount;
             this.autoPay = autoPay;
+            this.billHandler = billHandler;
+            this.billHandler.bill = this;
+            this.billHandler.tagCompound = new NBTTagCompound();
+            this.billHandler.writeToNBT(this.billHandler.tagCompound);
 
-            Minelife.SQLITE.query("INSERT INTO Economy_Bills (uuid, dueDate, days, amount, amountDue, player, memo, autoPay) VALUES ('" + UUID.randomUUID().toString() + "', " +
-                    "'" + df.format(this.dueDate) + "', '" + days + "', '" + this.amount + "', '" + amountDue + "', '" + player.toString() + "', '" + memo + "', '" + (autoPay ? 1 : 0) + "')");
+            Minelife.SQLITE.query("INSERT INTO Economy_Bills (uuid, dueDate, days, amount, amountDue, player, memo, autoPay, handler, tagCompound) VALUES ('" + UUID.randomUUID().toString() + "', " +
+                    "'" + df.format(this.dueDate) + "', '" + days + "', '" + this.amount + "', '" + amountDue + "', '" + player.toString() + "', '" + memo + "', '" + (autoPay ? 1 : 0) + "', '" + billHandler.getClass().getName() + "', '" + this.billHandler.tagCompound.toString() + "')");
+        }
+
+        public BillHandler getBillHandler()
+        {
+            return billHandler;
         }
 
         public UUID getUniqueID()
@@ -216,12 +246,6 @@ public class Billing {
             writeToDB();
         }
 
-        public void pay(long amount)
-        {
-            this.amountDue -= amount;
-            writeToDB();
-        }
-
         public String getDueDateAsString()
         {
             return df.format(this.dueDate);
@@ -230,7 +254,13 @@ public class Billing {
         public void writeToDB()
         {
             try {
-                Minelife.SQLITE.query("UPDATE Economy_Bills SET dueDate='" + df.format(this.dueDate) + "', days='" + days + "', amount='" + amount + "', amountDue='" + amountDue + "', player='" + player.toString() + "', memo='" + memo + "', autoPay='" + (autoPay ? 1 : 0) + "' WHERE uuid='" + uuid.toString() + "'");
+                this.billHandler.tagCompound = new NBTTagCompound();
+                this.billHandler.writeToNBT(this.billHandler.tagCompound);
+                Minelife.SQLITE.query("UPDATE Economy_Bills SET dueDate='" + df.format(this.dueDate) + "', " +
+                        "days='" + days + "', amount='" + amount + "', amountDue='" + amountDue + "', " +
+                        "player='" + player.toString() + "', memo='" + memo + "', autoPay='" + (autoPay ? 1 : 0) + "', " +
+                        "handler='" + billHandler.getClass().getName() + "', " +
+                        "tagCompound='" + this.billHandler.tagCompound.toString() + "' WHERE uuid='" + uuid.toString() + "'");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -280,28 +310,22 @@ public class Billing {
 
                 try {
                     ResultSet result = Minelife.SQLITE.query("SELECT * FROM Economy_Bills");
-                    Date dueDate;
                     while (result.next()) {
                         try {
-                            dueDate = Bill.df.parse(result.getString("dueDate"));
-                            if (Calendar.getInstance().getTime().after(dueDate)) {
-                                Bill bill = Billing.getBill(UUID.fromString(result.getString("uuid")));
-                                bill.setAmountDue(bill.getAmountDue() + bill.getAmount());
-                                if (bill.autoPay) {
-                                    if (ModEconomy.getBalance(bill.getPlayer(), false) >= bill.amount) {
-                                        bill.pay(bill.getAmount());
-                                        ModEconomy.withdraw(bill.getPlayer(), bill.getAmount(), false);
-                                        EconomyNotification notification = new EconomyNotification(bill.getPlayer(), "Bill paid: $" + NumberConversions.formatter.format(bill.getAmount()));
-                                        if (PlayerHelper.getPlayer(bill.getPlayer()) != null)
-                                            notification.sendTo(PlayerHelper.getPlayer(bill.getPlayer()));
-                                        else
-                                            notification.writeToDB();
+                            Bill bill = Billing.getBill(UUID.fromString(result.getString("uuid")));
+                            if (bill != null) {
+                                bill.billHandler.update();
+                                if (bill.isDue()) {
+                                    bill.setAmountDue(bill.getAmountDue() + bill.getAmount());
+                                    if (bill.isAutoPay()) {
+                                        bill.billHandler.pay(bill, bill.getAmount());
                                     }
+                                    bill.incrementDueDate();
                                 }
-                                bill.incrementDueDate();
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            Minelife.getLogger().log(Level.SEVERE, "", e);
                         }
                     }
                 } catch (SQLException e) {
@@ -389,12 +413,11 @@ public class Billing {
 
                 if (bill != null) {
                     try {
-                        if (message.amount > bill.getAmountDue()) {
-                            bill.pay(bill.getAmountDue());
-                            ModEconomy.withdraw(ctx.getServerHandler().playerEntity.getUniqueID(), bill.getAmountDue(), false);
+                        if (message.amount <= ModEconomy.getBalance(ctx.getServerHandler().playerEntity.getUniqueID(), false)) {
+                            bill.billHandler.pay(bill, message.amount);
+                            Minelife.NETWORK.sendTo(new PacketUpdateATMGui("billpay.success"), ctx.getServerHandler().playerEntity);
                         } else {
-                            bill.pay(message.amount);
-                            ModEconomy.withdraw(ctx.getServerHandler().playerEntity.getUniqueID(), message.amount, false);
+                            Minelife.NETWORK.sendTo(new PacketUpdateATMGui("Insufficient funds."), ctx.getServerHandler().playerEntity);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
