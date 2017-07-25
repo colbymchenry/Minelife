@@ -141,9 +141,10 @@ public class Billing {
             this.billHandler.bill = this;
             this.billHandler.tagCompound = new NBTTagCompound();
             this.billHandler.writeToNBT(this.billHandler.tagCompound);
+            this.uuid = UUID.randomUUID();
 
-            Minelife.SQLITE.query("INSERT INTO Economy_Bills (uuid, dueDate, days, amount, amountDue, player, memo, autoPay, handler, tagCompound) VALUES ('" + UUID.randomUUID().toString() + "', " +
-                    "'" + df.format(this.dueDate) + "', '" + days + "', '" + this.amount + "', '" + amountDue + "', '" + player.toString() + "', '" + memo + "', '" + (autoPay ? 1 : 0) + "', '" + billHandler.getClass().getName() + "', '" + this.billHandler.tagCompound.toString() + "')");
+            Minelife.SQLITE.query("INSERT INTO Economy_Bills (uuid, dueDate, days, amount, amountDue, player, memo, autoPay, handler, tagCompound) VALUES ('" + this.uuid.toString() + "', " +
+                    "'" + df.format(this.dueDate) + "', '" + this.days + "', '" + this.amount + "', '" + this.amountDue + "', '" + this.player.toString() + "', '" + this.memo + "', '" + (this.autoPay ? 1 : 0) + "', '" + this.billHandler.getClass().getName() + "', '" + this.billHandler.tagCompound.toString() + "')");
         }
 
         public BillHandler getBillHandler()

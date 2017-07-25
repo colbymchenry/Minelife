@@ -25,14 +25,22 @@ public class TileEntityForSaleSign extends TileEntity {
     private int billingPeriod;
     private boolean allowBreaking, allowPlacing, allowInteracting;
     private long timeSync = 0L;
+    private UUID uniqueID;
 
     // TODO: what to do if the bill is not paid (suspend all privileges)
+
+
+    public TileEntityForSaleSign()
+    {
+        uniqueID = UUID.randomUUID();
+    }
 
     @Override
     public void writeToNBT(NBTTagCompound tagCompound)
     {
         super.writeToNBT(tagCompound);
         tagCompound.setString("renter", renter != null ? renter.toString() : "");
+        tagCompound.setString("uniqueID", uniqueID != null ? uniqueID.toString() : "");
         tagCompound.setBoolean("rentable", rentable);
         tagCompound.setLong("price", price);
         tagCompound.setInteger("billingPeriod", billingPeriod);
@@ -58,6 +66,7 @@ public class TileEntityForSaleSign extends TileEntity {
     {
         super.readFromNBT(tagCompound);
         renter = !tagCompound.getString("renter").isEmpty() ? UUID.fromString(tagCompound.getString("renter")) : null;
+        uniqueID = !tagCompound.getString("uniqueID").isEmpty() ? UUID.fromString(tagCompound.getString("uniqueID")) : null;
         rentable = tagCompound.getBoolean("rentable");
         price = tagCompound.getLong("price");
         billingPeriod = tagCompound.getInteger("billingPeriod");
@@ -88,6 +97,11 @@ public class TileEntityForSaleSign extends TileEntity {
         NBTTagCompound tagCompound = new NBTTagCompound();
         writeToNBT(tagCompound);
         return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+    }
+
+    public UUID getUniqueID()
+    {
+        return uniqueID;
     }
 
     public void setRentable(boolean rentable)

@@ -20,15 +20,19 @@ public abstract class AbstractNotification {
     protected UUID playerUniqueID;
     public NBTTagCompound tagCompound = new NBTTagCompound();
 
-    public AbstractNotification()
+    public AbstractNotification() {}
+
+    public AbstractNotification(UUID playerUniqueID)
     {
         this.uniqueID = UUID.randomUUID();
+        this.playerUniqueID = playerUniqueID;
     }
 
-    public AbstractNotification(UUID uniqueID) throws SQLException
+    public AbstractNotification(UUID uniqueID, UUID playerUniqueID) throws SQLException
     {
         this.uniqueID = uniqueID;
-        ResultSet result = Minelife.SQLITE.query("SELECT * FROM notifications WHERE uuid='" + uniqueID.toString() + "'");
+        this.playerUniqueID = playerUniqueID;
+        ResultSet result = Minelife.SQLITE.query("SELECT * FROM notifications WHERE uuid='" + uniqueID.toString() + "' AND player='" + playerUniqueID.toString() + "'");
         if(result.next()) {
             this.playerUniqueID = UUID.fromString(result.getString("player"));
             writeToNBT(tagCompound);

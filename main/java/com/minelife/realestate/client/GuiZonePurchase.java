@@ -73,7 +73,7 @@ public class GuiZonePurchase extends AbstractZoneGui {
     {
         super.initGui();
         purchaseBtn = new CustomZoneBtn(0, calcX(75), this.yPosition + bgHeight - 30, 75, 20, "Purchase");
-        purchaseBtn.enabled = ModEconomy.BALANCE_WALLET_CLIENT >= forSaleSign.getPrice();
+        purchaseBtn.enabled = ModEconomy.BALANCE_BANK_CLIENT >= forSaleSign.getPrice();
     }
 
     public static class PacketPurchaseZone implements IMessage {
@@ -126,19 +126,19 @@ public class GuiZonePurchase extends AbstractZoneGui {
 
                     if(forSaleSign.isOccupied()) throw new CustomMessageException("This zone is already occupied.");
 
-                    if(ModEconomy.getBalance(player.getUniqueID(), true) < forSaleSign.getPrice()) throw new CustomMessageException("Insufficient funds.");
+                    if(ModEconomy.getBalance(player.getUniqueID(), false) < forSaleSign.getPrice()) throw new CustomMessageException("Insufficient funds.");
 
                     if(forSaleSign.isRentable()) {
                         forSaleSign.getMembers().clear();
                         forSaleSign.setRenter(player.getUniqueID());
-                        Billing.Bill bill = Billing.createBill(forSaleSign.getBillingPeriod(), forSaleSign.getPrice(), player, "Pay Rent for Zone", true, new ZoneBillHandler(zone.getUniqueID()));
-                        player.addChatComponentMessage(new ChatComponentText("You will be billed every " + forSaleSign.getBillingPeriod() + " days. You can manage your bills in the Bill Pay section at any ATM."));
+                        Billing.Bill bill = Billing.createBill(forSaleSign.getBillingPeriod(), forSaleSign.getPrice(), player, "Pay Rent for Zone", true, new ZoneBillHandler(zone.getUniqueID(), forSaleSign.getUniqueID()));
                         bill.getBillHandler().pay(bill, bill.getAmount());
                         bill.setAmountDue(bill.getAmount());
+                        player.addChatComponentMessage(new ChatComponentText("You will be billed every " + forSaleSign.getBillingPeriod() + " days. You can manage your bills in the Bill Pay section at any ATM."));
                     } else {
                         // TODO: Purchasing
-                        ModEconomy.withdraw(player.getUniqueID(), forSaleSign.getPrice(), true);
-                        ModEconomy.deposit(zone.getOwner(), forSaleSign.getPrice(), true);
+                        ModEconomy.withdraw(player.getUniqueID(), forSaleSign.getPrice(), false);
+                        ModEconomy.deposit(zone.getOwner(), forSaleSign.getPrice(), false);
                         player.addChatComponentMessage(new ChatComponentText("Zone purchased!"));
                     }
 

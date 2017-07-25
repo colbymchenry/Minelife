@@ -1,6 +1,8 @@
 package com.minelife.notification;
 
+import com.minelife.Minelife;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.achievement.GuiAchievement;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
@@ -21,7 +23,8 @@ public class NotificationOverlay {
     @SubscribeEvent
     public void onRenderGameOverlay(RenderGameOverlayEvent event)
     {
-        if(event.type != RenderGameOverlayEvent.ElementType.CROSSHAIRS) return;
+        // TODO: Notification doesn't appear to animate down. Just snaps in down and animates up
+        if (event.type != RenderGameOverlayEvent.ElementType.CROSSHAIRS) return;
 
         boolean new_notification = currentNotification == null;
 
@@ -31,11 +34,13 @@ public class NotificationOverlay {
         if (currentNotification == null) return;
 
         // new notification is appearing, so set it up
-        if(new_notification) {
+        if (new_notification) {
             notificationY = -1 * currentNotification.getHeight();
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.SECOND, 5);
             nextQueTime = calendar.getTime();
+            if (currentNotification.getSound() != null)
+                Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + currentNotification.getSound(), 0.5F, 1.0F);
         }
 
         int notificationX = event.resolution.getScaledWidth() - (currentNotification.getWidth() + 1);
@@ -49,7 +54,7 @@ public class NotificationOverlay {
             // that way we animate back out of the screen
             notificationY -= timePassed * speedY;
 
-            if(notificationY < (currentNotification.getHeight() + 80) * -1) {
+            if (notificationY < (currentNotification.getHeight() + 80) * -1) {
                 NOTIFICATION_QUE.remove(currentNotification);
                 currentNotification = null;
                 return;

@@ -39,6 +39,8 @@ public abstract class AbstractGuiNotification extends Gui implements Comparable<
         drawForeground();
     }
 
+    public String getSound() { return null; }
+
     protected abstract void drawForeground();
 
     protected abstract void onClick(int mouseX, int mouseY);

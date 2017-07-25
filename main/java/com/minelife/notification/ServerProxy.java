@@ -4,6 +4,7 @@ import com.minelife.CommonProxy;
 import com.minelife.Minelife;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.sql.SQLException;
 

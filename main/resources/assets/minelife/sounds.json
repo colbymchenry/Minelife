@@ -58,5 +58,9 @@
   "guns.DesertEagle.reload": {
     "category": "neutral",
     "sounds": ["minelife:guns/DesertEagle_RELOAD"]
+  },
+  "cha_ching": {
+    "category": "neutral",
+    "sounds": ["minelife:cha_ching"]
   }
 }
