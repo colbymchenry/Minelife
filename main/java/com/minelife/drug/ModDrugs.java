@@ -18,6 +18,7 @@ public class ModDrugs extends AbstractMod {
         GameRegistry.registerItem(ItemCannabisSeeds.instance(), "cannabis_seeds");
         GameRegistry.registerItem(ItemCannabisBuds.instance(), "cannabis_buds");
         GameRegistry.registerItem(ItemCannabisShredded.instance(), "shredded_cannabis");
+        GameRegistry.registerItem(ItemCocaLeafShredded.instance(), "shredded_coca_leaf");
         GameRegistry.registerBlock(BlockCocaPlant.instance(), "coca_plant");
         GameRegistry.registerBlock(BlockCannabisPlant.instance(), "cannabis_plant");
     }
