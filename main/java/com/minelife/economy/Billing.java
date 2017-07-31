@@ -46,6 +46,13 @@ public class Billing {
         try {
             return new Bill(uuid);
         } catch (SQLException | ParseException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+            if (e instanceof ClassNotFoundException) {
+                try {
+                    Minelife.SQLITE.query("DELETE FROM Economy_Bills WHERE uuid='" + uuid.toString() + "'");
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
             e.printStackTrace();
         }
         return null;

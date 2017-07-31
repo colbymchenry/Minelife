@@ -68,7 +68,7 @@ public abstract class ItemGunClient {
                         Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
                         shootBullet();
                         Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":guns." + gun.getName() + ".shot", 5F, 1.0F);
-                        PlayerHelper.getTarget(holder, 11);
+                        PlayerHelper.getTarget(holder, 11, "smoke");
                     }
                 }
             } else {
@@ -77,7 +77,7 @@ public abstract class ItemGunClient {
                     Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
                     shootBullet();
                     Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":guns." + gun.getName() + ".shot", 5F, 1.0F);
-                    PlayerHelper.getTarget(holder, 11);
+                    PlayerHelper.getTarget(holder, 11, "smoke");
                 }
             }
 

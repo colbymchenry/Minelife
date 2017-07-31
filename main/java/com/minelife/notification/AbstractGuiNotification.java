@@ -23,11 +23,11 @@ public abstract class AbstractGuiNotification extends Gui implements Comparable<
     protected FontRenderer fontRenderer;
     protected Minecraft mc;
 
-    private AbstractNotification abstractNotification;
+    protected AbstractNotification notification;
 
-    public AbstractGuiNotification(AbstractNotification abstractNotification)
+    public AbstractGuiNotification(AbstractNotification notification)
     {
-        this.abstractNotification = abstractNotification;
+        this.notification = notification;
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = mc.fontRenderer;
         notifications.add(this);
@@ -98,13 +98,13 @@ public abstract class AbstractGuiNotification extends Gui implements Comparable<
     @Override
     public int compareTo(AbstractGuiNotification o)
     {
-        return o.abstractNotification.getUniqueID().equals(abstractNotification.getUniqueID()) ? 0 : 1;
+        return o.notification.getUniqueID().equals(notification.getUniqueID()) ? 0 : 1;
     }
 
     @Override
     public boolean equals(Object obj)
     {
-        return (obj instanceof AbstractGuiNotification) && ((AbstractGuiNotification) obj).abstractNotification.getUniqueID().equals(abstractNotification.getUniqueID());
+        return (obj instanceof AbstractGuiNotification) && ((AbstractGuiNotification) obj).notification.getUniqueID().equals(notification.getUniqueID());
     }
 
     public static final AbstractGuiNotification getNotification(int index)

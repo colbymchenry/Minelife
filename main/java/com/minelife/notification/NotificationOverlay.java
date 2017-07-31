@@ -7,10 +7,7 @@ import net.minecraft.client.gui.achievement.GuiAchievement;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class NotificationOverlay {
 
@@ -23,7 +20,6 @@ public class NotificationOverlay {
     @SubscribeEvent
     public void onRenderGameOverlay(RenderGameOverlayEvent event)
     {
-        // TODO: Notification doesn't appear to animate down. Just snaps in down and animates up
         if (event.type != RenderGameOverlayEvent.ElementType.CROSSHAIRS) return;
 
         boolean new_notification = currentNotification == null;
@@ -39,6 +35,7 @@ public class NotificationOverlay {
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.SECOND, 5);
             nextQueTime = calendar.getTime();
+            timeOfLastFrame = System.nanoTime() / 1e9;
             if (currentNotification.getSound() != null)
                 Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + currentNotification.getSound(), 0.5F, 1.0F);
         }
@@ -55,7 +52,7 @@ public class NotificationOverlay {
             notificationY -= timePassed * speedY;
 
             if (notificationY < (currentNotification.getHeight() + 80) * -1) {
-                NOTIFICATION_QUE.remove(currentNotification);
+                NOTIFICATION_QUE.removeIf(abstractGuiNotification -> abstractGuiNotification.notification.uniqueID.equals(currentNotification.notification.uniqueID));
                 currentNotification = null;
                 return;
             }

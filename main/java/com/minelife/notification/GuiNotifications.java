@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class GuiNotifications extends GuiScreen {
@@ -88,7 +89,7 @@ public class GuiNotifications extends GuiScreen {
             notification.onClick(mouseX, mouseY);
 
             if (removeBtnList.get(index).mousePressed(mc, mouseX, mouseY)) {
-                AbstractGuiNotification.notifications.remove(notification);
+                AbstractGuiNotification.notifications.removeIf(abstractGuiNotification -> abstractGuiNotification.notification.uniqueID.equals(notification.notification.uniqueID));
             }
         }
 

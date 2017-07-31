@@ -81,6 +81,36 @@ public class Region implements Comparable<Region> {
         return Region.getContainingRegion(getWorldName(), getBounds());
     }
 
+    public List<Region> getContainingRegions() {
+        List<Region> containingRegions = Lists.newArrayList();
+        for (Region region : REGIONS) {
+            if(!region.getUniqueID().equals(getUniqueID()) && isVecInside(Vec3.createVectorHelper(region.bounds.minX, region.bounds.minY, region.bounds.minZ)) &&
+                    isVecInside(Vec3.createVectorHelper(region.bounds.maxX, region.bounds.maxY, region.bounds.maxZ)))
+                containingRegions.add(region);
+        }
+
+        List<Region> regionsInOrder = Lists.newArrayList();
+        double difference = 100;
+        Region r = null;
+        for(int i = 0; i < containingRegions.size(); i++) {
+            for (Region containingRegion : containingRegions) {
+                if (containingRegion.bounds.minX - bounds.minX < difference && !regionsInOrder.contains(containingRegion)) {
+                    difference = containingRegion.bounds.minX - bounds.minX;
+                    r = containingRegion;
+                }
+            }
+            regionsInOrder.add(r);
+        }
+
+        return regionsInOrder;
+    }
+
+    public Region getMasterRegion() {
+        Region region = this;
+        while(region.getParentRegion() != null) region = region.getParentRegion();
+        return region;
+    }
+
     public boolean isSubRegion()
     {
         return getParentRegion() != null;
@@ -160,7 +190,6 @@ public class Region implements Comparable<Region> {
     {
         Region region = getRegionFromUUID(regionUniqueID);
         Minelife.SQLITE.query("DELETE FROM regions WHERE uuid='" + regionUniqueID.toString() + "'");
-        region.getEntityWorld().setBlock((int) region.getBounds().minX, (int) region.getBounds().minY, (int) region.getBounds().minZ, Blocks.diamond_block);
         REGIONS.remove(region);
     }
 
@@ -253,6 +282,12 @@ public class Region implements Comparable<Region> {
         if (regions.isEmpty()) return null;
 
         return getClosest(regions, vec3);
+    }
+
+
+    public static Region getRegionAt(World world, Vec3 vec3)
+    {
+        return getRegionAt(world.getWorldInfo().getWorldName(), vec3);
     }
 
     private static Region getClosest(Set<Region> regions, Vec3 vec)

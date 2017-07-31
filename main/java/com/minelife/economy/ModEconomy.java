@@ -77,7 +77,7 @@ public class ModEconomy extends AbstractMod {
         balance += amount;
         String column = wallet ? "balanceWallet" : "balanceBank";
 
-        Minelife.SQLITE.query("UPDATE players SET " + column + "='" + balance + "'");
+        Minelife.SQLITE.query("UPDATE players SET " + column + "='" + balance + "' WHERE uuid='" + player.toString() + "'");
 
         // update client
         if (PlayerHelper.getPlayer(player) != null)
@@ -97,8 +97,7 @@ public class ModEconomy extends AbstractMod {
         if (balance < 0) throw new CustomMessageException("Balance cannot be less than zero.");
 
         String column = wallet ? "balanceWallet" : "balanceBank";
-        Minelife.SQLITE.query("UPDATE players SET " + column + "='" + balance + "'");
-
+        Minelife.SQLITE.query("UPDATE players SET " + column + "='" + balance + "' WHERE uuid='" + player.toString() + "'");
         // update client
         if (PlayerHelper.getPlayer(player) != null)
             Minelife.NETWORK.sendTo(new PacketBalanceResult(getBalance(player, false), getBalance(player, true)), PlayerHelper.getPlayer(player));

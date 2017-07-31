@@ -3,6 +3,7 @@ package com.minelife;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import lib.PatPeter.SQLibrary.SQLite;
+import net.minecraft.init.Blocks;
 
 import java.util.logging.Logger;
 
@@ -12,7 +13,6 @@ public class ServerProxy extends CommonProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         initSQLite();
-
         Minelife.MODS.forEach(mod -> {
             try {
                 mod.getServerProxy().newInstance().preInit(event);

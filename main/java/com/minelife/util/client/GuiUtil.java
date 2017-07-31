@@ -14,6 +14,7 @@ import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import java.awt.*;
 import java.nio.FloatBuffer;
 
 public class GuiUtil {
@@ -327,6 +328,89 @@ public class GuiUtil {
         OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+    }
+
+    public static final void drawDefaultBackground(int x, int y, int width, int height) {
+        drawDefaultBackground(x, y, width, height, 0xC6C6C6);
+    }
+
+    public static final void drawDefaultBackground(int x, int y, int width, int height, int color) {
+        Color main = new Color(color);
+        Color bottomBorder = main.darker().darker();
+        Color topColor = main.brighter().brighter().brighter().brighter().brighter().brighter().brighter();
+        Color border = main.darker().darker().darker().darker().darker().darker().darker();
+
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+
+        GL11.glPushMatrix();
+        GL11.glTranslatef(x, y, 0f);
+
+        GL11.glColor4f(main.getRed()/ 255f, main.getGreen() / 255f, main.getBlue() / 255f, main.getAlpha() / 255f);
+        /* draw fill */
+        {
+            // draw top 1st line fill
+            drawImage(2, 1, width - 4, 1);
+            // draw top 2nd line fill
+            drawImage( 1,  2, width - 2, 1);
+            // draw fill to bottom curve
+            drawImage(1,  3, width - 1, height - 5);
+            // draw bottom 1st line curve
+            drawImage(2, height - 2, width - 2, 1);
+            // draw bottom 2nd line curve
+            drawImage(3, height - 1, width - 4, 1);
+        }
+
+        GL11.glColor4f(border.getRed()/ 255f, border.getGreen() / 255f, border.getBlue() / 255f, border.getAlpha() / 255f);
+        /* draw outline */
+        {
+            // draw top line
+            drawImage(2, 0, width - 4, 1);
+            // draw bottom line
+            drawImage(3,  height, width - 4, 1);
+            // draw left line
+            drawImage(0, 2, 1, height - 3);
+            // draw right line
+            drawImage(width,  3, 1, height - 4);
+            // draw top left pixel curve connector
+            drawImage(1, 1, 1, 1);
+            // draw bottom left pixel curve connector
+            drawImage(1, height - 2, 1, 1);
+            // draw bottom left pixel curve connector 2
+            drawImage(2, height - 1, 1, 1);
+            // draw top right pixel curve connector 1
+            drawImage( width - 2, 1, 1, 1);
+            // draw top right pixel curve connector 2
+            drawImage(width - 1,  2, 1, 1);
+            // draw bottom right pixel curve connector
+            drawImage( width - 1,  height - 1, 1, 1);
+        }
+
+        GL11.glColor4f(topColor.getRed()/ 255f, topColor.getGreen() / 255f, topColor.getBlue() / 255f, topColor.getAlpha() / 255f);
+        /* draw top color */
+        {
+            // draw top block
+            drawImage(2, 1, width - 4, 2);
+            // draw left block
+            drawImage(1, 2, 2, height - 4);
+            // draw connector
+            drawImage(3,3, 1, 1);
+        }
+
+        GL11.glColor4f(bottomBorder.getRed()/ 255f, bottomBorder.getGreen() / 255f, bottomBorder.getBlue() / 255f, bottomBorder.getAlpha() / 255f);
+        /* draw bottom color */
+        {
+            // draw bottom block
+            drawImage(3, height - 2, width - 4, 2);
+            // draw right block
+            drawImage(width -  2, 3, 2, height - 4);
+            // draw connector
+            drawImage(width - 3,height - 3, 1, 1);
+        }
+
+        GL11.glPopMatrix();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(1, 1, 1, 1);
     }
 
 }
