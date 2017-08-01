@@ -18,57 +18,47 @@ public class ContainerLeafMulcher extends BuildCraftContainer {
     {
         super(tile_leaf_mulcher.getSizeInventory());
         this.tile_leaf_mulcher = tile_leaf_mulcher;
-        int slot = this.setup_player_slots(inventory_player) + 1;
+
+        // Player Inventory, Slot 9-35, Slot IDs 9-35
+        for (int y = 0; y < 3; ++y) {
+            for (int x = 0; x < 9; ++x) {
+                this.addSlotToContainer(new Slot(inventory_player, x + y * 9 + 9, 8 + x * 18, 84 + y * 18));
+            }
+        }
+
+        // Player Inventory, Slot 0-8, Slot IDs 36-44
+        for (int x = 0; x < 9; ++x) {
+            this.addSlotToContainer(new Slot(inventory_player, x, 8 + x * 18, 142));
+        }
+
         // add input slot for fuel
-        this.addSlotToContainer(new Slot(this.tile_leaf_mulcher, slot++, 124, 35));
+        this.addSlotToContainer(new Slot(tile_leaf_mulcher, 0, 132, 61));
         // add input slot for item
-        this.addSlotToContainer(new Slot(this.tile_leaf_mulcher, slot++, 124, 35));
+        this.addSlotToContainer(new Slot(tile_leaf_mulcher, 1, 52, 41));
         // add output slot
-        this.addSlotToContainer(new SlotOutput(this.tile_leaf_mulcher, slot, 124, 35));
-        this.onCraftMatrixChanged(this.tile_leaf_mulcher);
+        this.addSlotToContainer(new SlotOutput(tile_leaf_mulcher, 2, 107, 41));
+//        this.onCraftMatrixChanged(this.tile_leaf_mulcher);
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer player)
     {
-        return true;
+        return this.tile_leaf_mulcher.isUseableByPlayer(player);
     }
 
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-        Iterator var1 = this.crafters.iterator();
 
-        while(var1.hasNext()) {
-            Object crafter = var1.next();
-            this.engine.sendGUINetworkData(this, (ICrafting)crafter);
+        for (Object crafter : this.crafters) {
+            this.tile_leaf_mulcher.sendGUINetworkData(this, (ICrafting) crafter);
         }
 
     }
 
     @Override
     public void updateProgressBar(int i, int j) {
-        this.engine.getGUINetworkData(i, j);
+        this.tile_leaf_mulcher.getGUINetworkData(i, j);
     }
 
-
-    public int setup_player_slots(InventoryPlayer inventory_player) {
-        int x;
-        int slot = 0;
-        // players hot bar
-        for(x = 0; x < 9; ++x) {
-            slot++;
-            this.addSlotToContainer(new Slot(inventory_player, x, 8 + x * 18, 173));
-        }
-
-        // players main inventory
-        for(x = 0; x < 3; ++x) {
-            for(x = 0; x < 9; ++x) {
-                slot++;
-                this.addSlotToContainer(new Slot(inventory_player, x + x * 9 + 9, 8 + x * 18, 115 + x * 18));
-            }
-        }
-
-        return slot;
-    }
 }
