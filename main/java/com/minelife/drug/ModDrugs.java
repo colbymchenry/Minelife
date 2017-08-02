@@ -7,7 +7,7 @@ import com.minelife.drug.block.BlockCannabisPlant;
 import com.minelife.drug.block.BlockCocaPlant;
 import com.minelife.drug.block.BlockLeafMulcher;
 import com.minelife.drug.item.*;
-import com.minelife.drug.tileentity.TileEntityLeafMulcher;
+import com.minelife.drug.tileentity.TileEntityEntityLeafMulcher;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -16,7 +16,7 @@ public class ModDrugs extends AbstractMod {
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
-        GameRegistry.registerTileEntity(TileEntityLeafMulcher.class, "leaf_mulcher");
+        GameRegistry.registerTileEntity(TileEntityEntityLeafMulcher.class, "leaf_mulcher");
         GameRegistry.registerItem(ItemCocaSeeds.instance(), "coca_seeds");
         GameRegistry.registerItem(ItemCocaLeaf.instance(false), "coca_leaf");
         GameRegistry.registerItem(ItemCocaLeaf.instance(true), "coca_leaf_dry");

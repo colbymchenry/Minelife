@@ -2,7 +2,7 @@ package com.minelife.drug.block;
 
 import buildcraft.core.lib.block.BlockBuildCraft;
 import com.minelife.Minelife;
-import com.minelife.drug.tileentity.TileEntityLeafMulcher;
+import com.minelife.drug.tileentity.TileEntityEntityLeafMulcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
@@ -47,7 +47,7 @@ public class BlockLeafMulcher extends BlockBuildCraft {
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-        TileEntityLeafMulcher tile = (TileEntityLeafMulcher) world.getTileEntity(x, y, z);
+        TileEntityEntityLeafMulcher tile = (TileEntityEntityLeafMulcher) world.getTileEntity(x, y, z);
         tile.onBlockActivated(player, ForgeDirection.getOrientation(side));
         return true;
     }
@@ -55,7 +55,7 @@ public class BlockLeafMulcher extends BlockBuildCraft {
     @Override
     public TileEntity createNewTileEntity(World world, int meta)
     {
-        return new TileEntityLeafMulcher();
+        return new TileEntityEntityLeafMulcher();
     }
 
     @Override

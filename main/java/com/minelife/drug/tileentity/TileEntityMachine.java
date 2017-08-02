@@ -24,7 +24,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.*;
 
-public abstract class TileMachine extends TileBuildCraft implements IHasWork, IFluidHandler, IInventory, ISidedInventory, IPipeConnection {
+public abstract class TileEntityMachine extends TileBuildCraft implements IHasWork, IFluidHandler, IInventory, ISidedInventory, IPipeConnection {
 
     private Tank tank_fuel;
     private int tank_fuel_amount_cache;
@@ -35,7 +35,7 @@ public abstract class TileMachine extends TileBuildCraft implements IHasWork, IF
     private final SimpleInventory inv;
     private final int[] defaultSlotArray;
 
-    public TileMachine(int invSize, String name)
+    public TileEntityMachine(int invSize, String name)
     {
         this.inv = new SimpleInventory(invSize, name, 64);
         this.defaultSlotArray = Utils.createSlotArray(0, invSize);
