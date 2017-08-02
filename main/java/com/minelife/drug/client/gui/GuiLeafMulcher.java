@@ -23,16 +23,16 @@ public class GuiLeafMulcher extends GuiBuildCraft {
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int par1, int par2)
+    protected void drawGuiContainerForegroundLayer(int mouse_x, int mouse_y)
     {
-        super.drawGuiContainerForegroundLayer(par1, par2);
+        super.drawGuiContainerForegroundLayer(mouse_x, mouse_y);
         String title = "Leaf Mulcher";
         this.fontRendererObj.drawString(title, this.getCenteredOffset(title), 6, 4210752);
         this.fontRendererObj.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
         TileEntityEntityLeafMulcher tile_leaf_mulcher = (TileEntityEntityLeafMulcher) this.tile;
         FluidStack stack = null;
-        if (tile_leaf_mulcher != null && par2 >= this.guiTop + 19 && par2 < this.guiTop + 19 + 60) {
-            if (par1 >= this.guiLeft + 155 && par1 < this.guiLeft + 155 + 16) {
+        if (tile_leaf_mulcher != null && mouse_y >= this.guiTop + 19 && mouse_y < this.guiTop + 19 + 60) {
+            if (mouse_x >= this.guiLeft + 155 && mouse_x < this.guiLeft + 155 + 16) {
                 stack = tile_leaf_mulcher.fuel();
             }
         }
@@ -40,7 +40,7 @@ public class GuiLeafMulcher extends GuiBuildCraft {
         if (stack != null && stack.amount > 0) {
             List<String> fluidTip = Lists.newArrayList();
             fluidTip.add(stack.getLocalizedName());
-            this.drawHoveringText(fluidTip, par1 - this.guiLeft, par2 - this.guiTop, this.fontRendererObj);
+            this.drawHoveringText(fluidTip, mouse_x - this.guiLeft, mouse_y - this.guiTop, this.fontRendererObj);
         }
 
     }

@@ -2,6 +2,12 @@ package com.minelife.drug.client;
 
 import com.minelife.CommonProxy;
 import com.minelife.drug.block.BlockLeafMulcher;
+import com.minelife.drug.client.render.ItemCocaLeafRenderer;
+import com.minelife.drug.client.render.ItemLeafMulcherRenderer;
+import com.minelife.drug.client.render.TileEntityDryingRackRenderer;
+import com.minelife.drug.client.render.TileEntityLeafMulcherRenderer;
+import com.minelife.drug.item.ItemCocaLeaf;
+import com.minelife.drug.tileentity.TileEntityDryingRack;
 import com.minelife.drug.tileentity.TileEntityEntityLeafMulcher;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -14,6 +20,8 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent event)
     {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEntityLeafMulcher.class, new TileEntityLeafMulcherRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDryingRack.class, new TileEntityDryingRackRenderer());
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlockLeafMulcher.instance()), new ItemLeafMulcherRenderer());
+        MinecraftForgeClient.registerItemRenderer(ItemCocaLeaf.instance(), new ItemCocaLeafRenderer());
     }
 }

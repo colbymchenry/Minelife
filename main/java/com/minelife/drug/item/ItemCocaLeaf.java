@@ -3,28 +3,38 @@ package com.minelife.drug.item;
 import com.minelife.Minelife;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class ItemCocaLeaf extends Item {
 
-    private static ItemCocaLeaf instance, instance_dry;
-    private boolean dry;
+    private static ItemCocaLeaf instance;
 
-    private ItemCocaLeaf(boolean dry)
+    private ItemCocaLeaf()
     {
         setCreativeTab(CreativeTabs.tabDecorations);
-        setTextureName(Minelife.MOD_ID + ":coca_leaf" + (dry ? "_dry" : ""));
+        setTextureName(Minelife.MOD_ID + ":coca_leaf");
+        setMaxDamage(100);
     }
 
-    public static ItemCocaLeaf instance(boolean dry) {
-        if(dry) {
-            if(instance_dry == null) instance_dry = new ItemCocaLeaf(true);
-            return instance_dry;
-        } else {
-            if (instance == null) instance = new ItemCocaLeaf(false);
-            return instance;
-        }
+    public static ItemCocaLeaf instance()
+    {
+        if (instance == null) instance = new ItemCocaLeaf();
+        return instance;
     }
 
-    public boolean dry() { return dry; }
+    public static void set_moisture_level(ItemStack stack, int moisture) {
+        if(stack == null) return;
+        if(stack.getItem() != instance()) return;
+        moisture = moisture < 0 ? 0 : moisture > 100 ? 100 : moisture;
+        stack.setItemDamage(moisture);
+    }
+
+    public static int get_moisture_level(ItemStack stack) {
+        if(stack == null) return 0;
+        if(stack.getItem() != instance()) return 0;
+
+        return stack.getItemDamage();
+    }
 
 }

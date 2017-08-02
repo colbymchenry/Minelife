@@ -47,6 +47,9 @@ public class TileEntityAmmoniaExtractor extends TileEntityMachine
     @Override
     public boolean has_work()
     {
+        ItemStack output_stack = getStackInSlot(slot_output);
+        if(output_stack != null && output_stack.stackSize > 63) return false;
+
         if(fuel() != null && fuel().amount > 20) {
             int updateNext = this.update + this.getBattery().getEnergyStored() + 1;
             int updateThreshold = (this.update & -16) + 16;
@@ -64,7 +67,10 @@ public class TileEntityAmmoniaExtractor extends TileEntityMachine
 
         if (this.progress >= extraction_time) {
             this.progress = 0;
-            // TODO: Finish
+            ItemStack output_stack = getStackInSlot(slot_output);
+            ItemStack output_stack_final = new ItemStack(ItemAmmonia.instance(), output_stack == null ? 1 : output_stack.stackSize + 1);
+            setInventorySlotContents(slot_output, output_stack_final);
+            sendNetworkUpdate();
         }
     }
 

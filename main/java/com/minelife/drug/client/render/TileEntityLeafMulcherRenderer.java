@@ -1,4 +1,4 @@
-package com.minelife.drug.client;
+package com.minelife.drug.client.render;
 
 import com.minelife.Minelife;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;

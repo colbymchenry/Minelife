@@ -12,6 +12,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 
+// TODO: NOT EVEN CLOSE, WILL NEED TO BE REDONE
 public class ModPolice extends AbstractMod {
 
     @Override

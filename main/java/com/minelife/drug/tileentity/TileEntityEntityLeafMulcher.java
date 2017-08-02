@@ -54,7 +54,7 @@ public class TileEntityEntityLeafMulcher extends TileEntityMachine {
         if (input.getItem() == ItemCannabisBuds.instance()) {
             if (output == null || (output.stackSize < 64 && output.getItem() == ItemCannabisShredded.instance()))
                 return true;
-        } else if (input.getItem() == ItemCocaLeaf.instance(true)) {
+        } else if (input.getItem() == ItemCocaLeaf.instance() && ItemCocaLeaf.get_moisture_level(input) == 0) {
             if (output == null || (output.stackSize < 64 && output.getItem() == ItemCocaLeafShredded.instance()))
                 return true;
         }
@@ -72,7 +72,7 @@ public class TileEntityEntityLeafMulcher extends TileEntityMachine {
 
         if (input.getItem() == ItemCannabisBuds.instance()) {
             output_final = new ItemStack(ItemCannabisShredded.instance(), output_stack_size);
-        } else if (input.getItem() == ItemCocaLeaf.instance(true)) {
+        } else if (input.getItem() == ItemCocaLeaf.instance()  && ItemCocaLeaf.get_moisture_level(input) == 0) {
             output_final = new ItemStack(ItemCocaLeafShredded.instance(), output_stack_size);
         }
 
@@ -117,7 +117,7 @@ public class TileEntityEntityLeafMulcher extends TileEntityMachine {
     @Override
     public boolean is_item_valid_for_slot(int slot, ItemStack stack)
     {
-        return stack != null && (stack.getItem() == ItemCocaLeaf.instance(true) || stack.getItem() == ItemCannabisBuds.instance());
+        return stack != null && ((stack.getItem() == ItemCocaLeaf.instance()  && ItemCocaLeaf.get_moisture_level(stack) == 0) || stack.getItem() == ItemCannabisBuds.instance());
     }
 
 }
