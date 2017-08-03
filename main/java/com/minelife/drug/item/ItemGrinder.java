@@ -63,7 +63,7 @@ public class ItemGrinder extends Item {
     public static void register_recipe() {
         GameRegistry.addShapedRecipe(new ItemStack(instance()), "AAA", "BBB", "AAA", 'A', Item.getItemFromBlock(Blocks.planks), 'B', Items.iron_ingot);
         for(int i = 0; i < ItemDye.field_150921_b.length; i++) {
-            GameRegistry.addShapelessRecipe(new ItemStack(instance(), 1, i), "A", "B", 'A', instance(), 'B', Items.dye);
+            GameRegistry.addShapelessRecipe(new ItemStack(instance(), 1, i), instance(), new ItemStack(Items.dye, 1, i));
         }
     }
 

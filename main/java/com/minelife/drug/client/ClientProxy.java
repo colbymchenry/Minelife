@@ -20,7 +20,7 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent event)
     {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEntityLeafMulcher.class, new TileEntityLeafMulcherRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDryingRack.class, new TileEntityDryingRackRenderer());
+//        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDryingRack.class, new TileEntityDryingRackRenderer());
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlockLeafMulcher.instance()), new ItemLeafMulcherRenderer());
         MinecraftForgeClient.registerItemRenderer(ItemCocaLeaf.instance(), new ItemCocaLeafRenderer());
     }

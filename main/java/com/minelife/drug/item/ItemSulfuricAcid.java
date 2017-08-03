@@ -4,7 +4,10 @@ import buildcraft.energy.ItemBucketBuildcraft;
 import com.minelife.Minelife;
 import com.minelife.drug.block.BlockSulfuricAcid;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -26,6 +29,10 @@ public class ItemSulfuricAcid extends ItemBucketBuildcraft {
         FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("sulfuric_acid", 1000), new ItemStack(this), new ItemStack(Items.bucket));
     }
 
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IIconRegister par1IconRegister) {
+        this.itemIcon = par1IconRegister.registerIcon(Minelife.MOD_ID + ":sulfuric_acid");
+    }
 
     public static ItemSulfuricAcid instance() {
         if(instance == null) instance = new ItemSulfuricAcid();

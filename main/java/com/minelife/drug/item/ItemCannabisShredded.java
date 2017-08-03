@@ -22,7 +22,7 @@ public class ItemCannabisShredded extends Item {
     }
 
     public static void register_recipe() {
-        GameRegistry.addShapelessRecipe(new ItemStack(instance()), "A", "B", 'A', ItemCannabisBuds.instance(), 'B', ItemGrinder.instance());
+        GameRegistry.addShapelessRecipe(new ItemStack(instance()), ItemCannabisBuds.instance(), ItemGrinder.instance());
     }
 
 }

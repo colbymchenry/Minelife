@@ -27,6 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.io.File;
 import java.util.List;
@@ -70,6 +71,7 @@ public class Minelife {
         AbstractMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
         MODS.forEach(mod -> mod.preInit(event));
         PROXY.preInit(event);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Mod.EventHandler

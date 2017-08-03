@@ -21,12 +21,10 @@ public class BlockAmmonia extends BlockBuildCraftFluid {
 
     private BlockAmmonia()
     {
-        super(fluid = new Fluid("ammonia"), Material.water, MapColor.greenColor);
+        super(fluid, Material.water, MapColor.greenColor);
         setParticleColor(0.7F, 0.7F, 0.0F);
         setBlockName("ammonia").setLightOpacity(3);
-        fluid.setBlock(this);
-        FluidRegistry.registerFluid(fluid);
-        BucketHandler.INSTANCE.buckets.put(this, ItemAmmonia.instance());
+        setBlockTextureName(Minelife.MOD_ID + ":ammonia_still");
     }
 
     @Override
@@ -39,6 +37,10 @@ public class BlockAmmonia extends BlockBuildCraftFluid {
     {
         if (instance == null) instance = new BlockAmmonia();
         return instance;
+    }
+
+    public static void register_fluid() {
+        FluidRegistry.registerFluid(fluid = new Fluid("ammonia"));
     }
 
     public static Fluid fluid() {

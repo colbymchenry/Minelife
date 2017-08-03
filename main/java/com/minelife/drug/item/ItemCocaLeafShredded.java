@@ -24,7 +24,7 @@ public class ItemCocaLeafShredded extends Item {
     }
 
     public static void register_recipe() {
-        GameRegistry.addShapelessRecipe(new ItemStack(instance()), "A", "B", 'A', ItemGrinder.instance(), 'B', ItemCocaLeaf.instance());
+        GameRegistry.addShapelessRecipe(new ItemStack(instance()), ItemGrinder.instance(), ItemCocaLeaf.instance());
     }
 
 }

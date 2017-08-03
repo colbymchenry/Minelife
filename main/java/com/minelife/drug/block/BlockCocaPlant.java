@@ -40,7 +40,7 @@ public class BlockCocaPlant extends AbstractCrop {
         if (player.getHeldItem() != null && player.getHeldItem().getItem() == Items.dye && player.getHeldItem().getItemDamage() == 15)
             return false;
 
-        EntityItem entityitem = player.dropPlayerItemWithRandomChoice(new ItemStack(ItemCocaLeaf.instance(false), MathHelper.getRandomIntegerInRange(random, 2, 4)), false);
+        EntityItem entityitem = player.dropPlayerItemWithRandomChoice(new ItemStack(ItemCocaLeaf.instance(), MathHelper.getRandomIntegerInRange(random, 2, 4)), false);
         entityitem.delayBeforeCanPickup = 0;
         set_growth_stage(world, x, y, z, max_growth_stage() - 6);
         return true;

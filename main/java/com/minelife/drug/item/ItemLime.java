@@ -11,7 +11,7 @@ public class ItemLime extends Item {
     private ItemLime() {
         setCreativeTab(CreativeTabs.tabFood);
         setUnlocalizedName("lime");
-        setTextureName(Minelife.MOD_ID + "lime");
+        setTextureName(Minelife.MOD_ID + ":lime");
     }
 
     public static ItemLime instance() {
