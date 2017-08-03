@@ -23,6 +23,7 @@ public class ItemCannabisSeeds extends Item implements IPlantable {
         super();
         setCreativeTab(CreativeTabs.tabFood);
         setTextureName(Minelife.MOD_ID + ":cannabis_seeds");
+        setUnlocalizedName("cannabis_seeds");
     }
 
     public static ItemCannabisSeeds instance()

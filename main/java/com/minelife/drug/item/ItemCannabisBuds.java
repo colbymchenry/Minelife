@@ -11,6 +11,7 @@ public class ItemCannabisBuds extends Item {
     private ItemCannabisBuds(){
         setCreativeTab(CreativeTabs.tabFood);
         setTextureName(Minelife.MOD_ID + ":buds");
+        setUnlocalizedName("cannabis_buds");
     }
 
     public static ItemCannabisBuds instance() {

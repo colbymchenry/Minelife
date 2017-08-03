@@ -20,9 +20,9 @@ public class ItemCocaSeeds extends Item implements IPlantable {
 
     private ItemCocaSeeds()
     {
-        super();
         setCreativeTab(CreativeTabs.tabFood);
         setTextureName(Minelife.MOD_ID + ":coca_seeds");
+        setUnlocalizedName("coca_seeds");
     }
 
     public static ItemCocaSeeds instance()

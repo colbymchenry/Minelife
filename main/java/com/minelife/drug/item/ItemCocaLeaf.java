@@ -14,6 +14,7 @@ public class ItemCocaLeaf extends Item {
     {
         setCreativeTab(CreativeTabs.tabDecorations);
         setTextureName(Minelife.MOD_ID + ":coca_leaf");
+        setUnlocalizedName("coca_leaf");
         setMaxDamage(100);
     }
 

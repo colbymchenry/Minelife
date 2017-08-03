@@ -7,10 +7,12 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
+import net.minecraftforge.client.event.TextureStitchEvent;
 
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +31,11 @@ public class AbstractMod {
     public Class<? extends CommonProxy> getServerProxy() {return null;}
 
     public AbstractGuiHandler gui_handler() { return null; }
+
+    @SideOnly(Side.CLIENT)
+    public void textureHook(TextureStitchEvent.Post event) {
+
+    }
 
     private static int PACKET_ID = 0;
     private static Map<Integer, Class> gui_map = Maps.newHashMap();

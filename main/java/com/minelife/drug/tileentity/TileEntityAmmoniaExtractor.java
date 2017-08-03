@@ -65,6 +65,8 @@ public class TileEntityAmmoniaExtractor extends TileEntityMachine
     {
         this.progress += 16;
 
+
+        // TODO: Instead of making buckets and putting them in output stack, need to make it another tank with ammonia
         if (this.progress >= extraction_time) {
             this.progress = 0;
             ItemStack output_stack = getStackInSlot(slot_output);
