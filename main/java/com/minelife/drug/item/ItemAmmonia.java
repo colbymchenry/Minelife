@@ -2,6 +2,7 @@ package com.minelife.drug.item;
 
 import buildcraft.energy.ItemBucketBuildcraft;
 import com.minelife.Minelife;
+import com.minelife.drug.ModDrugs;
 import com.minelife.drug.block.BlockAmmonia;
 import com.minelife.drug.block.BlockSulfuricAcid;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -22,7 +23,7 @@ public class ItemAmmonia extends ItemBucketBuildcraft {
     private ItemAmmonia()
     {
         super(BlockAmmonia.instance());
-        setCreativeTab(CreativeTabs.tabBrewing);
+        setCreativeTab(ModDrugs.tab_drugs);
         setUnlocalizedName("ammonia");
         setContainerItem(Items.bucket);
         setTextureName(Minelife.MOD_ID + ":ammonia");

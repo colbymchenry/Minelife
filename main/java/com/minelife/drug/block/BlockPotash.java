@@ -1,49 +1,31 @@
 package com.minelife.drug.block;
 
-import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
-import com.minelife.drug.item.ItemSulfur;
 import cpw.mods.fml.common.IWorldGenerator;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-public class BlockSulfurOre extends Block {
+public class BlockPotash extends Block {
 
-    private static BlockSulfurOre instance;
+    private static BlockPotash instance;
 
-    private BlockSulfurOre()
-    {
-        super(Material.rock);
-        setHardness(3.0F).setResistance(5.0F).setStepSound(soundTypePiston);
-        setCreativeTab(ModDrugs.tab_drugs);
-        setBlockTextureName(Minelife.MOD_ID + ":sulfur_ore");
-        setBlockName("sulfur_ore");
-    }
-
-    @Override
-    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune)
-    {
-        ArrayList<ItemStack> drops = Lists.newArrayList();
-        drops.add(new ItemStack(ItemSulfur.instance(), fortune + MathHelper.getRandomIntegerInRange(world.rand, 2, 4)));
-        return drops;
-    }
-
-    public static BlockSulfurOre instance()
-    {
-        if (instance == null) instance = new BlockSulfurOre();
+    public static BlockPotash instance() {
+        if(instance == null) instance = new BlockPotash();
         return instance;
+    }
+
+    private BlockPotash() {
+        super(Material.rock);
+        setCreativeTab(ModDrugs.tab_drugs);
+        setBlockName("potash");
+        setBlockTextureName(Minelife.MOD_ID + ":potash");
     }
 
     public static class Generator implements IWorldGenerator {
@@ -53,7 +35,7 @@ public class BlockSulfurOre extends Block {
         {
             // only over-world
             if (world.provider.dimensionId == 0) {
-                this.generate(instance(), world, random, chunkX, chunkZ, 7, 20, 30, 60, Blocks.stone);
+                this.generate(instance(), world, random, chunkX, chunkZ, 20, 50, 20, 60, Blocks.stone);
             }
         }
 

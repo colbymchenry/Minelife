@@ -2,6 +2,7 @@ package com.minelife.drug.item;
 
 import buildcraft.energy.ItemBucketBuildcraft;
 import com.minelife.Minelife;
+import com.minelife.drug.ModDrugs;
 import com.minelife.drug.block.BlockSulfuricAcid;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -22,7 +23,7 @@ public class ItemSulfuricAcid extends ItemBucketBuildcraft {
     private ItemSulfuricAcid()
     {
         super(BlockSulfuricAcid.instance());
-        setCreativeTab(CreativeTabs.tabBrewing);
+        setCreativeTab(ModDrugs.tab_drugs);
         setUnlocalizedName("sulfuric_acid");
         setContainerItem(Items.bucket);
         setTextureName(Minelife.MOD_ID + ":sulfuric_acid");

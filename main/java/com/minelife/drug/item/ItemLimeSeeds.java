@@ -1,6 +1,7 @@
 package com.minelife.drug.item;
 
 import com.minelife.Minelife;
+import com.minelife.drug.ModDrugs;
 import com.minelife.drug.block.BlockLimePlant;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -20,7 +21,7 @@ public class ItemLimeSeeds extends Item implements IPlantable {
     private ItemLimeSeeds()
     {
         super();
-        setCreativeTab(CreativeTabs.tabFood);
+        setCreativeTab(ModDrugs.tab_drugs);
         setTextureName(Minelife.MOD_ID + ":lime_seeds");
         setUnlocalizedName("lime_seeds");
     }

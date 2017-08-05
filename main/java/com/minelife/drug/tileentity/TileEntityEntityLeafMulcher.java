@@ -1,6 +1,7 @@
 package com.minelife.drug.tileentity;
 
 import buildcraft.api.transport.IPipeTile;
+import com.minelife.Minelife;
 import com.minelife.drug.DrugsGuiHandler;
 import com.minelife.drug.item.ItemCannabisBuds;
 import com.minelife.drug.item.ItemCannabisShredded;
@@ -76,16 +77,25 @@ public class TileEntityEntityLeafMulcher extends TileEntityMachine {
             output_final = new ItemStack(ItemCocaLeafShredded.instance(), output_stack_size);
         }
 
-        // TODO: Add sound effects and fix gui by removing the fuel bucket slot
-
-        setInventorySlotContents(slot_output, output_final);
-        sendNetworkUpdate();
+        if(output_final != null) {
+            this.decrStackSize(slot_input, 1);
+            // TODO: Add sound effects and fix gui by removing the fuel bucket slot
+            setInventorySlotContents(slot_output, output_final);
+            sendNetworkUpdate();
+            worldObj.playSoundEffect(xCoord, yCoord, zCoord, Minelife.MOD_ID + ":leaf_mulcher", 1.0F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
+        }
     }
 
     @Override
     public boolean can_pipe_connect(IPipeTile.PipeType pipe_type, ForgeDirection direction)
     {
         return pipe_type == IPipeTile.PipeType.FLUID || pipe_type == IPipeTile.PipeType.ITEM;
+    }
+
+    @Override
+    public boolean requires_redstone_power()
+    {
+        return false;
     }
 
     @Override

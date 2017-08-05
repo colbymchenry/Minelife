@@ -2,6 +2,7 @@ package com.minelife.drug.block;
 
 import buildcraft.core.lib.block.BlockBuildCraft;
 import com.minelife.Minelife;
+import com.minelife.drug.ModDrugs;
 import com.minelife.drug.tileentity.TileEntityEntityLeafMulcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -25,7 +26,7 @@ public class BlockLeafMulcher extends BlockBuildCraft {
     private BlockLeafMulcher()
     {
         super(Material.iron);
-        setCreativeTab(CreativeTabs.tabRedstone);
+        setCreativeTab(ModDrugs.tab_drugs);
     }
 
     public static BlockLeafMulcher instance() {

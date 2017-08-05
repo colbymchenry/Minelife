@@ -12,18 +12,14 @@ import com.minelife.region.ModRegion;
 import com.minelife.util.PacketPlaySound;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import lib.PatPeter.SQLibrary.Database;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -31,11 +27,10 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="after:BuildCraft|Transport;after:IC2;after:WorldEdit")
+@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="after:BuildCraft|Transport;after:BuildCraft|Energy;after:IC2;after:WorldEdit")
 public class Minelife {
 
     public static final String MOD_ID = "minelife", VERSION = "2017.1", NAME = "Minelife";
@@ -86,11 +81,23 @@ public class Minelife {
         MODS.forEach(mod -> mod.serverStarting(event));
     }
 
+    @Mod.EventHandler
+    public void onLoadComplete(FMLLoadCompleteEvent event){
+        MODS.forEach(mod -> mod.onLoadComplete(event));
+    }
+
+    @Mod.EventHandler
+    public void postInit(FMLPostInitializationEvent event){
+        MODS.forEach(mod -> mod.postInit(event));
+    }
+
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void textureHook(TextureStitchEvent.Post event) {
         MODS.forEach(mod -> mod.textureHook(event));
     }
+
+
 
     public static File getDirectory() {
         return new File(System.getProperty("user.dir") + File.separator + "config", MOD_ID);

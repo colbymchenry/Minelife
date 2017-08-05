@@ -1,9 +1,7 @@
 package com.minelife;
 
 import com.google.common.collect.Maps;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -25,6 +23,10 @@ public class AbstractMod {
     public void init(FMLInitializationEvent event) {}
 
     public void serverStarting(FMLServerStartingEvent event) {}
+
+    public void onLoadComplete(FMLLoadCompleteEvent event){}
+
+    public void postInit(FMLPostInitializationEvent event){}
 
     public Class<? extends CommonProxy> getClientProxy() {return null;}
 

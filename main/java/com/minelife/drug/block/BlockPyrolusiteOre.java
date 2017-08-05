@@ -3,11 +3,10 @@ package com.minelife.drug.block;
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
-import com.minelife.drug.item.ItemSulfur;
+import com.minelife.drug.item.ItemPyrolusite;
 import cpw.mods.fml.common.IWorldGenerator;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -16,33 +15,32 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-public class BlockSulfurOre extends Block {
+public class BlockPyrolusiteOre extends Block {
 
-    private static BlockSulfurOre instance;
+    private static BlockPyrolusiteOre instance;
 
-    private BlockSulfurOre()
+    private BlockPyrolusiteOre()
     {
         super(Material.rock);
         setHardness(3.0F).setResistance(5.0F).setStepSound(soundTypePiston);
         setCreativeTab(ModDrugs.tab_drugs);
-        setBlockTextureName(Minelife.MOD_ID + ":sulfur_ore");
-        setBlockName("sulfur_ore");
+        setBlockTextureName(Minelife.MOD_ID + ":pyrolusite_ore");
+        setBlockName("pyrolusite_ore");
     }
 
     @Override
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune)
     {
         ArrayList<ItemStack> drops = Lists.newArrayList();
-        drops.add(new ItemStack(ItemSulfur.instance(), fortune + MathHelper.getRandomIntegerInRange(world.rand, 2, 4)));
+        drops.add(new ItemStack(ItemPyrolusite.instance(), fortune + MathHelper.getRandomIntegerInRange(world.rand, 2, 4)));
         return drops;
     }
 
-    public static BlockSulfurOre instance()
+    public static BlockPyrolusiteOre instance()
     {
-        if (instance == null) instance = new BlockSulfurOre();
+        if (instance == null) instance = new BlockPyrolusiteOre();
         return instance;
     }
 

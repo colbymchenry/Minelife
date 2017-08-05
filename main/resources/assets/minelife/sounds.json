@@ -62,5 +62,9 @@
   "cha_ching": {
     "category": "neutral",
     "sounds": ["minelife:cha_ching"]
+  },
+  "leaf_mulcher": {
+    "category": "neutral",
+    "sounds": ["minelife:leaf_mulcher"]
   }
 }

@@ -1,6 +1,7 @@
 package com.minelife.drug.item;
 
 import com.minelife.Minelife;
+import com.minelife.drug.ModDrugs;
 import com.minelife.drug.block.BlockCannabisPlant;
 import com.minelife.drug.block.BlockCocaPlant;
 import net.minecraft.block.Block;
@@ -21,7 +22,7 @@ public class ItemCannabisSeeds extends Item implements IPlantable {
     private ItemCannabisSeeds()
     {
         super();
-        setCreativeTab(CreativeTabs.tabFood);
+        setCreativeTab(ModDrugs.tab_drugs);
         setTextureName(Minelife.MOD_ID + ":cannabis_seeds");
         setUnlocalizedName("cannabis_seeds");
     }

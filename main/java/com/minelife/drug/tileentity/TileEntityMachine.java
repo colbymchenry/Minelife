@@ -212,16 +212,21 @@ public abstract class TileEntityMachine extends TileBuildCraft implements IHasWo
         }
 
         if (this.current_fuel != null) {
-            if (this.isRedstonePowered) {
-                if (fuel != null && fuel.amount > 0) {
+            if (fuel != null && fuel.amount > 0) {
+                if (has_work()) {
+                    if (requires_redstone_power()) {
+                        if (!this.isRedstonePowered) return;
+                    }
                     if (--fuel.amount <= 0) {
                         this.tank_fuel.setFluid(null);
                     }
-                    if (has_work()) work();
+                    work();
                 }
             }
         }
     }
+
+    public abstract boolean requires_redstone_power();
 
     public abstract int[] get_accessible_slots_from_side(int side);
 
@@ -287,13 +292,14 @@ public abstract class TileEntityMachine extends TileBuildCraft implements IHasWo
         return true;
     }
 
-    public void getGUINetworkData(int id, int value) {
-        switch(id) {
+    public void getGUINetworkData(int id, int value)
+    {
+        switch (id) {
             case 0:
                 if (FluidRegistry.getFluid(value) != null) {
                     this.tank_fuel.setFluid(new FluidStack(FluidRegistry.getFluid(value), this.tank_fuel_amount_cache));
                 } else {
-                    this.tank_fuel.setFluid((FluidStack)null);
+                    this.tank_fuel.setFluid((FluidStack) null);
                 }
                 break;
             case 1:
@@ -309,13 +315,15 @@ public abstract class TileEntityMachine extends TileBuildCraft implements IHasWo
 
     }
 
-    public void sendGUINetworkData(Container containerEngine, ICrafting iCrafting) {
+    public void sendGUINetworkData(Container containerEngine, ICrafting iCrafting)
+    {
         iCrafting.sendProgressBarUpdate(containerEngine, 0, this.tank_fuel.getFluid() != null && this.tank_fuel.getFluid().getFluid() != null ? this.tank_fuel.getFluid().getFluid().getID() : 0);
         iCrafting.sendProgressBarUpdate(containerEngine, 1, this.tank_fuel.getFluid() != null ? this.tank_fuel.getFluid().amount : 0);
         iCrafting.sendProgressBarUpdate(containerEngine, 2, this.tank_fuel.colorRenderCache);
     }
 
-    public FluidStack fuel() {
+    public FluidStack fuel()
+    {
         return this.tank_fuel.getFluid();
     }
 

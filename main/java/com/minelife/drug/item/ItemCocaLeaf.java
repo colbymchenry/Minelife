@@ -1,6 +1,7 @@
 package com.minelife.drug.item;
 
 import com.minelife.Minelife;
+import com.minelife.drug.ModDrugs;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,7 +13,7 @@ public class ItemCocaLeaf extends Item {
 
     private ItemCocaLeaf()
     {
-        setCreativeTab(CreativeTabs.tabDecorations);
+        setCreativeTab(ModDrugs.tab_drugs);
         setTextureName(Minelife.MOD_ID + ":coca_leaf");
         setUnlocalizedName("coca_leaf");
         setMaxDamage(100);

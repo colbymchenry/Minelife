@@ -1,6 +1,7 @@
 package com.minelife.drug.item;
 
 import com.minelife.Minelife;
+import com.minelife.drug.ModDrugs;
 import com.minelife.drug.block.BlockCocaPlant;
 import ic2.core.crop.BlockCrop;
 import net.minecraft.block.Block;
@@ -20,7 +21,7 @@ public class ItemCocaSeeds extends Item implements IPlantable {
 
     private ItemCocaSeeds()
     {
-        setCreativeTab(CreativeTabs.tabFood);
+        setCreativeTab(ModDrugs.tab_drugs);
         setTextureName(Minelife.MOD_ID + ":coca_seeds");
         setUnlocalizedName("coca_seeds");
     }

@@ -1,6 +1,7 @@
 package com.minelife.drug.item;
 
 import com.minelife.Minelife;
+import com.minelife.drug.ModDrugs;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -22,7 +23,7 @@ public class ItemGrinder extends Item {
     private IIcon[] icons;
 
     private ItemGrinder() {
-        setCreativeTab(CreativeTabs.tabBrewing);
+        setCreativeTab(ModDrugs.tab_drugs);
         setHasSubtypes(true);
         setUnlocalizedName("grinder");
     }
