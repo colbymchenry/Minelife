@@ -1,5 +1,6 @@
 package com.minelife.gun;
 
+import com.minelife.Minelife;
 import com.minelife.gun.block.BlockZincOre;
 import cpw.mods.fml.common.IWorldGenerator;
 import net.minecraft.world.World;
@@ -14,7 +15,7 @@ public class ZincGenerator implements IWorldGenerator {
     private WorldGenerator worldGenerator;
 
     public ZincGenerator() {
-        worldGenerator = new WorldGenMinable(BlockZincOre.getBlock(), 8);
+        worldGenerator = new WorldGenMinable(Minelife.blocks.zinc_ore, 8);
     }
 
     @Override

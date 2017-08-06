@@ -3,6 +3,7 @@ package com.minelife.drug.tileentity;
 import buildcraft.api.transport.IPipeTile;
 import com.minelife.Minelife;
 import com.minelife.drug.DrugsGuiHandler;
+import com.minelife.drug.ModDrugs;
 import com.minelife.drug.item.ItemCannabisBuds;
 import com.minelife.drug.item.ItemCannabisShredded;
 import com.minelife.drug.item.ItemCocaLeaf;
@@ -52,11 +53,11 @@ public class TileEntityEntityLeafMulcher extends TileEntityMachine {
 
         if (input == null) return false;
 
-        if (input.getItem() == ItemCannabisBuds.instance()) {
-            if (output == null || (output.stackSize < 64 && output.getItem() == ItemCannabisShredded.instance()))
+        if (input.getItem() == Minelife.items.cannabis_buds) {
+            if (output == null || (output.stackSize < 64 && output.getItem() == Minelife.items.cannabis_shredded))
                 return true;
-        } else if (input.getItem() == ItemCocaLeaf.instance() && ItemCocaLeaf.get_moisture_level(input) == 0) {
-            if (output == null || (output.stackSize < 64 && output.getItem() == ItemCocaLeafShredded.instance()))
+        } else if (input.getItem() == Minelife.items.coca_leaf && Minelife.items.coca_leaf.get_moisture_level(input) == 0) {
+            if (output == null || (output.stackSize < 64 && output.getItem() == Minelife.items.coca_leaf_shredded))
                 return true;
         }
 
@@ -71,10 +72,10 @@ public class TileEntityEntityLeafMulcher extends TileEntityMachine {
         int output_stack_size = output == null ? 1 : output.stackSize + 1;
         ItemStack output_final = null;
 
-        if (input.getItem() == ItemCannabisBuds.instance()) {
-            output_final = new ItemStack(ItemCannabisShredded.instance(), output_stack_size);
-        } else if (input.getItem() == ItemCocaLeaf.instance()  && ItemCocaLeaf.get_moisture_level(input) == 0) {
-            output_final = new ItemStack(ItemCocaLeafShredded.instance(), output_stack_size);
+        if (input.getItem() == Minelife.items.cannabis_buds) {
+            output_final = new ItemStack(Minelife.items.cannabis_shredded, output_stack_size);
+        } else if (input.getItem() == Minelife.items.coca_leaf  && Minelife.items.coca_leaf.get_moisture_level(input) == 0) {
+            output_final = new ItemStack(Minelife.items.coca_leaf_shredded, output_stack_size);
         }
 
         if(output_final != null) {
@@ -127,7 +128,7 @@ public class TileEntityEntityLeafMulcher extends TileEntityMachine {
     @Override
     public boolean is_item_valid_for_slot(int slot, ItemStack stack)
     {
-        return stack != null && ((stack.getItem() == ItemCocaLeaf.instance()  && ItemCocaLeaf.get_moisture_level(stack) == 0) || stack.getItem() == ItemCannabisBuds.instance());
+        return stack != null && ((stack.getItem() == Minelife.items.coca_leaf  && Minelife.items.coca_leaf.get_moisture_level(stack) == 0) || stack.getItem() == Minelife.items.cannabis_buds);
     }
 
 }

@@ -7,14 +7,7 @@ import net.minecraft.block.material.Material;
 
 public class BlockPyrolusiteBlock extends Block {
 
-    private static BlockPyrolusiteBlock instance;
-
-    public static BlockPyrolusiteBlock instance() {
-        if(instance == null) instance = new BlockPyrolusiteBlock();
-        return instance;
-    }
-
-    private BlockPyrolusiteBlock()
+    public BlockPyrolusiteBlock()
     {
         super(Material.iron);
         setCreativeTab(ModDrugs.tab_drugs);

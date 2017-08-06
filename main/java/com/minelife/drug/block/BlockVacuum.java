@@ -5,13 +5,13 @@ import com.minelife.drug.ModDrugs;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 
-public class BlockCementMixer extends Block {
+public class BlockVacuum extends Block {
 
-    public BlockCementMixer()
+    public BlockVacuum()
     {
         super(Material.iron);
-        setBlockName("cement_mixer");
-        setBlockTextureName(Minelife.MOD_ID + ":cement_mixer");
+        setBlockName("vacuum");
+        setBlockTextureName(Minelife.MOD_ID + ":vacuum");
         setCreativeTab(ModDrugs.tab_drugs);
     }
 }

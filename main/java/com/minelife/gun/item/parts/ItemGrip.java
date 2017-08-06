@@ -1,5 +1,6 @@
 package com.minelife.gun.item.parts;
 
+import com.minelife.Minelife;
 import com.minelife.gun.item.ItemGunmetal;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.ItemStack;
@@ -11,6 +12,6 @@ public class ItemGrip extends ItemGunPart {
         GameRegistry.addRecipe(new ItemStack(this),
                 " G ",
                 " G ",
-                'G', ItemGunmetal.getItem());
+                'G', Minelife.items.gunmetal);
     }
 }

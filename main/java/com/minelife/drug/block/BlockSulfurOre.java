@@ -5,6 +5,7 @@ import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.item.ItemSulfur;
 import cpw.mods.fml.common.IWorldGenerator;
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -21,39 +22,32 @@ import java.util.Random;
 
 public class BlockSulfurOre extends Block {
 
-    private static BlockSulfurOre instance;
-
-    private BlockSulfurOre()
+    public BlockSulfurOre()
     {
         super(Material.rock);
         setHardness(3.0F).setResistance(5.0F).setStepSound(soundTypePiston);
         setCreativeTab(ModDrugs.tab_drugs);
         setBlockTextureName(Minelife.MOD_ID + ":sulfur_ore");
         setBlockName("sulfur_ore");
+        GameRegistry.registerWorldGenerator(new Generator(), 6);
     }
 
     @Override
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune)
     {
         ArrayList<ItemStack> drops = Lists.newArrayList();
-        drops.add(new ItemStack(ItemSulfur.instance(), fortune + MathHelper.getRandomIntegerInRange(world.rand, 2, 4)));
+        drops.add(new ItemStack(Minelife.items.sulfur, fortune + MathHelper.getRandomIntegerInRange(world.rand, 2, 4)));
         return drops;
     }
 
-    public static BlockSulfurOre instance()
-    {
-        if (instance == null) instance = new BlockSulfurOre();
-        return instance;
-    }
-
-    public static class Generator implements IWorldGenerator {
+    private class Generator implements IWorldGenerator {
 
         @Override
         public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
         {
             // only over-world
             if (world.provider.dimensionId == 0) {
-                this.generate(instance(), world, random, chunkX, chunkZ, 7, 20, 30, 60, Blocks.stone);
+                this.generate(Minelife.blocks.sulfur_ore, world, random, chunkX, chunkZ, 7, 20, 30, 60, Blocks.stone);
             }
         }
 

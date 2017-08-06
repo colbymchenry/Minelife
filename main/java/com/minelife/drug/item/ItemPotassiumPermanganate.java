@@ -5,6 +5,7 @@ import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.block.BlockAmmonia;
 import com.minelife.drug.block.BlockPotassiumPermanganate;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -15,27 +16,20 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 public class ItemPotassiumPermanganate extends ItemBucketBuildcraft {
 
-    private static ItemPotassiumPermanganate instance;
-
-    private ItemPotassiumPermanganate()
+    public ItemPotassiumPermanganate()
     {
-        super(BlockPotassiumPermanganate.instance());
+        super(Minelife.blocks.potassium_permanganate);
         setCreativeTab(ModDrugs.tab_drugs);
         setUnlocalizedName("potassium_permanganate");
         setContainerItem(Items.bucket);
         setTextureName(Minelife.MOD_ID + ":potassium_permanganate");
-        FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("potassium_permanganate", 1000), new ItemStack(this), new ItemStack(Items.bucket));
+
+
     }
 
     @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister par1IconRegister) {
         this.itemIcon = par1IconRegister.registerIcon(Minelife.MOD_ID + ":potassium_permanganate");
-    }
-
-    public static ItemPotassiumPermanganate instance()
-    {
-        if (instance == null) instance = new ItemPotassiumPermanganate();
-        return instance;
     }
 
 }

@@ -4,6 +4,7 @@ import buildcraft.core.lib.block.BlockBuildCraft;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.tileentity.TileEntityEntityLeafMulcher;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
@@ -20,18 +21,14 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockLeafMulcher extends BlockBuildCraft {
 
-    private static BlockLeafMulcher instance;
     private IIcon icon;
 
-    private BlockLeafMulcher()
+    public BlockLeafMulcher()
     {
         super(Material.iron);
         setCreativeTab(ModDrugs.tab_drugs);
-    }
-
-    public static BlockLeafMulcher instance() {
-        if(instance == null) instance = new BlockLeafMulcher();
-        return instance;
+        GameRegistry.registerTileEntity(TileEntityEntityLeafMulcher.class, "leaf_mulcher");
+        setBlockName("leaf_mulcher");
     }
 
     @Override

@@ -32,8 +32,6 @@ public class ModEconomy extends AbstractMod {
     public void preInit(FMLPreInitializationEvent event)
     {
         GameRegistry.registerTileEntity(TileEntityATM.class, "tileATM");
-        GameRegistry.registerBlock(BlockATM.INSTANCE, BlockATM.NAME);
-        GameRegistry.registerBlock(BlockATMTop.INSTANCE, BlockATMTop.NAME);
 
         registerPacket(PacketOpenATM.Handler.class, PacketOpenATM.class, Side.CLIENT);
         registerPacket(PacketVerifyPin.Handler.class, PacketVerifyPin.class, Side.SERVER);

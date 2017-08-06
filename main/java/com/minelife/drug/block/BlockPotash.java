@@ -3,6 +3,7 @@ package com.minelife.drug.block;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import cpw.mods.fml.common.IWorldGenerator;
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
@@ -14,28 +15,22 @@ import java.util.Random;
 
 public class BlockPotash extends Block {
 
-    private static BlockPotash instance;
-
-    public static BlockPotash instance() {
-        if(instance == null) instance = new BlockPotash();
-        return instance;
-    }
-
-    private BlockPotash() {
+    public BlockPotash() {
         super(Material.rock);
         setCreativeTab(ModDrugs.tab_drugs);
         setBlockName("potash");
         setBlockTextureName(Minelife.MOD_ID + ":potash");
+        GameRegistry.registerWorldGenerator(new Generator(), 0);
     }
 
-    public static class Generator implements IWorldGenerator {
+    private class Generator implements IWorldGenerator {
 
         @Override
         public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
         {
             // only over-world
             if (world.provider.dimensionId == 0) {
-                this.generate(instance(), world, random, chunkX, chunkZ, 20, 50, 20, 60, Blocks.stone);
+                this.generate(Minelife.blocks.potash, world, random, chunkX, chunkZ, 20, 50, 20, 60, Blocks.stone);
             }
         }
 

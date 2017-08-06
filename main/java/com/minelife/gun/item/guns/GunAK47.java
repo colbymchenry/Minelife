@@ -1,6 +1,7 @@
 package com.minelife.gun.item.guns;
 
 import buildcraft.BuildCraftCore;
+import com.minelife.Minelife;
 import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.parts.ItemGunPart;
@@ -44,9 +45,9 @@ public class GunAK47 extends ItemGun {
     @Override
     public List<ItemAmmo> getAmmo() {
         return new ArrayList<ItemAmmo>() {{
-            add(ItemAmmo.ammo556);
-            add(ItemAmmo.ammo556Explosive);
-            add(ItemAmmo.ammo556Incendiary);
+            add(Minelife.items.ammo_556);
+            add(Minelife.items.ammo_556_explosive);
+            add(Minelife.items.ammo_556_incendiary);
         }};
     }
 
@@ -68,7 +69,7 @@ public class GunAK47 extends ItemGun {
                 "TTT",
                 'L', Item.getItemFromBlock(Blocks.log),
                 'S', BuildCraftCore.ironGearItem,
-                'F', ItemGunPart.rifleFrame,
+                'F', Minelife.items.rifle_frame,
                 'T', Item.getItemFromBlock(Blocks.iron_block));
     }
 

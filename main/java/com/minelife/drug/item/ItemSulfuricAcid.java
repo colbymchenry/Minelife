@@ -18,30 +18,20 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 public class ItemSulfuricAcid extends ItemBucketBuildcraft {
 
-    private static ItemSulfuricAcid instance;
-
-    private ItemSulfuricAcid()
+    public ItemSulfuricAcid()
     {
-        super(BlockSulfuricAcid.instance());
+        super(Minelife.blocks.sulfuric_acid);
         setCreativeTab(ModDrugs.tab_drugs);
         setUnlocalizedName("sulfuric_acid");
         setContainerItem(Items.bucket);
         setTextureName(Minelife.MOD_ID + ":sulfuric_acid");
-        FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("sulfuric_acid", 1000), new ItemStack(this), new ItemStack(Items.bucket));
+
+
     }
 
     @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister par1IconRegister) {
         this.itemIcon = par1IconRegister.registerIcon(Minelife.MOD_ID + ":sulfuric_acid");
-    }
-
-    public static ItemSulfuricAcid instance() {
-        if(instance == null) instance = new ItemSulfuricAcid();
-        return instance;
-    }
-
-    public static void register_recipe() {
-        GameRegistry.addSmelting(ItemSulfur.instance(), new ItemStack(instance()), 0.3F);
     }
 
 

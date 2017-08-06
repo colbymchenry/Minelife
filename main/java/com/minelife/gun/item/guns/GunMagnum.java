@@ -1,6 +1,7 @@
 package com.minelife.gun.item.guns;
 
 import buildcraft.BuildCraftCore;
+import com.minelife.Minelife;
 import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.parts.ItemGunPart;
@@ -42,8 +43,8 @@ public class GunMagnum extends ItemGun {
     @Override
     public List<ItemAmmo> getAmmo() {
         return new ArrayList<ItemAmmo>() {{
-            add(ItemAmmo.ammoPistol);
-            add(ItemAmmo.ammoPistolIncendiary);
+            add(Minelife.items.ammo_pistol);
+            add(Minelife.items.ammo_pistol_incendiary);
         }};
     }
 
@@ -63,7 +64,7 @@ public class GunMagnum extends ItemGun {
                 "SFS",
                 "TTT",
                 'S', BuildCraftCore.ironGearItem,
-                'F', ItemGunPart.pistolFrame,
+                'F', Minelife.items.pistol_frame,
                 'T', Items.iron_ingot);
     }
 

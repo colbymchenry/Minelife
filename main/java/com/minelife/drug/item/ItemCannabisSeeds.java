@@ -17,20 +17,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class ItemCannabisSeeds extends Item implements IPlantable {
 
-    private static ItemCannabisSeeds instance;
-
-    private ItemCannabisSeeds()
+    public ItemCannabisSeeds()
     {
-        super();
         setCreativeTab(ModDrugs.tab_drugs);
         setTextureName(Minelife.MOD_ID + ":cannabis_seeds");
         setUnlocalizedName("cannabis_seeds");
-    }
-
-    public static ItemCannabisSeeds instance()
-    {
-        if (instance == null) instance = new ItemCannabisSeeds();
-        return instance;
     }
 
     @Override
@@ -48,7 +39,7 @@ public class ItemCannabisSeeds extends Item implements IPlantable {
                     parX, parY, parZ, ForgeDirection.UP, this) && parWorld
                     .isAirBlock(parX, parY + 1, parZ)) {
                 // place the plant block
-                parWorld.setBlock(parX, parY + 1, parZ, BlockCannabisPlant.instance());
+                parWorld.setBlock(parX, parY + 1, parZ, Minelife.blocks.cannabis_plant);
                 // decrement the stack of seed items
                 --parItemStack.stackSize;
                 return true;
@@ -69,7 +60,7 @@ public class ItemCannabisSeeds extends Item implements IPlantable {
     @Override
     public Block getPlant(IBlockAccess world, int x, int y, int z)
     {
-        return BlockCannabisPlant.instance();
+        return Minelife.blocks.cannabis_plant;
     }
 
     @Override

@@ -16,20 +16,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class ItemLimeSeeds extends Item implements IPlantable {
 
-    private static ItemLimeSeeds instance;
-
-    private ItemLimeSeeds()
+    public ItemLimeSeeds()
     {
-        super();
         setCreativeTab(ModDrugs.tab_drugs);
         setTextureName(Minelife.MOD_ID + ":lime_seeds");
         setUnlocalizedName("lime_seeds");
-    }
-
-    public static ItemLimeSeeds instance()
-    {
-        if (instance == null) instance = new ItemLimeSeeds();
-        return instance;
     }
 
     @Override
@@ -47,7 +38,7 @@ public class ItemLimeSeeds extends Item implements IPlantable {
                     parX, parY, parZ, ForgeDirection.UP, this) && parWorld
                     .isAirBlock(parX, parY + 1, parZ)) {
                 // place the plant block
-                parWorld.setBlock(parX, parY + 1, parZ, BlockLimePlant.instance());
+                parWorld.setBlock(parX, parY + 1, parZ, Minelife.blocks.lime_plant);
                 // decrement the stack of seed items
                 --parItemStack.stackSize;
                 return true;
@@ -68,7 +59,7 @@ public class ItemLimeSeeds extends Item implements IPlantable {
     @Override
     public Block getPlant(IBlockAccess world, int x, int y, int z)
     {
-        return BlockLimePlant.instance();
+        return Minelife.blocks.lime_plant;
     }
 
     @Override

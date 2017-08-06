@@ -1,6 +1,7 @@
 package com.minelife.drug.block;
 
 import com.minelife.Minelife;
+import com.minelife.drug.ModDrugs;
 import com.minelife.drug.item.ItemCannabisBuds;
 import com.minelife.drug.item.ItemCannabisSeeds;
 import com.minelife.drug.item.ItemCocaLeaf;
@@ -17,16 +18,10 @@ import java.util.Random;
 
 public class BlockCannabisPlant extends AbstractCrop {
 
-    private static BlockCannabisPlant instance;
     private static Random random = new Random();
 
-    private BlockCannabisPlant()
-    {
-    }
-
-    public static BlockCannabisPlant instance() {
-        if(instance == null) instance = new BlockCannabisPlant();
-        return instance;
+    public BlockCannabisPlant() {
+        setBlockName("cannabis_plant");
     }
 
     @Override
@@ -40,8 +35,8 @@ public class BlockCannabisPlant extends AbstractCrop {
         if (player.getHeldItem() != null && player.getHeldItem().getItem() == Items.dye && player.getHeldItem().getItemDamage() == 15)
             return false;
 
-        EntityItem entity_item_buds = player.dropPlayerItemWithRandomChoice(new ItemStack(ItemCannabisBuds.instance(), MathHelper.getRandomIntegerInRange(random, 4, 6)), false);
-        EntityItem entity_item_seeds = player.dropPlayerItemWithRandomChoice(new ItemStack(ItemCannabisSeeds.instance(), MathHelper.getRandomIntegerInRange(random, 0, 2)), false);
+        EntityItem entity_item_buds = player.dropPlayerItemWithRandomChoice(new ItemStack(Minelife.items.cannabis_buds, MathHelper.getRandomIntegerInRange(random, 4, 6)), false);
+        EntityItem entity_item_seeds = player.dropPlayerItemWithRandomChoice(new ItemStack(Minelife.items.cannabis_seeds, MathHelper.getRandomIntegerInRange(random, 0, 2)), false);
         entity_item_buds.delayBeforeCanPickup = 0;
         entity_item_seeds.delayBeforeCanPickup = 0;
         set_growth_stage(world, x, y, z, max_growth_stage() - 6);

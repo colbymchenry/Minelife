@@ -29,40 +29,23 @@ import java.util.List;
 
 public abstract class ItemGun extends Item {
 
-    public static GunAK47 ak47;
-    public static GunAWP awp;
-    public static GunBarrett barrett;
-    public static GunDesertEagle desertEagle;
-    public static GunM4A4 m4A4;
-    public static GunMagnum magnum;
-
-    public static final void registerGuns() {
-        ak47 = new GunAK47();
-        awp = new GunAWP();
-        barrett = new GunBarrett();
-        desertEagle = new GunDesertEagle();
-        m4A4 = new GunM4A4();
-        magnum = new GunMagnum();
-        registerRecipes();
-    }
-
     public static final void registerRecipes() {
-        ak47.registerRecipe();
-        awp.registerRecipe();
-        barrett.registerRecipe();
-        desertEagle.registerRecipe();
-        m4A4.registerRecipe();
-        magnum.registerRecipe();
+        Minelife.items.ak47.registerRecipe();
+        Minelife.items.awp.registerRecipe();
+        Minelife.items.barrett.registerRecipe();
+        Minelife.items.desert_eagle.registerRecipe();
+        Minelife.items.m4a4.registerRecipe();
+        Minelife.items.magnum.registerRecipe();
     }
 
     @SideOnly(Side.CLIENT)
     public static final void registerRenderers() {
-        MinecraftForgeClient.registerItemRenderer(ak47, new RenderGun(ak47));
-        MinecraftForgeClient.registerItemRenderer(awp, new RenderGun(awp));
-        MinecraftForgeClient.registerItemRenderer(barrett, new RenderGun(barrett));
-        MinecraftForgeClient.registerItemRenderer(desertEagle, new RenderGun(desertEagle));
-        MinecraftForgeClient.registerItemRenderer(m4A4, new RenderGun(m4A4));
-        MinecraftForgeClient.registerItemRenderer(magnum, new RenderGun(magnum));
+        MinecraftForgeClient.registerItemRenderer(Minelife.items.ak47, new RenderGun(Minelife.items.ak47));
+        MinecraftForgeClient.registerItemRenderer(Minelife.items.awp, new RenderGun(Minelife.items.awp));
+        MinecraftForgeClient.registerItemRenderer(Minelife.items.barrett, new RenderGun(Minelife.items.barrett));
+        MinecraftForgeClient.registerItemRenderer(Minelife.items.desert_eagle, new RenderGun(Minelife.items.desert_eagle));
+        MinecraftForgeClient.registerItemRenderer(Minelife.items.m4a4, new RenderGun(Minelife.items.m4a4));
+        MinecraftForgeClient.registerItemRenderer(Minelife.items.magnum, new RenderGun(Minelife.items.magnum));
     }
 
     @SideOnly(Side.CLIENT)
@@ -71,7 +54,6 @@ public abstract class ItemGun extends Item {
     public ItemGun() {
         setUnlocalizedName(getName());
         setCreativeTab(ModGun.tabGuns);
-        GameRegistry.registerItem(this, getClass().getSimpleName());
     }
 
     @Override

@@ -9,9 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class ItemCocaLeaf extends Item {
 
-    private static ItemCocaLeaf instance;
-
-    private ItemCocaLeaf()
+    public ItemCocaLeaf()
     {
         setCreativeTab(ModDrugs.tab_drugs);
         setTextureName(Minelife.MOD_ID + ":coca_leaf");
@@ -19,22 +17,16 @@ public class ItemCocaLeaf extends Item {
         setMaxDamage(100);
     }
 
-    public static ItemCocaLeaf instance()
-    {
-        if (instance == null) instance = new ItemCocaLeaf();
-        return instance;
-    }
-
-    public static void set_moisture_level(ItemStack stack, int moisture) {
+    public void set_moisture_level(ItemStack stack, int moisture) {
         if(stack == null) return;
-        if(stack.getItem() != instance()) return;
+        if(stack.getItem() != this) return;
         moisture = moisture < 0 ? 0 : moisture > 100 ? 100 : moisture;
         stack.setItemDamage(moisture);
     }
 
-    public static int get_moisture_level(ItemStack stack) {
+    public int get_moisture_level(ItemStack stack) {
         if(stack == null) return 0;
-        if(stack.getItem() != instance()) return 0;
+        if(stack.getItem() != this) return 0;
 
         return stack.getItemDamage();
     }

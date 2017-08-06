@@ -15,17 +15,12 @@ import net.minecraft.world.World;
 
 public class BlockDryingRack extends BlockContainer {
 
-    private static BlockDryingRack instance;
     private IIcon icon;
 
-    private BlockDryingRack()
+    public BlockDryingRack()
     {
         super(Material.wood);
-    }
-
-    public static BlockDryingRack instance() {
-        if(instance == null) instance = new BlockDryingRack();
-        return instance;
+        setBlockName("drying_rack");
     }
 
     @Override

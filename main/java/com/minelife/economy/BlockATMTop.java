@@ -17,14 +17,11 @@ import net.minecraft.world.World;
 
 public class BlockATMTop extends Block {
 
-    public static final BlockATMTop INSTANCE = new BlockATMTop();
-    public static final String NAME = "atm_top";
-
     private IIcon icon;
 
-    private BlockATMTop() {
+    public BlockATMTop() {
         super(Material.iron);
-        this.setBlockName(NAME);
+        this.setBlockName("atm_top");
     }
 
     /**
@@ -77,7 +74,7 @@ public class BlockATMTop extends Block {
 
     @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int side) {
-        if (world.getBlock(x, y - 1, z) == BlockATM.INSTANCE)
+        if (world.getBlock(x, y - 1, z) == Minelife.blocks.atm)
             world.setBlockToAir(x, y - 1, z);
     }
 

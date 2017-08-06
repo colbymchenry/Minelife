@@ -15,10 +15,9 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 public class BlockSulfuricAcid extends BlockBuildCraftFluid {
 
-    private static BlockSulfuricAcid instance;
-    private static Fluid fluid;
+    private static Fluid fluid = new Fluid("sulfuric_acid");
 
-    private BlockSulfuricAcid()
+    public BlockSulfuricAcid()
     {
         super(fluid, Material.water, MapColor.airColor);
         setParticleColor(0.7F, 0.7F, 0.0F);
@@ -32,14 +31,8 @@ public class BlockSulfuricAcid extends BlockBuildCraftFluid {
         this.theIcon = new IIcon[]{iconRegister.registerIcon(Minelife.MOD_ID + ":sulfuric_acid_still"), iconRegister.registerIcon(Minelife.MOD_ID + ":sulfuric_acid_flow")};
     }
 
-    public static BlockSulfuricAcid instance()
-    {
-        if (instance == null) instance = new BlockSulfuricAcid();
-        return instance;
-    }
-
     public static void register_fluid() {
-        FluidRegistry.registerFluid(fluid = new Fluid("sulfuric_acid"));
+        FluidRegistry.registerFluid(fluid);
     }
 
     public static Fluid fluid() {

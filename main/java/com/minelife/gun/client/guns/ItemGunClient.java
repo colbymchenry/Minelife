@@ -21,12 +21,12 @@ import org.lwjgl.input.Mouse;
 @SideOnly(Side.CLIENT)
 public abstract class ItemGunClient {
 
-    public static GunClientAK47 ak47 = new GunClientAK47(ItemGun.ak47);
-    public static GunClientAWP awp = new GunClientAWP(ItemGun.awp);
-    public static GunClientBarrett barrett = new GunClientBarrett(ItemGun.barrett);
-    public static GunClientDesertEagle desertEagle = new GunClientDesertEagle(ItemGun.desertEagle);
-    public static GunClientM4A4 m4A4 = new GunClientM4A4(ItemGun.m4A4);
-    public static GunClientMagnum magnum = new GunClientMagnum(ItemGun.magnum);
+    public static GunClientAK47 ak47 = new GunClientAK47(Minelife.items.ak47);
+    public static GunClientAWP awp = new GunClientAWP(Minelife.items.awp);
+    public static GunClientBarrett barrett = new GunClientBarrett(Minelife.items.barrett);
+    public static GunClientDesertEagle desertEagle = new GunClientDesertEagle(Minelife.items.desert_eagle);
+    public static GunClientM4A4 m4A4 = new GunClientM4A4(Minelife.items.m4a4);
+    public static GunClientMagnum magnum = new GunClientMagnum(Minelife.items.magnum);
 
     private final ResourceLocation texture, objModel;
     private final IModelCustom model;

@@ -22,15 +22,12 @@ import net.minecraft.world.World;
 
 public class BlockATM extends BlockContainer {
 
-    public static final BlockATM INSTANCE = new BlockATM();
-    public static final String NAME = "atm";
-
     private IIcon icon;
 
     public BlockATM() {
         super(Material.iron);
 
-        this.setBlockName(NAME);
+        this.setBlockName("atm");
         this.setCreativeTab(CreativeTabs.tabRedstone);
         this.setBlockBounds(0, 0, 0, 1, 2, 1);
     }
@@ -90,7 +87,7 @@ public class BlockATM extends BlockContainer {
         TileEntityATM tileEntityATM = (TileEntityATM) world.getTileEntity(x, y, z);
         tileEntityATM.setFacing(l == 0 ? EnumFacing.NORTH : l == 1 ? EnumFacing.EAST : l == 2 ? EnumFacing.SOUTH : EnumFacing.WEST);
 
-        world.setBlock(x, y + 1, z, BlockATMTop.INSTANCE);
+        world.setBlock(x, y + 1, z, Minelife.blocks.atm_top);
     }
 
     @Override
@@ -108,7 +105,7 @@ public class BlockATM extends BlockContainer {
 
     @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int side) {
-        if (world.getBlock(x, y + 1, z) == BlockATMTop.INSTANCE)
+        if (world.getBlock(x, y + 1, z) == Minelife.blocks.atm_top)
             world.setBlockToAir(x, y + 1, z);
     }
 

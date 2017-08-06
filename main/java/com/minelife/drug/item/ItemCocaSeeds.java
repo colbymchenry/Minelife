@@ -17,19 +17,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class ItemCocaSeeds extends Item implements IPlantable {
 
-    private static ItemCocaSeeds instance;
-
-    private ItemCocaSeeds()
+    public ItemCocaSeeds()
     {
         setCreativeTab(ModDrugs.tab_drugs);
         setTextureName(Minelife.MOD_ID + ":coca_seeds");
         setUnlocalizedName("coca_seeds");
-    }
-
-    public static ItemCocaSeeds instance()
-    {
-        if (instance == null) instance = new ItemCocaSeeds();
-        return instance;
     }
 
     @Override
@@ -47,7 +39,7 @@ public class ItemCocaSeeds extends Item implements IPlantable {
                     parX, parY, parZ, ForgeDirection.UP, this) && parWorld
                     .isAirBlock(parX, parY + 1, parZ)) {
                 // place the plant block
-                parWorld.setBlock(parX, parY + 1, parZ, BlockCocaPlant.instance());
+                parWorld.setBlock(parX, parY + 1, parZ, Minelife.blocks.coca_plant);
                 // decrement the stack of seed items
                 --parItemStack.stackSize;
                 return true;
@@ -68,7 +60,7 @@ public class ItemCocaSeeds extends Item implements IPlantable {
     @Override
     public Block getPlant(IBlockAccess world, int x, int y, int z)
     {
-        return BlockCocaPlant.instance();
+        return Minelife.blocks.coca_plant;
     }
 
     @Override

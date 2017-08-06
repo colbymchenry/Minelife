@@ -1,6 +1,8 @@
 package com.minelife.drug.client;
 
 import com.minelife.CommonProxy;
+import com.minelife.Minelife;
+import com.minelife.drug.ModDrugs;
 import com.minelife.drug.block.BlockLeafMulcher;
 import com.minelife.drug.client.render.ItemCocaLeafRenderer;
 import com.minelife.drug.client.render.ItemLeafMulcherRenderer;
@@ -21,7 +23,7 @@ public class ClientProxy extends CommonProxy {
     {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEntityLeafMulcher.class, new TileEntityLeafMulcherRenderer());
 //        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDryingRack.class, new TileEntityDryingRackRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlockLeafMulcher.instance()), new ItemLeafMulcherRenderer());
-        MinecraftForgeClient.registerItemRenderer(ItemCocaLeaf.instance(), new ItemCocaLeafRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(Minelife.blocks.leaf_mulcher), new ItemLeafMulcherRenderer());
+        MinecraftForgeClient.registerItemRenderer(Minelife.items.coca_leaf, new ItemCocaLeafRenderer());
     }
 }

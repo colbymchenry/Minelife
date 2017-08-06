@@ -7,17 +7,10 @@ import net.minecraft.item.Item;
 
 public class ItemCannabisBuds extends Item {
 
-    private static ItemCannabisBuds instance;
-
-    private ItemCannabisBuds(){
+    public ItemCannabisBuds(){
         setCreativeTab(ModDrugs.tab_drugs);
         setTextureName(Minelife.MOD_ID + ":buds");
         setUnlocalizedName("cannabis_buds");
-    }
-
-    public static ItemCannabisBuds instance() {
-        if(instance == null) instance = new ItemCannabisBuds();
-        return instance;
     }
 
 }

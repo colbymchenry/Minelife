@@ -19,10 +19,9 @@ import java.util.List;
 
 public class ItemGrinder extends Item {
 
-    private static ItemGrinder instance;
     private IIcon[] icons;
 
-    private ItemGrinder() {
+    public ItemGrinder() {
         setCreativeTab(ModDrugs.tab_drugs);
         setHasSubtypes(true);
         setUnlocalizedName("grinder");
@@ -53,18 +52,6 @@ public class ItemGrinder extends Item {
         for (int i = 0; i < ItemDye.field_150921_b.length; ++i)
         {
             this.icons[i] = icon_register.registerIcon(Minelife.MOD_ID + ":grinder_" + ItemDye.field_150921_b[i]);
-        }
-    }
-
-    public static ItemGrinder instance() {
-        if(instance == null) instance = new ItemGrinder();
-        return instance;
-    }
-
-    public static void register_recipe() {
-        GameRegistry.addShapedRecipe(new ItemStack(instance()), "AAA", "BBB", "AAA", 'A', Item.getItemFromBlock(Blocks.planks), 'B', Items.iron_ingot);
-        for(int i = 0; i < ItemDye.field_150921_b.length; i++) {
-            GameRegistry.addShapelessRecipe(new ItemStack(instance(), 1, i), instance(), new ItemStack(Items.dye, 1, i));
         }
     }
 

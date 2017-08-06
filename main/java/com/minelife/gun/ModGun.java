@@ -2,6 +2,7 @@ package com.minelife.gun;
 
 import com.minelife.CommonProxy;
 import com.minelife.AbstractMod;
+import com.minelife.Minelife;
 import com.minelife.gun.block.BlockZincOre;
 import com.minelife.gun.item.*;
 import com.minelife.gun.item.ammos.ItemAmmo;
@@ -41,20 +42,19 @@ public class ModGun extends AbstractMod {
 
     @Override
     public void init(FMLInitializationEvent event) {
-//       Recipes.macerator.addRecipe(new RecipeInputItemStack(yourInputItemStack, amount), null, yourItemStackOutput);
         GameRegistry.registerWorldGenerator(new ZincGenerator(), 0);
-        GameRegistry.addSmelting(BlockZincOre.getBlock(), new ItemStack(ItemZincIngot.getItem(), 1), 1F);
+        GameRegistry.addSmelting(Minelife.blocks.zinc_ore, new ItemStack(Minelife.items.zinc_ingot, 1), 1F);
 
-        GameRegistry.addRecipe(new ItemStack(ItemGunmetal.getItem()),
+        GameRegistry.addRecipe(new ItemStack(Minelife.items.gunmetal),
                 "CCC",
                 "ZZZ",
                 "TTT",
                 'C', Ic2Items.platecopper,
-                'Z', ItemZincPlate.getItem(),
+                'Z', Minelife.items.zinc_plate,
                 'T', Ic2Items.platetin
         );
 
-        GameRegistry.addShapelessRecipe(new ItemStack(ItemZincPlate.getItem()), new ItemStack(ForgeHammer.getItem(), 1, OreDictionary.WILDCARD_VALUE), ItemZincIngot.getItem());
+        GameRegistry.addShapelessRecipe(new ItemStack(Minelife.items.zinc_plate), new ItemStack(ForgeHammer.getItem(), 1, OreDictionary.WILDCARD_VALUE), Minelife.items.zinc_ingot);
     }
 
     @Override
@@ -63,14 +63,9 @@ public class ModGun extends AbstractMod {
         registerPacket(PacketReload.Handler.class, PacketReload.class, Side.SERVER);
         registerPacket(PacketSetAmmoType.Handler.class, PacketSetAmmoType.class, Side.SERVER);
 
-        GameRegistry.registerBlock(BlockZincOre.getBlock(), "zincOre");
-        GameRegistry.registerItem(ItemGunmetal.getItem(), "gunMetal");
-        GameRegistry.registerItem(ItemZincIngot.getItem(), "zincIngot");
-        GameRegistry.registerItem(ItemZincPlate.getItem(), "zincPlate");
-
-        ItemGunPart.registerParts();
-        ItemAmmo.registerAmmos();
-        ItemGun.registerGuns();
+        ItemGunPart.registerRecipes();
+        ItemAmmo.registerRecipes();
+        ItemGun.registerRecipes();
     }
 
     @Override

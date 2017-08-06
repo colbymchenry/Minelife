@@ -9,23 +9,12 @@ import net.minecraft.item.ItemStack;
 
 public class ItemCocaLeafShredded extends Item {
 
-    private static ItemCocaLeafShredded instance;
-
-    private ItemCocaLeafShredded()
+    public ItemCocaLeafShredded()
     {
         setCreativeTab(ModDrugs.tab_drugs);
         setTextureName(Minelife.MOD_ID + ":coca_leaf_shredded");
         setUnlocalizedName("coca_leaf_shredded");
-    }
 
-    public static ItemCocaLeafShredded instance()
-    {
-        if (instance == null) instance = new ItemCocaLeafShredded();
-        return instance;
-    }
-
-    public static void register_recipe() {
-        GameRegistry.addShapelessRecipe(new ItemStack(instance()), ItemGrinder.instance(), ItemCocaLeaf.instance());
     }
 
 }

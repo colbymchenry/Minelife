@@ -19,7 +19,9 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import lib.PatPeter.SQLibrary.Database;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -49,6 +51,9 @@ public class Minelife {
 
     public static String default_error_message = EnumChatFormatting.RED + "Sorry, something went wrong. Notify a staff member.";
 
+    public static MinelifeBlocks blocks = new MinelifeBlocks();
+    public static MinelifeItems items = new MinelifeItems();
+
     public Minelife() {
         MODS.add(new ModPermission());
         MODS.add(new ModNotifications());
@@ -62,11 +67,11 @@ public class Minelife {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         NETWORK = new SimpleNetworkWrapper(MOD_ID);
-
+        items.init();
+        blocks.init();
         AbstractMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
         MODS.forEach(mod -> mod.preInit(event));
         PROXY.preInit(event);
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Mod.EventHandler

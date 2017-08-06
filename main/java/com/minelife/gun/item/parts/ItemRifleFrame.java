@@ -1,5 +1,6 @@
 package com.minelife.gun.item.parts;
 
+import com.minelife.Minelife;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.ItemStack;
 
@@ -10,10 +11,10 @@ public class ItemRifleFrame extends ItemGunPart {
         GameRegistry.addRecipe(new ItemStack(this),
                 "STB",
                 " G ",
-                'S', ItemGunPart.rifleStock,
-                'T', ItemGunPart.trigger,
-                'B', ItemGunPart.rifleBarrel,
-                'G', ItemGunPart.grip);
+                'S', Minelife.items.rifle_stock,
+                'T', Minelife.items.trigger,
+                'B', Minelife.items.rifle_barrel,
+                'G', Minelife.items.grip);
     }
 
 }
