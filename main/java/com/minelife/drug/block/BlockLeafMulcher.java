@@ -3,13 +3,12 @@ package com.minelife.drug.block;
 import buildcraft.core.lib.block.BlockBuildCraft;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
-import com.minelife.drug.tileentity.TileEntityEntityLeafMulcher;
+import com.minelife.drug.tileentity.TileEntityLeafMulcher;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -27,7 +26,7 @@ public class BlockLeafMulcher extends BlockBuildCraft {
     {
         super(Material.iron);
         setCreativeTab(ModDrugs.tab_drugs);
-        GameRegistry.registerTileEntity(TileEntityEntityLeafMulcher.class, "leaf_mulcher");
+        GameRegistry.registerTileEntity(TileEntityLeafMulcher.class, "leaf_mulcher");
         setBlockName("leaf_mulcher");
     }
 
@@ -45,7 +44,7 @@ public class BlockLeafMulcher extends BlockBuildCraft {
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-        TileEntityEntityLeafMulcher tile = (TileEntityEntityLeafMulcher) world.getTileEntity(x, y, z);
+        TileEntityLeafMulcher tile = (TileEntityLeafMulcher) world.getTileEntity(x, y, z);
         tile.onBlockActivated(player, ForgeDirection.getOrientation(side));
         return true;
     }
@@ -53,7 +52,7 @@ public class BlockLeafMulcher extends BlockBuildCraft {
     @Override
     public TileEntity createNewTileEntity(World world, int meta)
     {
-        return new TileEntityEntityLeafMulcher();
+        return new TileEntityLeafMulcher();
     }
 
     @Override

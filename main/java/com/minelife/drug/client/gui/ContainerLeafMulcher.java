@@ -2,7 +2,7 @@ package com.minelife.drug.client.gui;
 
 import buildcraft.core.lib.gui.BuildCraftContainer;
 import buildcraft.core.lib.gui.slots.SlotOutput;
-import com.minelife.drug.tileentity.TileEntityEntityLeafMulcher;
+import com.minelife.drug.tileentity.TileEntityLeafMulcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ICrafting;
@@ -10,9 +10,9 @@ import net.minecraft.inventory.Slot;
 
 public class ContainerLeafMulcher extends BuildCraftContainer {
 
-    private TileEntityEntityLeafMulcher tile_leaf_mulcher;
+    private TileEntityLeafMulcher tile_leaf_mulcher;
 
-    public ContainerLeafMulcher(InventoryPlayer inventory_player, TileEntityEntityLeafMulcher tile_leaf_mulcher)
+    public ContainerLeafMulcher(InventoryPlayer inventory_player, TileEntityLeafMulcher tile_leaf_mulcher)
     {
         super(tile_leaf_mulcher.getSizeInventory());
         this.tile_leaf_mulcher = tile_leaf_mulcher;

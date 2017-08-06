@@ -1,5 +1,6 @@
 package com.minelife.drug.block;
 
+import com.minelife.MLBlocks;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import cpw.mods.fml.common.IWorldGenerator;
@@ -30,7 +31,7 @@ public class BlockLimestone extends Block {
         {
             // only over-world
             if (world.provider.dimensionId == 0) {
-                this.generate(Minelife.blocks.limestone, world, random, chunkX, chunkZ, 20, 50, 20, 60, Blocks.stone);
+                this.generate(MLBlocks.limestone, world, random, chunkX, chunkZ, 20, 50, 20, 60, Blocks.stone);
             }
         }
 

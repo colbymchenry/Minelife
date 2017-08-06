@@ -1,9 +1,6 @@
 package com.minelife.drug;
 
-import com.minelife.AbstractGuiHandler;
-import com.minelife.AbstractMod;
-import com.minelife.CommonProxy;
-import com.minelife.Minelife;
+import com.minelife.*;
 import com.minelife.drug.block.*;
 import com.minelife.drug.item.*;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -24,40 +21,40 @@ public class ModDrugs extends AbstractMod {
     public static final CreativeTabs tab_drugs = new CreativeTabs("tab_drugs") {
         @Override
         public Item getTabIconItem() {
-            return Minelife.items.grinder;
+            return MLItems.grinder;
         }
     };
 
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
-        BucketHandler.INSTANCE.buckets.put(Minelife.blocks.ammonia, Minelife.items.ammonia);
-        BucketHandler.INSTANCE.buckets.put(Minelife.blocks.sulfuric_acid, Minelife.items.sulfuric_acid);
-        BucketHandler.INSTANCE.buckets.put(Minelife.blocks.potassium_permanganate, Minelife.items.potassium_permanganate);
+        BucketHandler.INSTANCE.buckets.put(MLBlocks.ammonia, MLItems.ammonia);
+        BucketHandler.INSTANCE.buckets.put(MLBlocks.sulfuric_acid, MLItems.sulfuric_acid);
+        BucketHandler.INSTANCE.buckets.put(MLBlocks.potassium_permanganate, MLItems.potassium_permanganate);
 
         // register recipes
-        GameRegistry.addShapelessRecipe(new ItemStack(Minelife.items.calcium_hydroxide), Items.water_bucket, Minelife.items.calcium_oxide);
-        GameRegistry.addSmelting(Item.getItemFromBlock(Minelife.blocks.limestone), new ItemStack(Minelife.items.calcium_oxide), 0.3F);
-        GameRegistry.addShapelessRecipe(new ItemStack(Minelife.items.cannabis_shredded), Minelife.items.cannabis_buds, Minelife.items.grinder);
-        GameRegistry.addShapelessRecipe(new ItemStack(Minelife.items.coca_leaf_shredded), Minelife.items.grinder, new ItemStack(Minelife.items.coca_leaf, 1, 0));
+        GameRegistry.addShapelessRecipe(new ItemStack(MLItems.calcium_hydroxide), Items.water_bucket, MLItems.calcium_oxide);
+        GameRegistry.addSmelting(Item.getItemFromBlock(MLBlocks.limestone), new ItemStack(MLItems.calcium_oxide), 0.3F);
+        GameRegistry.addShapelessRecipe(new ItemStack(MLItems.cannabis_shredded), MLItems.cannabis_buds, MLItems.grinder);
+        GameRegistry.addShapelessRecipe(new ItemStack(MLItems.coca_leaf_shredded), MLItems.grinder, new ItemStack(MLItems.coca_leaf, 1, 0));
         // register grinder recipes
-        GameRegistry.addShapedRecipe(new ItemStack(Minelife.items.grinder), "AAA", "BBB", "AAA", 'A', Item.getItemFromBlock(Blocks.planks), 'B', Items.iron_ingot);
-        for(int i = 0; i < ItemDye.field_150921_b.length; i++) GameRegistry.addShapelessRecipe(new ItemStack(Minelife.items.grinder, 1, i), Minelife.items.grinder, new ItemStack(Items.dye, 1, i));
+        GameRegistry.addShapedRecipe(new ItemStack(MLItems.grinder), "AAA", "BBB", "AAA", 'A', Item.getItemFromBlock(Blocks.planks), 'B', Items.iron_ingot);
+        for(int i = 0; i < ItemDye.field_150921_b.length; i++) GameRegistry.addShapelessRecipe(new ItemStack(MLItems.grinder, 1, i), MLItems.grinder, new ItemStack(Items.dye, 1, i));
         // continue with other recipes
-        GameRegistry.addShapelessRecipe(new ItemStack(Minelife.items.potassium_hydroxide), Item.getItemFromBlock(Minelife.blocks.potash), Minelife.items.calcium_hydroxide);
-        GameRegistry.addShapelessRecipe(new ItemStack(Minelife.items.potassium_permanganate), Minelife.items.sulfuric_acid, Minelife.items.potassium_manganate);
-        GameRegistry.addSmelting(Items.water_bucket, new ItemStack(Minelife.items.salt), 1F);
-        GameRegistry.addSmelting(Minelife.items.sulfur, new ItemStack(Minelife.items.sulfuric_acid), 0.3F);
-        GameRegistry.addSmelting(Minelife.items.potassium_hydroxide_pyrolusite_mixture, new ItemStack(Minelife.items.potassium_manganate), 0.3F);
-        GameRegistry.addShapelessRecipe(new ItemStack(Minelife.items.potassium_hydroxide_pyrolusite_mixture), Minelife.items.potassium_hydroxide, Minelife.items.pyrolusite);
+        GameRegistry.addShapelessRecipe(new ItemStack(MLItems.potassium_hydroxide), Item.getItemFromBlock(MLBlocks.potash), MLItems.calcium_hydroxide);
+        GameRegistry.addShapelessRecipe(new ItemStack(MLItems.potassium_permanganate), MLItems.sulfuric_acid, MLItems.potassium_manganate);
+        GameRegistry.addSmelting(Items.water_bucket, new ItemStack(MLItems.salt), 1F);
+        GameRegistry.addSmelting(MLItems.sulfur, new ItemStack(MLItems.sulfuric_acid), 0.3F);
+        GameRegistry.addSmelting(MLItems.potassium_hydroxide_pyrolusite_mixture, new ItemStack(MLItems.potassium_manganate), 0.3F);
+        GameRegistry.addShapelessRecipe(new ItemStack(MLItems.potassium_hydroxide_pyrolusite_mixture), MLItems.potassium_hydroxide, MLItems.pyrolusite);
     }
 
     @Override
     public void init(FMLInitializationEvent event)
     {
-        FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("ammonia", 1000), new ItemStack(Minelife.items.ammonia), new ItemStack(Items.bucket));
-        FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("potassium_permanganate", 1000), new ItemStack(Minelife.items.potassium_permanganate), new ItemStack(Items.bucket));
-        FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("sulfuric_acid", 1000), new ItemStack(Minelife.items.sulfuric_acid), new ItemStack(Items.bucket));
+        FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("ammonia", 1000), new ItemStack(MLItems.ammonia), new ItemStack(Items.bucket));
+        FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("potassium_permanganate", 1000), new ItemStack(MLItems.potassium_permanganate), new ItemStack(Items.bucket));
+        FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("sulfuric_acid", 1000), new ItemStack(MLItems.sulfuric_acid), new ItemStack(Items.bucket));
     }
 
     @Override
@@ -82,9 +79,9 @@ public class ModDrugs extends AbstractMod {
     public void textureHook(TextureStitchEvent.Post event)
     {
         if (event.map.getTextureType() == 0) {
-            BlockAmmonia.fluid().setIcons(Minelife.blocks.ammonia.getBlockTextureFromSide(1), Minelife.blocks.ammonia.getBlockTextureFromSide(2));
-            BlockSulfuricAcid.fluid().setIcons(Minelife.blocks.sulfuric_acid.getBlockTextureFromSide(1), Minelife.blocks.sulfuric_acid.getBlockTextureFromSide(2));
-            BlockPotassiumPermanganate.fluid().setIcons(Minelife.blocks.potassium_permanganate.getBlockTextureFromSide(1), Minelife.blocks.potassium_permanganate.getBlockTextureFromSide(2));
+            BlockAmmonia.fluid().setIcons(MLBlocks.ammonia.getBlockTextureFromSide(1), MLBlocks.ammonia.getBlockTextureFromSide(2));
+            BlockSulfuricAcid.fluid().setIcons(MLBlocks.sulfuric_acid.getBlockTextureFromSide(1), MLBlocks.sulfuric_acid.getBlockTextureFromSide(2));
+            BlockPotassiumPermanganate.fluid().setIcons(MLBlocks.potassium_permanganate.getBlockTextureFromSide(1), MLBlocks.potassium_permanganate.getBlockTextureFromSide(2));
         }
     }
 }

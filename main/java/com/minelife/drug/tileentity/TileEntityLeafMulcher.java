@@ -1,6 +1,7 @@
 package com.minelife.drug.tileentity;
 
 import buildcraft.api.transport.IPipeTile;
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.drug.DrugsGuiHandler;
 import com.minelife.drug.ModDrugs;
@@ -12,11 +13,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class TileEntityEntityLeafMulcher extends TileEntityMachine {
+public class TileEntityLeafMulcher extends TileEntityMachine {
 
     private static final int slot_input = 0, slot_output = 1;
 
-    public TileEntityEntityLeafMulcher()
+    // TODO: Make this use electricity
+
+    public TileEntityLeafMulcher()
     {
         super(3, "leaf_mulcher");
     }
@@ -53,11 +56,11 @@ public class TileEntityEntityLeafMulcher extends TileEntityMachine {
 
         if (input == null) return false;
 
-        if (input.getItem() == Minelife.items.cannabis_buds) {
-            if (output == null || (output.stackSize < 64 && output.getItem() == Minelife.items.cannabis_shredded))
+        if (input.getItem() == MLItems.cannabis_buds) {
+            if (output == null || (output.stackSize < 64 && output.getItem() == MLItems.cannabis_shredded))
                 return true;
-        } else if (input.getItem() == Minelife.items.coca_leaf && Minelife.items.coca_leaf.get_moisture_level(input) == 0) {
-            if (output == null || (output.stackSize < 64 && output.getItem() == Minelife.items.coca_leaf_shredded))
+        } else if (input.getItem() == MLItems.coca_leaf && MLItems.coca_leaf.get_moisture_level(input) == 0) {
+            if (output == null || (output.stackSize < 64 && output.getItem() == MLItems.coca_leaf_shredded))
                 return true;
         }
 
@@ -72,10 +75,10 @@ public class TileEntityEntityLeafMulcher extends TileEntityMachine {
         int output_stack_size = output == null ? 1 : output.stackSize + 1;
         ItemStack output_final = null;
 
-        if (input.getItem() == Minelife.items.cannabis_buds) {
-            output_final = new ItemStack(Minelife.items.cannabis_shredded, output_stack_size);
-        } else if (input.getItem() == Minelife.items.coca_leaf  && Minelife.items.coca_leaf.get_moisture_level(input) == 0) {
-            output_final = new ItemStack(Minelife.items.coca_leaf_shredded, output_stack_size);
+        if (input.getItem() == MLItems.cannabis_buds) {
+            output_final = new ItemStack(MLItems.cannabis_shredded, output_stack_size);
+        } else if (input.getItem() == MLItems.coca_leaf  && MLItems.coca_leaf.get_moisture_level(input) == 0) {
+            output_final = new ItemStack(MLItems.coca_leaf_shredded, output_stack_size);
         }
 
         if(output_final != null) {
@@ -128,7 +131,7 @@ public class TileEntityEntityLeafMulcher extends TileEntityMachine {
     @Override
     public boolean is_item_valid_for_slot(int slot, ItemStack stack)
     {
-        return stack != null && ((stack.getItem() == Minelife.items.coca_leaf  && Minelife.items.coca_leaf.get_moisture_level(stack) == 0) || stack.getItem() == Minelife.items.cannabis_buds);
+        return stack != null && ((stack.getItem() == MLItems.coca_leaf  && MLItems.coca_leaf.get_moisture_level(stack) == 0) || stack.getItem() == MLItems.cannabis_buds);
     }
 
 }

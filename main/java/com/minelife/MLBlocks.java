@@ -9,30 +9,31 @@ import net.minecraft.block.Block;
 
 import java.util.logging.Level;
 
-public class MinelifeBlocks {
+public class MLBlocks {
 
-    public BlockAmmonia ammonia;
-    public BlockCannabisPlant cannabis_plant;
-    public BlockCementMixer cement_mixer;
-    public BlockCocaPlant coca_plant;
-    public BlockDryingRack drying_rack;
-    public BlockLeafMulcher leaf_mulcher;
-    public BlockLimePlant lime_plant;
-    public BlockLimestone limestone;
-    public BlockPotash potash;
-    public BlockPotassiumPermanganate potassium_permanganate;
-    public BlockPyrolusiteOre pyrolusite_ore;
-    public BlockPyrolusiteBlock pyrolusite;
-    public BlockSulfuricAcid sulfuric_acid;
-    public BlockSulfurOre sulfur_ore;
-    public BlockVacuum vacuum;
-    public BlockATM atm;
-    public BlockATMTop atm_top;
-    public BlockZincOre zinc_ore;
-    public BlockRoller roller;
-    public BlockPresser presser;
+    public static BlockAmmonia ammonia;
+    public static BlockCannabisPlant cannabis_plant;
+    public static BlockCementMixer cement_mixer;
+    public static BlockCocaPlant coca_plant;
+    public static BlockLeafMulcher leaf_mulcher;
+    public static BlockLimePlant lime_plant;
+    public static BlockLimestone limestone;
+    public static BlockPotash potash;
+    public static BlockPotassiumPermanganate potassium_permanganate;
+    public static BlockPyrolusiteOre pyrolusite_ore;
+    public static BlockPyrolusiteBlock pyrolusite;
+    public static BlockSulfuricAcid sulfuric_acid;
+    public static BlockSulfurOre sulfur_ore;
+    public static BlockVacuum vacuum;
+    public static BlockATM atm;
+    public static BlockATMTop atm_top;
+    public static BlockZincOre zinc_ore;
+    public static BlockRoller roller;
+    public static BlockPresser presser;
+    public static BlockDryingRack drying_rack;
+    public static BlockCementMixer cement_mixer;
 
-    protected void init()
+    protected static void init()
     {
         // register fluids
         BlockAmmonia.register_fluid();
@@ -59,9 +60,10 @@ public class MinelifeBlocks {
         register_block(zinc_ore = new BlockZincOre());
         register_block(presser = new BlockPresser());
         register_block(roller = new BlockRoller());
+        register_block(cement_mixer = new BlockCementMixer());
     }
 
-    private void register_block(Block block)
+    private static void register_block(Block block)
     {
         try {
             GameRegistry.registerBlock(block, block.getUnlocalizedName());

@@ -1,5 +1,6 @@
 package com.minelife.economy;
 
+import com.minelife.MLBlocks;
 import com.minelife.Minelife;
 import com.minelife.economy.packet.PacketOpenATM;
 import cpw.mods.fml.relauncher.Side;
@@ -87,7 +88,7 @@ public class BlockATM extends BlockContainer {
         TileEntityATM tileEntityATM = (TileEntityATM) world.getTileEntity(x, y, z);
         tileEntityATM.setFacing(l == 0 ? EnumFacing.NORTH : l == 1 ? EnumFacing.EAST : l == 2 ? EnumFacing.SOUTH : EnumFacing.WEST);
 
-        world.setBlock(x, y + 1, z, Minelife.blocks.atm_top);
+        world.setBlock(x, y + 1, z, MLBlocks.atm_top);
     }
 
     @Override
@@ -105,7 +106,7 @@ public class BlockATM extends BlockContainer {
 
     @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int side) {
-        if (world.getBlock(x, y + 1, z) == Minelife.blocks.atm_top)
+        if (world.getBlock(x, y + 1, z) == MLBlocks.atm_top)
             world.setBlockToAir(x, y + 1, z);
     }
 

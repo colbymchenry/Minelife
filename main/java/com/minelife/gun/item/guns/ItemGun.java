@@ -1,6 +1,7 @@
 package com.minelife.gun.item.guns;
 
 import com.google.common.collect.Lists;
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.gun.client.RenderGun;
 import com.minelife.gun.client.guns.ItemGunClient;
@@ -30,22 +31,22 @@ import java.util.List;
 public abstract class ItemGun extends Item {
 
     public static final void registerRecipes() {
-        Minelife.items.ak47.registerRecipe();
-        Minelife.items.awp.registerRecipe();
-        Minelife.items.barrett.registerRecipe();
-        Minelife.items.desert_eagle.registerRecipe();
-        Minelife.items.m4a4.registerRecipe();
-        Minelife.items.magnum.registerRecipe();
+        MLItems.ak47.registerRecipe();
+        MLItems.awp.registerRecipe();
+        MLItems.barrett.registerRecipe();
+        MLItems.desert_eagle.registerRecipe();
+        MLItems.m4a4.registerRecipe();
+        MLItems.magnum.registerRecipe();
     }
 
     @SideOnly(Side.CLIENT)
     public static final void registerRenderers() {
-        MinecraftForgeClient.registerItemRenderer(Minelife.items.ak47, new RenderGun(Minelife.items.ak47));
-        MinecraftForgeClient.registerItemRenderer(Minelife.items.awp, new RenderGun(Minelife.items.awp));
-        MinecraftForgeClient.registerItemRenderer(Minelife.items.barrett, new RenderGun(Minelife.items.barrett));
-        MinecraftForgeClient.registerItemRenderer(Minelife.items.desert_eagle, new RenderGun(Minelife.items.desert_eagle));
-        MinecraftForgeClient.registerItemRenderer(Minelife.items.m4a4, new RenderGun(Minelife.items.m4a4));
-        MinecraftForgeClient.registerItemRenderer(Minelife.items.magnum, new RenderGun(Minelife.items.magnum));
+        MinecraftForgeClient.registerItemRenderer(MLItems.ak47, new RenderGun(MLItems.ak47));
+        MinecraftForgeClient.registerItemRenderer(MLItems.awp, new RenderGun(MLItems.awp));
+        MinecraftForgeClient.registerItemRenderer(MLItems.barrett, new RenderGun(MLItems.barrett));
+        MinecraftForgeClient.registerItemRenderer(MLItems.desert_eagle, new RenderGun(MLItems.desert_eagle));
+        MinecraftForgeClient.registerItemRenderer(MLItems.m4a4, new RenderGun(MLItems.m4a4));
+        MinecraftForgeClient.registerItemRenderer(MLItems.magnum, new RenderGun(MLItems.magnum));
     }
 
     @SideOnly(Side.CLIENT)

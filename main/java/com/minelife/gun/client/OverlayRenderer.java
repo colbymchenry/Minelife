@@ -1,5 +1,6 @@
 package com.minelife.gun.client;
 
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.item.guns.GunAWP;
@@ -36,14 +37,14 @@ public class OverlayRenderer {
                 /**
                  * START: Handle zooming for snipers
                  */
-                if (gun == Minelife.items.barrett) {
+                if (gun == MLItems.barrett) {
                     if (((GunClientBarrett) gun.getClientHandler()).isZoom()) {
                         drawHollowCircle(x, y, 100);
                         event.setCanceled(true);
                     }
                 }
 
-                if (gun == Minelife.items.awp) {
+                if (gun == MLItems.awp) {
                     if (((GunClientAWP) gun.getClientHandler()).isZoom()) {
                         drawHollowCircle(x, y, 100);
                         event.setCanceled(true);
@@ -58,13 +59,13 @@ public class OverlayRenderer {
 
         if(event.type == RenderGameOverlayEvent.ElementType.HOTBAR || event.type == RenderGameOverlayEvent.ElementType.FOOD ||
                 event.type == RenderGameOverlayEvent.ElementType.HEALTH || event.type == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
-            if (gun == Minelife.items.barrett) {
+            if (gun == MLItems.barrett) {
                 if (((GunClientBarrett) gun.getClientHandler()).isZoom()) {
                     event.setCanceled(true);
                 }
             }
 
-            if (gun == Minelife.items.awp) {
+            if (gun == MLItems.awp) {
                 if (((GunClientAWP) gun.getClientHandler()).isZoom()) {
                     event.setCanceled(true);
                 }

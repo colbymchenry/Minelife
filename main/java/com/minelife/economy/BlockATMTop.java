@@ -1,5 +1,6 @@
 package com.minelife.economy;
 
+import com.minelife.MLBlocks;
 import com.minelife.Minelife;
 import com.minelife.economy.packet.PacketOpenATM;
 import cpw.mods.fml.relauncher.Side;
@@ -74,7 +75,7 @@ public class BlockATMTop extends Block {
 
     @Override
     public void breakBlock(World world, int x, int y, int z, Block block, int side) {
-        if (world.getBlock(x, y - 1, z) == Minelife.blocks.atm)
+        if (world.getBlock(x, y - 1, z) == MLBlocks.atm)
             world.setBlockToAir(x, y - 1, z);
     }
 

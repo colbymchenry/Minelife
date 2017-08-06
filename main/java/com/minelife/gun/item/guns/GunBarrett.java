@@ -1,6 +1,7 @@
 package com.minelife.gun.item.guns;
 
 import buildcraft.BuildCraftCore;
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.item.ammos.ItemAmmo;
@@ -45,9 +46,9 @@ public class GunBarrett extends ItemGun {
     @Override
     public List<ItemAmmo> getAmmo() {
         return new ArrayList<ItemAmmo>() {{
-            add(Minelife.items.ammo_556);
-            add(Minelife.items.ammo_556_explosive);
-            add(Minelife.items.ammo_556_incendiary);
+            add(MLItems.ammo_556);
+            add(MLItems.ammo_556_explosive);
+            add(MLItems.ammo_556_incendiary);
         }};
     }
 
@@ -69,7 +70,7 @@ public class GunBarrett extends ItemGun {
                 "TTT",
                 'L', Item.getItemFromBlock(Blocks.diamond_block),
                 'S', BuildCraftCore.diamondGearItem,
-                'F', Minelife.items.sniper_frame,
+                'F', MLItems.sniper_frame,
                 'T', Item.getItemFromBlock(Blocks.iron_block));
     }
 

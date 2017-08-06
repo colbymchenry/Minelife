@@ -1,5 +1,6 @@
 package com.minelife.gun.item.parts;
 
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.gun.item.ItemGunmetal;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -14,7 +15,7 @@ public class ItemSniperScope extends ItemGunPart {
         GameRegistry.addRecipe(new ItemStack(this),
                 "GMG",
                 'G', Item.getItemFromBlock(Blocks.glass_pane),
-                'M', Minelife.items.gunmetal);
+                'M', MLItems.gunmetal);
     }
 
 }

@@ -1,8 +1,6 @@
 package com.minelife.gun;
 
-import com.minelife.CommonProxy;
-import com.minelife.AbstractMod;
-import com.minelife.Minelife;
+import com.minelife.*;
 import com.minelife.gun.block.BlockZincOre;
 import com.minelife.gun.item.*;
 import com.minelife.gun.item.ammos.ItemAmmo;
@@ -43,18 +41,18 @@ public class ModGun extends AbstractMod {
     @Override
     public void init(FMLInitializationEvent event) {
         GameRegistry.registerWorldGenerator(new ZincGenerator(), 0);
-        GameRegistry.addSmelting(Minelife.blocks.zinc_ore, new ItemStack(Minelife.items.zinc_ingot, 1), 1F);
+        GameRegistry.addSmelting(MLBlocks.zinc_ore, new ItemStack(MLItems.zinc_ingot, 1), 1F);
 
-        GameRegistry.addRecipe(new ItemStack(Minelife.items.gunmetal),
+        GameRegistry.addRecipe(new ItemStack(MLItems.gunmetal),
                 "CCC",
                 "ZZZ",
                 "TTT",
                 'C', Ic2Items.platecopper,
-                'Z', Minelife.items.zinc_plate,
+                'Z', MLItems.zinc_plate,
                 'T', Ic2Items.platetin
         );
 
-        GameRegistry.addShapelessRecipe(new ItemStack(Minelife.items.zinc_plate), new ItemStack(ForgeHammer.getItem(), 1, OreDictionary.WILDCARD_VALUE), Minelife.items.zinc_ingot);
+        GameRegistry.addShapelessRecipe(new ItemStack(MLItems.zinc_plate), new ItemStack(ForgeHammer.getItem(), 1, OreDictionary.WILDCARD_VALUE), MLItems.zinc_ingot);
     }
 
     @Override

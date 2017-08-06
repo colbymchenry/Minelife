@@ -1,5 +1,6 @@
 package com.minelife.gun.client.guns;
 
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketMouseClick;
@@ -21,12 +22,12 @@ import org.lwjgl.input.Mouse;
 @SideOnly(Side.CLIENT)
 public abstract class ItemGunClient {
 
-    public static GunClientAK47 ak47 = new GunClientAK47(Minelife.items.ak47);
-    public static GunClientAWP awp = new GunClientAWP(Minelife.items.awp);
-    public static GunClientBarrett barrett = new GunClientBarrett(Minelife.items.barrett);
-    public static GunClientDesertEagle desertEagle = new GunClientDesertEagle(Minelife.items.desert_eagle);
-    public static GunClientM4A4 m4A4 = new GunClientM4A4(Minelife.items.m4a4);
-    public static GunClientMagnum magnum = new GunClientMagnum(Minelife.items.magnum);
+    public static GunClientAK47 ak47 = new GunClientAK47(MLItems.ak47);
+    public static GunClientAWP awp = new GunClientAWP(MLItems.awp);
+    public static GunClientBarrett barrett = new GunClientBarrett(MLItems.barrett);
+    public static GunClientDesertEagle desertEagle = new GunClientDesertEagle(MLItems.desert_eagle);
+    public static GunClientM4A4 m4A4 = new GunClientM4A4(MLItems.m4a4);
+    public static GunClientMagnum magnum = new GunClientMagnum(MLItems.magnum);
 
     private final ResourceLocation texture, objModel;
     private final IModelCustom model;

@@ -5,6 +5,7 @@ import buildcraft.api.core.ISerializable;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.lib.inventory.SimpleInventory;
 import buildcraft.core.lib.network.PacketTileUpdate;
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.item.ItemCocaLeaf;
@@ -32,7 +33,7 @@ public class TileEntityDryingRack extends TileEntity implements IInventory, ISer
         if(progress >= 256) {
             progress = 0;
             for(int i = 0; i < 9; i++) {
-                Minelife.items.coca_leaf.set_moisture_level(getStackInSlot(i), Minelife.items.coca_leaf.get_moisture_level(getStackInSlot(i)) - 1);
+                MLItems.coca_leaf.set_moisture_level(getStackInSlot(i), MLItems.coca_leaf.get_moisture_level(getStackInSlot(i)) - 1);
             }
             // TODO: Not really sure what sendNetworkUpdate does, need to find out
             sendNetworkUpdate();
@@ -128,7 +129,7 @@ public class TileEntityDryingRack extends TileEntity implements IInventory, ISer
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack stack)
     {
-        return stack != null && stack.getItem() == Minelife.items.coca_leaf && Minelife.items.coca_leaf.get_moisture_level(stack) == 0;
+        return stack != null && stack.getItem() == MLItems.coca_leaf && MLItems.coca_leaf.get_moisture_level(stack) == 0;
     }
 
     @Override

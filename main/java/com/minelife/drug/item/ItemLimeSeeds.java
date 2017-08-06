@@ -1,5 +1,6 @@
 package com.minelife.drug.item;
 
+import com.minelife.MLBlocks;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.block.BlockLimePlant;
@@ -38,7 +39,7 @@ public class ItemLimeSeeds extends Item implements IPlantable {
                     parX, parY, parZ, ForgeDirection.UP, this) && parWorld
                     .isAirBlock(parX, parY + 1, parZ)) {
                 // place the plant block
-                parWorld.setBlock(parX, parY + 1, parZ, Minelife.blocks.lime_plant);
+                parWorld.setBlock(parX, parY + 1, parZ, MLBlocks.lime_plant);
                 // decrement the stack of seed items
                 --parItemStack.stackSize;
                 return true;
@@ -59,7 +60,7 @@ public class ItemLimeSeeds extends Item implements IPlantable {
     @Override
     public Block getPlant(IBlockAccess world, int x, int y, int z)
     {
-        return Minelife.blocks.lime_plant;
+        return MLBlocks.lime_plant;
     }
 
     @Override

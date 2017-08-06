@@ -1,5 +1,6 @@
 package com.minelife.gun.item.ammos;
 
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.gun.ModGun;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -18,11 +19,11 @@ public abstract class ItemAmmo extends Item {
     public abstract AmmoType getAmmoType();
 
     public static void registerRecipes() {
-        Minelife.items.ammo_556.registerRecipe();
-        Minelife.items.ammo_556_explosive.registerRecipe();
-        Minelife.items.ammo_556_incendiary.registerRecipe();
-        Minelife.items.ammo_pistol.registerRecipe();
-        Minelife.items.ammo_pistol_incendiary.registerRecipe();
+        MLItems.ammo_556.registerRecipe();
+        MLItems.ammo_556_explosive.registerRecipe();
+        MLItems.ammo_556_incendiary.registerRecipe();
+        MLItems.ammo_pistol.registerRecipe();
+        MLItems.ammo_pistol_incendiary.registerRecipe();
     }
 
     public enum AmmoType {

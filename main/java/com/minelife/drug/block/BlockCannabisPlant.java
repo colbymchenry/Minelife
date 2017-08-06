@@ -1,5 +1,6 @@
 package com.minelife.drug.block;
 
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.item.ItemCannabisBuds;
@@ -35,8 +36,8 @@ public class BlockCannabisPlant extends AbstractCrop {
         if (player.getHeldItem() != null && player.getHeldItem().getItem() == Items.dye && player.getHeldItem().getItemDamage() == 15)
             return false;
 
-        EntityItem entity_item_buds = player.dropPlayerItemWithRandomChoice(new ItemStack(Minelife.items.cannabis_buds, MathHelper.getRandomIntegerInRange(random, 4, 6)), false);
-        EntityItem entity_item_seeds = player.dropPlayerItemWithRandomChoice(new ItemStack(Minelife.items.cannabis_seeds, MathHelper.getRandomIntegerInRange(random, 0, 2)), false);
+        EntityItem entity_item_buds = player.dropPlayerItemWithRandomChoice(new ItemStack(MLItems.cannabis_buds, MathHelper.getRandomIntegerInRange(random, 4, 6)), false);
+        EntityItem entity_item_seeds = player.dropPlayerItemWithRandomChoice(new ItemStack(MLItems.cannabis_seeds, MathHelper.getRandomIntegerInRange(random, 0, 2)), false);
         entity_item_buds.delayBeforeCanPickup = 0;
         entity_item_seeds.delayBeforeCanPickup = 0;
         set_growth_stage(world, x, y, z, max_growth_stage() - 6);

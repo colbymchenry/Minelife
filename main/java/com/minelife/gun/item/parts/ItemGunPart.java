@@ -1,5 +1,6 @@
 package com.minelife.gun.item.parts;
 
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.gun.ModGun;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -16,16 +17,16 @@ public abstract class ItemGunPart extends Item {
     public abstract void registerRecipe();
 
     public static void registerRecipes() {
-        Minelife.items.grip.registerRecipe();
-        Minelife.items.pistol_barrel.registerRecipe();
-        Minelife.items.pistol_frame.registerRecipe();
-        Minelife.items.rifle_barrel.registerRecipe();
-        Minelife.items.rifle_stock.registerRecipe();
-        Minelife.items.rifle_frame.registerRecipe();
-        Minelife.items.sniper_barrel.registerRecipe();
-        Minelife.items.sniper_scope.registerRecipe();
-        Minelife.items.sniper_frame.registerRecipe();
-        Minelife.items.trigger.registerRecipe();
+        MLItems.grip.registerRecipe();
+        MLItems.pistol_barrel.registerRecipe();
+        MLItems.pistol_frame.registerRecipe();
+        MLItems.rifle_barrel.registerRecipe();
+        MLItems.rifle_stock.registerRecipe();
+        MLItems.rifle_frame.registerRecipe();
+        MLItems.sniper_barrel.registerRecipe();
+        MLItems.sniper_scope.registerRecipe();
+        MLItems.sniper_frame.registerRecipe();
+        MLItems.trigger.registerRecipe();
     }
 
 }

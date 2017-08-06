@@ -1,6 +1,7 @@
 package com.minelife.drug.item;
 
 import buildcraft.energy.ItemBucketBuildcraft;
+import com.minelife.MLBlocks;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.block.BlockSulfuricAcid;
@@ -20,7 +21,7 @@ public class ItemSulfuricAcid extends ItemBucketBuildcraft {
 
     public ItemSulfuricAcid()
     {
-        super(Minelife.blocks.sulfuric_acid);
+        super(MLBlocks.sulfuric_acid);
         setCreativeTab(ModDrugs.tab_drugs);
         setUnlocalizedName("sulfuric_acid");
         setContainerItem(Items.bucket);

@@ -1,5 +1,6 @@
 package com.minelife.drug.block;
 
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.item.ItemCocaLeaf;
@@ -33,7 +34,7 @@ public class BlockCocaPlant extends AbstractCrop {
         if (player.getHeldItem() != null && player.getHeldItem().getItem() == Items.dye && player.getHeldItem().getItemDamage() == 15)
             return false;
 
-        EntityItem entityitem = player.dropPlayerItemWithRandomChoice(new ItemStack(Minelife.items.coca_leaf, MathHelper.getRandomIntegerInRange(random, 2, 4)), false);
+        EntityItem entityitem = player.dropPlayerItemWithRandomChoice(new ItemStack(MLItems.coca_leaf, MathHelper.getRandomIntegerInRange(random, 2, 4)), false);
         entityitem.delayBeforeCanPickup = 0;
         set_growth_stage(world, x, y, z, max_growth_stage() - 6);
         return true;

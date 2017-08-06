@@ -1,6 +1,7 @@
 package com.minelife.drug.item;
 
 import buildcraft.energy.ItemBucketBuildcraft;
+import com.minelife.MLBlocks;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.block.BlockAmmonia;
@@ -20,7 +21,7 @@ public class ItemAmmonia extends ItemBucketBuildcraft {
 
     public ItemAmmonia()
     {
-        super(Minelife.blocks.ammonia);
+        super(MLBlocks.ammonia);
         setCreativeTab(ModDrugs.tab_drugs);
         setUnlocalizedName("ammonia");
         setContainerItem(Items.bucket);

@@ -51,9 +51,6 @@ public class Minelife {
 
     public static String default_error_message = EnumChatFormatting.RED + "Sorry, something went wrong. Notify a staff member.";
 
-    public static MinelifeBlocks blocks = new MinelifeBlocks();
-    public static MinelifeItems items = new MinelifeItems();
-
     public Minelife() {
         MODS.add(new ModPermission());
         MODS.add(new ModNotifications());
@@ -67,8 +64,8 @@ public class Minelife {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         NETWORK = new SimpleNetworkWrapper(MOD_ID);
-        items.init();
-        blocks.init();
+        MLItems.init();
+        MLBlocks.init();
         AbstractMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
         MODS.forEach(mod -> mod.preInit(event));
         PROXY.preInit(event);

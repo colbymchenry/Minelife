@@ -1,6 +1,7 @@
 package com.minelife.drug.item;
 
 import buildcraft.energy.ItemBucketBuildcraft;
+import com.minelife.MLBlocks;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.block.BlockAmmonia;
@@ -18,7 +19,7 @@ public class ItemPotassiumPermanganate extends ItemBucketBuildcraft {
 
     public ItemPotassiumPermanganate()
     {
-        super(Minelife.blocks.potassium_permanganate);
+        super(MLBlocks.potassium_permanganate);
         setCreativeTab(ModDrugs.tab_drugs);
         setUnlocalizedName("potassium_permanganate");
         setContainerItem(Items.bucket);

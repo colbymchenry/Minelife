@@ -12,56 +12,56 @@ import net.minecraft.item.Item;
 
 import java.util.logging.Level;
 
-public class MinelifeItems {
+public class MLItems {
 
-    public ItemAmmonia ammonia;
-    public ItemCalciumHydroxide calcium_hydroxide;
-    public ItemCalciumOxide calcium_oxide;
-    public ItemCannabisBuds cannabis_buds;
-    public ItemCannabisSeeds cannabis_seeds;
-    public ItemCannabisShredded cannabis_shredded;
-    public ItemCocaineSulfate cocaine_sulfate;
-    public ItemCocaLeaf coca_leaf;
-    public ItemCocaLeafShredded coca_leaf_shredded;
-    public ItemCocaPaste coca_paste;
-    public ItemGrinder grinder;
-    public ItemLime lime;
-    public ItemLimeSeeds lime_seeds;
-    public ItemPotassiumHydroxide potassium_hydroxide;
-    public ItemPotassiumManganate potassium_manganate;
-    public ItemPotassiumPermanganate potassium_permanganate;
-    public ItemPyrolusite pyrolusite;
-    public ItemSalt salt;
-    public ItemSulfur sulfur;
-    public ItemSulfuricAcid sulfuric_acid;
-    public ItemCocaSeeds coca_seeds;
-    public ItemPotassiumHydroxidePyrolusiteMixture potassium_hydroxide_pyrolusite_mixture;
-    public GunAK47 ak47;
-    public GunAWP awp;
-    public GunBarrett barrett;
-    public GunDesertEagle desert_eagle;
-    public GunM4A4 m4a4;
-    public GunMagnum magnum;
-    public ItemZincPlate zinc_plate;
-    public ItemGunmetal gunmetal;
-    public ItemZincIngot zinc_ingot;
-    public Ammo556 ammo_556;
-    public Ammo556Explosive ammo_556_explosive;
-    public Ammo556Incendiary ammo_556_incendiary;
-    public AmmoPistol ammo_pistol;
-    public AmmoPistolIncendiary ammo_pistol_incendiary;
-    public ItemPistolBarrel pistol_barrel;
-    public ItemPistolFrame pistol_frame;
-    public ItemRifleBarrel rifle_barrel;
-    public ItemRifleFrame rifle_frame;
-    public ItemRifleStock rifle_stock;
-    public ItemSniperBarrel sniper_barrel;
-    public ItemSniperFrame sniper_frame;
-    public ItemSniperScope sniper_scope;
-    public ItemTrigger trigger;
-    public ItemGrip grip;
+    public static ItemAmmonia ammonia;
+    public static ItemCalciumHydroxide calcium_hydroxide;
+    public static ItemCalciumOxide calcium_oxide;
+    public static ItemCannabisBuds cannabis_buds;
+    public static ItemCannabisSeeds cannabis_seeds;
+    public static ItemCannabisShredded cannabis_shredded;
+    public static ItemCocaineSulfate cocaine_sulfate;
+    public static ItemCocaLeaf coca_leaf;
+    public static ItemCocaLeafShredded coca_leaf_shredded;
+    public static ItemCocaPaste coca_paste;
+    public static ItemGrinder grinder;
+    public static ItemLime lime;
+    public static ItemLimeSeeds lime_seeds;
+    public static ItemPotassiumHydroxide potassium_hydroxide;
+    public static ItemPotassiumManganate potassium_manganate;
+    public static ItemPotassiumPermanganate potassium_permanganate;
+    public static ItemPyrolusite pyrolusite;
+    public static ItemSalt salt;
+    public static ItemSulfur sulfur;
+    public static ItemSulfuricAcid sulfuric_acid;
+    public static ItemCocaSeeds coca_seeds;
+    public static ItemPotassiumHydroxidePyrolusiteMixture potassium_hydroxide_pyrolusite_mixture;
+    public static GunAK47 ak47;
+    public static GunAWP awp;
+    public static GunBarrett barrett;
+    public static GunDesertEagle desert_eagle;
+    public static GunM4A4 m4a4;
+    public static GunMagnum magnum;
+    public static ItemZincPlate zinc_plate;
+    public static ItemGunmetal gunmetal;
+    public static ItemZincIngot zinc_ingot;
+    public static Ammo556 ammo_556;
+    public static Ammo556Explosive ammo_556_explosive;
+    public static Ammo556Incendiary ammo_556_incendiary;
+    public static AmmoPistol ammo_pistol;
+    public static AmmoPistolIncendiary ammo_pistol_incendiary;
+    public static ItemPistolBarrel pistol_barrel;
+    public static ItemPistolFrame pistol_frame;
+    public static ItemRifleBarrel rifle_barrel;
+    public static ItemRifleFrame rifle_frame;
+    public static ItemRifleStock rifle_stock;
+    public static ItemSniperBarrel sniper_barrel;
+    public static ItemSniperFrame sniper_frame;
+    public static ItemSniperScope sniper_scope;
+    public static ItemTrigger trigger;
+    public static ItemGrip grip;
 
-    protected void init()
+    protected static void init()
     {
         register_item(ammonia = new ItemAmmonia());
         register_item(calcium_hydroxide = new ItemCalciumHydroxide());
@@ -111,7 +111,7 @@ public class MinelifeItems {
         register_item(trigger = new ItemTrigger());
     }
 
-    private void register_item(Item item)
+    private static void register_item(Item item)
     {
         try {
             GameRegistry.registerItem(item, item.getUnlocalizedName());

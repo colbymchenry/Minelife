@@ -1,6 +1,8 @@
 package com.minelife.drug.block;
 
 import com.google.common.collect.Lists;
+import com.minelife.MLBlocks;
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.item.ItemPyrolusite;
@@ -34,7 +36,7 @@ public class BlockPyrolusiteOre extends Block {
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune)
     {
         ArrayList<ItemStack> drops = Lists.newArrayList();
-        drops.add(new ItemStack(Minelife.items.pyrolusite, fortune + MathHelper.getRandomIntegerInRange(world.rand, 2, 4)));
+        drops.add(new ItemStack(MLItems.pyrolusite, fortune + MathHelper.getRandomIntegerInRange(world.rand, 2, 4)));
         return drops;
     }
 
@@ -45,7 +47,7 @@ public class BlockPyrolusiteOre extends Block {
         {
             // only over-world
             if (world.provider.dimensionId == 0) {
-                this.generate(Minelife.blocks.pyrolusite_ore, world, random, chunkX, chunkZ, 7, 20, 30, 60, Blocks.stone);
+                this.generate(MLBlocks.pyrolusite_ore, world, random, chunkX, chunkZ, 7, 20, 30, 60, Blocks.stone);
             }
         }
 
