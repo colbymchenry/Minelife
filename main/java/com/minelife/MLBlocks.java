@@ -13,7 +13,6 @@ public class MLBlocks {
 
     public static BlockAmmonia ammonia;
     public static BlockCannabisPlant cannabis_plant;
-    public static BlockCementMixer cement_mixer;
     public static BlockCocaPlant coca_plant;
     public static BlockLeafMulcher leaf_mulcher;
     public static BlockLimePlant lime_plant;
@@ -42,7 +41,6 @@ public class MLBlocks {
 
         register_block(ammonia = new BlockAmmonia());
         register_block(cannabis_plant = new BlockCannabisPlant());
-        register_block(cement_mixer = new BlockCementMixer());
         register_block(coca_plant = new BlockCocaPlant());
         register_block(drying_rack = new BlockDryingRack());
         register_block(leaf_mulcher = new BlockLeafMulcher());
