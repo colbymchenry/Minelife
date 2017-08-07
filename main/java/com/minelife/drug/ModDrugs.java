@@ -3,6 +3,7 @@ package com.minelife.drug;
 import com.minelife.*;
 import com.minelife.drug.block.*;
 import com.minelife.drug.item.*;
+import com.minelife.drug.tileentity.TileEntityCementMixer;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -47,6 +48,9 @@ public class ModDrugs extends AbstractMod {
         GameRegistry.addSmelting(MLItems.sulfur, new ItemStack(MLItems.sulfuric_acid), 0.3F);
         GameRegistry.addSmelting(MLItems.potassium_hydroxide_pyrolusite_mixture, new ItemStack(MLItems.potassium_manganate), 0.3F);
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.potassium_hydroxide_pyrolusite_mixture), MLItems.potassium_hydroxide, MLItems.pyrolusite);
+
+        // TODO: Add recipes
+//        TileEntityCementMixer.add_recipe();
     }
 
     @Override

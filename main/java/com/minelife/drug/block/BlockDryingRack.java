@@ -2,7 +2,9 @@ package com.minelife.drug.block;
 
 import com.minelife.Minelife;
 import com.minelife.drug.DrugsGuiHandler;
+import com.minelife.drug.ModDrugs;
 import com.minelife.drug.tileentity.TileEntityDryingRack;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockContainer;
@@ -21,6 +23,9 @@ public class BlockDryingRack extends BlockContainer {
     {
         super(Material.wood);
         setBlockName("drying_rack");
+        setBlockTextureName(Minelife.MOD_ID + ":drying_rack");
+        setCreativeTab(ModDrugs.tab_drugs);
+        GameRegistry.registerTileEntity(TileEntityDryingRack.class, "drying_rack");
     }
 
     @Override

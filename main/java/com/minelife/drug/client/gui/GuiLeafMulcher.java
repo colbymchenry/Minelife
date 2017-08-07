@@ -12,7 +12,7 @@ import java.util.List;
 
 public class GuiLeafMulcher extends GuiBuildCraft {
 
-    private static final ResourceLocation texture = new ResourceLocation(Minelife.MOD_ID + ":textures/gui/leaf_mulcher_gui.png");
+    private static final ResourceLocation texture = new ResourceLocation(Minelife.MOD_ID + ":textures/gui/leaf_mulcher.png");
 
     public GuiLeafMulcher(InventoryPlayer player_inventory, TileEntityLeafMulcher tile_leaf_mulcher)
     {
@@ -28,32 +28,16 @@ public class GuiLeafMulcher extends GuiBuildCraft {
         String title = "Leaf Mulcher";
         this.fontRendererObj.drawString(title, this.getCenteredOffset(title), 6, 4210752);
         this.fontRendererObj.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
-        TileEntityLeafMulcher tile_leaf_mulcher = (TileEntityLeafMulcher) this.tile;
-        FluidStack stack = null;
-        if (tile_leaf_mulcher != null && mouse_y >= this.guiTop + 19 && mouse_y < this.guiTop + 19 + 60) {
-            if (mouse_x >= this.guiLeft + 155 && mouse_x < this.guiLeft + 155 + 16) {
-                stack = tile_leaf_mulcher.fuel();
-            }
-        }
-
-        if (stack != null && stack.amount > 0) {
-            List<String> fluidTip = Lists.newArrayList();
-            fluidTip.add(stack.getLocalizedName());
-            this.drawHoveringText(fluidTip, mouse_x - this.guiLeft, mouse_y - this.guiTop, this.fontRendererObj);
-        }
-
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y)
     {
         super.drawGuiContainerBackgroundLayer(f, x, y);
-        TileEntityLeafMulcher tile_leaf_mulcher = (TileEntityLeafMulcher) this.tile;
-        if (tile_leaf_mulcher != null) {
-            this.drawFluid(tile_leaf_mulcher.fuel(), this.guiLeft + 155, this.guiTop + 19, 16, 58, tile_leaf_mulcher.max_fuel());
-        }
-
         this.mc.renderEngine.bindTexture(texture);
-        this.drawTexturedModalRect(this.guiLeft + 155, this.guiTop + 19, 176, 0, 16, 60);
+        if (((TileEntityLeafMulcher) this.tile).progress() > 0) {
+            int progress = ((TileEntityLeafMulcher) this.tile).progress_scaled(23);
+            this.drawTexturedModalRect(this.guiLeft + 76, this.guiTop + 40, 176, 0, progress + 1, 60);
+        }
     }
 }

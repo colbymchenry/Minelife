@@ -35,7 +35,7 @@ public class ContainerCementMixer extends BuildCraftContainer {
 
         // TODO: Fix x and y offsets
         // add input slots for items
-        for(int i = 0; i < 9; ++i) {
+        for (int i = 0; i < 9; ++i) {
             this.addSlotToContainer(new Slot(tile_cement_mixer, i, 8 + i * 18, 84));
         }
         // add output slot
@@ -49,14 +49,12 @@ public class ContainerCementMixer extends BuildCraftContainer {
     }
 
     @Override
-    public void detectAndSendChanges() {
+    public void detectAndSendChanges()
+    {
         super.detectAndSendChanges();
 
         for (Object crafter : this.crafters) {
             this.tile_cement_mixer.sendGUINetworkData(this, (ICrafting) crafter);
-            ICrafting icrafting = (ICrafting)crafter;
-            if (this.last_progress != this.tile_cement_mixer.progress())
-                icrafting.sendProgressBarUpdate(this, 3, this.tile_cement_mixer.progress());
         }
     }
 
@@ -64,13 +62,13 @@ public class ContainerCementMixer extends BuildCraftContainer {
     public void addCraftingToCrafters(ICrafting crafter)
     {
         super.addCraftingToCrafters(crafter);
-        crafter.sendProgressBarUpdate(this, 3, this.tile_cement_mixer.progress());
+        this.tile_cement_mixer.sendGUINetworkData(this, crafter);
     }
 
     @Override
-    public void updateProgressBar(int i, int j) {
+    public void updateProgressBar(int i, int j)
+    {
         this.tile_cement_mixer.getGUINetworkData(i, j);
-        if(i == 3) this.tile_cement_mixer.set_progress(j);
     }
 
 }

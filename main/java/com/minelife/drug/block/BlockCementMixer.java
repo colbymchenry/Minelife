@@ -29,7 +29,7 @@ public class BlockCementMixer extends BlockBuildCraft {
     {
         super(Material.iron);
         setCreativeTab(ModDrugs.tab_drugs);
-        GameRegistry.registerTileEntity(TileEntityLeafMulcher.class, "cement_mixer");
+        GameRegistry.registerTileEntity(TileEntityCementMixer.class, "cement_mixer");
         setBlockName("cement_mixer");
     }
 
@@ -48,7 +48,7 @@ public class BlockCementMixer extends BlockBuildCraft {
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
         TileEntityCementMixer tile = (TileEntityCementMixer) world.getTileEntity(x, y, z);
-        tile.onBlockActivated(player, ForgeDirection.getOrientation(side));
+        tile.onBlockActivated(player);
         return true;
     }
 

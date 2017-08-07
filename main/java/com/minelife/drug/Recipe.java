@@ -28,7 +28,7 @@ public class Recipe {
             for (ItemStack itemStack : input) {
                 boolean foundItem = false;
                 for(ItemStack itemStack1 : items) {
-                    if(itemStack.isItemEqual(itemStack1)) {
+                    if(itemStack != null && itemStack1 != null && itemStack.isItemEqual(itemStack1)) {
                         foundItem = true;
                     }
                 }

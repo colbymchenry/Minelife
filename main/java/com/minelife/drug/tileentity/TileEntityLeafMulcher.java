@@ -1,6 +1,8 @@
 package com.minelife.drug.tileentity;
 
+import buildcraft.BuildCraftCore;
 import buildcraft.api.transport.IPipeTile;
+import buildcraft.core.lib.RFBattery;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.drug.DrugsGuiHandler;
@@ -13,15 +15,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class TileEntityLeafMulcher extends TileEntityMachine {
+public class TileEntityLeafMulcher extends TileEntityElectricMachine {
 
     private static final int slot_input = 0, slot_output = 1;
 
-    // TODO: Make this use electricity
-
     public TileEntityLeafMulcher()
     {
-        super(3, "leaf_mulcher");
+        super(2, "leaf_mulcher");
+        this.setBattery(new RFBattery((int)(20480.0F * BuildCraftCore.miningMultiplier), (int)(1000.0F * BuildCraftCore.miningMultiplier), 0));
     }
 
     @Override
@@ -31,21 +32,39 @@ public class TileEntityLeafMulcher extends TileEntityMachine {
     }
 
     @Override
-    public int max_fuel()
+    public int max_energy_storage()
     {
-        return 10000;
+        return 30720;
     }
 
     @Override
-    public boolean can_fill_from_side(ForgeDirection from)
+    public int max_energy_receive()
     {
-        return from != ForgeDirection.UP && from != ForgeDirection.DOWN;
+        return 1000;
     }
 
     @Override
-    public boolean can_drain_from_side(ForgeDirection from)
+    public int max_energy_extract()
     {
-        return from != ForgeDirection.UP && from != ForgeDirection.DOWN;
+        return 0;
+    }
+
+    @Override
+    public int update_time()
+    {
+        return 16;
+    }
+
+    @Override
+    public int processing_time()
+    {
+        return 256;
+    }
+
+    @Override
+    public int min_energy_extract()
+    {
+        return 20;
     }
 
     @Override
@@ -55,7 +74,6 @@ public class TileEntityLeafMulcher extends TileEntityMachine {
         ItemStack output = getStackInSlot(slot_output);
 
         if (input == null) return false;
-
         if (input.getItem() == MLItems.cannabis_buds) {
             if (output == null || (output.stackSize < 64 && output.getItem() == MLItems.cannabis_shredded))
                 return true;
@@ -83,17 +101,18 @@ public class TileEntityLeafMulcher extends TileEntityMachine {
 
         if(output_final != null) {
             this.decrStackSize(slot_input, 1);
-            // TODO: Add sound effects and fix gui by removing the fuel bucket slot
             setInventorySlotContents(slot_output, output_final);
             sendNetworkUpdate();
-            worldObj.playSoundEffect(xCoord, yCoord, zCoord, Minelife.MOD_ID + ":leaf_mulcher", 1.0F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
+            worldObj.playSoundEffect(xCoord, yCoord, zCoord, Minelife.MOD_ID + ":leaf_mulcher", 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
         }
+
+        // TODO: Remove output slot and just make the product go straight into the pipe or into the world. Checkout TileQuary and BlockMiner
     }
 
     @Override
     public boolean can_pipe_connect(IPipeTile.PipeType pipe_type, ForgeDirection direction)
     {
-        return pipe_type == IPipeTile.PipeType.FLUID || pipe_type == IPipeTile.PipeType.ITEM;
+        return pipe_type == IPipeTile.PipeType.ITEM;
     }
 
     @Override

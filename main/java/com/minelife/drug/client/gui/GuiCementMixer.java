@@ -13,13 +13,13 @@ import java.util.List;
 
 public class GuiCementMixer extends GuiBuildCraft {
 
-    private static final ResourceLocation texture = new ResourceLocation(Minelife.MOD_ID + ":textures/gui/cement_mixer_gui.png");
+    private static final ResourceLocation texture = new ResourceLocation(Minelife.MOD_ID + ":textures/gui/cement_mixer.png");
 
     public GuiCementMixer(InventoryPlayer player_inventory, TileEntityCementMixer tile_cement_mixer)
     {
         super(new ContainerCementMixer(player_inventory, tile_cement_mixer), tile_cement_mixer, texture);
         this.xSize = 176;
-        this.ySize = 166;
+        this.ySize = 172;
     }
 
     @Override
@@ -29,31 +29,12 @@ public class GuiCementMixer extends GuiBuildCraft {
         String title = "Cement Mixer";
         this.fontRendererObj.drawString(title, this.getCenteredOffset(title), 6, 4210752);
         this.fontRendererObj.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
-        TileEntityLeafMulcher tile_cement_mixer = (TileEntityLeafMulcher) this.tile;
-        FluidStack stack = null;
-        if (tile_cement_mixer != null && mouse_y >= this.guiTop + 19 && mouse_y < this.guiTop + 19 + 60) {
-            if (mouse_x >= this.guiLeft + 155 && mouse_x < this.guiLeft + 155 + 16) {
-                stack = tile_cement_mixer.fuel();
-            }
-        }
-
-        if (stack != null && stack.amount > 0) {
-            List<String> fluidTip = Lists.newArrayList();
-            fluidTip.add(stack.getLocalizedName());
-            this.drawHoveringText(fluidTip, mouse_x - this.guiLeft, mouse_y - this.guiTop, this.fontRendererObj);
-        }
-
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float f, int x, int y)
     {
         super.drawGuiContainerBackgroundLayer(f, x, y);
-        TileEntityLeafMulcher tile_cement_mixer = (TileEntityLeafMulcher) this.tile;
-        if (tile_cement_mixer != null) {
-            this.drawFluid(tile_cement_mixer.fuel(), this.guiLeft + 155, this.guiTop + 19, 16, 58, tile_cement_mixer.max_fuel());
-        }
-
         this.mc.renderEngine.bindTexture(texture);
         this.drawTexturedModalRect(this.guiLeft + 155, this.guiTop + 19, 176, 0, 16, 60);
 

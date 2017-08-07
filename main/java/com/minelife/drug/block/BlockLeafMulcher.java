@@ -45,7 +45,7 @@ public class BlockLeafMulcher extends BlockBuildCraft {
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
         TileEntityLeafMulcher tile = (TileEntityLeafMulcher) world.getTileEntity(x, y, z);
-        tile.onBlockActivated(player, ForgeDirection.getOrientation(side));
+        tile.onBlockActivated(player);
         return true;
     }
 
