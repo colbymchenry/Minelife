@@ -22,10 +22,7 @@ public class ItemPotassiumPermanganate extends ItemBucketBuildcraft {
         super(MLBlocks.potassium_permanganate);
         setCreativeTab(ModDrugs.tab_drugs);
         setUnlocalizedName("potassium_permanganate");
-        setContainerItem(Items.bucket);
         setTextureName(Minelife.MOD_ID + ":potassium_permanganate");
-
-
     }
 
     @SideOnly(Side.CLIENT)

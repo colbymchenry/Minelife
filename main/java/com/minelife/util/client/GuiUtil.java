@@ -9,7 +9,10 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.Vec3;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -411,6 +414,40 @@ public class GuiUtil {
         GL11.glPopMatrix();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4f(1, 1, 1, 1);
+    }
+
+    public static int[] transition(Color far, Color close, double ratio) {
+        int red = (int) Math.abs((ratio * far.getRed()) + ((1 - ratio) * close.getRed()));
+        int green = (int) Math.abs((ratio * far.getGreen()) + ((1 - ratio) * close.getGreen()));
+        int blue = (int) Math.abs((ratio * far.getBlue()) + ((1 - ratio) * close.getBlue()));
+        return new int[]{red, green, blue};
+    }
+
+    public static void render_item_in_world(Minecraft mc, ItemStack item) {
+        GL11.glPushMatrix();
+        {
+            IIcon iicon = mc.thePlayer.getItemIcon(item, 0);
+
+            if (iicon == null) {
+                GL11.glPopMatrix();
+                return;
+            }
+
+            mc.getTextureManager().bindTexture(mc.getTextureManager().getResourceLocation(item.getItemSpriteNumber()));
+            TextureUtil.func_152777_a(false, false, 1.0F);
+            Tessellator tessellator = Tessellator.instance;
+            float min_x = iicon.getMinU();
+            float max_x = iicon.getMaxU();
+            float min_y = iicon.getMinV();
+            float max_y = iicon.getMaxV();
+            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+            GL11.glTranslatef(-0.5f, 0f, 0.0F);
+            float scale = 0.9F;
+            GL11.glScalef(scale, scale, scale);
+            ItemRenderer.renderItemIn2D(tessellator, max_x, min_y, min_x, max_y, iicon.getIconWidth(), iicon.getIconHeight(), 0.0625F);
+            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+        }
+        GL11.glPopMatrix();
     }
 
 }

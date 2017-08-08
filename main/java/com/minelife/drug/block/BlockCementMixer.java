@@ -17,7 +17,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -31,6 +33,7 @@ public class BlockCementMixer extends BlockBuildCraft {
         setCreativeTab(ModDrugs.tab_drugs);
         GameRegistry.registerTileEntity(TileEntityCementMixer.class, "cement_mixer");
         setBlockName("cement_mixer");
+        setBlockBounds(0, 0, 0, 1, 0.85f, 1);
     }
 
     @Override

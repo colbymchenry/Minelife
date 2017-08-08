@@ -24,10 +24,7 @@ public class ItemSulfuricAcid extends ItemBucketBuildcraft {
         super(MLBlocks.sulfuric_acid);
         setCreativeTab(ModDrugs.tab_drugs);
         setUnlocalizedName("sulfuric_acid");
-        setContainerItem(Items.bucket);
         setTextureName(Minelife.MOD_ID + ":sulfuric_acid");
-
-
     }
 
     @SideOnly(Side.CLIENT)

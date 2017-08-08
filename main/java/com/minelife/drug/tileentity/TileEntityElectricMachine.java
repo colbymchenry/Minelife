@@ -132,6 +132,8 @@ public abstract class TileEntityElectricMachine extends TileBuildCraft implement
 
     public abstract void work();
 
+    public abstract void on_progress_increment();
+
     @Override
     public boolean hasWork()
     {
@@ -178,6 +180,7 @@ public abstract class TileEntityElectricMachine extends TileBuildCraft implement
                         }
 
                     this.progress += update_time();
+                    on_progress_increment();
                     if (this.progress >= processing_time()) {
                         this.progress = 0;
                         work();

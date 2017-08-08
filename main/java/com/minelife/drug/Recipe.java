@@ -1,72 +1,103 @@
 package com.minelife.drug;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntityChest;
+import net.minecraftforge.fluids.FluidStack;
 
 public class Recipe {
 
     private ItemStack output;
-    private ItemStack[] input;
+    private ItemStack[] inputs;
+    private FluidStack[] fluids;
 
-    public Recipe(ItemStack output, ItemStack... input) {
+    private Recipe(ItemStack output, ItemStack... inputs)
+    {
         this.output = output;
-        this.input = input;
+        this.inputs = inputs;
     }
 
-    public ItemStack output() {
-        return output;
+    public static Recipe build(ItemStack output, ItemStack... inputs)
+    {
+        return new Recipe(output, inputs);
     }
 
-    public ItemStack[] input() {
-        return input;
+    public Recipe addLiquids(FluidStack... fluids)
+    {
+        this.fluids = fluids;
+        return this;
     }
 
-    public boolean matches(ItemStack... items) {
-        if(input.length == items.length) {
-            for (ItemStack itemStack : input) {
-                boolean foundItem = false;
-                for(ItemStack itemStack1 : items) {
-                    if(itemStack != null && itemStack1 != null && itemStack.isItemEqual(itemStack1)) {
-                        foundItem = true;
+    public ItemStack output()
+    {
+        return output.copy();
+    }
+
+    public ItemStack[] inputs()
+    {
+        return inputs;
+    }
+
+    public FluidStack[] fluids()
+    {
+        return fluids;
+    }
+
+    public ItemStack process(FluidStack[] fluids, ItemStack[] items)
+    {
+        if (matches(fluids, items)) {
+            for (ItemStack itemStack : inputs) {
+                for (ItemStack itemStack1 : items) {
+                    if (itemStack != null && itemStack1 != null && itemStack.isItemEqual(itemStack1)) {
+                        itemStack1.stackSize -= itemStack.stackSize;
+                        break;
                     }
                 }
 
-                if(!foundItem) {
-                    return false;
+            }
+
+            for (FluidStack fluidStack : this.fluids) {
+                for (FluidStack fluidStack1 : fluids) {
+                    if (fluidStack1.containsFluid(fluidStack)) {
+                        fluidStack1.amount -= fluidStack.amount;
+                        break;
+                    }
                 }
             }
-        } else {
-            return false;
+            return output();
+        }
+
+        return null;
+    }
+
+    public boolean matches(FluidStack[] fluids, ItemStack[] items)
+    {
+        for (ItemStack itemStack : inputs) {
+            boolean foundItem = false;
+            for (ItemStack itemStack1 : items) {
+                if (itemStack != null && itemStack1 != null && itemStack.isItemEqual(itemStack1)) {
+                    foundItem = true;
+                }
+            }
+
+            if (!foundItem) {
+                return false;
+            }
+        }
+
+        for (FluidStack fluidStack : this.fluids) {
+            boolean foundFluid = false;
+            for (FluidStack fluidStack1 : fluids) {
+                if (fluidStack1.containsFluid(fluidStack)) {
+                    foundFluid = true;
+                }
+            }
+
+            if (!foundFluid) {
+                return false;
+            }
         }
 
         return true;
-    }
-
-    public void writeToNBT(NBTTagCompound tag) {
-        NBTTagCompound tagOutput = new NBTTagCompound();
-        NBTTagList inputs = new NBTTagList();
-        output.writeToNBT(tagOutput);
-        for (ItemStack itemStack : input) {
-            NBTTagCompound tagCompound = new NBTTagCompound();
-            itemStack.writeToNBT(tagCompound);
-            inputs.appendTag(tagCompound);
-        }
-
-        tag.setTag("output", tagOutput);
-        tag.setTag("input", inputs);
-    }
-
-    public static Recipe readFromNBT(NBTTagCompound tag) {
-        ItemStack output = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("output"));
-        NBTTagList tagList = tag.getTagList("input", 10);
-        ItemStack[] input = new ItemStack[tagList.tagCount()];
-        for(int i = 0; i < tagList.tagCount(); i++) {
-            input[i] = ItemStack.loadItemStackFromNBT(tagList.getCompoundTagAt(i));
-        }
-
-        return new Recipe(output, input);
     }
 
 }

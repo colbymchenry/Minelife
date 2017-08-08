@@ -1,5 +1,6 @@
 package com.minelife.drug;
 
+import buildcraft.BuildCraftEnergy;
 import com.minelife.*;
 import com.minelife.drug.block.*;
 import com.minelife.drug.item.*;
@@ -16,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 public class ModDrugs extends AbstractMod {
 
@@ -50,7 +52,7 @@ public class ModDrugs extends AbstractMod {
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.potassium_hydroxide_pyrolusite_mixture), MLItems.potassium_hydroxide, MLItems.pyrolusite);
 
         // TODO: Add recipes
-//        TileEntityCementMixer.add_recipe();
+        TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.waxy_cocaine), new ItemStack(MLItems.lime), new ItemStack(MLItems.salt)).addLiquids(new FluidStack(BuildCraftEnergy.fluidFuel, 100)));
     }
 
     @Override

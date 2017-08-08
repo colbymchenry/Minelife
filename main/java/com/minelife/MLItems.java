@@ -60,6 +60,7 @@ public class MLItems {
     public static ItemSniperScope sniper_scope;
     public static ItemTrigger trigger;
     public static ItemGrip grip;
+    public static ItemWaxyCocaine waxy_cocaine;
 
     protected static void init()
     {
@@ -109,6 +110,7 @@ public class MLItems {
         register_item(sniper_scope = new ItemSniperScope());
         register_item(sniper_frame = new ItemSniperFrame());
         register_item(trigger = new ItemTrigger());
+        register_item(waxy_cocaine = new ItemWaxyCocaine());
     }
 
     private static void register_item(Item item)

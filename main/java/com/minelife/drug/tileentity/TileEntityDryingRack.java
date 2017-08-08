@@ -5,6 +5,7 @@ import buildcraft.api.core.ISerializable;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.lib.inventory.SimpleInventory;
 import buildcraft.core.lib.network.PacketTileUpdate;
+import com.google.common.collect.Maps;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
@@ -16,10 +17,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
+import java.util.List;
+import java.util.Map;
+
 public class TileEntityDryingRack extends TileEntity implements IInventory, ISerializable {
 
     private SimpleInventory inv;
     private int progress;
+    private int[] slots = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8};
 
     public TileEntityDryingRack()
     {
@@ -30,19 +35,11 @@ public class TileEntityDryingRack extends TileEntity implements IInventory, ISer
     public void updateEntity()
     {
         progress += 1;
-        if(progress >= 256) {
+        if(progress >= 2) {
             progress = 0;
             for(int i = 0; i < 9; i++) {
-                MLItems.coca_leaf.set_moisture_level(getStackInSlot(i), MLItems.coca_leaf.get_moisture_level(getStackInSlot(i)) - 1);
+                MLItems.coca_leaf.set_moisture_level(getStackInSlot(i), MLItems.coca_leaf.get_moisture_level(getStackInSlot(i)) + 1);
             }
-            // TODO: Not really sure what sendNetworkUpdate does, need to find out
-            sendNetworkUpdate();
-        }
-    }
-
-    public void sendNetworkUpdate() {
-        if (this.worldObj != null && !this.worldObj.isRemote) {
-            BuildCraftCore.instance.sendToPlayers(new PacketTileUpdate(this), this.worldObj, this.xCoord, this.yCoord, this.zCoord, DefaultProps.NETWORK_UPDATE_RANGE);
         }
     }
 
@@ -142,5 +139,13 @@ public class TileEntityDryingRack extends TileEntity implements IInventory, ISer
     public void readData(ByteBuf byteBuf)
     {
 
+    }
+
+    public Map<Integer, ItemStack> get_leaves() {
+        Map<Integer, ItemStack> leaves = Maps.newHashMap();
+        for (int i = 0; i < slots.length; i++) {
+            leaves.put(i, getStackInSlot(i));
+        }
+        return leaves;
     }
 }

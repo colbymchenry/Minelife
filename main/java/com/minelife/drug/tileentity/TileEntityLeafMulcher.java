@@ -3,6 +3,7 @@ package com.minelife.drug.tileentity;
 import buildcraft.BuildCraftCore;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.core.lib.RFBattery;
+import buildcraft.core.lib.utils.Utils;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.drug.DrugsGuiHandler;
@@ -11,9 +12,12 @@ import com.minelife.drug.item.ItemCannabisBuds;
 import com.minelife.drug.item.ItemCannabisShredded;
 import com.minelife.drug.item.ItemCocaLeaf;
 import com.minelife.drug.item.ItemCocaLeafShredded;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
+import org.lwjgl.Sys;
 
 public class TileEntityLeafMulcher extends TileEntityElectricMachine {
 
@@ -28,7 +32,7 @@ public class TileEntityLeafMulcher extends TileEntityElectricMachine {
     @Override
     public int gui_id()
     {
-        return DrugsGuiHandler.leaf_mulcher_id;
+        return -1;
     }
 
     @Override
@@ -101,12 +105,38 @@ public class TileEntityLeafMulcher extends TileEntityElectricMachine {
 
         if(output_final != null) {
             this.decrStackSize(slot_input, 1);
-            setInventorySlotContents(slot_output, output_final);
-            sendNetworkUpdate();
-            worldObj.playSoundEffect(xCoord, yCoord, zCoord, Minelife.MOD_ID + ":leaf_mulcher", 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
-        }
 
-        // TODO: Remove output slot and just make the product go straight into the pipe or into the world. Checkout TileQuary and BlockMiner
+            output_final.stackSize -= Utils.addToRandomInventoryAround(this.worldObj, this.xCoord, this.yCoord, this.zCoord, output_final);
+
+            if (output_final.stackSize > 0) {
+                output_final.stackSize -= Utils.addToRandomInjectableAround(this.worldObj, this.xCoord, this.yCoord, this.zCoord, ForgeDirection.DOWN, output_final);
+            }
+
+            if (output_final.stackSize > 0) {
+                float f = this.worldObj.rand.nextFloat() * 0.8F + 0.1F;
+                float f1 = this.worldObj.rand.nextFloat() * 0.8F + 0.1F;
+                float f2 = this.worldObj.rand.nextFloat() * 0.8F + 0.1F;
+                EntityItem entityitem = new EntityItem(this.worldObj, (double) ((float) this.xCoord + f), (double) ((float) this.yCoord + f1 - 0.5F), (double) ((float) this.zCoord + f2), output_final);
+                entityitem.lifespan = BuildCraftCore.itemLifespan * 20;
+                entityitem.delayBeforeCanPickup = 10;
+                float f3 = 0.05F;
+                entityitem.motionX = (double) ((float) this.worldObj.rand.nextGaussian() * f3);
+                entityitem.motionY = (double) ((float) this.worldObj.rand.nextGaussian() * f3 - 1.0F);
+                entityitem.motionZ = (double) ((float) this.worldObj.rand.nextGaussian() * f3);
+                this.worldObj.spawnEntityInWorld(entityitem);
+            }
+        }
+    }
+
+    long startTime = System.currentTimeMillis();
+
+    @Override
+    public void on_progress_increment()
+    {
+        if(System.currentTimeMillis() - startTime > 1400) {
+            worldObj.playSoundEffect(xCoord, yCoord, zCoord, Minelife.MOD_ID + ":leaf_mulcher", 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
+            startTime = System.currentTimeMillis();
+        }
     }
 
     @Override
@@ -151,6 +181,12 @@ public class TileEntityLeafMulcher extends TileEntityElectricMachine {
     public boolean is_item_valid_for_slot(int slot, ItemStack stack)
     {
         return stack != null && ((stack.getItem() == MLItems.coca_leaf  && MLItems.coca_leaf.get_moisture_level(stack) == 0) || stack.getItem() == MLItems.cannabis_buds);
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox()
+    {
+        return AxisAlignedBB.getBoundingBox(xCoord, yCoord - 1, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
     }
 
 }

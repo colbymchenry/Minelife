@@ -9,15 +9,15 @@ import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
 
-public class ItemLeafMulcherRenderer implements IItemRenderer {
+public class ItemDryingRackRenderer implements IItemRenderer {
 
     ResourceLocation texture;
     ResourceLocation objModelLocation;
     IModelCustom model;
 
-    public ItemLeafMulcherRenderer() {
-        texture = new ResourceLocation(Minelife.MOD_ID, "textures/blocks/leaf_mulcher.png");
-        objModelLocation = new ResourceLocation(Minelife.MOD_ID, "models/leaf_mulcher.obj");
+    public ItemDryingRackRenderer() {
+        texture = new ResourceLocation(Minelife.MOD_ID, "textures/blocks/drying_rack.png");
+        objModelLocation = new ResourceLocation(Minelife.MOD_ID, "models/drying_rack.obj");
         model = AdvancedModelLoader.loadModel(objModelLocation);
     }
 

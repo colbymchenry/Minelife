@@ -1,5 +1,6 @@
 package com.minelife.drug.client.gui;
 
+import com.minelife.Minelife;
 import com.minelife.drug.tileentity.TileEntityDryingRack;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -9,21 +10,19 @@ import org.lwjgl.opengl.GL11;
 public class GuiDryingRack extends GuiContainer {
 
     private TileEntityDryingRack tile_drying_rack;
-    private static ResourceLocation texture = new ResourceLocation("buildcraftfactory:textures/gui/drying_rack.png");
+    private static ResourceLocation texture = new ResourceLocation(Minelife.MOD_ID + ":textures/gui/drying_rack.png");
 
     public GuiDryingRack(InventoryPlayer inventoryplayer, TileEntityDryingRack tile) {
         super(new ContainerDryingRack(inventoryplayer, tile));
         this.tile_drying_rack = tile;
         this.xSize = 176;
-        this.ySize = 197;
+        this.ySize = 126;
     }
 
     // TODO: Make gui
     @Override
     protected void drawGuiContainerForegroundLayer(int mouse_x, int mouse_y) {
-        String title = "Drying Rack";
-        this.fontRendererObj.drawString(title, this.getCenteredOffset(title), 6, 4210752);
-        this.fontRendererObj.drawString("Inventory", 8, this.ySize - 96 + 2, 4210752);
+        this.fontRendererObj.drawString("Inventory", 8, this.ySize - 96 + 4, 4210752);
     }
 
     @Override

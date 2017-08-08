@@ -24,7 +24,6 @@ public class ItemAmmonia extends ItemBucketBuildcraft {
         super(MLBlocks.ammonia);
         setCreativeTab(ModDrugs.tab_drugs);
         setUnlocalizedName("ammonia");
-        setContainerItem(Items.bucket);
         setTextureName(Minelife.MOD_ID + ":ammonia");
     }
 

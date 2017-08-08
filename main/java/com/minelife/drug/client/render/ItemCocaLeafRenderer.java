@@ -1,27 +1,75 @@
 package com.minelife.drug.client.render;
 
+import com.minelife.Minelife;
+import com.minelife.economy.client.gui.GuiUnlock;
+import com.minelife.util.client.GuiUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.texture.TextureUtil;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.common.MinecraftForge;
+import net.royawesome.jlibnoise.module.combiner.Min;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
+import java.awt.*;
 
 // TODO
 public class ItemCocaLeafRenderer implements IItemRenderer {
 
+    protected static RenderItem itemRender = new RenderItem();
+    protected static Minecraft mc = Minecraft.getMinecraft();
+    protected static ResourceLocation texture = new ResourceLocation(Minelife.MOD_ID + ":textures/items/coca_leaf.png");
+    private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
+
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type)
     {
-        return false;
+        return true;
     }
 
     @Override
     public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper)
     {
-        return false;
+        return type != ItemRenderType.INVENTORY;
     }
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data)
     {
+        Color FAR = new Color(237, 234, 0);
+        Color CLOSE = new Color(0, 237, 21);
+        int[] transition_color = GuiUtil.transition(FAR, CLOSE, item.getItemDamage() / 80.0);
+        GL11.glColor4f(transition_color[0] / 255f, transition_color[1] / 255f, transition_color[2] / 255f, 1f);
 
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+
+        if (type == ItemRenderType.INVENTORY) {
+            mc.getTextureManager().bindTexture(texture);
+            GuiUtil.drawImage(0, 0, 16, 16);
+        }else if (type == ItemRenderType.EQUIPPED_FIRST_PERSON) {
+            GL11.glPushMatrix();
+            {
+                GL11.glRotatef(70f, 0f, 1f, 0f);
+                GL11.glTranslatef(-0.7f, 0.8f, 0.2f);
+                GuiUtil.render_item_in_world(mc, item);
+            }
+            GL11.glPopMatrix();
+        } else {
+            GuiUtil.render_item_in_world(mc, item);
+        }
     }
 
 }

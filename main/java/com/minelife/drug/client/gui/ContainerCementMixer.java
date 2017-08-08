@@ -35,11 +35,14 @@ public class ContainerCementMixer extends BuildCraftContainer {
 
         // TODO: Fix x and y offsets
         // add input slots for items
-        for (int i = 0; i < 9; ++i) {
-            this.addSlotToContainer(new Slot(tile_cement_mixer, i, 8 + i * 18, 84));
+        int slot_count = 0;
+        for(int x = 0; x < 3; ++x) {
+            for(int y = 0; y < 3; ++y) {
+                this.addSlotToContainer(new Slot(tile_cement_mixer, slot_count++, 36 + x * 18, 16 + y * 18));
+            }
         }
         // add output slot
-        this.addSlotToContainer(new SlotOutput(tile_cement_mixer, 9, 107, 41));
+        this.addSlotToContainer(new SlotOutput(tile_cement_mixer, 9, 130, 34));
     }
 
     @Override

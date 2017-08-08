@@ -45,12 +45,12 @@ public class ItemCementMixerRenderer implements IItemRenderer {
 
             if(type == IItemRenderer.ItemRenderType.INVENTORY) {
                 GL11.glScalef(0.6f, 0.6f, 0.6f);
-                GL11.glTranslatef(0.5f, -1.25f, 0f);
+                GL11.glTranslatef(0f, -0.55f, 0f);
             }
 
             if(type == IItemRenderer.ItemRenderType.EQUIPPED) {
                 GL11.glScalef(1.5f, 1.5f, 1.5f);
-                GL11.glTranslatef(0.5f, 0f, 0.1f);
+                GL11.glTranslatef(-0.3f, 0.4f, -0.4f);
             }
 
             model.renderAll();

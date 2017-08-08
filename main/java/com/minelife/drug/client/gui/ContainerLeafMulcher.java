@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 
 public class ContainerLeafMulcher extends BuildCraftContainer {
 
@@ -42,7 +43,8 @@ public class ContainerLeafMulcher extends BuildCraftContainer {
     }
 
     @Override
-    public void detectAndSendChanges() {
+    public void detectAndSendChanges()
+    {
         super.detectAndSendChanges();
 
         for (Object crafter : this.crafters) {
@@ -52,8 +54,10 @@ public class ContainerLeafMulcher extends BuildCraftContainer {
     }
 
     @Override
-    public void updateProgressBar(int i, int j) {
+    public void updateProgressBar(int i, int j)
+    {
         this.tile_leaf_mulcher.getGUINetworkData(i, j);
     }
+
 
 }

@@ -66,5 +66,9 @@
   "leaf_mulcher": {
     "category": "neutral",
     "sounds": ["minelife:leaf_mulcher"]
+  },
+  "cement_mixer": {
+    "category": "neutral",
+    "sounds": ["minelife:cement_mixer"]
   }
 }

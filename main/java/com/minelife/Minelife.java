@@ -16,6 +16,7 @@ import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import lib.PatPeter.SQLibrary.Database;
@@ -64,8 +65,9 @@ public class Minelife {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         NETWORK = new SimpleNetworkWrapper(MOD_ID);
-        MLItems.init();
         MLBlocks.init();
+        MLItems.init();
+        MinecraftForge.EVENT_BUS.register(this);
         AbstractMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
         MODS.forEach(mod -> mod.preInit(event));
         PROXY.preInit(event);
@@ -98,8 +100,6 @@ public class Minelife {
     public void textureHook(TextureStitchEvent.Post event) {
         MODS.forEach(mod -> mod.textureHook(event));
     }
-
-
 
     public static File getDirectory() {
         return new File(System.getProperty("user.dir") + File.separator + "config", MOD_ID);
