@@ -21,14 +21,14 @@ public class ItemCocaLeaf extends Item {
         if(stack == null) return;
         if(stack.getItem() != this) return;
         moisture = moisture < 0 ? 0 : moisture > 100 ? 100 : moisture;
-        stack.setItemDamage(moisture);
+        stack.setItemDamage(100 - moisture);
     }
 
     public int get_moisture_level(ItemStack stack) {
         if(stack == null) return 0;
         if(stack.getItem() != this) return 0;
 
-        return stack.getItemDamage();
+        return 100 - stack.getItemDamage();
     }
 
 }

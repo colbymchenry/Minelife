@@ -4,6 +4,9 @@ import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
 import com.minelife.drug.item.ItemCocaLeaf;
+import com.minelife.drug.tileentity.TileEntityDryingRack;
+import com.minelife.util.ArrayUtil;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,6 +16,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class BlockCocaPlant extends AbstractCrop {
@@ -70,4 +74,5 @@ public class BlockCocaPlant extends AbstractCrop {
         icon_array[6] = icon_register.registerIcon(Minelife.MOD_ID + ":coca_stage_2");
         icon_array[7] = icon_register.registerIcon(Minelife.MOD_ID + ":coca_stage_3");
     }
+
 }

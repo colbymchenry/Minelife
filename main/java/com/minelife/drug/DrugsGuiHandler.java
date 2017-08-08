@@ -13,6 +13,7 @@ public class DrugsGuiHandler extends AbstractGuiHandler {
     public static int leaf_mulcher_id = 9090;
     public static int drying_rack_id = 9092;
     public static int cement_mixer_id = 9093;
+    public static int presser_id = 9094;
 
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)

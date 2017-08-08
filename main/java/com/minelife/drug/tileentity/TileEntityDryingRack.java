@@ -1,23 +1,19 @@
 package com.minelife.drug.tileentity;
 
-import buildcraft.BuildCraftCore;
 import buildcraft.api.core.ISerializable;
-import buildcraft.core.DefaultProps;
 import buildcraft.core.lib.inventory.SimpleInventory;
-import buildcraft.core.lib.network.PacketTileUpdate;
 import com.google.common.collect.Maps;
 import com.minelife.MLItems;
-import com.minelife.Minelife;
-import com.minelife.drug.ModDrugs;
-import com.minelife.drug.item.ItemCocaLeaf;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
-import java.util.List;
 import java.util.Map;
 
 public class TileEntityDryingRack extends TileEntity implements IInventory, ISerializable {
@@ -35,10 +31,10 @@ public class TileEntityDryingRack extends TileEntity implements IInventory, ISer
     public void updateEntity()
     {
         progress += 1;
-        if(progress >= 2) {
+        if(progress >= 256) {
             progress = 0;
             for(int i = 0; i < 9; i++) {
-                MLItems.coca_leaf.set_moisture_level(getStackInSlot(i), MLItems.coca_leaf.get_moisture_level(getStackInSlot(i)) + 1);
+                MLItems.coca_leaf.set_moisture_level(getStackInSlot(i), MLItems.coca_leaf.get_moisture_level(getStackInSlot(i)) - 1);
             }
         }
     }
@@ -147,5 +143,19 @@ public class TileEntityDryingRack extends TileEntity implements IInventory, ISer
             leaves.put(i, getStackInSlot(i));
         }
         return leaves;
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt)
+    {
+        this.readFromNBT(pkt.func_148857_g());
+    }
+
+    @Override
+    public Packet getDescriptionPacket()
+    {
+        NBTTagCompound tagCompound = new NBTTagCompound();
+        this.writeToNBT(tagCompound);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, blockMetadata, tagCompound);
     }
 }
