@@ -63,6 +63,8 @@ public class MLItems {
     public static ItemWaxyCocaine waxy_cocaine;
     public static ItemHeatedCocaine heated_cocaine;
     public static ItemPressedCocaine pressed_cocaine;
+    public static ItemPurpleCocaine purple_cocaine;
+    public static ItemProcessedCocaine processed_cocaine;
 
     protected static void init()
     {
@@ -115,6 +117,8 @@ public class MLItems {
         register_item(waxy_cocaine = new ItemWaxyCocaine());
         register_item(heated_cocaine = new ItemHeatedCocaine());
         register_item(pressed_cocaine = new ItemPressedCocaine());
+        register_item(purple_cocaine = new ItemPurpleCocaine());
+        register_item(processed_cocaine = new ItemProcessedCocaine());
     }
 
     private static void register_item(Item item)

@@ -5,6 +5,7 @@ import com.minelife.drug.client.gui.*;
 import com.minelife.drug.tileentity.TileEntityCementMixer;
 import com.minelife.drug.tileentity.TileEntityDryingRack;
 import com.minelife.drug.tileentity.TileEntityLeafMulcher;
+import com.minelife.drug.tileentity.TileEntityPresser;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
@@ -21,6 +22,7 @@ public class DrugsGuiHandler extends AbstractGuiHandler {
         if(ID == leaf_mulcher_id) return new ContainerLeafMulcher(player.inventory, (TileEntityLeafMulcher) world.getTileEntity(x, y, z));
         if(ID == drying_rack_id) return new ContainerDryingRack(player.inventory, (TileEntityDryingRack) world.getTileEntity(x, y, z));
         if(ID == cement_mixer_id) return new ContainerCementMixer(player.inventory, (TileEntityCementMixer) world.getTileEntity(x, y, z));
+        if(ID == presser_id) return new ContainerPresser(player.inventory, (TileEntityPresser) world.getTileEntity(x, y, z));
         return null;
     }
 
@@ -30,6 +32,7 @@ public class DrugsGuiHandler extends AbstractGuiHandler {
         if(ID == leaf_mulcher_id) return new GuiLeafMulcher(player.inventory, (TileEntityLeafMulcher) world.getTileEntity(x, y, z));
         if(ID == drying_rack_id) return new GuiDryingRack(player.inventory, (TileEntityDryingRack) world.getTileEntity(x, y, z));
         if(ID == cement_mixer_id) return new GuiCementMixer(player.inventory, (TileEntityCementMixer) world.getTileEntity(x, y, z));
+        if(ID == presser_id) return new GuiPresser(player.inventory, (TileEntityPresser) world.getTileEntity(x, y, z));
         return null;
     }
 

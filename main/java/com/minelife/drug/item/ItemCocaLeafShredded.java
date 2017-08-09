@@ -14,7 +14,6 @@ public class ItemCocaLeafShredded extends Item {
         setCreativeTab(ModDrugs.tab_drugs);
         setTextureName(Minelife.MOD_ID + ":coca_leaf_shredded");
         setUnlocalizedName("coca_leaf_shredded");
-
     }
 
 }
