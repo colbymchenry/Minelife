@@ -27,7 +27,6 @@ public class MLBlocks {
     public static BlockATM atm;
     public static BlockATMTop atm_top;
     public static BlockZincOre zinc_ore;
-    public static BlockRoller roller;
     public static BlockPresser presser;
     public static BlockDryingRack drying_rack;
     public static BlockCementMixer cement_mixer;
@@ -57,7 +56,6 @@ public class MLBlocks {
         register_block(atm_top = new BlockATMTop());
         register_block(zinc_ore = new BlockZincOre());
         register_block(presser = new BlockPresser());
-        register_block(roller = new BlockRoller());
         register_block(cement_mixer = new BlockCementMixer());
     }
 

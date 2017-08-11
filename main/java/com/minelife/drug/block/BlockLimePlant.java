@@ -2,9 +2,6 @@ package com.minelife.drug.block;
 
 import com.minelife.MLItems;
 import com.minelife.Minelife;
-import com.minelife.drug.ModDrugs;
-import com.minelife.drug.item.ItemCannabisBuds;
-import com.minelife.drug.item.ItemCannabisSeeds;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;

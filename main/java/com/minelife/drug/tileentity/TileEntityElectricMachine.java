@@ -10,6 +10,7 @@ import buildcraft.core.lib.fluids.TankUtils;
 import buildcraft.core.lib.inventory.SimpleInventory;
 import buildcraft.core.lib.utils.Utils;
 import com.minelife.Minelife;
+import com.minelife.drug.DrugsGuiHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ICrafting;

@@ -5,12 +5,10 @@ import com.minelife.MLBlocks;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
-import com.minelife.drug.item.ItemSulfur;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -19,7 +17,6 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class BlockSulfurOre extends Block {

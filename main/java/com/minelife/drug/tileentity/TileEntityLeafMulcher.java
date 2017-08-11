@@ -7,18 +7,11 @@ import buildcraft.core.lib.RFBattery;
 import buildcraft.core.lib.utils.Utils;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
-import com.minelife.drug.DrugsGuiHandler;
-import com.minelife.drug.ModDrugs;
-import com.minelife.drug.item.ItemCannabisBuds;
-import com.minelife.drug.item.ItemCannabisShredded;
-import com.minelife.drug.item.ItemCocaLeaf;
-import com.minelife.drug.item.ItemCocaLeafShredded;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
-import org.lwjgl.Sys;
 
 public class TileEntityLeafMulcher extends TileEntityElectricMachine implements IRedstoneEngineReceiver {
 

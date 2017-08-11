@@ -4,7 +4,6 @@ import buildcraft.BuildCraftCore;
 import buildcraft.api.power.IRedstoneEngineReceiver;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.core.lib.utils.Utils;
-import buildcraft.transport.TileGenericPipe;
 import com.minelife.MLItems;
 import com.minelife.drug.DrugsGuiHandler;
 import net.minecraft.entity.item.EntityItem;
@@ -12,19 +11,19 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class TileEntityPresser extends TileEntityElectricMachine implements IRedstoneEngineReceiver {
+public class TileEntityVacuum extends TileEntityElectricMachine implements IRedstoneEngineReceiver {
 
     private int slot_input = 0, slot_output = 1;
 
-    public TileEntityPresser()
+    public TileEntityVacuum()
     {
-        super(2, "presser");
+        super(2, "vacuum");
     }
 
     @Override
     public int gui_id()
     {
-        return DrugsGuiHandler.presser_id;
+        return DrugsGuiHandler.vacuum_id;
     }
 
     @Override
@@ -54,7 +53,7 @@ public class TileEntityPresser extends TileEntityElectricMachine implements IRed
     @Override
     public int processing_time()
     {
-        return 256;
+        return 32;
     }
 
     @Override
@@ -66,20 +65,20 @@ public class TileEntityPresser extends TileEntityElectricMachine implements IRed
     @Override
     public boolean has_work()
     {
-        return this.getStackInSlot(slot_input) != null && this.getStackInSlot(slot_input).getItem() == MLItems.heated_cocaine;
+        return this.getStackInSlot(slot_input) != null && this.getStackInSlot(slot_input).getItem() == MLItems.coca_leaf;
     }
 
     @Override
     public void work()
     {
-        ItemStack output = new ItemStack(MLItems.pressed_cocaine, 1);
+        ItemStack output = new ItemStack(MLItems.coca_leaf, 1, 100);
 
-        if(output != null) {
+        if (output != null) {
             this.decrStackSize(slot_input, 1);
 
             if (getStackInSlot(slot_output) == null || getStackInSlot(slot_output).stackSize < 64) {
-                int size = getStackInSlot(slot_output) == null ? 1 : getStackInSlot(slot_output).stackSize;
-                setInventorySlotContents(slot_output, new ItemStack(MLItems.pressed_cocaine, size));
+                int size = getStackInSlot(slot_output) == null ? 1 : getStackInSlot(slot_output).stackSize + 1;
+                setInventorySlotContents(slot_output, new ItemStack(MLItems.coca_leaf, size, 100));
                 output.stackSize -= size;
             }
 
@@ -91,11 +90,6 @@ public class TileEntityPresser extends TileEntityElectricMachine implements IRed
                 output.stackSize -= Utils.addToRandomInjectableAround(this.worldObj, this.xCoord, this.yCoord, this.zCoord, ForgeDirection.UNKNOWN, output);
             }
 
-            if(getStackInSlot(slot_output) == null || getStackInSlot(slot_output).stackSize < 64) {
-                int size = getStackInSlot(slot_output) == null ? 1 : getStackInSlot(slot_output).stackSize + 1;
-                setInventorySlotContents(slot_output, new ItemStack(MLItems.pressed_cocaine, size));
-                return;
-            }
 
             if (output.stackSize > 0) {
                 float f = this.worldObj.rand.nextFloat() * 0.8F + 0.1F;
@@ -158,7 +152,7 @@ public class TileEntityPresser extends TileEntityElectricMachine implements IRed
     @Override
     public boolean is_item_valid_for_slot(int slot, ItemStack stack)
     {
-        return stack != null && ((slot == slot_input && stack.getItem() == MLItems.heated_cocaine) || slot == slot_output && stack.getItem() == MLItems.pressed_cocaine);
+        return stack != null && stack.getItem() == MLItems.coca_leaf;
     }
 
     @Override
@@ -166,4 +160,5 @@ public class TileEntityPresser extends TileEntityElectricMachine implements IRed
     {
         return true;
     }
+
 }
