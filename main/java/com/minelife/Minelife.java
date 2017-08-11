@@ -62,7 +62,6 @@ public class Minelife {
         MODS.add(new ModRegion());
         MODS.add(new ModDrugs());
         MODS.add(new ModRealEstate());
-        MODS.add(new ModRealEstate());
     }
 
     @Mod.EventHandler
