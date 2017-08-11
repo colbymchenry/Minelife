@@ -14,7 +14,6 @@ public class ServerProxy extends CommonProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(new TickListener());
         FMLCommonHandler.instance().bus().register(new TickListener());
     }
 

@@ -16,6 +16,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         FMLCommonHandler.instance().bus().register(new KeyStrokeListener());
+        FMLCommonHandler.instance().bus().register(new TickHandler());
         MinecraftForge.EVENT_BUS.register(new OverlayRenderer());
         MinecraftForge.EVENT_BUS.register(this);
         ItemGun.registerRenderers();

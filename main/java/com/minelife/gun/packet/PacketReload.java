@@ -3,15 +3,19 @@ package com.minelife.gun.packet;
 import com.minelife.Minelife;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
+import com.minelife.util.PacketPlaySound;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.World;
 
 public class PacketReload implements IMessage {
 
@@ -30,7 +34,7 @@ public class PacketReload implements IMessage {
 
         @Override
         public IMessage onMessage(PacketReload message, MessageContext ctx) {
-            EntityPlayer player = ctx.getServerHandler().playerEntity;
+            EntityPlayerMP player = ctx.getServerHandler().playerEntity;
 
             ItemStack heldItem = player.getHeldItem();
             if(heldItem != null && heldItem.getItem() instanceof ItemGun) {
@@ -46,7 +50,7 @@ public class PacketReload implements IMessage {
                 // prevent reloading if max ammo is already met
                 if(ItemGun.getCurrentClipHoldings(heldItem) == ((ItemGun) heldItem.getItem()).getClipSize()) return null;
 
-                player.worldObj.playSoundAtEntity(player, Minelife.MOD_ID + ":guns." + ((ItemGun) heldItem.getItem()).getName() + ".reload", 5F, 1.0F);
+                Minelife.NETWORK.sendTo(new PacketPlaySound("guns." + ((ItemGun) heldItem.getItem()).getName() + ".reload", 5F, 1.0F), player);
 
                 NBTTagCompound tagCompound = heldItem.hasTagCompound() ? heldItem.stackTagCompound : new NBTTagCompound();
 
