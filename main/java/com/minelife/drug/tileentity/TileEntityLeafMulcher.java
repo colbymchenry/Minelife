@@ -1,6 +1,7 @@
 package com.minelife.drug.tileentity;
 
 import buildcraft.BuildCraftCore;
+import buildcraft.api.power.IRedstoneEngineReceiver;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.core.lib.RFBattery;
 import buildcraft.core.lib.utils.Utils;
@@ -19,7 +20,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.Sys;
 
-public class TileEntityLeafMulcher extends TileEntityElectricMachine {
+public class TileEntityLeafMulcher extends TileEntityElectricMachine implements IRedstoneEngineReceiver {
 
     private static final int slot_input = 0, slot_output = 1;
 
@@ -189,4 +190,9 @@ public class TileEntityLeafMulcher extends TileEntityElectricMachine {
         return AxisAlignedBB.getBoundingBox(xCoord, yCoord - 1, zCoord, xCoord + 1, yCoord + 1, zCoord + 1);
     }
 
+    @Override
+    public boolean canConnectRedstoneEngine(ForgeDirection forgeDirection)
+    {
+        return true;
+    }
 }

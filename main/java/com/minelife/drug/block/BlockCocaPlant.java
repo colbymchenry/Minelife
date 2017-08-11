@@ -59,7 +59,7 @@ public class BlockCocaPlant extends AbstractCrop {
     @Override
     public int max_growth_stage()
     {
-        return 8;
+        return 7;
     }
 
     @Override

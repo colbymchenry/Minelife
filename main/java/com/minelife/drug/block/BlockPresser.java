@@ -9,6 +9,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,10 +19,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockPresser extends BlockBuildCraft {
 
-    private IIcon icon;
+    private IIcon side, top;
 
     public BlockPresser()
     {
@@ -47,12 +49,19 @@ public class BlockPresser extends BlockBuildCraft {
 
     @Override
     public void registerBlockIcons(IIconRegister iconRegister) {
-        icon = iconRegister.registerIcon(Minelife.MOD_ID + ":presser");
+        side = iconRegister.registerIcon(Minelife.MOD_ID + ":presser");
+        top = iconRegister.registerIcon(Minelife.MOD_ID + ":presser_top");
     }
 
-    @Override
-    public IIcon getIcon(int p_149691_1_, int p_149691_2_) {
-        return icon;
+    @SideOnly(Side.CLIENT)
+    public IIcon getIcon(int side, int meta)
+    {
+        return ForgeDirection.getOrientation(side) == ForgeDirection.UP || ForgeDirection.getOrientation(side) == ForgeDirection.DOWN ? this.top : this.side;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public IIcon getIconAbsolute(int side, int metadata) {
+        return getIcon(side, metadata);
     }
 
 }
