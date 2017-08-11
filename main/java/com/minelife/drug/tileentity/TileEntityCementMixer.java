@@ -3,6 +3,7 @@ package com.minelife.drug.tileentity;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftEnergy;
 import buildcraft.api.fuels.IFuel;
+import buildcraft.api.power.IRedstoneEngineReceiver;
 import buildcraft.api.transport.IItemPipe;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.core.lib.fluids.Tank;
@@ -27,7 +28,7 @@ import net.minecraftforge.fluids.*;
 
 import java.util.List;
 
-public class TileEntityCementMixer extends TileEntityElectricMachine implements IFluidHandler {
+public class TileEntityCementMixer extends TileEntityElectricMachine implements IFluidHandler, IRedstoneEngineReceiver {
 
     private static int[] input_slots = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8};
     private static int slot_output = 9;
@@ -355,5 +356,11 @@ public class TileEntityCementMixer extends TileEntityElectricMachine implements 
 
         setInventorySlotContents(slot_output, new ItemStack(output.getItem(), output.stackSize + in_output.stackSize));
         return output.stackSize;
+    }
+
+    @Override
+    public boolean canConnectRedstoneEngine(ForgeDirection forgeDirection)
+    {
+        return true;
     }
 }

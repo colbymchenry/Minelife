@@ -8,6 +8,7 @@ import com.minelife.drug.tileentity.TileEntityCementMixer;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -55,7 +56,8 @@ public class ModDrugs extends AbstractMod {
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.potassium_hydroxide_pyrolusite_mixture), MLItems.potassium_hydroxide, MLItems.pyrolusite);
 
         // TODO: Add recipes for manufacturing blocks
-        TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.waxy_cocaine), new ItemStack(MLItems.lime), new ItemStack(MLItems.salt)).addLiquids(new FluidStack(BuildCraftEnergy.fluidFuel, 100)));
+        // TODO: Add cocaine to recipe
+        TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.waxy_cocaine), new ItemStack(MLItems.coca_leaf_shredded), new ItemStack(MLItems.lime), new ItemStack(MLItems.salt)).addLiquids(new FluidStack(BuildCraftEnergy.fluidFuel, 100)));
         TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.cocaine_sulfate), new ItemStack(MLItems.pressed_cocaine)).addLiquids(new FluidStack(MLBlocks.sulfuric_acid.getFluid(), 100)));
         TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.purple_cocaine), new ItemStack(MLItems.coca_paste)).addLiquids(new FluidStack(MLBlocks.potassium_permanganate.getFluid(), 100)));
         TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.processed_cocaine), new ItemStack(MLItems.coca_paste)).addLiquids(new FluidStack(MLBlocks.ammonia.getFluid(), 100)));
