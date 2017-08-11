@@ -188,8 +188,6 @@ public abstract class ItemGun extends Item {
             int needed = maxAmmo - currentHoldings;
             int insertingCount = 0;
 
-
-
             for(ItemStack itemStack : ammoFromInventory) {
                 if(insertingCount < needed) {
                     if(itemStack.stackSize - (needed - insertingCount) < 1) {
