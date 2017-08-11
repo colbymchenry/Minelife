@@ -41,6 +41,7 @@ public class ModDrugs extends AbstractMod {
         GameRegistry.addSmelting(Item.getItemFromBlock(MLBlocks.limestone), new ItemStack(MLItems.calcium_oxide), 0.3F);
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.cannabis_shredded), MLItems.cannabis_buds, MLItems.grinder);
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.coca_leaf_shredded), MLItems.grinder, new ItemStack(MLItems.coca_leaf, 1, 0));
+        GameRegistry.addShapelessRecipe(new ItemStack(MLItems.joint), MLItems.cannabis_shredded, Items.paper);
         // register grinder recipes
         GameRegistry.addShapedRecipe(new ItemStack(MLItems.grinder), "AAA", "BBB", "AAA", 'A', Item.getItemFromBlock(Blocks.planks), 'B', Items.iron_ingot);
         for(int i = 0; i < ItemDye.field_150921_b.length; i++) GameRegistry.addShapelessRecipe(new ItemStack(MLItems.grinder, 1, i), MLItems.grinder, new ItemStack(Items.dye, 1, i));

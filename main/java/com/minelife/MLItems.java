@@ -67,6 +67,7 @@ public class MLItems {
     public static ItemEstateCreateForm estate_create_form;
     public static ItemAbstractDrug purple_cocaine;
     public static ItemProcessedCocaine processed_cocaine;
+    public static ItemJoint joint;
 
     protected static void init()
     {
@@ -122,6 +123,7 @@ public class MLItems {
         register_item(estate_create_form = new ItemEstateCreateForm());
         register_item(processed_cocaine = new ItemProcessedCocaine());
         register_item(purple_cocaine = new ItemAbstractDrug("purple_cocaine"));
+        register_item(joint = new ItemJoint());
     }
 
     private static void register_item(Item item)
