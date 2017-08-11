@@ -8,6 +8,7 @@ import com.minelife.gun.ModGun;
 import com.minelife.notification.ModNotifications;
 import com.minelife.permission.ModPermission;
 import com.minelife.police.ModPolice;
+import com.minelife.realestate.ModRealEstate;
 import com.minelife.region.ModRegion;
 import com.minelife.util.PacketPlaySound;
 import cpw.mods.fml.common.Mod;
@@ -60,6 +61,8 @@ public class Minelife {
         MODS.add(new ModGun());
         MODS.add(new ModRegion());
         MODS.add(new ModDrugs());
+        MODS.add(new ModRealEstate());
+        MODS.add(new ModRealEstate());
     }
 
     @Mod.EventHandler

@@ -18,6 +18,7 @@ public class OverlayRenderer {
 
     @SubscribeEvent
     public void onGameOverlay(RenderGameOverlayEvent.Pre event) {
+
         EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         Minecraft mc = Minecraft.getMinecraft();
         ScaledResolution scaledResolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);

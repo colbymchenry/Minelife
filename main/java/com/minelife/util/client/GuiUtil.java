@@ -1,11 +1,9 @@
 package com.minelife.util.client;
 
-import com.sun.prism.impl.VertexBuffer;
+import com.minelife.util.Vector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -269,8 +267,8 @@ public class GuiUtil {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glBegin(GL11.GL_QUADS);
         float red = (float) (color >> 16 & 255) / 255.0F;
-        float blue = (float) (color >> 8 & 255) / 255.0F;
-        float green = (float) (color & 255) / 255.0F;
+        float green = (float) (color >> 8 & 255) / 255.0F;
+        float blue = (float) (color & 255) / 255.0F;
         float alpha = (float) (color >> 24 & 255) / 255.0F;
         GL11.glColor4f(red, green, blue, 0.5F);
 

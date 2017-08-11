@@ -136,6 +136,10 @@ public class Vector implements Cloneable {
         return this;
     }
 
+    public static Vector clone(Vector vec) {
+        return new Vector().copy(vec);
+    }
+
     /**
      * Gets the magnitude of the vector, defined as sqrt(x^2+y^2+z^2). The
      * value of this method is not cached and uses a costly square-root

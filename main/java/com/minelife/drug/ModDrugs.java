@@ -3,7 +3,6 @@ package com.minelife.drug;
 import buildcraft.BuildCraftEnergy;
 import com.minelife.*;
 import com.minelife.drug.block.*;
-import com.minelife.drug.item.*;
 import com.minelife.drug.tileentity.TileEntityCementMixer;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
