@@ -105,14 +105,14 @@ public class GUIUtil {
         Vector translate = new Vector(dx, dy, dz);
 
         GL11.glPushMatrix();
-        drawRectSetUp(color.getRGB());
+        drawRectSetUp();
 
         GL11.glPushMatrix();
-        drawRectRenderRect(new Vector().copy(translate).add(dr), length, height, true);
+        drawRectRenderRect(new Vector().copy(translate).add(dr), length, height, true, color.getRGB());
         GL11.glPopMatrix();
 
         GL11.glPushMatrix();
-        drawRectRenderRect(new Vector().copy(translate).subtract(dr), length, height, false);
+        drawRectRenderRect(new Vector().copy(translate).subtract(dr), length, height, false, color.getRGB());
         GL11.glPopMatrix();
 
         drawRectCleanUp();
@@ -120,7 +120,7 @@ public class GUIUtil {
 
     }
 
-    private static void drawRectSetUp(int color) {
+    private static void drawRectSetUp() {
 
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDepthMask(false);
@@ -129,17 +129,24 @@ public class GUIUtil {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glLineWidth(4);
+
+    }
+
+    private static void drawRectRenderRect(Vector translate, Vector length, Vector height, boolean counterClockwise, int color) {
+
+        // TODO: Make Green if able to buy, red otherwise
+
         double red = (color >> 16 & 255) / 255.0;
         double green = (color >> 8 & 255) / 255.0;
         double blue = (color & 255) / 255.0;
         double alpha = (color >> 24 & 255) / 255.0;
+
         GL11.glColor4d(red, green, blue, alpha);
 
-    }
-
-    private static void drawRectRenderRect(Vector translate, Vector length, Vector height, boolean counterClockwise) {
-
         GL11.glTranslated(translate.getX(), translate.getY(), translate.getZ());
+
+        // Draw Rect
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex3d(0, 0, 0);
         if (counterClockwise) GL11.glVertex3d(height.getX(), height.getY(), height.getZ());
@@ -149,13 +156,28 @@ public class GUIUtil {
         else GL11.glVertex3d(height.getX(), height.getY(), height.getZ());
         GL11.glEnd();
 
+        GL11.glColor4d(red, green, blue, 2 * alpha);
+
+        // Draw Border
+        GL11.glBegin(GL11.GL_LINES);
+        GL11.glVertex3d(0, 0, 0);
+        for (int i = 0; i < 2; i ++)
+            if (counterClockwise) GL11.glVertex3d(height.getX(), height.getY(), height.getZ());
+            else GL11.glVertex3d(length.getX(), length.getY(), length.getZ());
+        for (int i = 0; i < 2; i ++)
+            GL11.glVertex3d(height.getX() + length.getX(), height.getY() + length.getY(), height.getZ() + length.getZ());
+        for (int i = 0; i < 2; i ++)
+            if (counterClockwise) GL11.glVertex3d(length.getX(), length.getY(), length.getZ());
+            else GL11.glVertex3d(height.getX(), height.getY(), height.getZ());
+        GL11.glVertex3d(0, 0, 0);
+        GL11.glEnd();
+
     }
 
     private static void drawRectCleanUp() {
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4d(1, 1, 1, 1);
-
         GL11.glColor4d(1, 1, 1, 1);
         GL11.glDepthMask(true);
 //        GL11.glEnable(GL11.GL_DEPTH_TEST);

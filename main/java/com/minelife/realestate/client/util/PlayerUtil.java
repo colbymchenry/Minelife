@@ -7,8 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
-import net.royawesome.jlibnoise.module.combiner.Min;
 
 @SideOnly(Side.CLIENT)
 public class PlayerUtil {
