@@ -8,27 +8,27 @@ import java.awt.*;
 
 public class GUIUtil {
 
-    public static void drawCuboidAroundBlocks(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color) {
+    public static void drawCuboidAroundBlocks(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color, boolean depth_test) {
 
         Vector smallest = new Vector(Math.min(start.getBlockX(), end.getBlockX()), Math.min(start.getBlockY(), end.getBlockY()), Math.min(start.getBlockZ(), end.getBlockZ()));
 
         Vector largest = new Vector(Math.max(start.getBlockX(), end.getBlockX()) + 1, Math.max(start.getBlockY(), end.getBlockY()) + 1, Math.max(start.getBlockZ(), end.getBlockZ()) + 1);
 
-        renderCuboid(minecraft, smallest, largest, partialTickTime, color);
+        renderCuboid(minecraft, smallest, largest, partialTickTime, color, depth_test);
 
     }
 
-    public static void drawCuboid(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color) {
+    public static void drawCuboid(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color, boolean depth_test) {
 
         Vector smallest = new Vector(Math.min(start.getX(), end.getX()), Math.min(start.getY(), end.getY()), Math.min(start.getZ(), end.getZ()));
 
         Vector largest = new Vector(Math.max(start.getX(), end.getX()), Math.max(start.getY(), end.getY()), Math.max(start.getZ(), end.getZ()));
 
-        renderCuboid(minecraft, smallest, largest, partialTickTime, color);
+        renderCuboid(minecraft, smallest, largest, partialTickTime, color, depth_test);
 
     }
 
-    private static void renderCuboid(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color) {
+    private static void renderCuboid(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color, boolean depth_test) {
 
         Vector[] points = new Vector[4];
 
@@ -38,7 +38,7 @@ public class GUIUtil {
         points[2] = new Vector(end.getX(), end.getY(), end.getZ());
         points[3] = new Vector(end.getX(), end.getY(), start.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
 
         // Bottom
 
@@ -47,7 +47,7 @@ public class GUIUtil {
         points[2] = new Vector(end.getX(), start.getY(), end.getZ());
         points[3] = new Vector(end.getX(), start.getY(), start.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
 
         // Face 1
 
@@ -56,7 +56,7 @@ public class GUIUtil {
         points[2] = new Vector(start.getX(), end.getY(), end.getZ());
         points[3] = new Vector(start.getX(), end.getY(), start.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
 
         // Face 2
 
@@ -65,7 +65,7 @@ public class GUIUtil {
         points[2] = new Vector(end.getX(), end.getY(), end.getZ());
         points[3] = new Vector(start.getX(), end.getY(), end.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
 
         // Face 3
 
@@ -74,7 +74,7 @@ public class GUIUtil {
         points[2] = new Vector(end.getX(), end.getY(), start.getZ());
         points[3] = new Vector(end.getX(), end.getY(), end.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
 
         // Face 4
 
@@ -83,11 +83,11 @@ public class GUIUtil {
         points[2] = new Vector(start.getX(), end.getY(), start.getZ());
         points[3] = new Vector(end.getX(), end.getY(), start.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
 
     }
 
-    public static void drawRect(Minecraft minecraft, Vector topLeft, Vector bottomLeft, Vector bottomRight, Vector topRight, float partialTickTime, Color color) {
+    public static void drawRect(Minecraft minecraft, Vector topLeft, Vector bottomLeft, Vector bottomRight, Vector topRight, float partialTickTime, Color color, boolean depth_test) {
 
         double playerX = minecraft.thePlayer.lastTickPosX + (minecraft.thePlayer.posX - minecraft.thePlayer.lastTickPosX) * partialTickTime;
         double playerY = minecraft.thePlayer.lastTickPosY + (minecraft.thePlayer.posY - minecraft.thePlayer.lastTickPosY) * partialTickTime;
@@ -105,7 +105,7 @@ public class GUIUtil {
         Vector translate = new Vector(dx, dy, dz);
 
         GL11.glPushMatrix();
-        drawRectSetUp();
+        drawRectSetUp(depth_test);
 
         GL11.glPushMatrix();
         drawRectRenderRect(new Vector().copy(translate).add(dr), length, height, true, color.getRGB());
@@ -115,16 +115,16 @@ public class GUIUtil {
         drawRectRenderRect(new Vector().copy(translate).subtract(dr), length, height, false, color.getRGB());
         GL11.glPopMatrix();
 
-        drawRectCleanUp();
+        drawRectCleanUp(depth_test);
         GL11.glPopMatrix();
 
     }
 
-    private static void drawRectSetUp() {
+    private static void drawRectSetUp(boolean depth_test) {
 
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDepthMask(false);
-//        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        if (!depth_test) GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -174,13 +174,13 @@ public class GUIUtil {
 
     }
 
-    private static void drawRectCleanUp() {
+    private static void drawRectCleanUp(boolean depth_test) {
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4d(1, 1, 1, 1);
         GL11.glColor4d(1, 1, 1, 1);
         GL11.glDepthMask(true);
-//        GL11.glEnable(GL11.GL_DEPTH_TEST);
+       if (!depth_test) GL11.glEnable(GL11.GL_DEPTH_TEST);
 
     }
 

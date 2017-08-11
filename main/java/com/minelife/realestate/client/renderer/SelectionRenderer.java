@@ -108,13 +108,13 @@ public class SelectionRenderer {
                 Vector e = PlayerUtil.getBlockCoordinatesInFocus();
                 if (e == null) e = lastVariableEnd;
                 if ((start == null && end == null) || e == null) break;
-                if (start != null) GUIUtil.drawCuboidAroundBlocks(minecraft, start, e, event.partialTicks, selectionColor[ableToPurchase]);
-                else GUIUtil.drawCuboidAroundBlocks(minecraft, end, e, event.partialTicks, selectionColor[ableToPurchase]);
+                if (start != null) GUIUtil.drawCuboidAroundBlocks(minecraft, start, e, event.partialTicks, selectionColor[ableToPurchase], true);
+                else GUIUtil.drawCuboidAroundBlocks(minecraft, end, e, event.partialTicks, selectionColor[ableToPurchase], true);
                 break;
             case SELECTED:
                 // Draw Cuboid based on start and end
                 if (start == null || end == null) break;
-                GUIUtil.drawCuboidAroundBlocks(minecraft, start, end, event.partialTicks, selectionColor[ableToPurchase]);
+                GUIUtil.drawCuboidAroundBlocks(minecraft, start, end, event.partialTicks, selectionColor[ableToPurchase], true);
                 break;
             default: break;
         }
