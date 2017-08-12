@@ -27,8 +27,10 @@ public abstract class GuiScrollableContent extends Gui {
         return 5;
     }
 
-    public int getSingleUnit() {
-        return 10;
+    public float getSingleUnit() {
+        int contentHeight = getContentHeight();
+        contentHeight = contentHeight == 0 ? 1 : contentHeight;
+        return 10 * ((float) contentHeight / (float) bounds.getHeight());
     }
 
     public int getMaximumGripSize() {
@@ -90,7 +92,8 @@ public abstract class GuiScrollableContent extends Gui {
                 }
             } else {
                 boolean above = ((mouseY - bounds.getY()) - gripPosition) < 0;
-                float newGripPosition = (mouseY - bounds.getY()) + (above ? initialMouseClickY : -initialMouseClickY);
+                // changed the above ? initialMouseClickY to above ? 0
+                float newGripPosition = (mouseY - bounds.getY()) + (above ? 0 : -initialMouseClickY);
                 newGripPosition = newGripPosition < 0 ? 0 : newGripPosition > trackScrollAreaSize ? trackScrollAreaSize : newGripPosition;
                 float newGripPositionRatio = newGripPosition / trackScrollAreaSize;
                 scrollY = newGripPositionRatio * windowScrollAreaSize;

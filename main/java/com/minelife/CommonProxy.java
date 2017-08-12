@@ -5,8 +5,8 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 public class CommonProxy {
 
-    public void preInit(FMLPreInitializationEvent event) {}
+    public void preInit(FMLPreInitializationEvent event) throws Exception {}
 
-    public void init(FMLInitializationEvent event) {}
+    public void init(FMLInitializationEvent event) throws Exception {}
 
 }

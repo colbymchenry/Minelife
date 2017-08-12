@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.minelife.drug.ModDrugs;
 import com.minelife.economy.ModEconomy;
 import com.minelife.gun.ModGun;
+import com.minelife.minebay.ModMinebay;
 import com.minelife.notification.ModNotifications;
 import com.minelife.permission.ModPermission;
 import com.minelife.police.ModPolice;
@@ -62,6 +63,7 @@ public class Minelife {
         MODS.add(new ModRegion());
         MODS.add(new ModDrugs());
         MODS.add(new ModRealEstate());
+        MODS.add(new ModMinebay());
     }
 
     @Mod.EventHandler
@@ -72,13 +74,21 @@ public class Minelife {
         MinecraftForge.EVENT_BUS.register(this);
         AbstractMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
         MODS.forEach(mod -> mod.preInit(event));
-        PROXY.preInit(event);
+        try {
+            PROXY.preInit(event);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         MODS.forEach(mod -> mod.init(event));
-        PROXY.init(event);
+        try {
+            PROXY.init(event);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new MinelifeGuiHandler());
     }
 

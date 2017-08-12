@@ -66,7 +66,7 @@ public class GuiUtil {
         GL11.glPopMatrix();
     }
 
-    public static void drawImage(int x, int y, int width, int height)
+    public static void drawImage(float x, float y, float width, float height)
     {
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
@@ -166,7 +166,8 @@ public class GuiUtil {
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             RenderHelper.disableStandardItemLighting();
             GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_DEPTH);
+//            GL11.glEnable(GL11.GL_DEPTH);
+
             int width = 0;
 
             for (String s : textLines) {
@@ -192,49 +193,31 @@ public class GuiUtil {
             if (i2 + height + 6 > screenHeight) {
                 i2 = screenHeight - height - 6;
             }
-
-
-//                this.zLevel = 300.0F;
-            GL11.glPushMatrix();
-            GL11.glTranslatef(0, 0, zLevel);
-            itemRender.zLevel = 300.0F;
-            int l = -267386864;
-            drawGradientRect(l1 - 3, i2 - 4, l1 + width + 3, i2 - 3, l, l);
-            drawGradientRect(l1 - 3, i2 + height + 3, l1 + width + 3, i2 + height + 4, l, l);
-            drawGradientRect(l1 - 3, i2 - 3, l1 + width + 3, i2 + height + 3, l, l);
-            drawGradientRect(l1 - 4, i2 - 3, l1 - 3, i2 + height + 3, l, l);
-            drawGradientRect(l1 + width + 3, i2 - 3, l1 + width + 4, i2 + height + 3, l, l);
-            int i1 = 1347420415;
-            int j1 = (i1 & 16711422) >> 1 | i1 & -16777216;
-            drawGradientRect(l1 - 3, i2 - 3 + 1, l1 - 3 + 1, i2 + height + 3 - 1, i1, j1);
-            drawGradientRect(l1 + width + 2, i2 - 3 + 1, l1 + width + 3, i2 + height + 3 - 1, i1, j1);
-            drawGradientRect(l1 - 3, i2 - 3, l1 + width + 3, i2 - 3 + 1, i1, i1);
-            drawGradientRect(l1 - 3, i2 + height + 2, l1 + width + 3, i2 + height + 3, j1, j1);
-            GL11.glPopMatrix();
+            int k = 1347420415;
+            GuiUtil.drawDefaultBackground(l1 - 6, i2 - 6, width + 10, height + 10, new Color(40, 0, 127, 255));
 
             GL11.glPushMatrix();
-            GL11.glTranslatef(0, 0, zLevel + 400.0F);
-            for (int k1 = 0; k1 < textLines.size(); ++k1) {
-                String s1 = textLines.get(k1);
-                mc.fontRenderer.drawStringWithShadow(s1, l1, i2, -1);
+            {
+                GL11.glTranslatef(0, 0, zLevel + 400.0F);
+                for (int k1 = 0; k1 < textLines.size(); ++k1) {
+                    String s1 = textLines.get(k1);
+                    mc.fontRenderer.drawStringWithShadow(s1, l1, i2, -1);
 
-                if (k1 == 0) {
-                    i2 += 2;
+                    if (k1 == 0) {
+                        i2 += 2;
+                    }
+
+                    i2 += 10;
                 }
-
-                i2 += 10;
             }
-
-
             GL11.glPopMatrix();
 
-//                this.zLevel = 0.0F;
             itemRender.zLevel = 0.0F;
             GL11.glEnable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_DEPTH);
+//            GL11.glEnable(GL11.GL_DEPTH);
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             RenderHelper.disableStandardItemLighting();
-            return new int[]{width, height};
+            return new int[]{20, 20};
         }
 
 
@@ -331,23 +314,24 @@ public class GuiUtil {
         OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 
-    public static final void drawDefaultBackground(int x, int y, int width, int height) {
-        drawDefaultBackground(x, y, width, height, 0xC6C6C6);
+    public static final void drawDefaultBackground(float x, float y, float width, float height) {
+        drawDefaultBackground(x, y, width, height, new Color(0xC6C6C6));
     }
 
-    public static final void drawDefaultBackground(int x, int y, int width, int height, int color) {
-        Color main = new Color(color);
-        Color bottomBorder = main.darker().darker();
-        Color topColor = main.brighter().brighter().brighter().brighter().brighter().brighter().brighter();
-        Color border = main.darker().darker().darker().darker().darker().darker().darker();
+    public static final void drawDefaultBackground(float x, float y, float width, float height, Color color) {
+        Color bottomBorder = color.darker().darker();
+        Color topColor = color.brighter().brighter().brighter().brighter().brighter().brighter().brighter();
+        Color border = color.darker().darker().darker().darker().darker().darker().darker();
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 
+        // TODO: Seth see if you can make the alpha work correctly. Typically it just makes the thing see through no matter the alpha
+//        GL11.glEnable(GL11.GL_BLEND);
 
         GL11.glPushMatrix();
         GL11.glTranslatef(x, y, 0f);
 
-        GL11.glColor4f(main.getRed()/ 255f, main.getGreen() / 255f, main.getBlue() / 255f, main.getAlpha() / 255f);
+        GL11.glColor4f(color.getRed()/ 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
         /* draw fill */
         {
             // draw top 1st line fill
@@ -412,6 +396,7 @@ public class GuiUtil {
         GL11.glPopMatrix();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4f(1, 1, 1, 1);
+        GL11.glDisable(GL11.GL_BLEND);
     }
 
     public static int[] transition(Color far, Color close, double ratio) {
