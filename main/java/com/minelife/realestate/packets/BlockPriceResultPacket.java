@@ -12,7 +12,7 @@ public class BlockPriceResultPacket extends Packet {
 
     public BlockPriceResultPacket() { }
 
-    BlockPriceResultPacket(long price) {
+    public BlockPriceResultPacket(long price) {
         this.price = price;
     }
 
