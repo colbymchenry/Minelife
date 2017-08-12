@@ -20,6 +20,12 @@ public abstract class Packet implements IMessage {
 
     public abstract void handle(MessageContext ctx);
 
+    public Class getHandler() {
+
+        return Handler.class;
+
+    }
+
     public static class Handler implements IMessageHandler<Packet, IMessage> {
 
         @Override
@@ -32,6 +38,8 @@ public abstract class Packet implements IMessage {
         }
 
     }
+
+    // TODO: Make it where the packets are registered until they are sent for the first time.
 
     static void registerPackets() {
 
