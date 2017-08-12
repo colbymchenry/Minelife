@@ -17,9 +17,4 @@ public class ClientRenderer {
         SelectionRenderer.renderPrice(event);
     }
 
-    @SubscribeEvent
-    public void onClick(MouseEvent event) {
-        SelectionRenderer.cancelSelectionLeftClick(event);
-    }
-
 }

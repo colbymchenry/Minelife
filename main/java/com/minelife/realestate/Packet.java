@@ -42,13 +42,11 @@ public abstract class Packet implements IMessage {
                         Packet packet = (Packet) aClass.newInstance();
                         ModRealEstate.registerPacket(Packet.Handler.class, packet.getClass(), packet.sideOfHandling());
                         System.out.println("Registered " + packet.getClass().getSimpleName() + "!");
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (Exception ignored) {
                     }
                 }
             });
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
 
     }

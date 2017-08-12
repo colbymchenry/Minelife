@@ -31,6 +31,7 @@ public class SelectionRenderer {
     private static Vector[] savedRanges;
     private static boolean savedSelected;
 
+    private static long pricePerBlock;
     private static String priceString = "";
 
     public static void render(RenderWorldLastEvent event) {
@@ -95,7 +96,7 @@ public class SelectionRenderer {
             int diffY = Math.abs(ranges[0].getBlockY() - ranges[1].getBlockY()) + 1;
             int diffZ = Math.abs(ranges[0].getBlockZ() - ranges[1].getBlockZ()) + 1;
             int numberOfBlocks = (diffX) * (diffY) * (diffZ);
-            long price = numberOfBlocks * ModRealEstate.pricePerBlock;
+            long price = numberOfBlocks * pricePerBlock;
             priceString = "Total Price: $" + NumberConversions.formatter.format(price);
             long wallet = ModEconomy.BALANCE_WALLET_CLIENT;
             ableToPurchase = price > wallet ? 0 : 1;
@@ -118,7 +119,6 @@ public class SelectionRenderer {
                 break;
             default: break;
         }
-
 
     }
 
@@ -146,9 +146,9 @@ public class SelectionRenderer {
     }
 
     private static void setState() {
-        if (start != null && end != null) state  = SelectionState.SELECTED;
-        else if (start == null && end != null || start != null && end == null) state = SelectionState.SELECTING;
-        else state = SelectionState.INACTIVE;
+        if (start != null && end != null) state = SelectionState.SELECTED;
+        else if (start == null && end == null) state = SelectionState.INACTIVE;
+        else state = SelectionState.SELECTING;
     }
 
     public static void setStart(Vector point) {
@@ -159,6 +159,10 @@ public class SelectionRenderer {
     public static void setEnd(Vector point) {
         end = point;
         setState();
+    }
+
+    public static void setPricePerBlock(long price) {
+        pricePerBlock = price;
     }
 
 }

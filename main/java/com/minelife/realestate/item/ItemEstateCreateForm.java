@@ -3,6 +3,7 @@ package com.minelife.realestate.item;
 import com.minelife.Minelife;
 import com.minelife.realestate.client.renderer.SelectionRenderer;
 import com.minelife.realestate.client.util.PlayerUtil;
+import com.minelife.realestate.packets.BlockPriceRequestPacket;
 import com.minelife.util.Vector;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,6 +32,7 @@ public class ItemEstateCreateForm extends Item {
         if (entityLiving.worldObj.isRemote) {
             Vector point = PlayerUtil.getBlockCoordinatesInFocus();
             SelectionRenderer.setStart(point);
+            Minelife.NETWORK.sendToServer(new BlockPriceRequestPacket());
         }
         return true;
     }
