@@ -9,7 +9,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         initSQLite();
-        KeyBindings.registerKeys();
+        MLKeys.registerKeys();
 
         Minelife.MODS.forEach(mod -> {
             try {

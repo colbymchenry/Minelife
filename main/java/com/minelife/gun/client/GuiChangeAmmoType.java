@@ -1,7 +1,7 @@
 package com.minelife.gun.client;
 
 import com.google.common.collect.Maps;
-import com.minelife.KeyBindings;
+import com.minelife.MLKeys;
 import com.minelife.Minelife;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
@@ -9,13 +9,10 @@ import com.minelife.gun.packet.PacketSetAmmoType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 import org.lwjgl.util.Rectangle;
 
 import java.util.Map;
@@ -74,7 +71,7 @@ public class GuiChangeAmmoType extends GuiScreen {
 
     @Override
     public void updateScreen() {
-        if (!Keyboard.isKeyDown(KeyBindings.keyChangeAmmo.getKeyCode()))
+        if (!Keyboard.isKeyDown(MLKeys.keyChangeAmmo.getKeyCode()))
             Minecraft.getMinecraft().thePlayer.closeScreen();
     }
 

@@ -1,4 +1,9 @@
 package com.minelife.minebay;
 
-public class ModMinebay {
+import com.minelife.AbstractMod;
+
+public class ModMinebay extends AbstractMod {
+
+
+
 }

@@ -1,7 +1,7 @@
 package com.minelife.notification;
 
 import com.minelife.CommonProxy;
-import com.minelife.KeyBindings;
+import com.minelife.MLKeys;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -20,6 +20,6 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onKeyPress(InputEvent.KeyInputEvent event) {
-        if(KeyBindings.keyNotifications.isPressed()) Minecraft.getMinecraft().displayGuiScreen(new GuiNotifications());
+        if(MLKeys.keyNotifications.isPressed()) Minecraft.getMinecraft().displayGuiScreen(new GuiNotifications());
     }
 }

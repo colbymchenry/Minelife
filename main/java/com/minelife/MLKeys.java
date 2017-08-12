@@ -4,7 +4,7 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
-public class KeyBindings {
+public class MLKeys {
 
     public static KeyBinding keyNotifications = new KeyBinding("key." + Minelife.MOD_ID + ".notifications", Keyboard.KEY_N, Minelife.NAME);
     public static KeyBinding keyReload = new KeyBinding("key." + Minelife.MOD_ID + ".guns.reload", Keyboard.KEY_R, Minelife.NAME);
