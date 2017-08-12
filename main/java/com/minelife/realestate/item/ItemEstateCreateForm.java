@@ -31,7 +31,6 @@ public class ItemEstateCreateForm extends Item {
     public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
         if (entityLiving.worldObj.isRemote) {
             Vector point = PlayerUtil.getBlockCoordinatesInFocus();
-            // TODO: Test
             SelectionRenderer.setStart(point);
             Minelife.NETWORK.sendToServer(new BlockPriceRequestPacket());
         }
