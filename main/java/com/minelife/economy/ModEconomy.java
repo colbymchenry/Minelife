@@ -5,10 +5,10 @@ import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.economy.client.gui.GuiBillPay;
 import com.minelife.economy.server.CommandEconomy;
+import com.minelife.util.MLConfig;
 import com.minelife.util.PlayerHelper;
 import com.minelife.AbstractMod;
 import com.minelife.economy.packet.*;
-import com.minelife.util.SimpleConfig;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -17,13 +17,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.UUID;
 
 public class ModEconomy extends AbstractMod {
 
     @SideOnly(Side.SERVER)
-    public static SimpleConfig config;
+    public static MLConfig config;
 
     public static long BALANCE_WALLET_CLIENT = 0;
     public static long BALANCE_BANK_CLIENT = 0;
@@ -160,9 +159,7 @@ public class ModEconomy extends AbstractMod {
 
     public static final String getMessage(String key)
     {
-        Map<String, Object> options = config.getOptions();
-        if(!options.containsKey(key)) return "Message not found.";
-        return (String) options.get(key);
+        return config.getString(key);
     }
 
 }

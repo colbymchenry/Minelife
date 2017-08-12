@@ -40,8 +40,6 @@ public class AbstractMod {
     {
     }
 
-
-
     public Class<? extends CommonProxy> getClientProxy()
     {
         return null;

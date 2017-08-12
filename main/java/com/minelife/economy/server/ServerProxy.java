@@ -5,7 +5,7 @@ import com.minelife.Minelife;
 import com.minelife.economy.Billing;
 import com.minelife.economy.ModEconomy;
 import com.minelife.economy.packet.PacketBalanceResult;
-import com.minelife.util.SimpleConfig;
+import com.minelife.util.MLConfig;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -14,7 +14,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.io.File;
 import java.util.logging.Level;
 
 public class ServerProxy extends CommonProxy {
@@ -30,12 +29,12 @@ public class ServerProxy extends CommonProxy {
             Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36) NOT NULL, balanceBank LONG DEFAULT 0, balanceWallet LONG DEFAULT 0, pin VARCHAR(4) NOT NULL DEFAULT '')");
             Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS Economy_Bills (uuid VARCHAR(36) NOT NULL, dueDate VARCHAR(36) NOT NULL, days INT, amount LONG, amountDue LONG, player VARCHAR(36) NOT NULL, memo TEXT, autoPay BOOLEAN, handler TEXT, tagCompound TEXT)");
 
-            ModEconomy.config = new SimpleConfig(new File(Minelife.getConfigDirectory(), "economy_config.txt"));
-            ModEconomy.config.addDefault("Message_Balance", EnumChatFormatting.GOLD + "Balance: " + EnumChatFormatting.RED + "$%b");
-            ModEconomy.config.addDefault("Message_Set", EnumChatFormatting.GOLD + "%p's %w has been set to " + EnumChatFormatting.RED + "$%b");
-            ModEconomy.config.addDefault("Message_Deposit", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " deposited into %p's %w.");
-            ModEconomy.config.addDefault("Message_Withdraw", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " withdrawn from %p's %w.");
-            ModEconomy.config.setDefaults();
+            ModEconomy.config = new MLConfig("economy");
+            ModEconomy.config.addDefault("messages.balance", EnumChatFormatting.GOLD + "Balance: " + EnumChatFormatting.RED + "$%b");
+            ModEconomy.config.addDefault("messages.set", EnumChatFormatting.GOLD + "%p's %w has been set to " + EnumChatFormatting.RED + "$%b");
+            ModEconomy.config.addDefault("messages.deposit", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " deposited into %p's %w.");
+            ModEconomy.config.addDefault("messages.withdraw", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " withdrawn from %p's %w.");
+            ModEconomy.config.save();
         } catch (Exception e) {
             e.printStackTrace();
         }

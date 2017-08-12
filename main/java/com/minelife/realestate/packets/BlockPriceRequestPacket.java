@@ -18,7 +18,7 @@ public class BlockPriceRequestPacket extends Packet {
 
     @Override
     public void handle(MessageContext ctx) {
-        Minelife.NETWORK.sendTo(new BlockPriceResultPacket(Long.parseLong((String) ModRealEstate.config.getOptions().get("price_per_block"))), ctx.getServerHandler().playerEntity);
+        Minelife.NETWORK.sendTo(new BlockPriceResultPacket(ModRealEstate.config.getLong("price_per_block")), ctx.getServerHandler().playerEntity);
     }
 
     @Override

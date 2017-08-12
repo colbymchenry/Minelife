@@ -84,13 +84,13 @@ public class CommandEconomy implements ICommand {
 
             switch (args[0].toLowerCase()) {
                 case "balance": {
-                    sender.addChatMessage(new ChatComponentText(ModEconomy.getMessage("Message_Balance")
+                    sender.addChatMessage(new ChatComponentText(ModEconomy.getMessage("message.balance")
                             .replace("%b", String.valueOf(ModEconomy.getBalance(playerUUID, wallet)))));
                     break;
                 }
                 case "set": {
                     ModEconomy.set(playerUUID, amount, wallet);
-                    sender.addChatMessage(new ChatComponentText(ModEconomy.getMessage("Message_Set")
+                    sender.addChatMessage(new ChatComponentText(ModEconomy.getMessage("message.set")
                             .replace("%p", playerName)
                             .replace("%b", String.valueOf(amount))
                             .replace("%w", wallet ? "wallet" : "account")));
@@ -98,7 +98,7 @@ public class CommandEconomy implements ICommand {
                 }
                 case "withdraw": {
                     ModEconomy.withdraw(playerUUID, amount, wallet);
-                    sender.addChatMessage(new ChatComponentText(ModEconomy.getMessage("Message_Withdraw")
+                    sender.addChatMessage(new ChatComponentText(ModEconomy.getMessage("message.withdraw")
                             .replace("%b", String.valueOf(amount))
                             .replace("%p", playerName)
                             .replace("%w", wallet ? "wallet" : "account")));
@@ -106,7 +106,7 @@ public class CommandEconomy implements ICommand {
                 }
                 case "deposit": {
                     ModEconomy.deposit(playerUUID, amount, wallet);
-                    sender.addChatMessage(new ChatComponentText(ModEconomy.getMessage("Message_Deposit")
+                    sender.addChatMessage(new ChatComponentText(ModEconomy.getMessage("message.deposit")
                             .replace("%b", String.valueOf(amount))
                             .replace("%p", playerName)
                             .replace("%w", wallet ? "wallet" : "account")));
