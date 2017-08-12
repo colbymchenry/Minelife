@@ -193,8 +193,6 @@ public abstract class TileEntityElectricMachine extends TileBuildCraft implement
         }
     }
 
-    // TODO: Comment methods
-
     public abstract boolean requires_redstone_power();
 
     public abstract int[] get_accessible_slots_from_side(int side);

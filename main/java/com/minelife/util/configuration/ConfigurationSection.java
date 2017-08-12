@@ -1,8 +1,11 @@
 package com.minelife.util.configuration;
 
+import com.minelife.util.Vector;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Represents a section of a {@link Configuration}
@@ -461,6 +464,11 @@ public interface ConfigurationSection {
      * @return Requested List of Integer.
      */
     public List<Integer> getIntegerList(String path);
+
+    public UUID getUUID(String path, UUID def);
+    public boolean isUUID(String path);
+    public Vector getVector(String path, Vector def);
+    public boolean isVector(String path);
 
     /**
      * Gets the requested List of Boolean by path.

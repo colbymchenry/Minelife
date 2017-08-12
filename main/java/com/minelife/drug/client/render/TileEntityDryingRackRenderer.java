@@ -19,7 +19,6 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Map;
 
-// TODO: make model and texture and render leaves on the rack
 public class TileEntityDryingRackRenderer extends TileEntitySpecialRenderer {
 
     ResourceLocation texture;

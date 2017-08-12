@@ -33,7 +33,6 @@ public class ModDrugs extends AbstractMod {
 
     public static Potion x_ray_potion;
 
-    // TODO: Make one class for all these items, don't need so many classes
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -63,8 +62,6 @@ public class ModDrugs extends AbstractMod {
         GameRegistry.addSmelting(MLItems.waxy_cocaine, new ItemStack(MLItems.heated_cocaine), 0.3F);
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.potassium_hydroxide_pyrolusite_mixture), MLItems.potassium_hydroxide, MLItems.pyrolusite);
 
-        // TODO: Add recipes for manufacturing blocks
-        // TODO: Add cocaine to recipe
         TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.waxy_cocaine), new ItemStack(MLItems.coca_leaf_shredded), new ItemStack(MLItems.lime), new ItemStack(MLItems.salt)).addLiquids(new FluidStack(BuildCraftEnergy.fluidFuel, 100)));
         TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.cocaine_sulfate), new ItemStack(MLItems.pressed_cocaine)).addLiquids(new FluidStack(MLBlocks.sulfuric_acid.getFluid(), 100)));
         TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.purple_cocaine), new ItemStack(MLItems.coca_paste)).addLiquids(new FluidStack(MLBlocks.potassium_permanganate.getFluid(), 100)));

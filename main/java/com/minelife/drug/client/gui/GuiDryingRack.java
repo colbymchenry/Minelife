@@ -19,7 +19,6 @@ public class GuiDryingRack extends GuiContainer {
         this.ySize = 126;
     }
 
-    // TODO: Make gui
     @Override
     protected void drawGuiContainerForegroundLayer(int mouse_x, int mouse_y) {
         this.fontRendererObj.drawString("Inventory", 8, this.ySize - 96 + 4, 4210752);

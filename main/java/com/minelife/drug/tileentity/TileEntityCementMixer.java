@@ -276,7 +276,6 @@ public class TileEntityCementMixer extends TileEntityElectricMachine implements 
             if (current.getItem() instanceof IItemPipe) {
                 return false;
             }
-// TODO: when right clicking while shifted with ammonia while fuel is in it crashes client
             if (!this.worldObj.isRemote) {
                 if (TankUtils.handleRightClick(this, ForgeDirection.EAST, player, true, true)) {
                     return true;

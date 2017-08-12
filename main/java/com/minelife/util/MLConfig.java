@@ -1,12 +1,12 @@
 package com.minelife.util;
 
 import com.minelife.Minelife;
-import com.minelife.economy.ModEconomy;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import com.minelife.util.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 public class MLConfig extends YamlConfiguration {
 
@@ -29,6 +29,14 @@ public class MLConfig extends YamlConfiguration {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void set(String path, UUID uuid) {
+        this.set(path, uuid.toString());
+    }
+
+    public void set(String path, Vector vector) {
+        this.set(path, vector.serialize());
     }
 
 }

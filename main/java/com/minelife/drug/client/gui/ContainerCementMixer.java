@@ -33,7 +33,6 @@ public class ContainerCementMixer extends BuildCraftContainer {
             this.addSlotToContainer(new Slot(inventory_player, x, 8 + x * 18, 142));
         }
 
-        // TODO: Fix x and y offsets
         // add input slots for items
         int slot_count = 0;
         for(int x = 0; x < 3; ++x) {

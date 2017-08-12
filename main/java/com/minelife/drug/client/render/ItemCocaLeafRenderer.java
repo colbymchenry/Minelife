@@ -24,7 +24,6 @@ import org.lwjgl.opengl.GL12;
 
 import java.awt.*;
 
-// TODO
 public class ItemCocaLeafRenderer implements IItemRenderer {
 
     protected static RenderItem itemRender = new RenderItem();
