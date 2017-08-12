@@ -29,7 +29,6 @@ public class ItemEstateCreateForm extends Item {
     @Override
     public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
         if (entityLiving.worldObj.isRemote) {
-            System.out.println("Swing");
             Vector point = PlayerUtil.getBlockCoordinatesInFocus();
             SelectionRenderer.setStart(point);
         }
