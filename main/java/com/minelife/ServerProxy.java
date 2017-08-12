@@ -3,9 +3,6 @@ package com.minelife;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import lib.PatPeter.SQLibrary.SQLite;
-import net.minecraft.init.Blocks;
-
-import java.util.logging.Logger;
 
 public class ServerProxy extends CommonProxy {
 
@@ -33,7 +30,7 @@ public class ServerProxy extends CommonProxy {
 
     private void initSQLite() {
         String prefix = "[" + Minelife.NAME + "]";
-        String directory = Minelife.getDirectory().getAbsolutePath();
+        String directory = Minelife.getConfigDirectory().getAbsolutePath();
         String dbName = Minelife.MOD_ID;
         Minelife.SQLITE = new SQLite(Minelife.getLogger(), prefix, directory, dbName);
         Minelife.SQLITE.open();

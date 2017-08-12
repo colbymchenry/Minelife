@@ -7,6 +7,7 @@ import com.minelife.drug.tileentity.TileEntityCementMixer;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.LanguageRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -14,7 +15,9 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -28,10 +31,15 @@ public class ModDrugs extends AbstractMod {
         }
     };
 
+    public static Potion x_ray_potion;
+
     // TODO: Make one class for all these items, don't need so many classes
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
+        x_ray_potion = new XRayEffect(25, false, 0);
+        MinecraftForge.EVENT_BUS.register(x_ray_potion);
+
         BucketHandler.INSTANCE.buckets.put(MLBlocks.ammonia, MLItems.ammonia);
         BucketHandler.INSTANCE.buckets.put(MLBlocks.sulfuric_acid, MLItems.sulfuric_acid);
         BucketHandler.INSTANCE.buckets.put(MLBlocks.potassium_permanganate, MLItems.potassium_permanganate);

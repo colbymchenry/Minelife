@@ -30,7 +30,7 @@ public class ServerProxy extends CommonProxy {
             Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36) NOT NULL, balanceBank LONG DEFAULT 0, balanceWallet LONG DEFAULT 0, pin VARCHAR(4) NOT NULL DEFAULT '')");
             Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS Economy_Bills (uuid VARCHAR(36) NOT NULL, dueDate VARCHAR(36) NOT NULL, days INT, amount LONG, amountDue LONG, player VARCHAR(36) NOT NULL, memo TEXT, autoPay BOOLEAN, handler TEXT, tagCompound TEXT)");
 
-            ModEconomy.config = new SimpleConfig(new File(Minelife.getDirectory(), "economy_config.txt"));
+            ModEconomy.config = new SimpleConfig(new File(Minelife.getConfigDirectory(), "economy_config.txt"));
             ModEconomy.config.addDefault("Message_Balance", EnumChatFormatting.GOLD + "Balance: " + EnumChatFormatting.RED + "$%b");
             ModEconomy.config.addDefault("Message_Set", EnumChatFormatting.GOLD + "%p's %w has been set to " + EnumChatFormatting.RED + "$%b");
             ModEconomy.config.addDefault("Message_Deposit", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " deposited into %p's %w.");

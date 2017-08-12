@@ -103,7 +103,7 @@ public class Minelife {
         MODS.forEach(mod -> mod.textureHook(event));
     }
 
-    public static File getDirectory() {
+    public static File getConfigDirectory() {
         return new File(System.getProperty("user.dir") + File.separator + "config", MOD_ID);
     }
 

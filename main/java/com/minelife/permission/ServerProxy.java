@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class ServerProxy extends CommonProxy {
 
-    static JsonFile JSON_FILE = new JsonFile(new File(Minelife.getDirectory(), "permissions.json"));
+    static JsonFile JSON_FILE = new JsonFile(new File(Minelife.getConfigDirectory(), "permissions.json"));
     static JSONObject JSON_OBJECT = new JSONObject();
 
     @Override

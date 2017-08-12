@@ -46,7 +46,7 @@ public class BlockPyrolusiteOre extends Block {
         {
             // only over-world
             if (world.provider.dimensionId == 0) {
-                this.generate(MLBlocks.pyrolusite_ore, world, random, chunkX, chunkZ, 7, 20, 30, 60, Blocks.stone);
+                this.generate(MLBlocks.pyrolusite_ore, world, random, chunkX, chunkZ, 7, 20, 0, 64, Blocks.stone);
             }
         }
 
@@ -55,10 +55,10 @@ public class BlockPyrolusiteOre extends Block {
             int y_range = max_y - min_y;
             WorldGenMinable worldgenminable = new WorldGenMinable(block, max_vein_size, generate_in);
             for (int k1 = 0; k1 < chance; ++k1) {
-                int x = random.nextInt(16);
+                int x = chunk_x * 16 + random.nextInt(16);
                 int y = random.nextInt(y_range) + min_y;
-                int z = random.nextInt(16);
-                worldgenminable.generate(world, random, chunk_x + x, y, chunk_z + z);
+                int z = chunk_z * 16 + random.nextInt(16);
+                worldgenminable.generate(world, random, x, y, z);
             }
         }
     }

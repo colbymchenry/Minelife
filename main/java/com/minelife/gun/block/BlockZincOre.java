@@ -9,7 +9,7 @@ public class BlockZincOre extends Block {
 
     public BlockZincOre() {
         super(Material.iron);
-        setBlockName("zine_ore");
+        setBlockName("zinc_ore");
         setBlockTextureName(Minelife.MOD_ID + ":zinc_ore");
         setHardness(3);
         setResistance(15);

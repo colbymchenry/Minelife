@@ -1,6 +1,7 @@
 package com.minelife.gun.client;
 
 import com.google.common.collect.Maps;
+import com.minelife.KeyBindings;
 import com.minelife.Minelife;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
@@ -73,7 +74,7 @@ public class GuiChangeAmmoType extends GuiScreen {
 
     @Override
     public void updateScreen() {
-        if (!Keyboard.isKeyDown(Keyboard.KEY_Q))
+        if (!Keyboard.isKeyDown(KeyBindings.keyChangeAmmo.getKeyCode()))
             Minecraft.getMinecraft().thePlayer.closeScreen();
     }
 

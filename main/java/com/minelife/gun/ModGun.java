@@ -40,7 +40,7 @@ public class ModGun extends AbstractMod {
 
     @Override
     public void init(FMLInitializationEvent event) {
-        GameRegistry.registerWorldGenerator(new ZincGenerator(), 0);
+        GameRegistry.registerWorldGenerator(new ZincGenerator(), 8);
         GameRegistry.addSmelting(MLBlocks.zinc_ore, new ItemStack(MLItems.zinc_ingot, 1), 1F);
 
         GameRegistry.addRecipe(new ItemStack(MLItems.gunmetal),
