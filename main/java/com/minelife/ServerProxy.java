@@ -14,6 +14,8 @@ public class ServerProxy extends CommonProxy {
             try {
                 mod.getServerProxy().newInstance().preInit(event);
             } catch (InstantiationException | IllegalAccessException | NullPointerException ignored) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
@@ -24,6 +26,8 @@ public class ServerProxy extends CommonProxy {
             try {
                 mod.getServerProxy().newInstance().init(event);
             } catch (InstantiationException | IllegalAccessException | NullPointerException ignored) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
