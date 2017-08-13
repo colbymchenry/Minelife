@@ -1,4 +1,4 @@
-package com.minelife.realestate.client.util;
+package com.minelife.realestate.util;
 
 import com.minelife.util.Vector;
 import cpw.mods.fml.relauncher.Side;

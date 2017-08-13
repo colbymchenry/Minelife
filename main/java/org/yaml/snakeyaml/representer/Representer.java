@@ -15,25 +15,13 @@
  */
 package org.yaml.snakeyaml.representer;
 
-import java.beans.IntrospectionException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.error.YAMLException;
 import org.yaml.snakeyaml.introspector.Property;
-import org.yaml.snakeyaml.nodes.MappingNode;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.NodeId;
-import org.yaml.snakeyaml.nodes.NodeTuple;
-import org.yaml.snakeyaml.nodes.ScalarNode;
-import org.yaml.snakeyaml.nodes.SequenceNode;
-import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.nodes.*;
+
+import java.beans.IntrospectionException;
+import java.util.*;
 
 /**
  * Represent JavaBeans
@@ -235,7 +223,7 @@ public class Representer extends SafeRepresenter {
 
     /**
      * Get JavaBean properties to be serialised. The order is respected. This
-     * method may be overridden to provide custom property selection or order.
+     * method may be overridden to provide custom property estateselection or order.
      * 
      * @param type
      *            - JavaBean to inspect the properties

@@ -1,9 +1,9 @@
 package com.minelife.realestate.item;
 
 import com.minelife.Minelife;
-import com.minelife.realestate.client.renderer.SelectionRenderer;
-import com.minelife.realestate.client.util.PlayerUtil;
-import com.minelife.realestate.packets.BlockPriceRequestPacket;
+import com.minelife.realestate.client.estateselection.Selection;
+import com.minelife.realestate.packets.client.BlockPriceRequestPacket;
+import com.minelife.realestate.util.PlayerUtil;
 import com.minelife.util.Vector;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,7 +31,7 @@ public class ItemEstateCreateForm extends Item {
     public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
         if (entityLiving.worldObj.isRemote) {
             Vector point = PlayerUtil.getBlockCoordinatesInFocus();
-            SelectionRenderer.setStart(point);
+            Selection.setStart(point);
             Minelife.NETWORK.sendToServer(new BlockPriceRequestPacket());
         }
         return true;
@@ -49,7 +49,7 @@ public class ItemEstateCreateForm extends Item {
 
             Vector point = new Vector(x, y, z);
 
-            SelectionRenderer.setEnd(point);
+            Selection.setEnd(point);
 
         }
 

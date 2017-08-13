@@ -1,7 +1,7 @@
 package com.minelife.realestate.client;
 
 import com.minelife.CommonProxy;
-import com.minelife.realestate.client.renderer.ClientListener;
+import com.minelife.realestate.client.listener.ClientListener;
 import com.minelife.realestate.client.renderer.ClientRenderer;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.MLBlocks;
 import com.minelife.Minelife;
-import com.minelife.realestate.client.util.GUIUtil;
+import com.minelife.realestate.util.GUIUtil;
 import com.minelife.util.Vector;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -19,7 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 

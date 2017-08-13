@@ -14,7 +14,7 @@ public class ModRealEstate extends AbstractMod {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
-        Packet.registerPackets();
+//        Packet.registerPackets();
     }
 
     @Override

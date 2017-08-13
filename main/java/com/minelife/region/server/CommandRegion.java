@@ -53,7 +53,7 @@ public class CommandRegion implements ICommand {
         try {
             if (args[0].equalsIgnoreCase("create")) {
                 if (weRegion == null || weRegion.getMinimumPoint() == null || weRegion.getMaximumPoint() == null)
-                    throw new CustomMessageException("Incomplete WorldEdit selection.");
+                    throw new CustomMessageException("Incomplete WorldEdit estateselection.");
                 Region.create(worldName, AxisAlignedBB.getBoundingBox(
                         weRegion.getMinimumPoint().getBlockX(), weRegion.getMinimumPoint().getBlockY(), weRegion.getMinimumPoint().getBlockZ(),
                         weRegion.getMaximumPoint().getBlockX(), weRegion.getMaximumPoint().getBlockY(), weRegion.getMaximumPoint().getBlockZ()));

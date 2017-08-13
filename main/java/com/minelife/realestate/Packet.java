@@ -49,8 +49,10 @@ public abstract class Packet implements IMessage {
                     try {
                         Packet packet = (Packet) aClass.newInstance();
                         ModRealEstate.registerPacket(Packet.Handler.class, packet.getClass(), packet.sideOfHandling());
-                        System.out.println("Registered " + packet.getClass().getSimpleName() + "!");
-                    } catch (Exception ignored) {
+                        System.out.println("Registered " + aClass.getSimpleName() + "!");
+                    } catch (Exception e) {
+                        System.out.println("Couldn't Register " + aClass.getSimpleName() + "!");
+                        e.printStackTrace();
                     }
                 }
             });

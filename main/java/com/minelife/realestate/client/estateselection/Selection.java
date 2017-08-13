@@ -1,15 +1,17 @@
-package com.minelife.realestate.client.renderer;
+package com.minelife.realestate.client.estateselection;
 
 import com.minelife.MLItems;
 import com.minelife.economy.ModEconomy;
-import com.minelife.realestate.ModRealEstate;
 import com.minelife.realestate.client.SelectionState;
-import com.minelife.realestate.client.util.GUIUtil;
-import com.minelife.realestate.client.util.PlayerUtil;
+import com.minelife.realestate.util.GUIUtil;
+import com.minelife.realestate.util.PlayerUtil;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.Vector;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -17,7 +19,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-public class SelectionRenderer {
+public class Selection {
 
     private static SelectionState state = SelectionState.INACTIVE;
     private static Vector start;
@@ -31,9 +33,14 @@ public class SelectionRenderer {
     private static Vector[] savedRanges;
     private static boolean savedSelected;
 
+    private static long price;
+
+    @SideOnly(Side.CLIENT)
     private static long pricePerBlock;
+
     private static String priceString = "";
 
+    @SideOnly(Side.CLIENT)
     public static void render(RenderWorldLastEvent event) {
 
         Minecraft minecraft = Minecraft.getMinecraft();
@@ -96,7 +103,7 @@ public class SelectionRenderer {
             int diffY = Math.abs(ranges[0].getBlockY() - ranges[1].getBlockY()) + 1;
             int diffZ = Math.abs(ranges[0].getBlockZ() - ranges[1].getBlockZ()) + 1;
             int numberOfBlocks = (diffX) * (diffY) * (diffZ);
-            long price = numberOfBlocks * pricePerBlock;
+            price = numberOfBlocks * pricePerBlock;
             priceString = "Total Price: $" + NumberConversions.formatter.format(price);
             long wallet = ModEconomy.BALANCE_WALLET_CLIENT;
             ableToPurchase = price > wallet ? 0 : 1;
@@ -122,7 +129,8 @@ public class SelectionRenderer {
 
     }
 
-    static void renderPrice(RenderGameOverlayEvent.Pre event) {
+    @SideOnly(Side.CLIENT)
+    public static void renderPrice(RenderGameOverlayEvent.Pre event) {
         if (event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
             if (!(state.equals(SelectionState.INACTIVE))) {
                 GL11.glColor4f(1f, 1f, 1f, 1f);
@@ -133,7 +141,8 @@ public class SelectionRenderer {
         }
     }
 
-    static void cancelSelectionLeftClick(MouseEvent event) {
+    @SideOnly(Side.CLIENT)
+    public static void cancelSelectionLeftClick(MouseEvent event) {
         EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         if (player != null && player.getHeldItem() != null && player.getHeldItem().getItem().equals(MLItems.estate_create_form) && event.button == 0) {
             event.setCanceled(true);
@@ -163,6 +172,20 @@ public class SelectionRenderer {
 
     public static void setPricePerBlock(long price) {
         pricePerBlock = price;
+    }
+
+    public static AxisAlignedBB getSelection() {
+        if (state.equals(SelectionState.SELECTED) && start != null && end != null) {
+            Vector s = new Vector(Math.min(start.getX(), end.getX()), Math.min(start.getY(), end.getY()), Math.min(start.getZ(), end.getZ()));
+            Vector e = new Vector(Math.max(start.getX(), end.getX()) + 1, Math.max(start.getY(), end.getY()) + 1, Math.max(start.getZ(), end.getZ()) + 1);
+            return AxisAlignedBB.getBoundingBox(s.getBlockX(), s.getBlockY(), s.getBlockZ(), e.getBlockX(), e.getBlockY(), e.getBlockZ());
+        }
+        return null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static long getPrice() {
+        return price;
     }
 
 }
