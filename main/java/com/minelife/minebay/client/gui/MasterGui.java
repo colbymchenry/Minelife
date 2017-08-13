@@ -4,6 +4,7 @@ import com.minelife.Minelife;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -18,6 +19,7 @@ public abstract class MasterGui extends GuiScreen {
     public void drawScreen(int mouse_x, int mouse_y, float f)
     {
         super.drawScreen(mouse_x, mouse_y, f);
+        this.drawDefaultBackground();
 //        this.mc.getTextureManager().bindTexture(bg_texture);
 //        this.drawTexturedModalRect(this.left, this.top, 0, 0, this.bg_width, this.bg_height);
         GuiUtil.drawDefaultBackground(this.left - 5, this.top - 5, this.bg_width + 7, this.bg_height + 7, new Color(0x70006e));

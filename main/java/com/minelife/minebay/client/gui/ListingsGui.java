@@ -1,26 +1,35 @@
 package com.minelife.minebay.client.gui;
 
+import com.minelife.Minelife;
 import com.minelife.minebay.ItemListing;
+import com.minelife.minebay.packet.PacketListings;
 import com.minelife.util.client.GuiLoadingAnimation;
 import com.minelife.util.client.GuiScrollableContent;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 
 public class ListingsGui extends MasterGui {
 
+    private static ResourceLocation magnify_texture = new ResourceLocation(Minelife.MOD_ID, "textures/gui/magnify.png");
+
     private Listings listings_gui;
     private GuiLoadingAnimation loadingAnimation;
     private List<ItemListing> listings;
+    private GuiTextField search_field;
 
-    public ListingsGui() {
-
+    public ListingsGui()
+    {
+        Minelife.NETWORK.sendToServer(new PacketListings(0));
     }
 
-    public ListingsGui(List<ItemListing> listings) {
+    public ListingsGui(List<ItemListing> listings)
+    {
         this.listings = listings;
     }
 
@@ -34,7 +43,23 @@ public class ListingsGui extends MasterGui {
             return;
         }
 
-        this.listings_gui.draw(mouse_x, mouse_y, Mouse.getDWheel());
+//        if(this.listings.isEmpty()) {
+//            String msg = EnumChatFormatting.BOLD + "Uh-Oh! No items were found :'(";
+//            int msg_width = mc.fontRenderer.getStringWidth(msg);
+//            mc.fontRenderer.drawStringWithShadow(msg,  (this.width - msg_width) / 2, top + ((bg_height - mc.fontRenderer.FONT_HEIGHT) / 2), 0xFFFFFF);
+//
+//            return;
+//        }
+
+
+//        this.listings_gui.draw(mouse_x, mouse_y, Mouse.getDWheel());
+
+        Color color = new Color(72, 0, 70, 200);
+        this.drawGradientRect(left - 2, top - 2, left + bg_width, top + 25, color.hashCode(), color.hashCode());
+        this.search_field.drawTextBox();
+        GL11.glColor4f(1, 1, 1, 1);
+        this.mc.getTextureManager().bindTexture(magnify_texture);
+        GuiUtil.drawImage(left + search_field.getWidth() + 13, search_field.yPosition + 3, 16, 16);
     }
 
     @Override
@@ -43,6 +68,14 @@ public class ListingsGui extends MasterGui {
         super.keyTyped(c, i);
         if (listings_gui != null)
             this.listings_gui.keyTyped(c, i);
+
+        this.search_field.textboxKeyTyped(c, i);
+    }
+
+    @Override
+    protected void mouseClicked(int mouse_x, int mouse_y, int mouse_btn)
+    {
+        this.search_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
     }
 
     @Override
@@ -55,6 +88,13 @@ public class ListingsGui extends MasterGui {
         }
 
         this.listings_gui = new Listings(this.left, this.top, this.bg_width, this.bg_height, listings, this);
+        this.search_field = new GuiTextField(mc.fontRenderer, this.left + 1, this.top + 1, bg_width / 2, 20);
+    }
+
+    @Override
+    public void updateScreen()
+    {
+        this.search_field.updateCursorCounter();
     }
 
     class Listings extends GuiScrollableContent {

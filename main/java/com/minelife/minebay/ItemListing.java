@@ -1,18 +1,24 @@
 package com.minelife.minebay;
 
+import com.minelife.Minelife;
 import com.minelife.util.ItemUtil;
 import com.minelife.util.NumberConversions;
 import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.registry.LanguageRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 
 
 public class ItemListing extends Listing {
 
-    private ItemStack item_stack;
+    protected ItemStack item_stack;
 
     public ItemListing(UUID uuid, UUID seller, long price, String title, String description, ItemStack item_stack)
     {
@@ -76,6 +82,42 @@ public class ItemListing extends Listing {
         listing.description = ByteBufUtils.readUTF8String(buf);
         listing.item_stack = ItemUtil.itemFromString(ByteBufUtils.readUTF8String(buf));
         return listing;
+    }
+
+    @SideOnly(Side.SERVER)
+    public void write_to_db() {
+        try {
+            Minelife.SQLITE.query("INSERT INTO item_listings (uuid, seller, price, title, description, item_stack, item_display_name, item_unlocalized_name) VALUES (" +
+                    "'" + uuid().toString() + "'," +
+                    "'" + seller().toString() + "'," +
+                    "'" + price() + "'," +
+                    "'" + title() + "'," +
+                    "'" + description() + "'," +
+                    "'" + ItemUtil.itemToString(item_stack()) + "'," +
+                    "'" + item_stack().getDisplayName() + "'," +
+                    "'" + item_stack().getUnlocalizedName() + "')");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SideOnly(Side.SERVER)
+    public static ItemListing from_db(ResultSet result) {
+        try {
+            if(result.next()) {
+                ItemListing listing = new ItemListing();
+                listing.uuid = UUID.fromString(result.getString("uuid"));
+                listing.seller = UUID.fromString(result.getString("seller"));
+                listing.price = result.getLong("price");
+                listing.title = result.getString("title");
+                listing.description = result.getString("description");
+                listing.item_stack = ItemUtil.itemFromString(result.getString("item_stack"));
+                return listing;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
