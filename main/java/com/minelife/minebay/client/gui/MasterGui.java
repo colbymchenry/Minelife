@@ -4,7 +4,6 @@ import com.minelife.Minelife;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 

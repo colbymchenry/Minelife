@@ -4,7 +4,6 @@ import com.minelife.Minelife;
 import com.minelife.util.ItemUtil;
 import com.minelife.util.NumberConversions;
 import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;

@@ -1,6 +1,5 @@
 package com.minelife.util.client;
 
-import com.minelife.util.Vector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;

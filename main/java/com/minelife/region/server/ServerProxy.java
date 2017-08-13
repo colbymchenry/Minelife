@@ -8,7 +8,6 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.sql.SQLException;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class ServerProxy extends CommonProxy {
 

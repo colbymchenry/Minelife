@@ -1,7 +1,6 @@
 package com.minelife;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.minelife.drug.ModDrugs;
 import com.minelife.economy.ModEconomy;
 import com.minelife.gun.ModGun;
@@ -18,13 +17,10 @@ import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import lib.PatPeter.SQLibrary.Database;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.TextureStitchEvent;

@@ -13,7 +13,6 @@ import io.netty.buffer.ByteBuf;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.UUID;
 
 public class PacketListings implements IMessage {
 
