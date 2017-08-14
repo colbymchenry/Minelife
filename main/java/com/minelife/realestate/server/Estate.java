@@ -13,17 +13,19 @@ public class Estate implements Comparable<Estate> {
 
     public static final Set<Estate> ESTATES = new TreeSet<>();
 
-    private List<Region> regions = new ArrayList<>();
     private UUID uuid;
+    private String name;
     private UUID owner_uuid;
+    private List<Region> regions = new ArrayList<>();
 
-    public static Estate create(Region region, UUID owner) throws SQLException {
+    public static Estate create(Region region, UUID owner, String name) throws SQLException {
 
         UUID estateUUID = UUID.randomUUID();
 
         // Create Estate
-        Minelife.SQLITE.query("INSERT INTO estates (uuid, owner_uuid, region_uuids) VALUES (" +
+        Minelife.SQLITE.query("INSERT INTO ESTATES (UUID, NAME, OWNER_UUID, REGION_UUIDs) VALUES (" +
                 "'" + estateUUID + "'," +
+                "'" + name + "'," +
                 "'" + owner + "'," +
                 "'" + region.getUniqueID() + "')");
 
@@ -34,7 +36,7 @@ public class Estate implements Comparable<Estate> {
     }
 
     private static Estate getFromUUID(UUID estateUUID) throws EstateException {
-        List<Estate> estates = ESTATES.stream().filter(estate -> estate.getUUID().equals(estateUUID)).collect(Collectors.toList());
+        List<Estate> estates = ESTATES.stream().filter(estate -> estate.getUniqueID().equals(estateUUID)).collect(Collectors.toList());
         if (estates.size() != 1) throw new EstateException("More than 1 Estate with same UUID!");
         return estates.get(0);
     }
@@ -49,27 +51,30 @@ public class Estate implements Comparable<Estate> {
 
         this.uuid = estateUUID;
 
-        ResultSet result = Minelife.SQLITE.query("SELECT * FROM estates WHERE uuid='" + this.uuid.toString() + "'");
+        ResultSet result = Minelife.SQLITE.query("SELECT * FROM ESTATES WHERE UUID = '" + this.uuid.toString() + "'");
 
-        Arrays.asList(result.getString("region_uuids").split(Pattern.quote("|"))).stream().map(UUID::fromString).map(Region::getRegionFromUUID).forEach(region -> this.regions.add(region));
-        this.owner_uuid = UUID.fromString(result.getString("owner_uuid"));
+        this.name = result.getString("NAME");
+        this.owner_uuid = UUID.fromString(result.getString("OWNER_UUID"));
+        Arrays.stream(result.getString("REGION_UUIDs").split(Pattern.quote("|"))).map(UUID::fromString).map(Region::getRegionFromUUID).forEach(region -> this.regions.add(region));
 
     }
 
     public boolean add(Region region) throws SQLException {
         boolean b = this.regions.add(region);
+
         // Update Table
-        Minelife.SQLITE.query("UPDATE estates " +
-                "SET region_uuids = " +
+        Minelife.SQLITE.query("UPDATE ESTATES " +
+                "SET REGION_UUIDs = " +
                 "'" + this.regions.stream().map(r -> r.getUniqueID().toString()).reduce("", (a, r) -> a + "|" + r) + "' " +
-                "WHERE uuid = '" + this.uuid.toString() + "'");
+                "WHERE UUID = '" + this.uuid.toString() + "'");
+
         return b;
     }
 
     public Estate getParent() throws EstateException {
 
         List<Estate> parents = ESTATES.stream().filter(estate -> estate.regions.equals(this.regions.stream().map(Region::getParentRegion).collect(Collectors.toList()))).collect(Collectors.toList());
-        if (parents.size() > 1) throw new EstateException("Estate (uuid = " + this.uuid + ") has more than one parent.");
+        if (parents.size() > 1) throw new EstateException("Estate (uuid = " + this.uuid + ", name = " + this.name + ") has more than one parent.");
         if (parents.isEmpty()) return null;
         else return parents.get(0);
 
@@ -85,13 +90,17 @@ public class Estate implements Comparable<Estate> {
 
     }
 
-    public UUID getUUID() {
+    public UUID getUniqueID() {
         return this.uuid;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public static void initEstates() throws SQLException {
-        ResultSet result = Minelife.SQLITE.query("SELECT * FROM estates");
-        while (result.next()) ESTATES.add(new Estate(UUID.fromString(result.getString("uuid"))));
+        ResultSet result = Minelife.SQLITE.query("SELECT * FROM ESTATES");
+        while (result.next()) ESTATES.add(new Estate(UUID.fromString(result.getString("UUID"))));
     }
 
     @Override

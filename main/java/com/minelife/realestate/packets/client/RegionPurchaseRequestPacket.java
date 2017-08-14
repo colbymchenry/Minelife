@@ -44,18 +44,22 @@ public class RegionPurchaseRequestPacket implements IMessage {
         @Override
         public IMessage onMessage(RegionPurchaseRequestPacket packet, MessageContext ctx) {
 
+            // TODO: Create separate class to handle buying and selling of estates
+
+            Region region = null;
+            Estate estate = null;
             try {
                 if (ModEconomy.getBalance(ctx.getServerHandler().playerEntity.getUniqueID(), true) >= packet.price) {
-                    Region region = Region.create(ctx.getServerHandler().playerEntity.worldObj.getWorldInfo().getWorldName(), packet.selection);
-                    Estate estate = Estate.create(region, ctx.getServerHandler().playerEntity.getUniqueID());
+                    region = Region.create(ctx.getServerHandler().playerEntity.worldObj.getWorldInfo().getWorldName(), packet.selection);
+                    estate = Estate.create(region, ctx.getServerHandler().playerEntity.getUniqueID(), "First Estate");
 
-                    // Create Gui to Purchase Estate.
+                    // TODO: Create Gui to Purchase Estate.
 
                     // TODO: Test
                     {
-                        System.out.println(ctx.getServerHandler().playerEntity.getDisplayName() + " purchased an estate (uuid = " + estate.getUUID() + ").");
+                        System.out.println(ctx.getServerHandler().playerEntity.getDisplayName() + " purchased an estate (uuid = " + estate.getUniqueID() + ", name = " + estate.getName() + ").");
                         Region.delete(region.getUniqueID());
-                        Estate.delete(estate.getUUID());
+                        Estate.delete(estate.getUniqueID());
                     }
 
                 } else {
@@ -64,6 +68,12 @@ public class RegionPurchaseRequestPacket implements IMessage {
             } catch (Exception e) {
                 System.out.println("Couldn't instantiate new Estate.");
                 e.printStackTrace();
+                try {
+                    if (region != null) Region.delete(region.getUniqueID());
+                    if (estate != null) Estate.delete(estate.getUniqueID());
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
             }
 
             return null;
@@ -99,9 +109,9 @@ public class RegionPurchaseRequestPacket implements IMessage {
 //                Estate estate = Estate.create(region, ctx.getServerHandler().playerEntity.getUniqueID());
 //
 //                // TODO: Test
-//                System.out.println(ctx.getServerHandler().playerEntity.getDisplayName() + " purchased an estate (uuid = " + estate.getUUID() + ").");
+//                System.out.println(ctx.getServerHandler().playerEntity.getDisplayName() + " purchased an estate (uuid = " + estate.getUniqueID() + ").");
 //                Region.delete(region.getUniqueID());
-//                Estate.delete(estate.getUUID());
+//                Estate.delete(estate.getUniqueID());
 //
 //            } else {
 //                System.out.println("Not enough money to purchase estate.");

@@ -1,7 +1,9 @@
 package com.minelife.realestate.client.estateselection;
 
 import com.minelife.MLItems;
+import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
+import com.minelife.realestate.packets.client.BlockPriceRequestPacket;
 import com.minelife.realestate.util.GUIUtil;
 import com.minelife.realestate.util.PlayerUtil;
 import com.minelife.util.NumberConversions;
@@ -11,6 +13,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -101,11 +104,12 @@ public class Selection {
             int diffX = Math.abs(ranges[0].getBlockX() - ranges[1].getBlockX()) + 1;
             int diffY = Math.abs(ranges[0].getBlockY() - ranges[1].getBlockY()) + 1;
             int diffZ = Math.abs(ranges[0].getBlockZ() - ranges[1].getBlockZ()) + 1;
+            Minelife.NETWORK.sendToServer(new BlockPriceRequestPacket());
             int numberOfBlocks = (diffX) * (diffY) * (diffZ);
             price = numberOfBlocks * pricePerBlock;
-            priceString = "Total Price: $" + NumberConversions.formatter.format(price);
             long wallet = ModEconomy.BALANCE_WALLET_CLIENT;
             ableToPurchase = price > wallet ? 0 : 1;
+            priceString = "Total Price: " + (ableToPurchase == 1 ? EnumChatFormatting.GREEN : EnumChatFormatting.RED) + "$" + NumberConversions.formatter.format(price);
         }
 
         // Drawing Selection
