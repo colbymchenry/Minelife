@@ -2,7 +2,6 @@ package com.minelife.realestate.client.estateselection;
 
 import com.minelife.MLItems;
 import com.minelife.economy.ModEconomy;
-import com.minelife.realestate.client.SelectionState;
 import com.minelife.realestate.util.GUIUtil;
 import com.minelife.realestate.util.PlayerUtil;
 import com.minelife.util.NumberConversions;
@@ -177,7 +176,7 @@ public class Selection {
     public static AxisAlignedBB getSelection() {
         if (state.equals(SelectionState.SELECTED) && start != null && end != null) {
             Vector s = new Vector(Math.min(start.getX(), end.getX()), Math.min(start.getY(), end.getY()), Math.min(start.getZ(), end.getZ()));
-            Vector e = new Vector(Math.max(start.getX(), end.getX()) + 1, Math.max(start.getY(), end.getY()) + 1, Math.max(start.getZ(), end.getZ()) + 1);
+            Vector e = new Vector(Math.max(start.getX(), end.getX()), Math.max(start.getY(), end.getY()), Math.max(start.getZ(), end.getZ()));
             return AxisAlignedBB.getBoundingBox(s.getBlockX(), s.getBlockY(), s.getBlockZ(), e.getBlockX(), e.getBlockY(), e.getBlockZ());
         }
         return null;

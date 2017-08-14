@@ -10,6 +10,8 @@ public class BlockPriceResultPacket implements IMessage {
 
     long price;
 
+    public BlockPriceResultPacket() { }
+
     public BlockPriceResultPacket(long price) {
         this.price = price;
     }

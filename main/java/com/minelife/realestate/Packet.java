@@ -26,7 +26,7 @@ public abstract class Packet implements IMessage {
 
     }
 
-    public static class Handler implements IMessageHandler<Packet, IMessage> {
+    public class Handler implements IMessageHandler<Packet, IMessage> {
 
         @Override
         public IMessage onMessage(Packet packet, MessageContext ctx) {
@@ -43,12 +43,14 @@ public abstract class Packet implements IMessage {
 
     static void registerPackets() {
 
+        System.out.println("Registering Real Estate Packets.");
+
         try {
             getClasses(Packet.class.getPackage().getName()).forEach(aClass -> {
                 if (aClass.getSuperclass().equals(Packet.class) && !aClass.equals(Packet.class)) {
                     try {
                         Packet packet = (Packet) aClass.newInstance();
-                        ModRealEstate.registerPacket(Packet.Handler.class, packet.getClass(), packet.sideOfHandling());
+                        ModRealEstate.registerPacket(packet.getHandler(), packet.getClass(), packet.sideOfHandling());
                         System.out.println("Registered " + aClass.getSimpleName() + "!");
                     } catch (Exception e) {
                         System.out.println("Couldn't Register " + aClass.getSimpleName() + "!");

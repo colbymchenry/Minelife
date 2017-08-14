@@ -17,7 +17,7 @@ public class ItemEstateCreateForm extends Item {
 
     public ItemEstateCreateForm() {
         this.setCreativeTab(CreativeTabs.tabTools);
-        this.setUnlocalizedName("Estate Claiming Tool");
+        this.setUnlocalizedName("estate_create_form");
         this.setTextureName(Minelife.MOD_ID + ":estate_create_form");
         this.setMaxStackSize(1);
     }
