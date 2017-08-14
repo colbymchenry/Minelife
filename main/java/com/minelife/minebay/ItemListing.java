@@ -19,9 +19,9 @@ public class ItemListing extends Listing {
 
     protected ItemStack item_stack;
 
-    public ItemListing(UUID uuid, UUID seller, long price, String title, String description, ItemStack item_stack)
+    public ItemListing(UUID uuid, UUID seller, long price, ItemStack item_stack)
     {
-        super(uuid, seller, price, title, description);
+        super(uuid, seller, price, "", "");
         this.item_stack = item_stack;
     }
 
