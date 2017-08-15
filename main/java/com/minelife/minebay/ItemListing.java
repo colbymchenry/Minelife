@@ -1,5 +1,6 @@
 package com.minelife.minebay;
 
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
 import com.minelife.minebay.packet.PacketPopupMsg;
@@ -12,9 +13,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -92,10 +95,14 @@ public class ItemListing extends Listing {
     public void finalize(EntityPlayer player)
     {
         try {
-            if (ModEconomy.getBalance(player.getUniqueID(), false) < price())
-                PacketPopupMsg.send("Insufficient Funds in Wallet", (EntityPlayerMP) player);
+            if (ModEconomy.getBalance(player.getUniqueID(), true) < price())
+                PacketPopupMsg.send("Insufficient Funds in Bank Account", (EntityPlayerMP) player);
 
+            EntityItem entity_item = player.dropPlayerItemWithRandomChoice(item_stack(), false);
+            entity_item.delayBeforeCanPickup = 0;
 
+            ModEconomy.withdraw(player.getUniqueID(), price(), true);
+            ModEconomy.deposit(seller(), price(), true);
         } catch (Exception e) {
             e.printStackTrace();
             Minelife.handle_exception(e, player);
