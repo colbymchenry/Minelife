@@ -118,8 +118,8 @@ public class ItemListing extends Listing {
     {
         buf.writeLong(price());
         ByteBufUtils.writeUTF8String(buf, uuid().toString());
-        ByteBufUtils.writeUTF8String(buf, title());
-        ByteBufUtils.writeUTF8String(buf, description());
+        ByteBufUtils.writeUTF8String(buf, title() == null ? " " : title());
+        ByteBufUtils.writeUTF8String(buf, description() == null ? " " : description());
         ByteBufUtils.writeItemStack(buf, item_stack());
     }
 

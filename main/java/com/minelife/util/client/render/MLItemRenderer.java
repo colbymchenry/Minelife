@@ -81,6 +81,61 @@ public class MLItemRenderer {
         itemRender.zLevel = 0.0F;
     }
 
+    public int[] getToolTipBounds(ItemStack p_146285_1_, int p_146285_2_, int p_146285_3_, int screenWidth, int screenHeight) {
+        List list = p_146285_1_.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
+
+        for (int k = 0; k < list.size(); ++k) {
+            if (k == 0) {
+                list.set(k, p_146285_1_.getRarity().rarityColor + (String) list.get(k));
+            } else {
+                list.set(k, EnumChatFormatting.GRAY + (String) list.get(k));
+            }
+        }
+
+        FontRenderer font = p_146285_1_.getItem().getFontRenderer(p_146285_1_);
+        return getToolTipBounds(list, p_146285_2_, p_146285_3_, (font == null ? fontRendererObj : font), screenWidth, screenHeight);
+    }
+
+    private int[] getToolTipBounds(List p_146283_1_, int p_146283_2_, int p_146283_3_, FontRenderer font, int screenWidth, int screenHeight) {
+        if (!p_146283_1_.isEmpty()) {
+            int k = 0;
+            Iterator iterator = p_146283_1_.iterator();
+
+            while (iterator.hasNext()) {
+                String s = (String) iterator.next();
+                int l = font.getStringWidth(s);
+
+                if (l > k) {
+                    k = l;
+                }
+            }
+
+            int j2 = p_146283_2_ + 12;
+            int k2 = p_146283_3_ - 12;
+            int i1 = 8;
+
+            if (p_146283_1_.size() > 1) {
+                i1 += 2 + (p_146283_1_.size() - 1) * 10;
+            }
+
+            if (j2 + k > screenWidth) {
+                j2 -= 28 + k;
+            }
+
+            if (k2 + i1 + 6 > screenHeight) {
+                k2 = screenHeight - i1 - 6;
+            }
+
+            int x = j2 - 4;
+            int y = k2 - 4;
+            int width =  k;
+            int height = i1;
+            return new int[]{width, height};
+        }
+
+        return new int[]{0, 0};
+    }
+
     public void renderToolTip(ItemStack p_146285_1_, int p_146285_2_, int p_146285_3_, int screenWidth, int screenHeight)
     {
         List list = p_146285_1_.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);

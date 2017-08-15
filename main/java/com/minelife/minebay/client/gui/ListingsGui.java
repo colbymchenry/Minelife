@@ -142,7 +142,11 @@ public class ListingsGui extends MasterGui {
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick)
         {
-            item_listings.get(index).mouse_clicked(mouseX, mouseY, doubleClick);
+            if(doubleClick) {
+                Minecraft.getMinecraft().displayGuiScreen(new BuyItemGui(item_listings.get(index)));
+            } else {
+                item_listings.get(index).mouse_clicked(mouseX, mouseY, false);
+            }
         }
 
         @Override

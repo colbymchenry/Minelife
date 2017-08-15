@@ -57,7 +57,8 @@ public class PacketSellItem implements IMessage {
             item_stack_to_sale.stackSize = message.amount;
 
             item_stack.stackSize -= message.amount;
-            player.inventory.mainInventory[message.slot] = item_stack;
+            player.inventory.setInventorySlotContents(message.slot, item_stack);
+            player.inventory.markDirty();
 
             ItemListing listing = new ItemListing(UUID.randomUUID(), player.getUniqueID(), message.price, item_stack_to_sale);
             listing.write_to_db();

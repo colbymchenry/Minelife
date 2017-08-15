@@ -5,6 +5,7 @@ import com.minelife.Minelife;
 import com.minelife.minebay.packet.PacketSellItem;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.render.MLItemRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.item.ItemStack;
@@ -47,8 +48,10 @@ public class SellItemGui extends MasterGui {
             this.slots.add(new ItemSlot(mc.thePlayer.inventory.mainInventory[x], new Rectangle(xOffset + x * 18, yOffset + 58, 16, 16), x));
         }
 
-        price_field = new GuiTextField(fontRendererObj, this.left + this.bg_width - 85, this.top + 20, 75, 10);
-        amount_field = new GuiTextField(fontRendererObj, this.left + this.bg_width - 85, this.top + 48, 75, 10);
+        int middle = bg_width / 2;
+        int x_pos = left + middle + ((middle - 75) / 2);
+        price_field = new GuiTextField(fontRendererObj, x_pos, this.top + 20, 75, 10);
+        amount_field = new GuiTextField(fontRendererObj, x_pos, this.top + 48, 75, 10);
         sell_btn = new CustomButton(0, amount_field.xPosition, amount_field.yPosition + 16, "Sell", fontRendererObj);
     }
 
@@ -87,16 +90,18 @@ public class SellItemGui extends MasterGui {
             }
         }
 
+        int middle = bg_width / 2;
+        int item_render_width = 60;
+        int item_render_x = left + ((middle - item_render_width) / 2);
+        // draw item rendering background
         color = new Color(64, 0, 62, 200);
         item_renderer.attempt_gl_reset();
-        this.drawGradientRect(left + 10, top + 10, left + 10 + 60, top + 10 + 60, color.hashCode(), color.hashCode());
+        this.drawGradientRect(item_render_x, top + 10, item_render_x + item_render_width, top + 10 + 60, color.hashCode(), color.hashCode());
 
         // render selected item
         if(item_to_sale != null) {
-            item_renderer.renderItem3D(item_to_sale, left + 40, top + 38, 30, rotY += 0.5f);
-            item_renderer.fontRendererObj.setUnicodeFlag(true);
-            item_renderer.renderToolTip(item_to_sale, left + 10 + 60, top + 26, width, height);
-            item_renderer.fontRendererObj.setUnicodeFlag(false);
+            item_renderer.renderItem3D(item_to_sale, item_render_x + (item_render_width / 2), top + 38, 30, rotY += 0.5f);
+
         }
 
         // draw price and amount fields
@@ -108,6 +113,12 @@ public class SellItemGui extends MasterGui {
         fontRendererObj.drawString("Amount: ", amount_field.xPosition, amount_field.yPosition - 10, 0xFFFFFF);
 
         sell_btn.drawButton(mc, mouse_x, mouse_y);
+
+        if(item_to_sale != null) {
+            if(mouse_x >= item_render_x && mouse_x <= item_render_x + item_render_width && mouse_y >= top + 10 && mouse_y <= top + 10 + 60) {
+                item_renderer.renderToolTip(item_to_sale, mouse_x, mouse_y, width, height);
+            }
+        }
     }
 
     @Override
@@ -145,6 +156,11 @@ public class SellItemGui extends MasterGui {
     @Override
     protected void keyTyped(char c, int i)
     {
+        if(i == Keyboard.KEY_ESCAPE) {
+            Minecraft.getMinecraft().displayGuiScreen(new ListingsGui());
+            return;
+        }
+
         super.keyTyped(c, i);
 
         if(!NumberConversions.isLong("" + c) && i != Keyboard.KEY_BACK) return;
