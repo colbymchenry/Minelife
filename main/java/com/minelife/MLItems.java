@@ -7,7 +7,7 @@ import com.minelife.gun.item.ItemZincPlate;
 import com.minelife.gun.item.ammos.*;
 import com.minelife.gun.item.guns.*;
 import com.minelife.gun.item.parts.*;
-import com.minelife.realestate.item.ItemEstateCreateForm;
+import com.minelife.realestate.items.ItemEstateClaimForm;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.Item;
 
@@ -64,7 +64,7 @@ public class MLItems {
     public static ItemAbstractDrug waxy_cocaine;
     public static ItemAbstractDrug heated_cocaine;
     public static ItemAbstractDrug pressed_cocaine;
-    public static ItemEstateCreateForm estate_create_form;
+    public static ItemEstateClaimForm estate_claim_form;
     public static ItemAbstractDrug purple_cocaine;
     public static ItemProcessedCocaine processed_cocaine;
     public static ItemJoint joint;
@@ -120,7 +120,7 @@ public class MLItems {
         register_item(waxy_cocaine = new ItemAbstractDrug("waxy_cocaine"));
         register_item(heated_cocaine = new ItemAbstractDrug("heated_cocaine"));
         register_item(pressed_cocaine = new ItemAbstractDrug("pressed_cocaine"));
-        register_item(estate_create_form = new ItemEstateCreateForm());
+        register_item(estate_claim_form = new ItemEstateClaimForm());
         register_item(processed_cocaine = new ItemProcessedCocaine());
         register_item(purple_cocaine = new ItemAbstractDrug("purple_cocaine"));
         register_item(joint = new ItemJoint());

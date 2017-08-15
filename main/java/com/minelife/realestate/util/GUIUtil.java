@@ -1,12 +1,22 @@
 package com.minelife.realestate.util;
 
 import com.minelife.util.Vector;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+@SideOnly(Side.CLIENT)
 public class GUIUtil {
+
+    public static void drawCuboidAroundsBlocks(Minecraft minecraft, AxisAlignedBB bounds, float partialTickTime, Color color, boolean depth_test) {
+        Vector start = new Vector(bounds.minX, bounds.minY, bounds.minZ);
+        Vector end = new Vector(bounds.maxX, bounds.maxY, bounds.maxZ);
+        drawCuboidAroundBlocks(minecraft, start, end, partialTickTime, color, depth_test);
+    }
 
     public static void drawCuboidAroundBlocks(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color, boolean depth_test) {
 
@@ -134,8 +144,6 @@ public class GUIUtil {
     }
 
     private static void drawRectRenderRect(Vector translate, Vector length, Vector height, boolean counterClockwise, int color) {
-
-        // TODO: Make Green if able to buy, red otherwise
 
         double red = (color >> 16 & 255) / 255.0;
         double green = (color >> 8 & 255) / 255.0;

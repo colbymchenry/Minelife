@@ -2,9 +2,8 @@ package com.minelife.realestate;
 
 import com.minelife.AbstractMod;
 import com.minelife.CommonProxy;
-import com.minelife.realestate.packets.client.BlockPriceRequestPacket;
-import com.minelife.realestate.packets.client.RegionPurchaseRequestPacket;
-import com.minelife.realestate.packets.server.BlockPriceResultPacket;
+import com.minelife.realestate.client.packet.BlockPriceRequest;
+import com.minelife.realestate.server.packet.BlockPriceResult;
 import com.minelife.util.MLConfig;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -17,10 +16,8 @@ public class ModRealEstate extends AbstractMod {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
-//        Packet.registerPackets();
-        registerPacket(BlockPriceRequestPacket.Handler.class, BlockPriceRequestPacket.class, Side.SERVER);
-        registerPacket(BlockPriceResultPacket.Handler.class, BlockPriceResultPacket.class, Side.CLIENT);
-        registerPacket(RegionPurchaseRequestPacket.Handler.class, RegionPurchaseRequestPacket.class, Side.SERVER);
+        registerPacket(BlockPriceRequest.Handler.class, BlockPriceRequest.class, Side.SERVER);
+        registerPacket(BlockPriceResult.Handler.class, BlockPriceResult.class, Side.CLIENT);
     }
 
     @Override

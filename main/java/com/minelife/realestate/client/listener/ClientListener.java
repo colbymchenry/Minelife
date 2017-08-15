@@ -2,36 +2,32 @@ package com.minelife.realestate.client.listener;
 
 import com.minelife.MLItems;
 import com.minelife.MLKeys;
-import com.minelife.Minelife;
-import com.minelife.realestate.client.estateselection.Selection;
-import com.minelife.realestate.packets.client.RegionPurchaseRequestPacket;
+import com.minelife.realestate.client.renderer.SelectionRenderer;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.client.event.MouseEvent;
 
+@SideOnly(Side.CLIENT)
 public class ClientListener {
 
     @SubscribeEvent
     public void onClick(MouseEvent event) {
-        Selection.cancelSelectionLeftClick(event);
+        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+        if (event.button == 0 && player.getHeldItem() != null && player.getHeldItem().getItem().equals(MLItems.estate_claim_form)) {
+            event.setCanceled(true);
+            player.getHeldItem().getItem().onEntitySwing(player, player.getHeldItem());
+        }
     }
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-        if (MLKeys.keySelectionClear.isPressed()) {
-            Selection.setStart(null);
-            Selection.setEnd(null);
-        }
+        if (MLKeys.keyClearSelection.isPressed()) SelectionRenderer.clear();
         if (MLKeys.keyPurchaseSelection.isPressed()) {
-            AxisAlignedBB selection = Selection.getSelection();
-            long price = Selection.getPrice();
-            if (player.getHeldItem() != null && player.getHeldItem().getItem().equals(MLItems.estate_create_form) && selection != null) {
-                Minelife.NETWORK.sendToServer(new RegionPurchaseRequestPacket(selection, price));
-            }
+            System.out.println("Purchasing Estate....");
         }
     }
 
