@@ -1,7 +1,5 @@
 package com.minelife.util.client.render;
 
-import com.minelife.util.client.GuiUtil;
-import ic2.core.block.RenderBlock;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -9,11 +7,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBed;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -25,18 +20,15 @@ public class MLItemRenderer {
     private RenderItem itemRender;
     private ItemRenderer itemRenderer;
     public FontRenderer fontRendererObj;
-    private Minecraft mc;
-    private int width, height;
     private float zLevel;
+    private Minecraft mc;
 
-    public MLItemRenderer(GuiScreen guiScreen)
+    public MLItemRenderer(Minecraft mc)
     {
-        itemRenderer = new ItemRenderer(guiScreen.mc);
+        this.mc = mc;
+        itemRenderer = new ItemRenderer(mc);
         itemRender = new RenderItem();
-        fontRendererObj = guiScreen.mc.fontRenderer;
-        this.mc = guiScreen.mc;
-        this.width = guiScreen.width;
-        this.height = guiScreen.height;
+        fontRendererObj = mc.fontRenderer;
         this.zLevel = 0F;
     }
 
@@ -89,7 +81,7 @@ public class MLItemRenderer {
         itemRender.zLevel = 0.0F;
     }
 
-    public void renderToolTip(ItemStack p_146285_1_, int p_146285_2_, int p_146285_3_)
+    public void renderToolTip(ItemStack p_146285_1_, int p_146285_2_, int p_146285_3_, int screenWidth, int screenHeight)
     {
         List list = p_146285_1_.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
 
@@ -102,10 +94,10 @@ public class MLItemRenderer {
         }
 
         FontRenderer font = p_146285_1_.getItem().getFontRenderer(p_146285_1_);
-        drawHoveringText(list, p_146285_2_, p_146285_3_, (font == null ? fontRendererObj : font));
+        drawHoveringText(list, p_146285_2_, p_146285_3_, (font == null ? fontRendererObj : font), screenWidth, screenHeight);
     }
 
-    protected void drawHoveringText(List p_146283_1_, int p_146283_2_, int p_146283_3_, FontRenderer font)
+    protected void drawHoveringText(List p_146283_1_, int p_146283_2_, int p_146283_3_, FontRenderer font, int screenWidth, int screenHeight)
     {
         if (!p_146283_1_.isEmpty()) {
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
@@ -132,12 +124,12 @@ public class MLItemRenderer {
                 i1 += 2 + (p_146283_1_.size() - 1) * 10;
             }
 
-            if (j2 + k > this.width) {
+            if (j2 + k > screenWidth) {
                 j2 -= 28 + k;
             }
 
-            if (k2 + i1 + 6 > this.height) {
-                k2 = this.height - i1 - 6;
+            if (k2 + i1 + 6 > screenHeight) {
+                k2 = screenHeight - i1 - 6;
             }
 
             this.zLevel = 300.0F;

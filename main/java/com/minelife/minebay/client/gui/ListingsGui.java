@@ -10,7 +10,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -46,16 +48,17 @@ public class ListingsGui extends MasterGui {
             return;
         }
 
-//        if(this.listings.isEmpty()) {
-//            String msg = EnumChatFormatting.BOLD + "Uh-Oh! No items were found :'(";
-//            int msg_width = mc.fontRenderer.getStringWidth(msg);
-//            mc.fontRenderer.drawStringWithShadow(msg,  (this.width - msg_width) / 2, top + ((bg_height - mc.fontRenderer.FONT_HEIGHT) / 2), 0xFFFFFF);
-//
-//            return;
-//        }
 
 
-//        this.listings_gui.draw(mouse_x, mouse_y, Mouse.getDWheel());
+        if(this.listings.isEmpty()) {
+            String msg = EnumChatFormatting.BOLD + "Uh-Oh! No items were found :'(";
+            int msg_width = mc.fontRenderer.getStringWidth(msg);
+            mc.fontRenderer.drawStringWithShadow(msg,  (this.width - msg_width) / 2, top + ((bg_height - mc.fontRenderer.FONT_HEIGHT) / 2), 0xFFFFFF);
+            this.sell_btn.drawButton(mc, mouse_x, mouse_y);
+            return;
+        }
+
+        this.listings_gui.draw(mouse_x, mouse_y, Mouse.getDWheel());
 
         Color color = new Color(72, 0, 70, 200);
         this.drawGradientRect(left - 2, top - 2, left + bg_width, top + 25, color.hashCode(), color.hashCode());
@@ -81,7 +84,8 @@ public class ListingsGui extends MasterGui {
     {
         this.search_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
 
-        if(this.sell_btn.mousePressed(mc, mouse_x, mouse_y)) Minecraft.getMinecraft().displayGuiScreen(new SellItemGui());
+        if (this.sell_btn.mousePressed(mc, mouse_x, mouse_y))
+            Minecraft.getMinecraft().displayGuiScreen(new SellItemGui());
 
     }
 
@@ -94,15 +98,15 @@ public class ListingsGui extends MasterGui {
             return;
         }
 
-        this.listings_gui = new Listings(this.left, this.top, this.bg_width, this.bg_height, listings, this);
+        this.listings_gui = new Listings(this.left, this.top + 30, this.bg_width, this.bg_height - 30, listings, this);
         this.search_field = new GuiTextField(mc.fontRenderer, this.left + 1, this.top + 1, bg_width / 2, 20);
-        this.sell_btn = new CustomBtn(0, this.left + this.bg_width - 50, this.top + 1, "Sell");
+        this.sell_btn = new CustomButton(0, this.left + this.bg_width - 50, this.top + 1, "Sell", fontRendererObj);
     }
 
     @Override
     public void updateScreen()
     {
-        this.search_field.updateCursorCounter();
+        if (this.search_field != null) this.search_field.updateCursorCounter();
     }
 
     class Listings extends GuiScrollableContent {
@@ -156,25 +160,6 @@ public class ListingsGui extends MasterGui {
         public void drawSelectionBox(int index, int width, int height)
         {
             GuiUtil.drawDefaultBackground(0, 0, width - 8, height, new Color(186, 0, 184));
-        }
-    }
-
-    class CustomBtn extends GuiButton {
-
-        public CustomBtn(int p_i1020_1_, int p_i1020_2_, int p_i1020_3_, String p_i1020_4_)
-        {
-            super(p_i1020_1_, p_i1020_2_, p_i1020_3_, p_i1020_4_);
-            this.width = fontRendererObj.getStringWidth(p_i1020_4_) + 15;
-            this.height = 20;
-        }
-
-        @Override
-        public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_)
-        {
-            boolean hovering = mousePressed(mc, p_146112_2_, p_146112_3_);
-            GL11.glColor4f(1, 1, 1, 1);
-            GuiUtil.drawDefaultBackground(xPosition, yPosition, width, height, hovering ? new Color(198, 0, 196) : new Color(184, 0, 184));
-            fontRendererObj.drawStringWithShadow(this.displayString, xPosition + 1 + (this.width - fontRendererObj.getStringWidth(displayString)) / 2, yPosition + 1 + (this.height - fontRendererObj.FONT_HEIGHT) / 2, hovering ? 16777120 : 0xFFFFFF);
         }
     }
 

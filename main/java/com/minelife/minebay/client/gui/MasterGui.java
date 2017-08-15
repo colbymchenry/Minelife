@@ -19,9 +19,7 @@ public abstract class MasterGui extends GuiScreen {
     {
         super.drawScreen(mouse_x, mouse_y, f);
         this.drawDefaultBackground();
-//        this.mc.getTextureManager().bindTexture(bg_texture);
-//        this.drawTexturedModalRect(this.left, this.top, 0, 0, this.bg_width, this.bg_height);
-        GuiUtil.drawDefaultBackground(this.left - 5, this.top - 5, this.bg_width + 7, this.bg_height + 7, new Color(0x70006e));
+        GuiUtil.drawDefaultBackground(this.left - 5, this.top - 5, this.bg_width + 7, this.bg_height + 7, new Color(0x8F008D));
         this.mc.getTextureManager().bindTexture(logo_texture);
         GuiUtil.drawImage(this.left + (bg_width - (logo_width / 2)) / 2, this.top - (this.logo_height / 2) - 3, this.logo_width / 2, this.logo_height / 2);
     }

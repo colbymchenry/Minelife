@@ -1,5 +1,7 @@
 package com.minelife.minebay;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 import java.util.UUID;
 
 public abstract class Listing {
@@ -50,5 +52,7 @@ public abstract class Listing {
     public abstract void draw(int mouse_x, int mouse_y);
 
     public abstract void mouse_clicked(int mouse_x, int mouse_y, boolean double_click);
+
+    public abstract void finalize(EntityPlayer player);
 
 }

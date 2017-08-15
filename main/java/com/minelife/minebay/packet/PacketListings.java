@@ -13,6 +13,7 @@ import io.netty.buffer.ByteBuf;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 public class PacketListings implements IMessage {
 
@@ -46,10 +47,12 @@ public class PacketListings implements IMessage {
             try {
                 ResultSet result = Minelife.SQLITE.query("SELECT * FROM item_listings LIMIT " + min_row + "," + max_row);
                 List<ItemListing> listings = Lists.newArrayList();
-                while(result.next()) listings.add(ItemListing.from_db(result));
+                while(result.next()) listings.add(new ItemListing(UUID.fromString(result.getString("uuid"))));
                 Minelife.NETWORK.sendTo(new PacketResponseListings(listings), ctx.getServerHandler().playerEntity);
             } catch (SQLException e) {
                 e.printStackTrace();
+                Minelife.handle_exception(e, ctx.getServerHandler().playerEntity);
+                ctx.getServerHandler().playerEntity.closeScreen();
             }
             return null;
         }

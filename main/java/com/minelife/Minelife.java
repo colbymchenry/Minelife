@@ -123,6 +123,7 @@ public class Minelife {
     }
 
     public static void handle_exception(Exception e, EntityPlayer player) {
+        player.closeScreen();
         if(e instanceof CustomMessageException) {
             player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
         } else {

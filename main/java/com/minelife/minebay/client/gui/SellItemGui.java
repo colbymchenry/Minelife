@@ -1,9 +1,14 @@
 package com.minelife.minebay.client.gui;
 
 import com.google.common.collect.Lists;
+import com.minelife.Minelife;
+import com.minelife.minebay.packet.PacketSellItem;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.client.render.MLItemRenderer;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.item.ItemStack;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -16,12 +21,14 @@ public class SellItemGui extends MasterGui {
     private ItemStack item_to_sale;
     private float rotY;
     private GuiTextField price_field, amount_field;
+    private GuiButton sell_btn;
+    private int slot = -1;
 
     @Override
     public void initGui()
     {
         super.initGui();
-        item_renderer = new MLItemRenderer(this);
+        item_renderer = new MLItemRenderer(mc);
         // setup slots
         slots = Lists.newArrayList();
 
@@ -31,17 +38,18 @@ public class SellItemGui extends MasterGui {
         // players inventory
         for (int y = 0; y < 3; ++y) {
             for (int x = 0; x < 9; ++x) {
-                this.slots.add(new ItemSlot(mc.thePlayer.inventory.mainInventory[x + y * 9 + 9], new Rectangle(xOffset + x * 18, yOffset + y * 18, 16, 16)));
+                this.slots.add(new ItemSlot(mc.thePlayer.inventory.mainInventory[x + y * 9 + 9], new Rectangle(xOffset + x * 18, yOffset + y * 18, 16, 16), x + y * 9 + 9));
             }
         }
 
         // players hotbar
         for (int x = 0; x < 9; ++x) {
-            this.slots.add(new ItemSlot(mc.thePlayer.inventory.mainInventory[x], new Rectangle(xOffset + x * 18, yOffset + 58, 16, 16)));
+            this.slots.add(new ItemSlot(mc.thePlayer.inventory.mainInventory[x], new Rectangle(xOffset + x * 18, yOffset + 58, 16, 16), x));
         }
 
         price_field = new GuiTextField(fontRendererObj, this.left + this.bg_width - 85, this.top + 20, 75, 10);
-        amount_field = new GuiTextField(fontRendererObj, this.left + this.bg_width - 85, this.top + 60, 75, 10);
+        amount_field = new GuiTextField(fontRendererObj, this.left + this.bg_width - 85, this.top + 48, 75, 10);
+        sell_btn = new CustomButton(0, amount_field.xPosition, amount_field.yPosition + 16, "Sell", fontRendererObj);
     }
 
     @Override
@@ -75,7 +83,7 @@ public class SellItemGui extends MasterGui {
         // draw the tooltip
         for (ItemSlot slot : slots) {
             if (slot.stack != null && slot.bounds.contains(mouse_x, mouse_y)) {
-                item_renderer.renderToolTip(slot.stack, mouse_x, mouse_y);
+                item_renderer.renderToolTip(slot.stack, mouse_x, mouse_y, width, height);
             }
         }
 
@@ -87,7 +95,7 @@ public class SellItemGui extends MasterGui {
         if(item_to_sale != null) {
             item_renderer.renderItem3D(item_to_sale, left + 40, top + 38, 30, rotY += 0.5f);
             item_renderer.fontRendererObj.setUnicodeFlag(true);
-            item_renderer.renderToolTip(item_to_sale, left + 10 + 60, top + 26);
+            item_renderer.renderToolTip(item_to_sale, left + 10 + 60, top + 26, width, height);
             item_renderer.fontRendererObj.setUnicodeFlag(false);
         }
 
@@ -98,6 +106,8 @@ public class SellItemGui extends MasterGui {
         price_field.drawTextBox();
         fontRendererObj.drawString("Price: ", price_field.xPosition, price_field.yPosition - 10, 0xFFFFFF);
         fontRendererObj.drawString("Amount: ", amount_field.xPosition, amount_field.yPosition - 10, 0xFFFFFF);
+
+        sell_btn.drawButton(mc, mouse_x, mouse_y);
     }
 
     @Override
@@ -105,11 +115,20 @@ public class SellItemGui extends MasterGui {
     {
         super.mouseClicked(mouse_x, mouse_y, mouse_btn);
         for(ItemSlot slot : slots) {
-            if(slot.bounds.contains(mouse_x, mouse_y)) item_to_sale = slot.stack;
+            if(slot.bounds.contains(mouse_x, mouse_y)) {
+                item_to_sale = slot.stack;
+                this.slot = slot.index;
+            }
         }
+
+        if(item_to_sale == null) amount_field.setText("");
 
         price_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
         amount_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
+
+        if(sell_btn.mousePressed(mc, mouse_x, mouse_y)) {
+            Minelife.NETWORK.sendToServer(new PacketSellItem(slot, NumberConversions.toInt(amount_field.getText()), NumberConversions.toLong(price_field.getText())));
+        }
     }
 
     @Override
@@ -118,26 +137,41 @@ public class SellItemGui extends MasterGui {
         super.updateScreen();
         price_field.updateCursorCounter();
         amount_field.updateCursorCounter();
+
+        sell_btn.enabled = item_to_sale != null && !price_field.getText().isEmpty() && !amount_field.getText().isEmpty() && slot > -1;
+        amount_field.setEnabled(item_to_sale != null);
     }
 
     @Override
     protected void keyTyped(char c, int i)
     {
         super.keyTyped(c, i);
-        price_field.textboxKeyTyped(c, i);
-        amount_field.textboxKeyTyped(c, i);
 
-        // TODO: Make amount not go above item stack amount
+        if(!NumberConversions.isLong("" + c) && i != Keyboard.KEY_BACK) return;
+        price_field.textboxKeyTyped(c, i);
+
+        if(amount_field.isFocused()) {
+
+            amount_field.textboxKeyTyped(c, i);
+            if(!amount_field.getText().isEmpty()) {
+                if(NumberConversions.toLong(amount_field.getText()) > item_to_sale.stackSize) {
+                    amount_field.setText(amount_field.getText().substring(0, amount_field.getText().length() - 1));
+                }
+            }
+        }
+
     }
 
     class ItemSlot {
         ItemStack stack;
         Rectangle bounds;
+        int index;
 
-        ItemSlot(ItemStack stack, Rectangle bounds)
+        ItemSlot(ItemStack stack, Rectangle bounds, int index)
         {
             this.stack = stack;
             this.bounds = bounds;
+            this.index= index;
         }
     }
 }

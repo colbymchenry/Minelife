@@ -322,6 +322,8 @@ public class GuiUtil {
         Color topColor = color.brighter().brighter().brighter().brighter().brighter().brighter().brighter();
         Color border = color.darker().darker().darker().darker().darker().darker().darker();
 
+        GL11.glColor4f(1, 1, 1, 1);
+        GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 
         // TODO: Seth see if you can make the alpha work correctly. Typically it just makes the thing see through no matter the alpha
