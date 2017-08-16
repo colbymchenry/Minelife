@@ -3,7 +3,6 @@ package com.minelife.realestate;
 import com.google.common.collect.Lists;
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
-import com.minelife.region.server.Region;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -44,7 +43,7 @@ public class EstateRegion implements Comparable<EstateRegion> {
         return this.regionUniqueID;
     }
 
-    public String getWorldName() {
+    private String getWorldName() {
         return this.world;
     }
 
@@ -67,7 +66,7 @@ public class EstateRegion implements Comparable<EstateRegion> {
         return Objects.equals(world.getWorldInfo().getWorldName(), this.world) && (this.bounds.isVecInside(Vec3.createVectorHelper(x, y, z)) || this.bounds.isVecInside(Vec3.createVectorHelper(x - 1, y - 1, z - 1)));
     }
 
-    public EstateRegion getParentRegion() {
+    private EstateRegion getParentRegion() {
         return EstateRegion.getContainingRegion(this.world, this.bounds);
     }
 
@@ -129,27 +128,45 @@ public class EstateRegion implements Comparable<EstateRegion> {
         return region;
     }
 
+    /**
+     *
+     * @param estateRegion the object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object
+     *          is contained in, disjoint from, or contains the specified object.
+     *
+     * @throws NullPointerException if the specified object is null
+     * @throws ClassCastException if the specified object's type prevents it
+     *         from being compared to this object.
+     *
+     */
+    @Override
     public int compareTo(EstateRegion estateRegion) {
-        return estateRegion.getUniqueID().equals(getUniqueID()) ? 0 : 1;
+        if (EstateRegion.getContainingRegion(this.world, this.bounds).equals(estateRegion)) return -1;
+        if (EstateRegion.getContainingRegion(estateRegion.world, estateRegion.bounds).equals(this)) return 1;
+        return 0;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Region && (((Region) obj).getUniqueID().equals(getUniqueID()));
+        return obj != null && obj instanceof EstateRegion && ((EstateRegion) obj).getUniqueID().equals(getUniqueID());
     }
 
     public static EstateRegion create(String world, AxisAlignedBB bounds) throws SQLException, CustomMessageException {
         // Check for a parent region
         EstateRegion parentRegion = EstateRegion.getContainingRegion(world, bounds);
 
+        System.out.println("A");
         if (parentRegion != null) {
             //check if intersects with another SubRegion
-            if (Region.getIntersectingRegion(world, bounds) != null)
+            if (EstateRegion.getIntersectingRegion(world, bounds) != null)
                 throw new CustomMessageException("Intersecting with another region2.");
         } else {
+            System.out.println("B");
             // If we have an intersecting region do not create a region
-            if (Region.getIntersectingRegion(world, bounds) != null)
+            if (EstateRegion.getIntersectingRegion(world, bounds) != null) {
+                System.out.println("C");
                 throw new CustomMessageException("Intersecting with another region1.");
+            }
         }
 
         UUID regionUniqueID = UUID.randomUUID();

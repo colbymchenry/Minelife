@@ -1,9 +1,14 @@
 package com.minelife.realestate.client;
 
 import com.minelife.Minelife;
+import com.minelife.economy.ModEconomy;
+import com.minelife.realestate.EstateRegion;
 import com.minelife.realestate.client.packet.BlockPriceRequest;
+import com.minelife.realestate.client.packet.SelectionAvailabilityRequest;
+import com.minelife.realestate.client.packet.SelectionPurchaseRequest;
 import com.minelife.realestate.util.GUIUtil;
 import com.minelife.util.Vector;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -12,16 +17,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.AxisAlignedBB;
 
 import java.awt.*;
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class Selection {
 
-    @SideOnly(Side.CLIENT)
     private static long pricePerBlock = 2;
+    private static boolean isAvailable = true;
 
-    @SideOnly(Side.CLIENT)
     public static void setPricePerBlock(long price) {
         pricePerBlock = price;
+    }
+
+    public static void setAvailable(boolean available) {
+        isAvailable = available;
     }
 
     private AxisAlignedBB bounds;
@@ -71,11 +80,45 @@ public class Selection {
 
     public long getPrice() {
         // Update Price Per Block From Server Stored Value
-        Minelife.NETWORK.sendToServer(new BlockPriceRequest());
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) Minelife.NETWORK.sendToServer(new BlockPriceRequest());
         double dx = Math.abs(this.bounds.maxX - this.bounds.minX) + 1;
         double dy = Math.abs(this.bounds.maxY - this.bounds.minY) + 1;
         double dz = Math.abs(this.bounds.maxZ - this.bounds.minZ) + 1;
         return (long) (dx * dy * dz * pricePerBlock);
+    }
+
+    public boolean isAvailable() {
+        if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
+            try {
+                EstateRegion.delete(EstateRegion.create(this.getWorldName(), this.getBounds()).getUniqueID());
+                ModEconomy.getBalance(this.playerUniqueID, true);
+                return ModEconomy.getBalance(this.playerUniqueID, true) >= this.getPrice();
+            } catch (Exception ignored) { }
+            return false;
+        } else {
+            Minelife.NETWORK.sendToServer(new SelectionAvailabilityRequest(this));
+        }
+        return isAvailable;
+    }
+
+    public void purchase() {
+        if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
+            if (this.isAvailable()) {
+                EstateRegion region = null;
+                try {
+                    region = EstateRegion.create(this.getWorldName(), this.bounds);
+
+                    // TODO: Create Estate
+
+                    ModEconomy.withdraw(this.playerUniqueID, this.getPrice(), true);
+                } catch (Exception e) {
+                    if (region != null) try { EstateRegion.delete(region.getUniqueID()); }
+                    catch (SQLException e1) { e1.printStackTrace(); }
+                }
+            }
+        } else {
+            Minelife.NETWORK.sendToServer(new SelectionPurchaseRequest(this));
+        }
     }
 
     public void toBytes(ByteBuf buf) {
@@ -89,7 +132,7 @@ public class Selection {
         ByteBufUtils.writeUTF8String(buf, this.playerUniqueID.toString());
     }
 
-    public Selection fromBytes(ByteBuf buf) {
+    public static Selection fromBytes(ByteBuf buf) {
         Selection selection = new Selection();
         selection.bounds = AxisAlignedBB.getBoundingBox(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble());
         selection.worldName = ByteBufUtils.readUTF8String(buf);

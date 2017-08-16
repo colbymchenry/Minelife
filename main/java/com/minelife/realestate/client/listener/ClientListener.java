@@ -2,6 +2,7 @@ package com.minelife.realestate.client.listener;
 
 import com.minelife.MLItems;
 import com.minelife.MLKeys;
+import com.minelife.realestate.client.Selection;
 import com.minelife.realestate.client.renderer.SelectionRenderer;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
@@ -27,7 +28,8 @@ public class ClientListener {
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (MLKeys.keyClearSelection.isPressed()) SelectionRenderer.clear();
         if (MLKeys.keyPurchaseSelection.isPressed()) {
-            System.out.println("Purchasing Estate....");
+            Selection selection = SelectionRenderer.getSelection();
+            if (selection != null && selection.isAvailable()) selection.purchase();
         }
     }
 

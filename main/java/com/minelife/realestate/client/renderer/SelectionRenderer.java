@@ -48,7 +48,7 @@ public class SelectionRenderer {
         }
         if (selection != null) {
             if (!selection.equals(lastSelection)) price = selection.getPrice();
-            boolean purchasable = ModEconomy.BALANCE_WALLET_CLIENT >= price;
+            boolean purchasable = ModEconomy.BALANCE_WALLET_CLIENT >= price && selection.isAvailable();
             if (purchasable) selection.highlight(event.partialTicks, new Color(0, 255, 0, 50));
             else selection.highlight(event.partialTicks, new Color(255, 0, 0, 50));
             text = "Total Price: " + (purchasable ? EnumChatFormatting.GREEN : EnumChatFormatting.RED) + "$" + NumberConversions.formatter.format(price);

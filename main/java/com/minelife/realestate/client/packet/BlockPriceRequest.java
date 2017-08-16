@@ -1,6 +1,7 @@
 package com.minelife.realestate.client.packet;
 
 import com.minelife.realestate.ModRealEstate;
+import com.minelife.realestate.client.Selection;
 import com.minelife.realestate.server.packet.BlockPriceResult;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -25,7 +26,9 @@ public class BlockPriceRequest implements IMessage {
 
         @Override
         public BlockPriceResult onMessage(BlockPriceRequest message, MessageContext ctx) {
-            return new BlockPriceResult(ModRealEstate.config.getLong("price_per_block", 2));
+            long price = ModRealEstate.config.getLong("price_per_block", 2);
+            Selection.setPricePerBlock(price);
+            return new BlockPriceResult(price);
         }
 
     }
