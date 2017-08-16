@@ -48,6 +48,7 @@ public class SelectionRenderer {
         }
         if (selection != null) {
             if (!selection.equals(lastSelection)) price = selection.getPrice();
+            // TODO: Selection.isAvailable() creates Ungodly Amounts of Regions
             boolean purchasable = ModEconomy.BALANCE_WALLET_CLIENT >= price && selection.isAvailable();
             if (purchasable) selection.highlight(event.partialTicks, new Color(0, 255, 0, 50));
             else selection.highlight(event.partialTicks, new Color(255, 0, 0, 50));
@@ -57,11 +58,11 @@ public class SelectionRenderer {
 
     static void onEventTick(RenderGameOverlayEvent event) {
         int width = Minecraft.getMinecraft().fontRenderer.getStringWidth(text);
-        Minecraft.getMinecraft().fontRenderer.drawString(text, event.resolution.getScaledWidth() - width - 2, 2, 0xFFFFFF);
+        if (selection != null) Minecraft.getMinecraft().fontRenderer.drawString(text, event.resolution.getScaledWidth() - width - 2, 2, 0xFFFFFF);
     }
 
     public static Selection getSelection() {
-        return selection;
+        return start != null && end != null ? selection : null;
     }
 
     public static void setStart(Vector vector) {

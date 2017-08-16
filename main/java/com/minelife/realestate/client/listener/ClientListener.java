@@ -3,6 +3,7 @@ package com.minelife.realestate.client.listener;
 import com.minelife.MLItems;
 import com.minelife.MLKeys;
 import com.minelife.realestate.client.Selection;
+import com.minelife.realestate.client.gui.GuiSelectionPurchase;
 import com.minelife.realestate.client.renderer.SelectionRenderer;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
@@ -29,7 +30,9 @@ public class ClientListener {
         if (MLKeys.keyClearSelection.isPressed()) SelectionRenderer.clear();
         if (MLKeys.keyPurchaseSelection.isPressed()) {
             Selection selection = SelectionRenderer.getSelection();
-            if (selection != null && selection.isAvailable()) selection.purchase();
+            if (selection != null && selection.isAvailable()) {
+                Minecraft.getMinecraft().displayGuiScreen(new GuiSelectionPurchase(selection));
+            }
         }
     }
 

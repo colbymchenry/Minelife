@@ -87,11 +87,13 @@ public class Selection {
         return (long) (dx * dy * dz * pricePerBlock);
     }
 
+    // TODO: Intersection with Region Check not working properly.
     public boolean isAvailable() {
         if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
+            EstateRegion region = null;
             try {
-                EstateRegion.delete(EstateRegion.create(this.getWorldName(), this.getBounds()).getUniqueID());
-                ModEconomy.getBalance(this.playerUniqueID, true);
+                region = EstateRegion.create(this.getWorldName(), this.getBounds());
+                EstateRegion.delete(region.getUniqueID());
                 return ModEconomy.getBalance(this.playerUniqueID, true) >= this.getPrice();
             } catch (Exception ignored) { }
             return false;
@@ -107,7 +109,6 @@ public class Selection {
                 EstateRegion region = null;
                 try {
                     region = EstateRegion.create(this.getWorldName(), this.bounds);
-
                     // TODO: Create Estate
 
                     ModEconomy.withdraw(this.playerUniqueID, this.getPrice(), true);

@@ -31,7 +31,7 @@ public class EstateRegion implements Comparable<EstateRegion> {
 
     private EstateRegion(UUID regionUniqueID) throws SQLException {
         this.regionUniqueID = regionUniqueID;
-        ResultSet result = Minelife.SQLITE.query("SELECT * FROM ESTATE_REGIONS WHERE uuid='" + regionUniqueID.toString() + "'");
+        ResultSet result = Minelife.SQLITE.query("SELECT * FROM ESTATE_REGIONS WHERE uuid = '" + regionUniqueID.toString() + "'");
         this.bounds = AxisAlignedBB.getBoundingBox(result.getInt("minX"), result.getInt("minY"), result.getInt("minZ"),
                 result.getInt("maxX"), result.getInt("maxY"), result.getInt("maxZ"));
         this.world = result.getString("world");
@@ -141,8 +141,9 @@ public class EstateRegion implements Comparable<EstateRegion> {
      */
     @Override
     public int compareTo(EstateRegion estateRegion) {
-        if (EstateRegion.getContainingRegion(this.world, this.bounds).equals(estateRegion)) return -1;
-        if (EstateRegion.getContainingRegion(estateRegion.world, estateRegion.bounds).equals(this)) return 1;
+        if (estateRegion == null) return 0;
+        if (EstateRegion.getContainingRegion(this.world, this.bounds) != null && EstateRegion.getContainingRegion(this.world, this.bounds).equals(estateRegion)) return -1;
+        if (EstateRegion.getContainingRegion(estateRegion.world, estateRegion.bounds) != null && EstateRegion.getContainingRegion(estateRegion.world, estateRegion.bounds).equals(this)) return 1;
         return 0;
     }
 
@@ -155,19 +156,22 @@ public class EstateRegion implements Comparable<EstateRegion> {
         // Check for a parent region
         EstateRegion parentRegion = EstateRegion.getContainingRegion(world, bounds);
 
-        System.out.println("A");
         if (parentRegion != null) {
             //check if intersects with another SubRegion
             if (EstateRegion.getIntersectingRegion(world, bounds) != null)
                 throw new CustomMessageException("Intersecting with another region2.");
         } else {
-            System.out.println("B");
             // If we have an intersecting region do not create a region
-            if (EstateRegion.getIntersectingRegion(world, bounds) != null) {
-                System.out.println("C");
-                throw new CustomMessageException("Intersecting with another region1.");
-            }
+            if (EstateRegion.getIntersectingRegion(world, bounds) != null) throw new CustomMessageException("Intersecting with another region1.");
         }
+
+        // Throw Exception is similar region exists
+        if (ESTATE_REGIONS.stream().anyMatch(region -> bounds.minX == region.bounds.minX &&
+                                                bounds.minY == region.bounds.minY &&
+                                                bounds.minZ == region.bounds.minZ &&
+                                                bounds.maxX == region.bounds.maxX &&
+                                                bounds.maxY == region.bounds.maxY &&
+                                                bounds.maxZ == region.bounds.maxZ)) throw new CustomMessageException("Has same bounds as another region.");
 
         UUID regionUniqueID = UUID.randomUUID();
 
@@ -187,8 +191,8 @@ public class EstateRegion implements Comparable<EstateRegion> {
 
     public static void delete(UUID regionUniqueID) throws SQLException {
         EstateRegion region = getRegionFromUUID(regionUniqueID);
-        Minelife.SQLITE.query("DELETE FROM ESTATE_REGIONS WHERE uuid='" + regionUniqueID.toString() + "'");
-        ESTATE_REGIONS.remove(region);
+        Minelife.SQLITE.query("DELETE FROM ESTATE_REGIONS WHERE uuid = '" + regionUniqueID.toString() + "'");
+        if (region != null) ESTATE_REGIONS.remove(region);
     }
 
     public static EstateRegion getIntersectingRegion(String world, AxisAlignedBB bounds) {
