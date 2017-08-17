@@ -39,6 +39,7 @@ public class MLItemRenderer {
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         RenderHelper.enableStandardItemLighting();
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        GL11.glColor4f(1, 1, 1, 1);
     }
 
     public void renderItem3D(ItemStack itemStack, int x, int y, int scale, float rotY)

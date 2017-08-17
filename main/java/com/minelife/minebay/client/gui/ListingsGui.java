@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -32,7 +33,7 @@ public class ListingsGui extends MasterGui {
 
     public ListingsGui()
     {
-        Minelife.NETWORK.sendToServer(new PacketListings(0));
+        Minelife.NETWORK.sendToServer(new PacketListings(0, " ", 0));
     }
 
     public ListingsGui(List<ItemListing> listings)
@@ -75,11 +76,16 @@ public class ListingsGui extends MasterGui {
     protected void keyTyped(char c, int i)
     {
         super.keyTyped(c, i);
+
         if (listings_gui != null)
             this.listings_gui.keyTyped(c, i);
 
-        if(this.search_field != null)
-        this.search_field.textboxKeyTyped(c, i);
+        if(this.search_field != null) {
+            if(this.search_field.isFocused() && i == Keyboard.KEY_RETURN) {
+                Minelife.NETWORK.sendToServer(new PacketListings(0, search_field.getText(), 0));
+            }
+            this.search_field.textboxKeyTyped(c, i);
+        }
     }
 
     @Override
@@ -97,6 +103,12 @@ public class ListingsGui extends MasterGui {
         if(this.sell_btn != null)
         if (this.sell_btn.mousePressed(mc, mouse_x, mouse_y))
             Minecraft.getMinecraft().displayGuiScreen(new SellItemGui());
+
+        if(mouse_x >=  left + search_field.getWidth() + 13 && mouse_x <=  left + search_field.getWidth() + 13 + 16) {
+            if(mouse_y >= search_field.yPosition + 3 && mouse_y <= search_field.yPosition + 3 + 16) {
+                Minelife.NETWORK.sendToServer(new PacketListings(0, search_field.getText(), 0));
+            }
+        }
     }
 
     @Override

@@ -95,7 +95,7 @@ public class ItemListing extends Listing {
     {
         try {
             int amount = (int) objects[0];
-            long price = price() / amount;
+            long price = price() <= 0 ? 0 : amount <= 0 ? 0 : price() / amount;
 
             if (ModEconomy.getBalance(player.getUniqueID(), false) < price) {
                 PacketPopupMsg.send("Insufficient Funds in Bank Account", (EntityPlayerMP) player);

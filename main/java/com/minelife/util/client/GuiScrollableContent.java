@@ -72,6 +72,7 @@ public abstract class GuiScrollableContent extends Gui {
                         scrollY -= getSingleUnit();
                     } else if (mouseX >= scrollBarLeft && mouseX <= scrollBarRight && (mouseY - bounds.getY()) > gripPosition + gripSize) {
                         scrollY += getSingleUnit();
+
                     } else {
                         int totalHeight = 0;
                         for (int i = 0; i < getSize(); i++) {
@@ -93,10 +94,11 @@ public abstract class GuiScrollableContent extends Gui {
             } else {
                 boolean above = ((mouseY - bounds.getY()) - gripPosition) < 0;
                 // changed the above ? initialMouseClickY to above ? 0
-                float newGripPosition = (mouseY - bounds.getY()) + (above ? 0 : -initialMouseClickY);
+                float newGripPosition = (mouseY - bounds.getY()) + (above ? initialMouseClickY : -initialMouseClickY);
                 newGripPosition = newGripPosition < 0 ? 0 : newGripPosition > trackScrollAreaSize ? trackScrollAreaSize : newGripPosition;
                 float newGripPositionRatio = newGripPosition / trackScrollAreaSize;
-                scrollY = newGripPositionRatio * windowScrollAreaSize;
+                 scrollY = newGripPositionRatio * windowScrollAreaSize;
+
                 gripPosition = newGripPosition;
             }
         } else {
