@@ -1,5 +1,6 @@
 package com.minelife.util.client.render;
 
+import codechicken.lib.render.BlockRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -56,6 +57,7 @@ public class MLItemRenderer {
 
             GL11.glDisable(GL11.GL_CULL_FACE);
             RenderHelper.enableStandardItemLighting();
+            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             itemRenderer.renderItem(mc.thePlayer, itemStack, 0);
         }
         GL11.glPopMatrix();

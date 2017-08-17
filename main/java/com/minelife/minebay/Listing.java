@@ -53,6 +53,6 @@ public abstract class Listing {
 
     public abstract void mouse_clicked(int mouse_x, int mouse_y, boolean double_click);
 
-    public abstract void finalize(EntityPlayer player);
+    public abstract void finalize(EntityPlayer player, Object... objects);
 
 }

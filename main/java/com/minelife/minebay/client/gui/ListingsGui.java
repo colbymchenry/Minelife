@@ -3,6 +3,7 @@ package com.minelife.minebay.client.gui;
 import com.minelife.Minelife;
 import com.minelife.minebay.ItemListing;
 import com.minelife.minebay.packet.PacketListings;
+import com.minelife.util.client.GuiDropDown;
 import com.minelife.util.client.GuiLoadingAnimation;
 import com.minelife.util.client.GuiScrollableContent;
 import com.minelife.util.client.GuiUtil;
@@ -27,6 +28,7 @@ public class ListingsGui extends MasterGui {
     private List<ItemListing> listings;
     private GuiTextField search_field;
     private GuiButton sell_btn;
+    private GuiDropDown dropdown;
 
     public ListingsGui()
     {
@@ -48,8 +50,6 @@ public class ListingsGui extends MasterGui {
             return;
         }
 
-
-
         if(this.listings.isEmpty()) {
             String msg = EnumChatFormatting.BOLD + "Uh-Oh! No items were found :'(";
             int msg_width = mc.fontRenderer.getStringWidth(msg);
@@ -67,6 +67,8 @@ public class ListingsGui extends MasterGui {
         this.mc.getTextureManager().bindTexture(magnify_texture);
         GuiUtil.drawImage(left + search_field.getWidth() + 13, search_field.yPosition + 3, 16, 16);
         this.sell_btn.drawButton(mc, mouse_x, mouse_y);
+
+        this.dropdown.draw(mc, mouse_x, mouse_y);
     }
 
     @Override
@@ -83,13 +85,18 @@ public class ListingsGui extends MasterGui {
     @Override
     protected void mouseClicked(int mouse_x, int mouse_y, int mouse_btn)
     {
+        if(this.dropdown != null) {
+            if(this.dropdown.mouseClicked(mc, mouse_x, mouse_y)) {
+                return;
+            }
+        }
+
         if(this.search_field != null)
         this.search_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
 
         if(this.sell_btn != null)
         if (this.sell_btn.mousePressed(mc, mouse_x, mouse_y))
             Minecraft.getMinecraft().displayGuiScreen(new SellItemGui());
-
     }
 
     @Override
@@ -103,7 +110,10 @@ public class ListingsGui extends MasterGui {
 
         this.listings_gui = new Listings(this.left, this.top + 30, this.bg_width, this.bg_height - 30, listings, this);
         this.search_field = new GuiTextField(mc.fontRenderer, this.left + 1, this.top + 1, bg_width / 2, 20);
-        this.sell_btn = new CustomButton(0, this.left + this.bg_width - 50, this.top + 1, "Sell", fontRendererObj);
+        this.sell_btn = new CustomButton(0, this.left + this.bg_width - 35, this.top + 1, "Sell", fontRendererObj);
+        this.dropdown = new GuiDropDown(this.search_field.xPosition + this.search_field.width + 30, this.search_field.yPosition + 3, 50, 13, "Price", "Date", "Damage", "Amount");
+        this.dropdown.color_bg = new Color(206, 0, 204);
+        this.dropdown.color_highlight = this.dropdown.color_bg.darker().darker();
     }
 
     @Override

@@ -62,9 +62,9 @@ public class PacketListings implements IMessage {
         }
 
         @Override
-        public void callback(Object object)
+        public void callback(Object... objects)
         {
-            Minelife.NETWORK.sendTo(new PacketResponseListings((List<ItemListing>) object), (EntityPlayerMP) player);
+            Minelife.NETWORK.sendTo(new PacketResponseListings((List<ItemListing>) objects[0]), (EntityPlayerMP) player);
         }
     }
 

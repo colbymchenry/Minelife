@@ -91,17 +91,32 @@ public class ItemListing extends Listing {
     }
 
     @Override
-    public void finalize(EntityPlayer player)
+    public void finalize(EntityPlayer player, Object... objects)
     {
         try {
-            if (ModEconomy.getBalance(player.getUniqueID(), true) < price())
-                PacketPopupMsg.send("Insufficient Funds in Bank Account", (EntityPlayerMP) player);
+            int amount = (int) objects[0];
+            long price = price() / amount;
 
-            EntityItem entity_item = player.dropPlayerItemWithRandomChoice(item_stack(), false);
+            if (ModEconomy.getBalance(player.getUniqueID(), false) < price) {
+                PacketPopupMsg.send("Insufficient Funds in Bank Account", (EntityPlayerMP) player);
+                return;
+            }
+
+            ItemStack to_give = item_stack().copy();
+            to_give.stackSize = amount;
+            item_stack.stackSize -= amount;
+            EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
             entity_item.delayBeforeCanPickup = 0;
 
-            ModEconomy.withdraw(player.getUniqueID(), price(), true);
-            ModEconomy.deposit(seller(), price(), true);
+            ModEconomy.withdraw(player.getUniqueID(), price(), false);
+            ModEconomy.deposit(seller(), price(), false);
+
+            if(item_stack.stackSize > 0) {
+                write_to_db();
+            } else {
+                delete();
+            }
+            // TODO: Notification for seller
         } catch (Exception e) {
             e.printStackTrace();
             Minelife.handle_exception(e, player);
@@ -137,13 +152,34 @@ public class ItemListing extends Listing {
     public void write_to_db()
     {
         try {
-            Minelife.SQLITE.query("INSERT INTO item_listings (uuid, seller, price, title, description, item_stack) VALUES (" +
-                    "'" + uuid().toString() + "'," +
-                    "'" + seller().toString() + "'," +
-                    "'" + price() + "'," +
-                    "'" + title() + "'," +
-                    "'" + description() + "'," +
-                    "'" + ItemUtil.itemToString(item_stack()) + "')");
+
+            ResultSet result = Minelife.SQLITE.query("SELECT * FROM item_listings WHERE uuid='" + uuid().toString() + "'");
+
+            if(result.next()) {
+                Minelife.SQLITE.query("UPDATE item_listings SET " +
+                        "seller='" + seller().toString() + "'," +
+                        "price='" + price() + "'," +
+                        "title='" + title() + "'," +
+                        "description='" + description() + "'," +
+                        "item_stack='" + ItemUtil.itemToString(item_stack()) + "'" +
+                        "WHERE uuid='" + uuid().toString() + "'");
+            } else {
+                Minelife.SQLITE.query("INSERT INTO item_listings (uuid, seller, price, title, description, item_stack) VALUES (" +
+                        "'" + uuid().toString() + "'," +
+                        "'" + seller().toString() + "'," +
+                        "'" + price() + "'," +
+                        "'" + title() + "'," +
+                        "'" + description() + "'," +
+                        "'" + ItemUtil.itemToString(item_stack()) + "')");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delete() {
+        try {
+            Minelife.SQLITE.query("DELETE FROM item_listings WHERE uuid='" + uuid().toString() + "'");
         } catch (SQLException e) {
             e.printStackTrace();
         }

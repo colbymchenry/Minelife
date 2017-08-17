@@ -1,6 +1,10 @@
 package com.minelife.minebay.client.gui;
 
+import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.gui.GuiScreen;
+
+import java.awt.Color;
+import java.util.List;
 
 public class PopupGui extends GuiScreen {
 
@@ -21,7 +25,8 @@ public class PopupGui extends GuiScreen {
     public void drawScreen(int mouse_x, int mouse_y, float f)
     {
         drawDefaultBackground();
-        fontRendererObj.drawSplitString(message, this.left, this.top, bg_width, 0xFFFFFF);
+        GuiUtil.drawDefaultBackground(this.left - 10, this.top - 8, bg_width + 10, this.bg_height + 10, new Color(0x8F008D));
+        fontRendererObj.drawSplitString(message, this.left, this.top, 100, 0xFFFFFF);
         this.ok_btn.drawButton(mc, mouse_x, mouse_y);
     }
 
@@ -39,10 +44,16 @@ public class PopupGui extends GuiScreen {
     {
         super.initGui();
 
-        this.bg_height = fontRendererObj.listFormattedStringToWidth(message, bg_width).size() * fontRendererObj.FONT_HEIGHT;
+        this.bg_height = fontRendererObj.listFormattedStringToWidth(message, 100).size() * fontRendererObj.FONT_HEIGHT +30;
+
+        for(String s : (List<String>) fontRendererObj.listFormattedStringToWidth(message, 100)) {
+            if(fontRendererObj.getStringWidth(s) == bg_width) {
+                bg_width += 10;
+            }
+        }
 
         this.left = (this.width - bg_width) / 2;
         this.top = (this.height - this.bg_height) / 2;
-        this.ok_btn = new CustomButton(0, left + ((bg_width - 50) / 2), top + bg_height - 10, "Ok", fontRendererObj);
+        this.ok_btn = new CustomButton(0, left + ((bg_width - 40) / 2), top + bg_height - 25, "Ok", fontRendererObj);
     }
 }

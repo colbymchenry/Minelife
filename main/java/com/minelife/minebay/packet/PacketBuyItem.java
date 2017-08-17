@@ -17,23 +17,27 @@ import java.util.UUID;
 public class PacketBuyItem implements IMessage {
 
     private UUID listing_uuid;
+    private int amount;
 
     public PacketBuyItem() {}
 
-    public PacketBuyItem(UUID listing_uuid) {
+    public PacketBuyItem(UUID listing_uuid, int amount) {
         this.listing_uuid = listing_uuid;
+        this.amount = amount;
     }
 
     @Override
     public void fromBytes(ByteBuf buf)
     {
         listing_uuid = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+        amount = buf.readInt();
     }
 
     @Override
     public void toBytes(ByteBuf buf)
     {
         ByteBufUtils.writeUTF8String(buf, listing_uuid.toString());
+        buf.writeInt(amount);
     }
 
     public static class Handler implements IMessageHandler<PacketBuyItem, IMessage> {
@@ -43,7 +47,7 @@ public class PacketBuyItem implements IMessage {
         {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
             try {
-                new ItemListing(message.listing_uuid).finalize(player);
+                new ItemListing(message.listing_uuid).finalize(player, message.amount);
             } catch (SQLException e) {
                 Minelife.handle_exception(e, player);
             }

@@ -20,7 +20,6 @@ public class SellItemGui extends MasterGui {
     private MLItemRenderer item_renderer;
     private List<ItemSlot> slots;
     private ItemStack item_to_sale;
-    private float rotY;
     private GuiTextField price_field, amount_field;
     private GuiButton sell_btn;
     private int slot = -1;
@@ -100,7 +99,17 @@ public class SellItemGui extends MasterGui {
 
         // render selected item
         if(item_to_sale != null) {
-            item_renderer.renderItem3D(item_to_sale, item_render_x + (item_render_width / 2), top + 38, 30, rotY += 0.5f);
+            GL11.glPushMatrix();
+            {
+                float scale = 3;
+
+                GL11.glTranslatef(item_render_x + ((60 - (8 * scale)) / 2) - 4, top + ((60 - (8 * scale)) / 2) + 6, 0);
+                GL11.glTranslatef(4, 4, 4);
+                GL11.glScalef(scale, scale, scale);
+                GL11.glTranslatef(-4, -4, -4);
+                item_renderer.drawItemStack(item_to_sale, 0, 0, null);
+            }
+            GL11.glPopMatrix();
         }
 
         // draw price and amount fields
