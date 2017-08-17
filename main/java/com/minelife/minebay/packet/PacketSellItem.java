@@ -20,9 +20,12 @@ public class PacketSellItem implements IMessage {
     private int slot, amount;
     private long price;
 
-    public PacketSellItem() {}
+    public PacketSellItem()
+    {
+    }
 
-    public PacketSellItem(int slot, int amount, long price) {
+    public PacketSellItem(int slot, int amount, long price)
+    {
         this.slot = slot;
         this.amount = amount;
         this.price = price;
@@ -52,19 +55,16 @@ public class PacketSellItem implements IMessage {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
             ItemStack item_stack = player.inventory.mainInventory[message.slot];
 
-            if(item_stack == null) return null;
+            if (item_stack == null) return null;
 
-            if(item_stack.stackSize < message.amount) return null;
+            if (item_stack.stackSize < message.amount) return null;
 
             ItemStack item_stack_to_sale = item_stack.copy();
             item_stack_to_sale.stackSize = message.amount;
 
-            // TODO: Keep trying to sync player inventory.
             item_stack.stackSize -= message.amount;
-            player.inventory.setInventorySlotContents(message.slot, item_stack);
-            PlayerHelper.updatePlayerInventory(player);
+            player.inventory.setInventorySlotContents(message.slot, item_stack.stackSize <= 0 ? null : item_stack);
             player.inventoryContainer.detectAndSendChanges();
-            player.sendContainerToPlayer(player.inventoryContainer);
 
             ItemListing listing = new ItemListing(UUID.randomUUID(), player.getUniqueID(), message.price, item_stack_to_sale);
             listing.write_to_db();

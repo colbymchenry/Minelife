@@ -59,6 +59,7 @@ public class PacketUpdatePlayerInventory implements IMessage {
         public IMessage onMessage(PacketUpdatePlayerInventory message, MessageContext ctx)
         {
             for (Integer slot : message.item_stack.keySet()) {
+                System.out.println(message.item_stack.get(slot) == null);
                 Minecraft.getMinecraft().thePlayer.inventory.setInventorySlotContents(slot, message.item_stack.get(slot));
             }
             Minecraft.getMinecraft().thePlayer.inventoryContainer.detectAndSendChanges();
