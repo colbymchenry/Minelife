@@ -101,7 +101,6 @@ public class SellItemGui extends MasterGui {
         // render selected item
         if(item_to_sale != null) {
             item_renderer.renderItem3D(item_to_sale, item_render_x + (item_render_width / 2), top + 38, 30, rotY += 0.5f);
-
         }
 
         // draw price and amount fields

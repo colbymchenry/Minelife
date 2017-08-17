@@ -6,6 +6,7 @@ import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
 import com.minelife.permission.ModPermission;
 import com.minelife.permission.Player;
+import com.minelife.util.server.Callback;
 import com.minelife.util.server.NameFetcher;
 import com.minelife.util.server.UUIDFetcher;
 import net.minecraft.command.ICommand;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class CommandEconomy implements ICommand {
+public class CommandEconomy implements ICommand, Callback {
 
     @Override
     public String getCommandName()
@@ -63,7 +64,8 @@ public class CommandEconomy implements ICommand {
 
             if (playerUUID == null) throw new CustomMessageException("Player not found.");
 
-            String playerName = NameFetcher.get(playerUUID);
+//            String playerName = NameFetcher.get(playerUUID);
+String playerName = null;
 
             if (playerName == null) throw new CustomMessageException("Player not found.");
 
@@ -152,5 +154,11 @@ public class CommandEconomy implements ICommand {
     public int compareTo(Object o)
     {
         return 0;
+    }
+
+    @Override
+    public void callback(Object object)
+    {
+
     }
 }

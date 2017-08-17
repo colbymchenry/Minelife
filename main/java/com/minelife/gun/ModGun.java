@@ -30,7 +30,7 @@ public class ModGun extends AbstractMod {
             return Items.diamond;
         }
     };
-
+// TODO: Make textures lower resolution to fix lag.
     public static final CreativeTabs tabAmmo = new CreativeTabs("ammo") {
         @Override
         public Item getTabIconItem() {

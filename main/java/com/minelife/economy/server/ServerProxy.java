@@ -39,7 +39,6 @@ public class ServerProxy extends CommonProxy {
         ModEconomy.config.save();
 
         FMLCommonHandler.instance().bus().register(this);
-        MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance().bus().register(new Billing.TickHandler());
     }
 

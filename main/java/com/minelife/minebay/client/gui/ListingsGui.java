@@ -76,14 +76,17 @@ public class ListingsGui extends MasterGui {
         if (listings_gui != null)
             this.listings_gui.keyTyped(c, i);
 
+        if(this.search_field != null)
         this.search_field.textboxKeyTyped(c, i);
     }
 
     @Override
     protected void mouseClicked(int mouse_x, int mouse_y, int mouse_btn)
     {
+        if(this.search_field != null)
         this.search_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
 
+        if(this.sell_btn != null)
         if (this.sell_btn.mousePressed(mc, mouse_x, mouse_y))
             Minecraft.getMinecraft().displayGuiScreen(new SellItemGui());
 

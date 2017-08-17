@@ -43,10 +43,12 @@ public class BuyItemGui extends GuiScreen {
         this.buy_btn.drawButton(mc, mouse_x, mouse_y);
         this.cancel_btn.drawButton(mc, mouse_x, mouse_y);
 
-        fontRendererObj.drawString("Cost Per Item: $" + NumberConversions.formatter.format(this.price_per_item), left + 4, top + 68, 0xFFFFFF);
-        this.amount_field.drawTextBox();
+        fontRendererObj.drawString("Total Available: " + listing.item_stack().stackSize, left + 4, top + 68, 0xFFFFFF);
+        fontRendererObj.drawString("Cost Per Item: $" + NumberConversions.formatter.format(this.price_per_item), left + 4, top + 78, 0xFFFFFF);
+        fontRendererObj.drawString("Total: $" + NumberConversions.formatter.format(this.price_per_item * this.amount_field_value()), left + 4, top + 88, 0xFFFFFF);
+
         fontRendererObj.drawString("Amount:", this.amount_field.xPosition - 40, this.amount_field.yPosition + 1, 0xFFFFFF);
-        fontRendererObj.drawString("Total: $" + NumberConversions.formatter.format(this.price_per_item * this.amount_field_value()), left + 4, top + 78, 0xFFFFFF);
+        this.amount_field.drawTextBox();
     }
 
     @Override
@@ -62,14 +64,24 @@ public class BuyItemGui extends GuiScreen {
     }
 
     @Override
-    protected void keyTyped(char p_73869_1_, int p_73869_2_)
+    protected void keyTyped(char c, int i)
     {
-        if (p_73869_2_ == Keyboard.KEY_ESCAPE) {
+        if (i == Keyboard.KEY_ESCAPE) {
             Minecraft.getMinecraft().displayGuiScreen(new ListingsGui());
             return;
         }
-        this.amount_field.textboxKeyTyped(p_73869_1_, p_73869_2_);
-        super.keyTyped(p_73869_1_, p_73869_2_);
+
+        if(i == Keyboard.KEY_BACK) {
+            this.amount_field.textboxKeyTyped(c, i);
+            return;
+        }
+
+        if(!NumberConversions.isLong("" + c)) return;
+
+        if(Long.parseLong(this.amount_field.getText() + c) <= this.listing.item_stack().stackSize) {
+            this.amount_field.textboxKeyTyped(c, i);
+        }
+        super.keyTyped(c, i);
     }
 
     @Override
@@ -80,7 +92,7 @@ public class BuyItemGui extends GuiScreen {
         int[] tool_tip_bounds = this.item_renderer.getToolTipBounds(listing.item_stack(), this.width / 2, this.height / 2, this.width, this.height);
         bg_width = (tool_tip_bounds[0]) + 80;
         bg_height = 100 + (tool_tip_bounds[1] > 60 ? tool_tip_bounds[1] - 60 : 0);
-        bg_height += 80;
+        bg_height += 50;
         left = (this.width - bg_width) / 2;
         top = (this.height - bg_height) / 2;
         int middle = bg_width / 2;
@@ -89,7 +101,7 @@ public class BuyItemGui extends GuiScreen {
         this.buy_btn = new CustomButton(0, left + ((middle - buy_width) / 2), top + bg_height - 25, "Buy", fontRendererObj);
         this.cancel_btn = new CustomButton(1, left + middle + ((middle - cancel_width) / 2), top + bg_height - 25, "Cancel", fontRendererObj);
         this.price_per_item = listing.price() / listing.item_stack().stackSize;
-        this.amount_field = new GuiTextField(fontRendererObj, left + ((bg_width - 20) / 2) + 30, top + 88, 20, 10);
+        this.amount_field = new GuiTextField(fontRendererObj, left + 4 + fontRendererObj.getStringWidth("Amount: ") + 1, top + 98, 20, 10);
     }
 
     private long amount_field_value() {

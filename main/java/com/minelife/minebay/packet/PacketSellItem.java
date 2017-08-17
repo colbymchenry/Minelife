@@ -1,6 +1,8 @@
 package com.minelife.minebay.packet;
 
 import com.minelife.minebay.ItemListing;
+import com.minelife.util.PlayerHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -9,6 +11,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 
 import java.util.UUID;
 
@@ -56,9 +59,12 @@ public class PacketSellItem implements IMessage {
             ItemStack item_stack_to_sale = item_stack.copy();
             item_stack_to_sale.stackSize = message.amount;
 
+            // TODO: Keep trying to sync player inventory.
             item_stack.stackSize -= message.amount;
             player.inventory.setInventorySlotContents(message.slot, item_stack);
-            player.inventory.markDirty();
+            PlayerHelper.updatePlayerInventory(player);
+            player.inventoryContainer.detectAndSendChanges();
+            player.sendContainerToPlayer(player.inventoryContainer);
 
             ItemListing listing = new ItemListing(UUID.randomUUID(), player.getUniqueID(), message.price, item_stack_to_sale);
             listing.write_to_db();

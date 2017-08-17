@@ -1,14 +1,19 @@
 package com.minelife;
 
+import com.minelife.util.server.UUIDFetcher;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import lib.PatPeter.SQLibrary.SQLite;
+import net.minecraftforge.common.MinecraftForge;
 
 public class ServerProxy extends CommonProxy {
 
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
+        FMLCommonHandler.instance().bus().register(new UUIDFetcher());
+
         initSQLite();
         Minelife.MODS.forEach(mod -> {
             try {

@@ -11,6 +11,7 @@ import com.minelife.police.ModPolice;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.region.ModRegion;
 import com.minelife.util.PacketPlaySound;
+import com.minelife.util.server.PacketUpdatePlayerInventory;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
@@ -69,6 +70,7 @@ public class Minelife {
         MLItems.init();
         MinecraftForge.EVENT_BUS.register(this);
         AbstractMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
+        AbstractMod.registerPacket(PacketUpdatePlayerInventory.Handler.class, PacketUpdatePlayerInventory.class, Side.CLIENT);
         MODS.forEach(mod -> mod.preInit(event));
         try {
             PROXY.preInit(event);

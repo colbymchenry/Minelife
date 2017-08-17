@@ -1,12 +1,12 @@
 package com.minelife.minebay;
 
-import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
 import com.minelife.minebay.packet.PacketPopupMsg;
 import com.minelife.util.ItemUtil;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.render.MLItemRenderer;
+import com.minelife.util.server.Callback;
 import com.minelife.util.server.NameFetcher;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
@@ -17,7 +17,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

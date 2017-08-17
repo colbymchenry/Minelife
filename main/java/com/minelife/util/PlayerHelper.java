@@ -1,6 +1,8 @@
 package com.minelife.util;
 
 import com.google.common.collect.Lists;
+import com.minelife.Minelife;
+import com.minelife.util.server.PacketUpdatePlayerInventory;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -38,6 +40,11 @@ public class PlayerHelper {
         }
 
         return null;
+    }
+
+    @SideOnly(Side.SERVER)
+    public static void updatePlayerInventory(EntityPlayerMP player) {
+        Minelife.NETWORK.sendTo(new PacketUpdatePlayerInventory(player), player);
     }
 
     public static List<Vec3> VECTORS = Lists.newArrayList();

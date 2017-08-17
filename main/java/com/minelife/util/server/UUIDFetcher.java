@@ -2,6 +2,8 @@ package com.minelife.util.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -53,6 +55,11 @@ public final class UUIDFetcher {
 
         NULL_NAMES.add(player.toLowerCase());
         return null;
+    }
+
+    @SubscribeEvent
+    public void onJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        CACHE.put(event.player.getUniqueID(), event.player.getDisplayName());
     }
 
 }
