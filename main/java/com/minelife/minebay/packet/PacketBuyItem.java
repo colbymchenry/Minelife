@@ -12,6 +12,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.UUID;
 
 public class PacketBuyItem implements IMessage {
@@ -50,6 +51,8 @@ public class PacketBuyItem implements IMessage {
                 new ItemListing(message.listing_uuid).finalize(player, message.amount);
             } catch (SQLException e) {
                 Minelife.handle_exception(e, player);
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
             return null;
         }

@@ -16,11 +16,13 @@ import java.util.List;
 public class PacketResponseListings implements IMessage {
 
     private List<ItemListing> listings;
+    private int pages;
 
     public PacketResponseListings() {}
 
-    public PacketResponseListings(List<ItemListing> listings) {
+    public PacketResponseListings(List<ItemListing> listings, int pages) {
         this.listings = listings;
+        this.pages = pages;
     }
 
     @Override
@@ -29,6 +31,7 @@ public class PacketResponseListings implements IMessage {
         listings = Lists.newArrayList();
         int size = buf.readInt();
         for(int i = 0; i < size; i++) listings.add(ItemListing.from_bytes(buf));
+        pages = buf.readInt();
     }
 
     @Override
@@ -36,6 +39,7 @@ public class PacketResponseListings implements IMessage {
     {
         buf.writeInt(listings.size());
         listings.forEach(listing -> listing.to_bytes(buf));
+        buf.writeInt(pages);
     }
 
     public static class Handler implements IMessageHandler<PacketResponseListings, IMessage> {
@@ -43,7 +47,7 @@ public class PacketResponseListings implements IMessage {
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketResponseListings message, MessageContext ctx)
         {
-            Minecraft.getMinecraft().displayGuiScreen(new ListingsGui(message.listings));
+            Minecraft.getMinecraft().displayGuiScreen(new ListingsGui(message.listings, message.pages));
             return null;
         }
     }

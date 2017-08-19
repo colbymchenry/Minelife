@@ -56,8 +56,8 @@ public class BuyItemGui extends GuiScreen {
         this.buy_btn.drawButton(mc, mouse_x, mouse_y);
         this.cancel_btn.drawButton(mc, mouse_x, mouse_y);
 
-        fontRendererObj.drawString("Cost Per Item: $" + NumberConversions.formatter.format(this.price_per_item), left + 4, top + 68, 0xFFFFFF);
-        fontRendererObj.drawString("Total: $" + NumberConversions.formatter.format(this.price_per_item * this.amount_field_value()), left + 4, top + 78, 0xFFFFFF);
+        fontRendererObj.drawString("1x = $" + NumberConversions.formatter.format(this.price_per_item), left + 4, top + 68, 0xFFFFFF);
+        fontRendererObj.drawString((amount_field.getText().isEmpty() ? 0 : NumberConversions.toLong(amount_field.getText())) + "x = $" + NumberConversions.formatter.format(this.price_per_item * this.amount_field_value()), left + 4, top + 78, 0xFFFFFF);
 
         fontRendererObj.drawString("Amount:", this.amount_field.xPosition - 40, this.amount_field.yPosition + 1, 0xFFFFFF);
         this.amount_field.drawTextBox();
@@ -114,6 +114,8 @@ public class BuyItemGui extends GuiScreen {
         this.cancel_btn = new CustomButton(1, left + middle + ((middle - cancel_width) / 2), top + bg_height - 25, "Cancel", fontRendererObj);
         this.price_per_item = listing.price() / listing.item_stack().stackSize;
         this.amount_field = new GuiTextField(fontRendererObj, left + 4 + fontRendererObj.getStringWidth("Amount: ") + 1, top + 98, 20, 10);
+
+        this.buy_btn.enabled = false;
     }
 
     @Override

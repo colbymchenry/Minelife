@@ -1,5 +1,6 @@
 package com.minelife.minebay.client.gui;
 
+import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.minebay.ItemListing;
 import com.minelife.minebay.packet.PacketListings;
@@ -23,22 +24,31 @@ import java.util.List;
 public class ListingsGui extends MasterGui {
 
     private static ResourceLocation magnify_texture = new ResourceLocation(Minelife.MOD_ID, "textures/gui/magnify.png");
+    private static final ResourceLocation arrow_texture = new ResourceLocation(Minelife.MOD_ID, "textures/gui/arrow.png");
+
+    private static int dropdown_value = 0;
 
     private Listings listings_gui;
     private GuiLoadingAnimation loadingAnimation;
     private List<ItemListing> listings;
     private GuiTextField search_field;
     private GuiButton sell_btn;
-    private GuiDropDown dropdown;
+    private GuiDropDown dropdown_sort, dropdown_page;
+    private int sort_x, sort_y, sort_width, sort_height;
+    private static boolean ascend = true;
+    private int pages;
+    private static int page = 0;
 
     public ListingsGui()
     {
-        Minelife.NETWORK.sendToServer(new PacketListings(0, " ", 0));
+        page = 0;
+        Minelife.NETWORK.sendToServer(new PacketListings(0, " ", 0, ascend));
     }
 
-    public ListingsGui(List<ItemListing> listings)
+    public ListingsGui(List<ItemListing> listings, int pages)
     {
         this.listings = listings;
+        this.pages = pages;
     }
 
     @Override
@@ -51,16 +61,6 @@ public class ListingsGui extends MasterGui {
             return;
         }
 
-        if(this.listings.isEmpty()) {
-            String msg = EnumChatFormatting.BOLD + "Uh-Oh! No items were found :'(";
-            int msg_width = mc.fontRenderer.getStringWidth(msg);
-            mc.fontRenderer.drawStringWithShadow(msg,  (this.width - msg_width) / 2, top + ((bg_height - mc.fontRenderer.FONT_HEIGHT) / 2), 0xFFFFFF);
-            this.sell_btn.drawButton(mc, mouse_x, mouse_y);
-            return;
-        }
-
-        this.listings_gui.draw(mouse_x, mouse_y, Mouse.getDWheel());
-
         Color color = new Color(72, 0, 70, 200);
         this.drawGradientRect(left - 2, top - 2, left + bg_width, top + 25, color.hashCode(), color.hashCode());
         this.search_field.drawTextBox();
@@ -69,7 +69,45 @@ public class ListingsGui extends MasterGui {
         GuiUtil.drawImage(left + search_field.getWidth() + 13, search_field.yPosition + 3, 16, 16);
         this.sell_btn.drawButton(mc, mouse_x, mouse_y);
 
-        this.dropdown.draw(mc, mouse_x, mouse_y);
+
+        draw_sort_button:
+        {
+            boolean hovering = mouse_x >= sort_x && mouse_x <= sort_x + sort_width && mouse_y >= sort_y && mouse_y <= sort_y + sort_height;
+            GL11.glColor4f(1, 1, 1, 1);
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GuiUtil.drawDefaultBackground(sort_x, sort_y, sort_width, sort_height, hovering ? new Color(230, 0, 228) : new Color(203, 0, 203));
+
+            mc.getTextureManager().bindTexture(arrow_texture);
+
+            GL11.glPushMatrix();
+            {
+                int scale = 2;
+                GL11.glTranslatef(sort_x + (!ascend ? 1.5f : 3f), sort_y + 2.5f, 0);
+                GL11.glTranslatef(4 * scale, 4 * scale, 4 * scale);
+                GL11.glRotatef(ascend ? 180 : 0, 0, 0, 1);
+                GL11.glTranslatef(-4 * scale, -4 * scale, -4 * scale);
+                Color hover_color = new Color(16777120);
+                GL11.glColor4f(hovering ? hover_color.getRed() / 255f : 1, hovering ? hover_color.getGreen() / 255f : 1, hovering ? hover_color.getBlue() / 255f : 1, 1);
+                GuiUtil.drawImage(0, 0, 8 * scale, 8 * scale);
+            }
+            GL11.glPopMatrix();
+        }
+
+        GL11.glColor4f(1, 1, 1, 1);
+
+        if (this.listings.isEmpty()) {
+            String msg = EnumChatFormatting.BOLD + "Uh-Oh! No items were found :'(";
+            int msg_width = mc.fontRenderer.getStringWidth(msg);
+            mc.fontRenderer.drawStringWithShadow(msg, (this.width - msg_width) / 2, top + ((bg_height - mc.fontRenderer.FONT_HEIGHT) / 2), 0xFFFFFF);
+            this.sell_btn.drawButton(mc, mouse_x, mouse_y);
+            this.dropdown_sort.draw(mc, mouse_x, mouse_y);
+            this.dropdown_page.draw(mc, mouse_x, mouse_y);
+            return;
+        }
+
+        this.listings_gui.draw(mouse_x, mouse_y, Mouse.getDWheel());
+        this.dropdown_sort.draw(mc, mouse_x, mouse_y);
+        this.dropdown_page.draw(mc, mouse_x, mouse_y);
     }
 
     @Override
@@ -80,9 +118,10 @@ public class ListingsGui extends MasterGui {
         if (listings_gui != null)
             this.listings_gui.keyTyped(c, i);
 
-        if(this.search_field != null) {
-            if(this.search_field.isFocused() && i == Keyboard.KEY_RETURN) {
-                Minelife.NETWORK.sendToServer(new PacketListings(0, search_field.getText(), 0));
+        if (this.search_field != null) {
+            if (this.search_field.isFocused() && i == Keyboard.KEY_RETURN) {
+                page = 0;
+                Minelife.NETWORK.sendToServer(new PacketListings(page, search_field.getText(), this.dropdown_sort.selected, ascend));
             }
             this.search_field.textboxKeyTyped(c, i);
         }
@@ -91,23 +130,46 @@ public class ListingsGui extends MasterGui {
     @Override
     protected void mouseClicked(int mouse_x, int mouse_y, int mouse_btn)
     {
-        if(this.dropdown != null) {
-            if(this.dropdown.mouseClicked(mc, mouse_x, mouse_y)) {
+        if (this.dropdown_sort != null) {
+            int selected = this.dropdown_sort.selected;
+            if (this.dropdown_sort.mouseClicked(mc, mouse_x, mouse_y)) {
+                if (selected != this.dropdown_sort.selected) {
+                    Minelife.NETWORK.sendToServer(new PacketListings(page, search_field.getText(), this.dropdown_sort.selected, ascend));
+                    dropdown_value = dropdown_sort.selected;
+                }
                 return;
             }
         }
 
-        if(this.search_field != null)
-        this.search_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
-
-        if(this.sell_btn != null)
-        if (this.sell_btn.mousePressed(mc, mouse_x, mouse_y))
-            Minecraft.getMinecraft().displayGuiScreen(new SellItemGui());
-
-        if(mouse_x >=  left + search_field.getWidth() + 13 && mouse_x <=  left + search_field.getWidth() + 13 + 16) {
-            if(mouse_y >= search_field.yPosition + 3 && mouse_y <= search_field.yPosition + 3 + 16) {
-                Minelife.NETWORK.sendToServer(new PacketListings(0, search_field.getText(), 0));
+        if (this.dropdown_page != null) {
+            int selected = this.dropdown_page.selected;
+            if (this.dropdown_page.mouseClicked(mc, mouse_x, mouse_y)) {
+                if (selected != this.dropdown_page.selected) {
+                    page = dropdown_page.selected;
+                    Minelife.NETWORK.sendToServer(new PacketListings(page, search_field.getText(), this.dropdown_sort.selected, ascend));
+                    dropdown_value = dropdown_page.selected;
+                }
+                return;
             }
+        }
+
+        if (this.search_field != null)
+            this.search_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
+
+        if (this.sell_btn != null)
+            if (this.sell_btn.mousePressed(mc, mouse_x, mouse_y))
+                Minecraft.getMinecraft().displayGuiScreen(new SellItemGui());
+
+        if (mouse_x >= left + search_field.getWidth() + 13 && mouse_x <= left + search_field.getWidth() + 13 + 16) {
+            if (mouse_y >= search_field.yPosition + 3 && mouse_y <= search_field.yPosition + 3 + 16) {
+                page = 0;
+                Minelife.NETWORK.sendToServer(new PacketListings(page, search_field.getText(), this.dropdown_sort.selected, ascend));
+            }
+        }
+
+        if(mouse_x >= sort_x && mouse_x <= sort_x + sort_width && mouse_y >= sort_y && mouse_y <= sort_y + sort_height) {
+            ascend = !ascend;
+            Minelife.NETWORK.sendToServer(new PacketListings(page, search_field.getText(), this.dropdown_sort.selected, ascend));
         }
     }
 
@@ -120,12 +182,28 @@ public class ListingsGui extends MasterGui {
             return;
         }
 
-        this.listings_gui = new Listings(this.left, this.top + 30, this.bg_width, this.bg_height - 30, listings, this);
-        this.search_field = new GuiTextField(mc.fontRenderer, this.left + 1, this.top + 1, bg_width / 2, 20);
+        this.listings_gui = new Listings(this.left, this.top + 26, this.bg_width, this.bg_height - 30, listings, this);
+        this.search_field = new GuiTextField(mc.fontRenderer, this.left + 1, this.top + 1, (bg_width / 2) - 27, 20);
         this.sell_btn = new CustomButton(0, this.left + this.bg_width - 35, this.top + 1, "Sell", fontRendererObj);
-        this.dropdown = new GuiDropDown(this.search_field.xPosition + this.search_field.width + 30, this.search_field.yPosition + 3, 50, 13, "Price", "Date", "Damage", "Amount");
-        this.dropdown.color_bg = new Color(206, 0, 204);
-        this.dropdown.color_highlight = this.dropdown.color_bg.darker().darker();
+
+        this.dropdown_sort = new GuiDropDown(this.search_field.xPosition + this.search_field.width + 30, this.search_field.yPosition + 3, 60, 13, PacketListings.options);
+        this.dropdown_sort.color_bg = new Color(206, 0, 204);
+        this.dropdown_sort.color_highlight = this.dropdown_sort.color_bg.darker().darker();
+        this.dropdown_sort.selected = dropdown_value;
+
+        this.sort_x = this.dropdown_sort.xPosition + this.dropdown_sort.width + 5;
+        this.sort_y = this.dropdown_sort.yPosition - 3;
+        this.sort_width = 20;
+        this.sort_height = 20;
+
+        List<String> page_list = Lists.newArrayList();
+// TODO: Fix error when changing page to 2, error on desktop
+        for(int i = 1; i < pages + 1; i++) page_list.add("" + i);
+
+        this.dropdown_page = new GuiDropDown(this.sort_x + this.sort_width + 6, this.dropdown_sort.yPosition, 20, 13, page_list.toArray(new String[page_list.size()]));
+        this.dropdown_page.color_bg = new Color(206, 0, 204);
+        this.dropdown_page.color_highlight = this.dropdown_page.color_bg.darker().darker();
+        this.dropdown_page.selected = dropdown_value;
     }
 
     @Override
@@ -167,7 +245,7 @@ public class ListingsGui extends MasterGui {
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick)
         {
-            if(doubleClick) {
+            if (doubleClick) {
                 Minecraft.getMinecraft().displayGuiScreen(new BuyItemGui(item_listings.get(index)));
             } else {
                 item_listings.get(index).mouse_clicked(mouseX, mouseY, false);

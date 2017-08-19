@@ -20,12 +20,20 @@ import net.minecraft.item.ItemStack;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 
 public class ItemListing extends Listing {
 
+    private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     protected ItemStack item_stack;
+    protected Date date_published;
 
     @SideOnly(Side.CLIENT)
     private MLItemRenderer item_renderer;
@@ -35,10 +43,11 @@ public class ItemListing extends Listing {
     {
         super(uuid, seller, price, item_stack.getDisplayName(), "");
         this.item_stack = item_stack;
+        this.date_published = Calendar.getInstance().getTime();
     }
 
     @SideOnly(Side.SERVER)
-    public ItemListing(UUID uuid) throws SQLException
+    public ItemListing(UUID uuid) throws SQLException, ParseException
     {
         this.uuid = uuid;
         ResultSet result = Minelife.SQLITE.query("SELECT * FROM item_listings WHERE uuid='" + uuid.toString() + "'");
@@ -48,6 +57,7 @@ public class ItemListing extends Listing {
             title = result.getString("title");
             description = NameFetcher.get(seller);
             item_stack = ItemUtil.itemFromString(result.getString("item_stack"));
+            date_published = df.parse(result.getString("date_published"));
         } else {
             throw new SQLException("ItemListing not found by that uuid.");
         }
@@ -108,8 +118,8 @@ public class ItemListing extends Listing {
             EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
             entity_item.delayBeforeCanPickup = 0;
 
-            ModEconomy.withdraw(player.getUniqueID(), price(), false);
-            ModEconomy.deposit(seller(), price(), false);
+            ModEconomy.withdraw(player.getUniqueID(), price, false);
+            ModEconomy.deposit(seller(), price, false);
 
             if(item_stack.stackSize > 0) {
                 write_to_db();
@@ -135,6 +145,7 @@ public class ItemListing extends Listing {
         ByteBufUtils.writeUTF8String(buf, title() == null ? " " : title());
         ByteBufUtils.writeUTF8String(buf, description() == null ? " " : description());
         ByteBufUtils.writeItemStack(buf, item_stack());
+        ByteBufUtils.writeUTF8String(buf, df.format(date_published));
     }
 
     public static ItemListing from_bytes(ByteBuf buf)
@@ -145,6 +156,11 @@ public class ItemListing extends Listing {
         listing.title = ByteBufUtils.readUTF8String(buf);
         listing.description = ByteBufUtils.readUTF8String(buf);
         listing.item_stack = ByteBufUtils.readItemStack(buf);
+        try {
+            listing.date_published = df.parse(ByteBufUtils.readUTF8String(buf));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return listing;
     }
 
@@ -161,16 +177,22 @@ public class ItemListing extends Listing {
                         "price='" + price() + "'," +
                         "title='" + title() + "'," +
                         "description='" + description() + "'," +
-                        "item_stack='" + ItemUtil.itemToString(item_stack()) + "'" +
+                        "item_stack='" + ItemUtil.itemToString(item_stack()) + "'," +
+                        "damage='" + item_stack().getItemDamage() + "'," +
+                        "stack_size='" + item_stack().stackSize + "'," +
+                        "date_published='" + df.format(date_published) + "'" +
                         "WHERE uuid='" + uuid().toString() + "'");
             } else {
-                Minelife.SQLITE.query("INSERT INTO item_listings (uuid, seller, price, title, description, item_stack) VALUES (" +
+                Minelife.SQLITE.query("INSERT INTO item_listings (uuid, seller, price, title, description, item_stack, damage, stack_size, date_published) VALUES (" +
                         "'" + uuid().toString() + "'," +
                         "'" + seller().toString() + "'," +
                         "'" + price() + "'," +
                         "'" + title() + "'," +
                         "'" + description() + "'," +
-                        "'" + ItemUtil.itemToString(item_stack()) + "')");
+                        "'" + ItemUtil.itemToString(item_stack()) + "'," +
+                        "'" + item_stack().getItemDamage() + "'," +
+                        "'" + item_stack().stackSize + "'," +
+                        "'" + df.format(date_published) + "')");
             }
         } catch (SQLException e) {
             e.printStackTrace();
