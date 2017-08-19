@@ -51,7 +51,6 @@ public class GuiDropDown extends Gui {
 
         mc.fontRenderer.drawString(options[selected], xPosition + 2, yPosition + ((height - mc.fontRenderer.FONT_HEIGHT) / 2) + 1, hover ? color_hover.hashCode() : color.hashCode());
 
-
         if (drop_down_active) {
             GL11.glColor4f(1, 1, 1, 1);
             drawRect(xPosition, yPosition + height, xPosition + width, yPosition + height + ((options.length - 1) * (mc.fontRenderer.FONT_HEIGHT + 5) + 1), color_bg.hashCode());

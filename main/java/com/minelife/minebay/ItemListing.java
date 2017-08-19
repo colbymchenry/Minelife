@@ -85,7 +85,7 @@ public class ItemListing extends Listing {
         if (item_renderer == null) item_renderer = new MLItemRenderer(mc);
         item_renderer.attempt_gl_reset();
         int xOffset = 5;
-        item_renderer.drawItemStack(item_stack, xOffset + 2, (height() - 16) / 2, null);
+        item_renderer.drawItemStack(item_stack, xOffset + 2, (height() - 16) / 2);
 //        item_renderer.renderToolTip(item_stack, mouse_x, mouse_y, width, height);
         mc.fontRenderer.setUnicodeFlag(true);
         mc.fontRenderer.drawString(title(), xOffset + 24, 2, 0xFFFFFF);

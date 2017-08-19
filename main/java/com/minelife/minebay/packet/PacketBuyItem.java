@@ -1,5 +1,6 @@
 package com.minelife.minebay.packet;
 
+import codechicken.lib.inventory.InventoryUtils;
 import com.minelife.Minelife;
 import com.minelife.minebay.ItemListing;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -40,6 +41,10 @@ public class PacketBuyItem implements IMessage {
         ByteBufUtils.writeUTF8String(buf, listing_uuid.toString());
         buf.writeInt(amount);
     }
+
+    //    public static boolean canItemFitInInventory(EntityPlayer player, ItemStack itemstack) {
+    //       return InventoryUtils.getInsertibleQuantity(new InventoryRange(player.inventory, 0, 36), itemstack) > 0;
+    //    }
 
     public static class Handler implements IMessageHandler<PacketBuyItem, IMessage> {
 

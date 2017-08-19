@@ -1,6 +1,10 @@
 package com.minelife.util.client.render;
 
+import codechicken.lib.gui.GuiDraw;
 import codechicken.lib.render.BlockRenderer;
+import codechicken.nei.HUDRenderer;
+import codechicken.nei.NEIClientUtils;
+import codechicken.nei.guihook.GuiContainerManager;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -13,6 +17,7 @@ import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,7 +42,7 @@ public class MLItemRenderer {
     {
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
-        RenderHelper.enableStandardItemLighting();
+        RenderHelper.enableGUIStandardItemLighting();
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         GL11.glColor4f(1, 1, 1, 1);
     }
@@ -64,24 +69,25 @@ public class MLItemRenderer {
         GL11.glPopMatrix();
     }
 
-    public void drawItemStack(ItemStack p_146982_1_, int p_146982_2_, int p_146982_3_, String p_146982_4_)
+    public void drawItemStack(ItemStack item_stack, int x, int y)
     {
-        RenderHelper.enableGUIStandardItemLighting();
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) 240 / 1.0F, (float) 240 / 1.0F);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glColor4f(1, 1, 1, 1);
-        GL11.glEnable(GL11.GL_LIGHTING);
-
-        this.zLevel = 200.0F;
-        itemRender.zLevel = 200.0F;
-        FontRenderer font = null;
-        if (p_146982_1_ != null) font = p_146982_1_.getItem().getFontRenderer(p_146982_1_);
-        if (font == null) font = fontRendererObj;
-        itemRender.renderItemAndEffectIntoGUI(font, this.mc.getTextureManager(), p_146982_1_, p_146982_2_, p_146982_3_);
-        itemRender.renderItemOverlayIntoGUI(font, this.mc.getTextureManager(), p_146982_1_, p_146982_2_, p_146982_3_, p_146982_4_);
-        this.zLevel = 0.0F;
-        itemRender.zLevel = 0.0F;
+//        RenderHelper.enableGUIStandardItemLighting();
+//        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+//        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) 240 / 1.0F, (float) 240 / 1.0F);
+//        GL11.glEnable(GL11.GL_BLEND);
+//        GL11.glColor4f(1, 1, 1, 1);
+//        GL11.glEnable(GL11.GL_LIGHTING);
+//
+//        this.zLevel = 200.0F;
+//        itemRender.zLevel = 200.0F;
+//        FontRenderer font = null;
+//        if (p_146982_1_ != null) font = p_146982_1_.getItem().getFontRenderer(p_146982_1_);
+//        if (font == null) font = fontRendererObj;
+//        itemRender.renderItemAndEffectIntoGUI(font, this.mc.getTextureManager(), p_146982_1_, p_146982_2_, p_146982_3_);
+//        itemRender.renderItemOverlayIntoGUI(font, this.mc.getTextureManager(), p_146982_1_, p_146982_2_, p_146982_3_, p_146982_4_);
+//        this.zLevel = 0.0F;
+//        itemRender.zLevel = 0.0F;
+        GuiContainerManager.drawItem(x, y, item_stack, mc.fontRenderer);
     }
 
     public int[] getToolTipBounds(ItemStack p_146285_1_, int p_146285_2_, int p_146285_3_, int screenWidth, int screenHeight) {
@@ -139,20 +145,33 @@ public class MLItemRenderer {
         return new int[]{0, 0};
     }
 
-    public void renderToolTip(ItemStack p_146285_1_, int p_146285_2_, int p_146285_3_, int screenWidth, int screenHeight)
+    public void renderToolTip(ItemStack item_stack, int x, int y)
     {
-        List list = p_146285_1_.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
+
+        List<String> list = item_stack.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
 
         for (int k = 0; k < list.size(); ++k) {
             if (k == 0) {
-                list.set(k, p_146285_1_.getRarity().rarityColor + (String) list.get(k));
+                list.set(k, item_stack.getRarity().rarityColor + list.get(k));
             } else {
-                list.set(k, EnumChatFormatting.GRAY + (String) list.get(k));
+                list.set(k, EnumChatFormatting.GRAY + list.get(k));
             }
         }
 
-        FontRenderer font = p_146285_1_.getItem().getFontRenderer(p_146285_1_);
-        drawHoveringText(list, p_146285_2_, p_146285_3_, (font == null ? fontRendererObj : font), screenWidth, screenHeight);
+        GuiDraw.drawMultilineTip(mc.fontRenderer, x + 12,  y - 12, list);
+//        HUDRenderer.renderOverlay(item_stack, list, new Point(x, y));
+//        List list = p_146285_1_.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
+//
+//        for (int k = 0; k < list.size(); ++k) {
+//            if (k == 0) {
+//                list.set(k, p_146285_1_.getRarity().rarityColor + (String) list.get(k));
+//            } else {
+//                list.set(k, EnumChatFormatting.GRAY + (String) list.get(k));
+//            }
+//        }
+//
+//        FontRenderer font = p_146285_1_.getItem().getFontRenderer(p_146285_1_);
+//        drawHoveringText(list, p_146285_2_, p_146285_3_, (font == null ? fontRendererObj : font), screenWidth, screenHeight);
     }
 
     protected void drawHoveringText(List p_146283_1_, int p_146283_2_, int p_146283_3_, FontRenderer font, int screenWidth, int screenHeight)

@@ -91,8 +91,9 @@ public class PacketListings implements IMessage {
                 }
 
                 query += message.ascend ? " ASC " : " DESC ";
+                ResultSet result_count = Minelife.SQLITE.query("SELECT COUNT(*) AS count FROM item_listings " + query);
                 query += "LIMIT " + min_row + "," + max_row;
-                new Thread(new GetListings(this, Minelife.SQLITE.query("SELECT * FROM item_listings " + query),  Minelife.SQLITE.query("SELECT COUNT(*) AS count FROM item_listings " + query))).start();
+                new Thread(new GetListings(this, Minelife.SQLITE.query("SELECT * FROM item_listings " + query),  result_count)).start();
             } catch (SQLException e) {
                 e.printStackTrace();
                 Minelife.handle_exception(e, ctx.getServerHandler().playerEntity);

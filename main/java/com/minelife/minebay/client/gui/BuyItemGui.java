@@ -49,10 +49,10 @@ public class BuyItemGui extends GuiScreen {
             GL11.glTranslatef(4, 4, 4);
             GL11.glScalef(scale, scale, scale);
             GL11.glTranslatef(-4, -4, -4);
-            item_renderer.drawItemStack(listing.item_stack(), 0, 0, null);
+            item_renderer.drawItemStack(listing.item_stack(), 0, 0);
         }
         GL11.glPopMatrix();
-        item_renderer.renderToolTip(listing.item_stack(), left + 60, top + 20, width, height);
+        item_renderer.renderToolTip(listing.item_stack(), left + 60, top + 20);
         this.buy_btn.drawButton(mc, mouse_x, mouse_y);
         this.cancel_btn.drawButton(mc, mouse_x, mouse_y);
 

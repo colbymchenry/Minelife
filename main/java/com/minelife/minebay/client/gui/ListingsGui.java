@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.minebay.ItemListing;
 import com.minelife.minebay.packet.PacketListings;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiDropDown;
 import com.minelife.util.client.GuiLoadingAnimation;
 import com.minelife.util.client.GuiScrollableContent;
@@ -26,23 +27,22 @@ public class ListingsGui extends MasterGui {
     private static ResourceLocation magnify_texture = new ResourceLocation(Minelife.MOD_ID, "textures/gui/magnify.png");
     private static final ResourceLocation arrow_texture = new ResourceLocation(Minelife.MOD_ID, "textures/gui/arrow.png");
 
-    private static int dropdown_value = 0;
-
     private Listings listings_gui;
     private GuiLoadingAnimation loadingAnimation;
     private List<ItemListing> listings;
-    private GuiTextField search_field;
+    private static GuiTextField search_field;
     private GuiButton sell_btn;
-    private GuiDropDown dropdown_sort, dropdown_page;
+    private static GuiDropDown dropdown_sort, dropdown_page;
     private int sort_x, sort_y, sort_width, sort_height;
     private static boolean ascend = true;
     private int pages;
-    private static int page = 0;
 
     public ListingsGui()
     {
-        page = 0;
         Minelife.NETWORK.sendToServer(new PacketListings(0, " ", 0, ascend));
+        if(dropdown_page != null) dropdown_page.selected = 0;
+        if(dropdown_sort != null) dropdown_sort.selected = 0;
+        if(search_field != null) search_field.setText("");
     }
 
     public ListingsGui(List<ItemListing> listings, int pages)
@@ -63,7 +63,7 @@ public class ListingsGui extends MasterGui {
 
         Color color = new Color(72, 0, 70, 200);
         this.drawGradientRect(left - 2, top - 2, left + bg_width, top + 25, color.hashCode(), color.hashCode());
-        this.search_field.drawTextBox();
+        search_field.drawTextBox();
         GL11.glColor4f(1, 1, 1, 1);
         this.mc.getTextureManager().bindTexture(magnify_texture);
         GuiUtil.drawImage(left + search_field.getWidth() + 13, search_field.yPosition + 3, 16, 16);
@@ -100,14 +100,14 @@ public class ListingsGui extends MasterGui {
             int msg_width = mc.fontRenderer.getStringWidth(msg);
             mc.fontRenderer.drawStringWithShadow(msg, (this.width - msg_width) / 2, top + ((bg_height - mc.fontRenderer.FONT_HEIGHT) / 2), 0xFFFFFF);
             this.sell_btn.drawButton(mc, mouse_x, mouse_y);
-            this.dropdown_sort.draw(mc, mouse_x, mouse_y);
-            this.dropdown_page.draw(mc, mouse_x, mouse_y);
+            dropdown_sort.draw(mc, mouse_x, mouse_y);
+            dropdown_page.draw(mc, mouse_x, mouse_y);
             return;
         }
 
         this.listings_gui.draw(mouse_x, mouse_y, Mouse.getDWheel());
-        this.dropdown_sort.draw(mc, mouse_x, mouse_y);
-        this.dropdown_page.draw(mc, mouse_x, mouse_y);
+        dropdown_sort.draw(mc, mouse_x, mouse_y);
+        dropdown_page.draw(mc, mouse_x, mouse_y);
     }
 
     @Override
@@ -118,43 +118,41 @@ public class ListingsGui extends MasterGui {
         if (listings_gui != null)
             this.listings_gui.keyTyped(c, i);
 
-        if (this.search_field != null) {
-            if (this.search_field.isFocused() && i == Keyboard.KEY_RETURN) {
-                page = 0;
-                Minelife.NETWORK.sendToServer(new PacketListings(page, search_field.getText(), this.dropdown_sort.selected, ascend));
+        if (search_field != null) {
+            if (search_field.isFocused() && i == Keyboard.KEY_RETURN) {
+                dropdown_sort.selected = 0;
+                dropdown_page.selected = 0;
+                Minelife.NETWORK.sendToServer(new PacketListings(NumberConversions.toInt(dropdown_page.options[dropdown_page.selected]) - 1, search_field.getText(), dropdown_sort.selected, ascend));
             }
-            this.search_field.textboxKeyTyped(c, i);
+            search_field.textboxKeyTyped(c, i);
         }
     }
 
     @Override
     protected void mouseClicked(int mouse_x, int mouse_y, int mouse_btn)
     {
-        if (this.dropdown_sort != null) {
-            int selected = this.dropdown_sort.selected;
-            if (this.dropdown_sort.mouseClicked(mc, mouse_x, mouse_y)) {
-                if (selected != this.dropdown_sort.selected) {
-                    Minelife.NETWORK.sendToServer(new PacketListings(page, search_field.getText(), this.dropdown_sort.selected, ascend));
-                    dropdown_value = dropdown_sort.selected;
+        if (dropdown_sort != null) {
+            int selected = dropdown_sort.selected;
+            if (dropdown_sort.mouseClicked(mc, mouse_x, mouse_y)) {
+                if (selected != dropdown_sort.selected) {
+                    Minelife.NETWORK.sendToServer(new PacketListings(NumberConversions.toInt(dropdown_page.options[dropdown_page.selected]) - 1, search_field.getText(), dropdown_sort.selected, ascend));
                 }
                 return;
             }
         }
 
-        if (this.dropdown_page != null) {
-            int selected = this.dropdown_page.selected;
-            if (this.dropdown_page.mouseClicked(mc, mouse_x, mouse_y)) {
-                if (selected != this.dropdown_page.selected) {
-                    page = dropdown_page.selected;
-                    Minelife.NETWORK.sendToServer(new PacketListings(page, search_field.getText(), this.dropdown_sort.selected, ascend));
-                    dropdown_value = dropdown_page.selected;
+        if (dropdown_page != null) {
+            int selected = dropdown_page.selected;
+            if (dropdown_page.mouseClicked(mc, mouse_x, mouse_y)) {
+                if (selected != dropdown_page.selected) {
+                    Minelife.NETWORK.sendToServer(new PacketListings(NumberConversions.toInt(dropdown_page.options[dropdown_page.selected]) - 1, search_field.getText(), dropdown_sort.selected, ascend));
                 }
                 return;
             }
         }
 
-        if (this.search_field != null)
-            this.search_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
+        if (search_field != null)
+            search_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
 
         if (this.sell_btn != null)
             if (this.sell_btn.mousePressed(mc, mouse_x, mouse_y))
@@ -162,14 +160,14 @@ public class ListingsGui extends MasterGui {
 
         if (mouse_x >= left + search_field.getWidth() + 13 && mouse_x <= left + search_field.getWidth() + 13 + 16) {
             if (mouse_y >= search_field.yPosition + 3 && mouse_y <= search_field.yPosition + 3 + 16) {
-                page = 0;
-                Minelife.NETWORK.sendToServer(new PacketListings(page, search_field.getText(), this.dropdown_sort.selected, ascend));
+                dropdown_page.selected = 0;
+                Minelife.NETWORK.sendToServer(new PacketListings(NumberConversions.toInt(dropdown_page.options[dropdown_page.selected]) - 1, search_field.getText(), dropdown_sort.selected, ascend));
             }
         }
 
-        if(mouse_x >= sort_x && mouse_x <= sort_x + sort_width && mouse_y >= sort_y && mouse_y <= sort_y + sort_height) {
+        if (mouse_x >= sort_x && mouse_x <= sort_x + sort_width && mouse_y >= sort_y && mouse_y <= sort_y + sort_height) {
             ascend = !ascend;
-            Minelife.NETWORK.sendToServer(new PacketListings(page, search_field.getText(), this.dropdown_sort.selected, ascend));
+            Minelife.NETWORK.sendToServer(new PacketListings(NumberConversions.toInt(dropdown_page.options[dropdown_page.selected]) - 1, search_field.getText(), dropdown_sort.selected, ascend));
         }
     }
 
@@ -183,33 +181,50 @@ public class ListingsGui extends MasterGui {
         }
 
         this.listings_gui = new Listings(this.left, this.top + 26, this.bg_width, this.bg_height - 30, listings, this);
-        this.search_field = new GuiTextField(mc.fontRenderer, this.left + 1, this.top + 1, (bg_width / 2) - 27, 20);
+        if (search_field == null)
+            search_field = new GuiTextField(mc.fontRenderer, this.left + 1, this.top + 1, (bg_width / 2) - 27, 20);
+        else {
+            search_field.xPosition = this.left + 1;
+            search_field.yPosition = this.top + 1;
+            search_field.width = (bg_width / 2) - 27;
+        }
+
         this.sell_btn = new CustomButton(0, this.left + this.bg_width - 35, this.top + 1, "Sell", fontRendererObj);
 
-        this.dropdown_sort = new GuiDropDown(this.search_field.xPosition + this.search_field.width + 30, this.search_field.yPosition + 3, 60, 13, PacketListings.options);
-        this.dropdown_sort.color_bg = new Color(206, 0, 204);
-        this.dropdown_sort.color_highlight = this.dropdown_sort.color_bg.darker().darker();
-        this.dropdown_sort.selected = dropdown_value;
+        if (dropdown_sort == null)
+            dropdown_sort = new GuiDropDown(search_field.xPosition + search_field.width + 30, search_field.yPosition + 3, 60, 13, PacketListings.options);
+        else {
+            dropdown_sort.xPosition = search_field.xPosition + search_field.width + 30;
+            dropdown_sort.yPosition = search_field.yPosition + 3;
+        }
+        dropdown_sort.color_bg = new Color(206, 0, 204);
+        dropdown_sort.color_highlight = dropdown_sort.color_bg.darker().darker();
 
-        this.sort_x = this.dropdown_sort.xPosition + this.dropdown_sort.width + 5;
-        this.sort_y = this.dropdown_sort.yPosition - 3;
+        this.sort_x = dropdown_sort.xPosition + dropdown_sort.width + 5;
+        this.sort_y = dropdown_sort.yPosition - 3;
         this.sort_width = 20;
         this.sort_height = 20;
 
         List<String> page_list = Lists.newArrayList();
-// TODO: Fix error when changing page to 2, error on desktop
-        for(int i = 1; i < pages + 1; i++) page_list.add("" + i);
+        for (int i = 1; i < pages + 1; i++) page_list.add("" + i);
 
-        this.dropdown_page = new GuiDropDown(this.sort_x + this.sort_width + 6, this.dropdown_sort.yPosition, 20, 13, page_list.toArray(new String[page_list.size()]));
-        this.dropdown_page.color_bg = new Color(206, 0, 204);
-        this.dropdown_page.color_highlight = this.dropdown_page.color_bg.darker().darker();
-        this.dropdown_page.selected = dropdown_value;
+        if (pages == 0) page_list.add("1");
+
+        if (dropdown_page == null)
+            dropdown_page = new GuiDropDown(this.sort_x + this.sort_width + 6, dropdown_sort.yPosition, 20, 13, page_list.toArray(new String[page_list.size()]));
+        else {
+            dropdown_page.xPosition = this.sort_x + this.sort_width + 6;
+            dropdown_page.yPosition = dropdown_sort.yPosition;
+            dropdown_page.options = page_list.toArray(new String[page_list.size()]);
+        }
+        dropdown_page.color_bg = new Color(206, 0, 204);
+        dropdown_page.color_highlight = dropdown_page.color_bg.darker().darker();
     }
 
     @Override
     public void updateScreen()
     {
-        if (this.search_field != null) this.search_field.updateCursorCounter();
+        if (search_field != null) search_field.updateCursorCounter();
     }
 
     class Listings extends GuiScrollableContent {

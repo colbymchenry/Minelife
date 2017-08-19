@@ -68,7 +68,7 @@ public class SellItemGui extends MasterGui {
 
         // draw the item stack
         for (ItemSlot slot : slots) {
-            if (slot.stack != null) item_renderer.drawItemStack(slot.stack, slot.bounds.x, slot.bounds.y, null);
+            if (slot.stack != null) item_renderer.drawItemStack(slot.stack, slot.bounds.x, slot.bounds.y);
         }
 
         // draw the highlight when mouse is over
@@ -85,7 +85,7 @@ public class SellItemGui extends MasterGui {
         // draw the tooltip
         for (ItemSlot slot : slots) {
             if (slot.stack != null && slot.bounds.contains(mouse_x, mouse_y)) {
-                item_renderer.renderToolTip(slot.stack, mouse_x, mouse_y, width, height);
+                item_renderer.renderToolTip(slot.stack, mouse_x, mouse_y);
             }
         }
 
@@ -107,7 +107,7 @@ public class SellItemGui extends MasterGui {
                 GL11.glTranslatef(4, 4, 4);
                 GL11.glScalef(scale, scale, scale);
                 GL11.glTranslatef(-4, -4, -4);
-                item_renderer.drawItemStack(item_to_sale, 0, 0, null);
+                item_renderer.drawItemStack(item_to_sale, 0, 0);
             }
             GL11.glPopMatrix();
         }
@@ -124,7 +124,7 @@ public class SellItemGui extends MasterGui {
 
         if(item_to_sale != null) {
             if(mouse_x >= item_render_x && mouse_x <= item_render_x + item_render_width && mouse_y >= top + 10 && mouse_y <= top + 10 + 60) {
-                item_renderer.renderToolTip(item_to_sale, mouse_x, mouse_y, width, height);
+                item_renderer.renderToolTip(item_to_sale, mouse_x, mouse_y);
             }
         }
     }

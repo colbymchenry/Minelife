@@ -14,6 +14,8 @@ import java.util.UUID;
 
 public class ServerProxy extends CommonProxy {
 
+    // TODO: Delete listings after 7 days.
+
     @Override
     public void preInit(FMLPreInitializationEvent event) throws SQLException
     {
