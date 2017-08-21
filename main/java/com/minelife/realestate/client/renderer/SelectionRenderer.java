@@ -22,6 +22,7 @@ public class SelectionRenderer {
     private static Selection selection, lastSelection;
     private static Vector start, end;
     private static String text;
+    private static boolean purchasable = false;
     private static long price = 0;
 
     static void onEventTick(RenderWorldLastEvent event) {
@@ -47,9 +48,10 @@ public class SelectionRenderer {
             selection = null;
         }
         if (selection != null) {
-            if (!selection.equals(lastSelection)) price = selection.getPrice();
-            // TODO: Selection.isAvailable() creates Ungodly Amounts of Regions
-            boolean purchasable = ModEconomy.BALANCE_WALLET_CLIENT >= price && selection.isAvailable();
+            if (!selection.equals(lastSelection)) {
+                price = selection.getPrice();
+                purchasable = ModEconomy.BALANCE_WALLET_CLIENT >= price && selection.isAvailable();
+            }
             if (purchasable) selection.highlight(event.partialTicks, new Color(0, 255, 0, 50));
             else selection.highlight(event.partialTicks, new Color(255, 0, 0, 50));
             text = "Total Price: " + (purchasable ? EnumChatFormatting.GREEN : EnumChatFormatting.RED) + "$" + NumberConversions.formatter.format(price);

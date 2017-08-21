@@ -2,7 +2,7 @@ package com.minelife.realestate.client;
 
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
-import com.minelife.realestate.EstateRegion;
+import com.minelife.realestate.Region;
 import com.minelife.realestate.client.packet.BlockPriceRequest;
 import com.minelife.realestate.client.packet.SelectionAvailabilityRequest;
 import com.minelife.realestate.client.packet.SelectionPurchaseRequest;
@@ -17,7 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.AxisAlignedBB;
 
 import java.awt.*;
-import java.sql.SQLException;
 import java.util.UUID;
 
 public class Selection {
@@ -90,36 +89,37 @@ public class Selection {
     // TODO: Intersection with Region Check not working properly.
     public boolean isAvailable() {
         if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
-            EstateRegion region = null;
             try {
-                region = EstateRegion.create(this.getWorldName(), this.getBounds());
-                EstateRegion.delete(region.getUniqueID());
+                Region region = Region.create(this);
+//                Region.delete(region.getUniqueID());
                 return ModEconomy.getBalance(this.playerUniqueID, true) >= this.getPrice();
             } catch (Exception ignored) { }
             return false;
         } else {
             Minelife.NETWORK.sendToServer(new SelectionAvailabilityRequest(this));
         }
-        return isAvailable;
+        throw new Error("Not Implemented!");
+//        return isAvailable;
     }
 
     public void purchase() {
         if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
             if (this.isAvailable()) {
-                EstateRegion region = null;
+                Region region = null;
                 try {
-                    region = EstateRegion.create(this.getWorldName(), this.bounds);
+                    region = Region.create(this);
                     // TODO: Create Estate
 
                     ModEconomy.withdraw(this.playerUniqueID, this.getPrice(), true);
                 } catch (Exception e) {
-                    if (region != null) try { EstateRegion.delete(region.getUniqueID()); }
-                    catch (SQLException e1) { e1.printStackTrace(); }
+//                    if (region != null) try { Region.delete(region.getUniqueID()); }
+//                    catch (SQLException e1) { e1.printStackTrace(); }
                 }
             }
         } else {
             Minelife.NETWORK.sendToServer(new SelectionPurchaseRequest(this));
         }
+        throw new Error("Not Implemented!");
     }
 
     public void toBytes(ByteBuf buf) {
