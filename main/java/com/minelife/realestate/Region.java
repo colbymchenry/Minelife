@@ -6,9 +6,11 @@ import net.minecraft.util.AxisAlignedBB;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Region implements Comparable<Region> {
 
@@ -36,6 +38,23 @@ public class Region implements Comparable<Region> {
                 "'" + (int) selection.getBounds().minX + "', '" + (int) selection.getBounds().minY + "', '" + (int) selection.getBounds().minZ + "'," +
                 "'" + (int) selection.getBounds().maxX + "', '" +  (int) selection.getBounds().maxY  + "', '" + (int) selection.getBounds().maxZ + "')");
         return new Region(uniqueID);
+    }
+
+    public static void delete(UUID uniqueID) throws Exception {
+        List<Region> regions = REGIONS.stream().filter(r -> r.uniqueID.equals(uniqueID)).collect(Collectors.toList());
+        if (regions.size() == 1) {
+            Region region = regions.get(0);
+            Minelife.SQLITE.query("DELETE * FROM estate_regions WHERE uuid = '" + region.uniqueID.toString() + "'");
+            REGIONS.remove(region);
+        } else if (regions.size() < 1) {
+            throw new Exception("Region with UUID=" + uniqueID + " does not exist.");
+        } else {
+            throw new Exception("Too many regions with UUID=" + uniqueID + ".");
+        }
+    }
+
+    public void delete() throws Exception {
+        delete(this.uniqueID);
     }
 
     // Intersecting
