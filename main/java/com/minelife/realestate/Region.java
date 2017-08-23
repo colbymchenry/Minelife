@@ -3,6 +3,7 @@ package com.minelife.realestate;
 import com.minelife.Minelife;
 import com.minelife.realestate.client.Selection;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Vec3;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,7 +31,9 @@ public class Region implements Comparable<Region> {
         this.bounds = AxisAlignedBB.getBoundingBox(result.getInt(i++), result.getInt(i++), result.getInt(i++), result.getInt(i++), result.getInt(i++), result.getInt(i));
     }
 
-    public static Region create(Selection selection) throws SQLException {
+    public static Region create(Selection selection) throws Exception {
+        if (intersectsAnotherRegion(selection)) throw new Exception("Selection intersects an already existing Region.");
+        if (surroundsAnotherRegion(selection)) throw new Exception("Selection contains an already existing Region.");
         UUID uniqueID = UUID.randomUUID();
         Minelife.SQLITE.query("INSERT INTO estate_regions (uuid, world, minX, minY, minZ, maxX, maxY, maxZ) VALUES (" +
                 "'" + uniqueID.toString() + "'," +
@@ -57,11 +60,38 @@ public class Region implements Comparable<Region> {
         delete(this.uniqueID);
     }
 
-    // Intersecting
+    public static boolean intersectsAnotherRegion(Selection selection) {
+        return REGIONS.stream().anyMatch(region -> region.bounds.intersectsWith(selection.getBounds()) && region.worldName.equals(selection.getWorldName()));
+    }
 
-    // Parent
+    public static boolean surroundsAnotherRegion(Selection selection) {
+        return REGIONS.stream().anyMatch(region -> {
+           Vec3 rMin = Vec3.createVectorHelper(region.bounds.minX, region.bounds.minY, region.bounds.minZ);
+           Vec3 rMax = Vec3.createVectorHelper(region.bounds.maxX, region.bounds.maxY, region.bounds.maxZ);
+           return selection.getBounds().isVecInside(rMin) && selection.getBounds().isVecInside(rMax);
+        });
+    }
 
-    // Children
+    private Region closest;
+
+    public Region getParent() {
+        Vec3 min = Vec3.createVectorHelper(this.bounds.minX, this.bounds.minY, this.bounds.minZ);
+        Vec3 max = Vec3.createVectorHelper(this.bounds.maxX, this.bounds.maxY, this.bounds.maxZ);
+        List<Region> enclosing = REGIONS.stream().filter(region -> region.bounds.isVecInside(min) && region.bounds.isVecInside(max)).collect(Collectors.toList());
+        if (closest == null) closest = enclosing.get(0);
+        enclosing.forEach(region -> {
+            Vec3 rMin = Vec3.createVectorHelper(region.bounds.minX, region.bounds.minY, region.bounds.minZ);
+            Vec3 rMax = Vec3.createVectorHelper(region.bounds.maxX, region.bounds.maxY, region.bounds.maxZ);
+            Vec3 cMin = Vec3.createVectorHelper(closest.bounds.minX, closest.bounds.minY, closest.bounds.minZ);
+            Vec3 cMax = Vec3.createVectorHelper(closest.bounds.maxX, closest.bounds.maxY, closest.bounds.maxZ);
+            if (rMin.distanceTo(min) + rMax.distanceTo(max) < cMin.distanceTo(min) + cMax.distanceTo(max)) closest = region;
+        });
+        return closest;
+    }
+
+    public List<Region> getChildren() {
+        return REGIONS.stream().filter(region -> region.getParent().equals(this)).collect(Collectors.toList());
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -79,12 +109,11 @@ public class Region implements Comparable<Region> {
 
     @Override
     public int compareTo(Region other) {
-        throw new Error("Method Not Implemented!");
-//        if (other != null) {
-//            if (other.getParent().equals(this)) return 1;
-//            else if (this.getParent().equals(other)) return -1;
-//        }
-//        return 0;
+        if (other != null) {
+            if (other.getParent().equals(this)) return 1;
+            else if (this.getParent().equals(other)) return -1;
+        }
+        return 0;
     }
 
     public static void initRegions() throws SQLException {
