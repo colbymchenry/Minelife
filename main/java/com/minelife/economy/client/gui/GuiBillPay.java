@@ -146,7 +146,7 @@ public class GuiBillPay extends GuiATM {
         {
             super.drawScreen(mouseX, mouseY, partialTicks);
             drawLabel("Amount Due: $" + NumberConversions.formatter.format(bill.getAmountDue()), (this.width / 2), (this.height / 2), 2, 0xFF03438D);
-            drawLabel("$" + NumberConversions.formatter.format(Long.parseLong(amount)), (this.width / 2), (this.height / 2) + 30, 2, 0xFF03438D);
+            drawLabel("$" + NumberConversions.formatter.format(Double.parseDouble(amount)), (this.width / 2), (this.height / 2) + 30, 2, 0xFF03438D);
         }
 
         @Override
@@ -176,7 +176,7 @@ public class GuiBillPay extends GuiATM {
                 return;
             }
 
-            if (NumberConversions.isInt("" + c) && NumberConversions.isLong(amount + c)) {
+            if (NumberConversions.isInt("" + c)) {
                 amount += c;
             }
         }
@@ -191,8 +191,8 @@ public class GuiBillPay extends GuiATM {
                 return;
             }
 
-            if (Long.parseLong(amount) > 0) {
-                Billing.sendPayPacketToServer(bill.getUniqueID(), Long.parseLong(amount));
+            if (Double.parseDouble(amount) > 0) {
+                Billing.sendPayPacketToServer(bill.getUniqueID(), Double.parseDouble(amount));
                 Minecraft.getMinecraft().displayGuiScreen(new GuiBillPay());
             }
         }

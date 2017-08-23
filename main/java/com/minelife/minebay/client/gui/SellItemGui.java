@@ -146,7 +146,7 @@ public class SellItemGui extends MasterGui {
         amount_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
 
         if(sell_btn.mousePressed(mc, mouse_x, mouse_y)) {
-            Minelife.NETWORK.sendToServer(new PacketSellItem(slot, NumberConversions.toInt(amount_field.getText()), NumberConversions.toLong(price_field.getText())));
+            Minelife.NETWORK.sendToServer(new PacketSellItem(slot, NumberConversions.toInt(amount_field.getText()), NumberConversions.toDouble(price_field.getText())));
         }
     }
 
@@ -171,14 +171,14 @@ public class SellItemGui extends MasterGui {
 
         super.keyTyped(c, i);
 
-        if(!NumberConversions.isLong("" + c) && i != Keyboard.KEY_BACK) return;
+        if(!NumberConversions.isDouble("" + c) && i != Keyboard.KEY_BACK) return;
         price_field.textboxKeyTyped(c, i);
 
         if(amount_field.isFocused()) {
 
             amount_field.textboxKeyTyped(c, i);
             if(!amount_field.getText().isEmpty()) {
-                if(NumberConversions.toLong(amount_field.getText()) > item_to_sale.stackSize) {
+                if(NumberConversions.toDouble(amount_field.getText()) > item_to_sale.stackSize) {
                     amount_field.setText(amount_field.getText().substring(0, amount_field.getText().length() - 1));
                 }
             }

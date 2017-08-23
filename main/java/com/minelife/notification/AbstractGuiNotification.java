@@ -25,6 +25,8 @@ public abstract class AbstractGuiNotification extends Gui implements Comparable<
 
     protected AbstractNotification notification;
 
+    public AbstractGuiNotification() {}
+
     public AbstractGuiNotification(AbstractNotification notification)
     {
         this.notification = notification;

@@ -24,8 +24,8 @@ public class ModEconomy extends AbstractMod {
     @SideOnly(Side.SERVER)
     public static MLConfig config;
 
-    public static long BALANCE_WALLET_CLIENT = 0;
-    public static long BALANCE_BANK_CLIENT = 0;
+    public static double BALANCE_WALLET_CLIENT = 0;
+    public static double BALANCE_BANK_CLIENT = 0;
 
     @Override
     public void preInit(FMLPreInitializationEvent event)
@@ -66,11 +66,11 @@ public class ModEconomy extends AbstractMod {
         return com.minelife.economy.server.ServerProxy.class;
     }
 
-    public static final void deposit(UUID player, long amount, boolean wallet) throws Exception
+    public static final void deposit(UUID player, double amount, boolean wallet) throws Exception
     {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
-        long balance = getBalance(player, wallet);
+        double balance = getBalance(player, wallet);
         balance += amount;
         String column = wallet ? "balanceWallet" : "balanceBank";
 
@@ -81,12 +81,14 @@ public class ModEconomy extends AbstractMod {
             Minelife.NETWORK.sendTo(new PacketBalanceResult(getBalance(player, false), getBalance(player, true)), PlayerHelper.getPlayer(player));
     }
 
-    public static final void withdraw(UUID player, long amount, boolean wallet) throws Exception
+    public static final void withdraw(UUID player, double amount, boolean wallet) throws Exception
     {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
-        long balance = getBalance(player, wallet);
+        double balance = getBalance(player, wallet);
         balance -= amount;
+
+        System.out.println(amount);
 
         /**
          * Make sure the player balance cannot go below zero (cannot go into debt)
@@ -100,7 +102,7 @@ public class ModEconomy extends AbstractMod {
             Minelife.NETWORK.sendTo(new PacketBalanceResult(getBalance(player, false), getBalance(player, true)), PlayerHelper.getPlayer(player));
     }
 
-    public static final void set(UUID player, long amount, boolean wallet) throws Exception
+    public static final void set(UUID player, double amount, boolean wallet) throws Exception
     {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
@@ -117,13 +119,13 @@ public class ModEconomy extends AbstractMod {
             Minelife.NETWORK.sendTo(new PacketBalanceResult(getBalance(player, false), getBalance(player, true)), PlayerHelper.getPlayer(player));
     }
 
-    public static final long getBalance(UUID player, boolean wallet) throws Exception
+    public static final double getBalance(UUID player, boolean wallet) throws Exception
     {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
         String table = wallet ? "balanceWallet" : "balanceBank";
         ResultSet result = Minelife.SQLITE.query("SELECT " + table + " AS balance FROM players WHERE uuid='" + player.toString() + "'");
-        if (result.next()) return result.getLong("balance");
+        if (result.next()) return result.getDouble("balance");
 
         return 0;
     }

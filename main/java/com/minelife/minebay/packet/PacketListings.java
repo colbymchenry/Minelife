@@ -67,7 +67,6 @@ public class PacketListings implements IMessage {
             int max_row = 100 * (message.page + 1);
             this.player = ctx.getServerHandler().playerEntity;
             try {
-                // TODO: Will have to add more columns to order by the damage and stack size and what not
                 // ASCENDING = ASC
                 // DESCENDING = DESC
                 String query = "";

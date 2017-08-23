@@ -5,6 +5,7 @@ import com.minelife.economy.ModEconomy;
 import com.minelife.minebay.packet.PacketPopupMsg;
 import com.minelife.util.ItemUtil;
 import com.minelife.util.NumberConversions;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.render.MLItemRenderer;
 import com.minelife.util.server.Callback;
 import com.minelife.util.server.NameFetcher;
@@ -30,7 +31,7 @@ import java.util.UUID;
 
 public class ItemListing extends Listing {
 
-    private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     protected ItemStack item_stack;
     protected Date date_published;
@@ -39,7 +40,7 @@ public class ItemListing extends Listing {
     private MLItemRenderer item_renderer;
 
     @SideOnly(Side.SERVER)
-    public ItemListing(UUID uuid, UUID seller, long price, ItemStack item_stack)
+    public ItemListing(UUID uuid, UUID seller, double price, ItemStack item_stack)
     {
         super(uuid, seller, price, item_stack.getDisplayName(), "");
         this.item_stack = item_stack;
@@ -53,7 +54,7 @@ public class ItemListing extends Listing {
         ResultSet result = Minelife.SQLITE.query("SELECT * FROM item_listings WHERE uuid='" + uuid.toString() + "'");
         if (result.next()) {
             seller = UUID.fromString(result.getString("seller"));
-            price = result.getLong("price");
+            price = result.getDouble("price");
             title = result.getString("title");
             description = NameFetcher.get(seller);
             item_stack = ItemUtil.itemFromString(result.getString("item_stack"));
@@ -105,7 +106,8 @@ public class ItemListing extends Listing {
     {
         try {
             int amount = (int) objects[0];
-            long price = price() <= 0 ? 0 : amount <= 0 ? 0 : price() / amount;
+            double price_per_item =  price() / item_stack().stackSize;
+            double price = price_per_item * (double) amount;
 
             if (ModEconomy.getBalance(player.getUniqueID(), false) < price) {
                 PacketPopupMsg.send("Insufficient Funds in Bank Account", (EntityPlayerMP) player);
@@ -118,6 +120,7 @@ public class ItemListing extends Listing {
             EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
             entity_item.delayBeforeCanPickup = 0;
 
+            System.out.println(price() + "," + (double) amount + "," + price + "," + (price() / (double) amount));
             ModEconomy.withdraw(player.getUniqueID(), price, false);
             ModEconomy.deposit(seller(), price, false);
 
@@ -126,7 +129,12 @@ public class ItemListing extends Listing {
             } else {
                 delete();
             }
-            // TODO: Notification for seller
+
+            SoldNotification notification = new SoldNotification(seller(), to_give, price);
+            if(PlayerHelper.getPlayer(seller()) != null)
+                notification.sendTo(PlayerHelper.getPlayer(seller()));
+            else
+                notification.writeToDB();
         } catch (Exception e) {
             e.printStackTrace();
             Minelife.handle_exception(e, player);
@@ -140,7 +148,7 @@ public class ItemListing extends Listing {
 
     public void to_bytes(ByteBuf buf)
     {
-        buf.writeLong(price());
+        buf.writeDouble(price());
         ByteBufUtils.writeUTF8String(buf, uuid().toString());
         ByteBufUtils.writeUTF8String(buf, title() == null ? " " : title());
         ByteBufUtils.writeUTF8String(buf, description() == null ? " " : description());
@@ -151,7 +159,7 @@ public class ItemListing extends Listing {
     public static ItemListing from_bytes(ByteBuf buf)
     {
         ItemListing listing = new ItemListing();
-        listing.price = buf.readLong();
+        listing.price = buf.readDouble();
         listing.uuid = UUID.fromString(ByteBufUtils.readUTF8String(buf));
         listing.title = ByteBufUtils.readUTF8String(buf);
         listing.description = ByteBufUtils.readUTF8String(buf);

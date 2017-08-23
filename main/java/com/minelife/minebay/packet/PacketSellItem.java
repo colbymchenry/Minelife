@@ -18,13 +18,13 @@ import java.util.UUID;
 public class PacketSellItem implements IMessage {
 
     private int slot, amount;
-    private long price;
+    private double price;
 
     public PacketSellItem()
     {
     }
 
-    public PacketSellItem(int slot, int amount, long price)
+    public PacketSellItem(int slot, int amount, double price)
     {
         this.slot = slot;
         this.amount = amount;
@@ -36,7 +36,7 @@ public class PacketSellItem implements IMessage {
     {
         this.slot = buf.readInt();
         this.amount = buf.readInt();
-        this.price = buf.readLong();
+        this.price = buf.readDouble();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class PacketSellItem implements IMessage {
     {
         buf.writeInt(this.slot);
         buf.writeInt(this.amount);
-        buf.writeLong(this.price);
+        buf.writeDouble(this.price);
     }
 
     public static class Handler implements IMessageHandler<PacketSellItem, IMessage> {

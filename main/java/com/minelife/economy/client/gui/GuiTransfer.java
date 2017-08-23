@@ -2,6 +2,7 @@ package com.minelife.economy.client.gui;
 
 import com.minelife.Minelife;
 import com.minelife.economy.packet.PacketTransferMoney;
+import com.minelife.util.NumberConversions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import org.lwjgl.input.Keyboard;
@@ -16,7 +17,7 @@ public class GuiTransfer extends GuiDeposit {
     protected void actionPerformed(GuiButton button) {
         if (pin.length() < 4 && button.id < 10) {
             // make sure this isn't larger than a valid long
-            if (validLong(this.amount + button.displayString)) {
+            if (NumberConversions.isDouble(this.amount + button.displayString)) {
                 this.amount += button.displayString;
             }
         }

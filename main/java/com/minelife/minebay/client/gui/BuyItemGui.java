@@ -20,7 +20,7 @@ public class BuyItemGui extends GuiScreen {
     private MLItemRenderer item_renderer;
     private int left, top, bg_width, bg_height;
     private CustomButton buy_btn, cancel_btn;
-    private long price_per_item;
+    private double price_per_item;
     private GuiTextField amount_field;
 
     public BuyItemGui(ItemListing listing)
@@ -52,12 +52,13 @@ public class BuyItemGui extends GuiScreen {
             item_renderer.drawItemStack(listing.item_stack(), 0, 0);
         }
         GL11.glPopMatrix();
+
         item_renderer.renderToolTip(listing.item_stack(), left + 60, top + 20);
         this.buy_btn.drawButton(mc, mouse_x, mouse_y);
         this.cancel_btn.drawButton(mc, mouse_x, mouse_y);
 
         fontRendererObj.drawString("1x = $" + NumberConversions.formatter.format(this.price_per_item), left + 4, top + 68, 0xFFFFFF);
-        fontRendererObj.drawString((amount_field.getText().isEmpty() ? 0 : NumberConversions.toLong(amount_field.getText())) + "x = $" + NumberConversions.formatter.format(this.price_per_item * this.amount_field_value()), left + 4, top + 78, 0xFFFFFF);
+        fontRendererObj.drawString((amount_field.getText().isEmpty() ? 0 : NumberConversions.toInt(amount_field.getText())) + "x = $" + NumberConversions.formatter.format(this.price_per_item * this.amount_field_value()), left + 4, top + 78, 0xFFFFFF);
 
         fontRendererObj.drawString("Amount:", this.amount_field.xPosition - 40, this.amount_field.yPosition + 1, 0xFFFFFF);
         this.amount_field.drawTextBox();
@@ -88,9 +89,9 @@ public class BuyItemGui extends GuiScreen {
             return;
         }
 
-        if(!NumberConversions.isLong("" + c)) return;
+        if(!NumberConversions.isInt("" + c)) return;
 
-        if(Long.parseLong(this.amount_field.getText() + c) <= this.listing.item_stack().stackSize) {
+        if(Double.parseDouble(this.amount_field.getText() + c) <= this.listing.item_stack().stackSize) {
             this.amount_field.textboxKeyTyped(c, i);
         }
         super.keyTyped(c, i);
@@ -121,12 +122,12 @@ public class BuyItemGui extends GuiScreen {
     @Override
     public void updateScreen()
     {
-        buy_btn.enabled = !amount_field.getText().isEmpty() && NumberConversions.toLong(amount_field.getText()) > 0;
+        buy_btn.enabled = !amount_field.getText().isEmpty() && NumberConversions.toDouble(amount_field.getText()) > 0;
     }
 
-    private long amount_field_value() {
+    private double amount_field_value() {
         if(this.amount_field.getText().isEmpty()) return 0;
-        if(!NumberConversions.isLong(this.amount_field.getText())) return 0;
-        return NumberConversions.toLong(this.amount_field.getText());
+        if(!NumberConversions.isDouble(this.amount_field.getText())) return 0;
+        return NumberConversions.toDouble(this.amount_field.getText());
     }
 }

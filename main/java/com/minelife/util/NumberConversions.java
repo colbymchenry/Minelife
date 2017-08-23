@@ -13,7 +13,9 @@ public final class NumberConversions {
     {
     }
 
-    public static DecimalFormat formatter = new DecimalFormat("#,###");
+    public static DecimalFormat formatter = new DecimalFormat("#,###.##");
+
+
 
     public static int floor(double num)
     {
@@ -136,6 +138,22 @@ public final class NumberConversions {
         try {
             Long.parseLong(s);
         } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isDouble(Object object)
+    {
+        if (object instanceof Number) {
+            return true;
+        }
+
+        try {
+            Double.valueOf(object.toString());
+        } catch (NumberFormatException e) {
+            return false;
+        } catch (NullPointerException e) {
             return false;
         }
         return true;

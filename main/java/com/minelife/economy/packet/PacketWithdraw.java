@@ -12,7 +12,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 public class PacketWithdraw implements IMessage {
 
-    private long amount;
+    private double amount;
 
     public PacketWithdraw() {
     }
@@ -23,12 +23,12 @@ public class PacketWithdraw implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        this.amount = buf.readLong();
+        this.amount = buf.readDouble();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeLong(this.amount);
+        buf.writeDouble(this.amount);
     }
 
     public static class Handler implements IMessageHandler<PacketWithdraw, IMessage> {

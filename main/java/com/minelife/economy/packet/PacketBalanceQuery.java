@@ -27,8 +27,8 @@ public class PacketBalanceQuery implements IMessage {
         @Override
         public IMessage onMessage(PacketBalanceQuery message, MessageContext ctx) {
             try {
-                long balanceBank = ModEconomy.getBalance(ctx.getServerHandler().playerEntity.getUniqueID(), false);
-                long balanceWallet = ModEconomy.getBalance(ctx.getServerHandler().playerEntity.getUniqueID(), true);
+                double balanceBank = ModEconomy.getBalance(ctx.getServerHandler().playerEntity.getUniqueID(), false);
+                double balanceWallet = ModEconomy.getBalance(ctx.getServerHandler().playerEntity.getUniqueID(), true);
                 Minelife.NETWORK.sendTo(new PacketBalanceResult(balanceBank, balanceWallet), ctx.getServerHandler().playerEntity);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -16,7 +16,7 @@ public abstract class BillHandler {
 
     public abstract void update();
 
-    public abstract void pay(Billing.Bill bill, long amount);
+    public abstract void pay(Billing.Bill bill, double amount);
 
     public abstract void delete();
 

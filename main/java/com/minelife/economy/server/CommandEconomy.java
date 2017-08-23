@@ -90,7 +90,7 @@ public class CommandEconomy implements ICommand, Callback {
             String message = (String) objects[1];
 
             if (objects.length == 6) {
-                long amount = (long) objects[2];
+                double amount = (double) objects[2];
                 boolean wallet = (boolean) objects[3];
                 String command = (String) objects[4];
                 UUID player_uuid = (UUID) objects[5];
@@ -134,7 +134,7 @@ public class CommandEconomy implements ICommand, Callback {
 
                 String player = args[1];
                 UUID playerUUID = UUIDFetcher.get(player);
-                long amount = 0;
+                double amount = 0;
                 boolean wallet;
 
                 if (playerUUID == null) throw new CustomMessageException("Player not found.");
@@ -154,7 +154,7 @@ public class CommandEconomy implements ICommand, Callback {
                         getCommandUsage(sender);
                         return;
                     }
-                    amount = Long.parseLong(args[2]);
+                    amount = Double.parseDouble(args[2]);
                     wallet = args[3].equalsIgnoreCase("t") || !args[3].equalsIgnoreCase("f") && Boolean.parseBoolean(args[3]);
                 }
 

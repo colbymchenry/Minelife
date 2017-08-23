@@ -69,10 +69,13 @@ public class GuiDropDown extends Gui {
 
     public boolean mouseClicked(Minecraft mc, int mouse_x, int mouse_y)
     {
+        // TODO: Fix dropdown pulling up even tho you don't click it
         if (mouse_x >= xPosition && mouse_x <= xPosition + width) {
             if (mouse_y >= yPosition && mouse_y <= yPosition + height) {
-                drop_down_active = !drop_down_active;
-                return true;
+                if(drop_down_active) {
+                    drop_down_active = !drop_down_active;
+                    return true;
+                }
             } else if (mouse_y >= yPosition) {
                 int y = yPosition + 3;
                 for (int i = 0; i < options.length; i++) {
