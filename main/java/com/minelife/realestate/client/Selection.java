@@ -91,15 +91,20 @@ public class Selection {
         if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
             try {
                 Region region = Region.create(this);
-//                Region.delete(region.getUniqueID());
+                System.out.println("Region with UUID=" + region.getUniqueID() + " created!");
+                region.delete();
+                System.out.println("Region with UUID=" + region.getUniqueID() + " deleted!");
+//                System.out.println("[Server] Selection.isAvailable().");
                 return ModEconomy.getBalance(this.playerUniqueID, true) >= this.getPrice();
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
+            }
+//            System.out.println("[Server] Selection is not available.");
             return false;
         } else {
             Minelife.NETWORK.sendToServer(new SelectionAvailabilityRequest(this));
         }
-        throw new Error("Not Implemented!");
-//        return isAvailable;
+        return isAvailable;
     }
 
     public void purchase() {
@@ -112,14 +117,13 @@ public class Selection {
 
                     ModEconomy.withdraw(this.playerUniqueID, this.getPrice(), true);
                 } catch (Exception e) {
-//                    if (region != null) try { Region.delete(region.getUniqueID()); }
-//                    catch (SQLException e1) { e1.printStackTrace(); }
+                    if (region != null) try { region.delete(); }
+                    catch (Exception e1) { e1.printStackTrace(); }
                 }
             }
         } else {
             Minelife.NETWORK.sendToServer(new SelectionPurchaseRequest(this));
         }
-        throw new Error("Not Implemented!");
     }
 
     public void toBytes(ByteBuf buf) {
