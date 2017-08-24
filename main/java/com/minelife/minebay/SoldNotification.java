@@ -15,6 +15,8 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.UUID;
 
+import static net.minecraft.util.EnumChatFormatting.*;
+
 public class SoldNotification extends AbstractNotification {
 
     private ItemStack item_stack;
@@ -61,14 +63,12 @@ public class SoldNotification extends AbstractNotification {
 
         @Override
         protected void drawForeground() {
-            mc.fontRenderer.drawString("Item Sold!", 24, 0, 0xFFFFFF);
-            mc.fontRenderer.drawString("Amount: x" + notification.item_stack.stackSize, 0, 16, 0xFFFFFF);
-            mc.fontRenderer.drawString("Cash: $" + NumberConversions.formatter.format(notification.price), 0, 32, 0xFFFFFF);
+            mc.fontRenderer.drawString(YELLOW.toString() + UNDERLINE.toString() + BOLD.toString() + "Item Sold!", 28, 11, 0xFFFFFF);
+            mc.fontRenderer.drawString(GREEN.toString() + BOLD.toString() + "Cash: +$" + NumberConversions.formatter.format(notification.price), 8, 28, 0xFFFFFF);
             GL11.glEnable(GL11.GL_LIGHTING);
             item_renderer.attempt_gl_reset();
             RenderHelper.enableGUIStandardItemLighting();
-            item_renderer.drawItemStack(notification.item_stack, 0, 0);
-            // TODO: Format and add sound effect
+            item_renderer.drawItemStack(notification.item_stack, 6, 6);
         }
 
         @Override
@@ -78,7 +78,12 @@ public class SoldNotification extends AbstractNotification {
 
         @Override
         protected int getHeight() {
-            return 50;
+            return 35;
+        }
+
+        @Override
+        public String getSound() {
+            return "cha_ching";
         }
     }
 

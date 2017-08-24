@@ -135,6 +135,8 @@ public class ItemListing extends Listing {
                 notification.sendTo(PlayerHelper.getPlayer(seller()));
             else
                 notification.writeToDB();
+
+            player.closeScreen();
         } catch (Exception e) {
             e.printStackTrace();
             Minelife.handle_exception(e, player);
