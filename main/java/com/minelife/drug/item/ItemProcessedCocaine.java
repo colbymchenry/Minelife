@@ -27,6 +27,7 @@ public class ItemProcessedCocaine extends Item {
         player.addPotionEffect(new PotionEffect(Potion.resistance.id, 20 * 300, 1, false));
         player.addPotionEffect(new PotionEffect(Potion.fireResistance.id, 20 * 300, 1, false));
         player.addPotionEffect(new PotionEffect(Potion.hunger.id, 20 * 300, 0, false));
+        player.getEntityData().setLong("cocaine", System.currentTimeMillis());
         return true;
     }
 }

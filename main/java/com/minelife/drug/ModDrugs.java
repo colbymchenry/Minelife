@@ -8,8 +8,11 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -102,5 +105,29 @@ public class ModDrugs extends AbstractMod {
             BlockSulfuricAcid.fluid().setIcons(MLBlocks.sulfuric_acid.getBlockTextureFromSide(1), MLBlocks.sulfuric_acid.getBlockTextureFromSide(2));
             BlockPotassiumPermanganate.fluid().setIcons(MLBlocks.potassium_permanganate.getBlockTextureFromSide(1), MLBlocks.potassium_permanganate.getBlockTextureFromSide(2));
         }
+    }
+
+    @SideOnly(Side.SERVER)
+    public static boolean check_for_marijuana(EntityPlayer player, int days_in_minecraft) {
+        if(!player.getEntityData().hasKey("joint")) return false;
+        long last_use = player.getEntityData().getLong("joint");
+        long difference = System.currentTimeMillis() - last_use;
+        int seconds = (int) (difference / 1000) % 60 ;
+        int minutes = (int) ((difference / (1000*60)) % 60);
+        int hours   = (int) ((difference / (1000*60*60)) % 24);
+        int mc_days = minutes / 20;
+        return  mc_days < days_in_minecraft;
+    }
+
+    @SideOnly(Side.SERVER)
+    public static boolean check_for_cocaine(EntityPlayer player, int days_in_minecraft) {
+        if(!player.getEntityData().hasKey("cocaine")) return false;
+        long last_use = player.getEntityData().getLong("cocaine");
+        long difference = System.currentTimeMillis() - last_use;
+        int seconds = (int) (difference / 1000) % 60 ;
+        int minutes = (int) ((difference / (1000*60)) % 60);
+        int hours   = (int) ((difference / (1000*60*60)) % 24);
+        int mc_days = minutes / 20;
+        return  mc_days < days_in_minecraft;
     }
 }

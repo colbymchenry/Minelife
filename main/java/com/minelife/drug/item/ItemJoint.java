@@ -22,6 +22,7 @@ public class ItemJoint extends ItemAbstractDrug {
         player.addPotionEffect(new PotionEffect(Potion.nightVision.id, 60 * 20, 0, false));
         player.addPotionEffect(new PotionEffect(Potion.waterBreathing.id, 60 * 20, 0, false));
         player.addPotionEffect(new PotionEffect(Potion.hunger.id, 60 * 20, 1, false));
+        player.getEntityData().setLong("joint", System.currentTimeMillis());
         return true;
     }
 

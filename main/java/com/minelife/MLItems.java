@@ -68,6 +68,7 @@ public class MLItems {
     public static ItemAbstractDrug purple_cocaine;
     public static ItemProcessedCocaine processed_cocaine;
     public static ItemJoint joint;
+    public static ItemDrugTest drug_test;
 
     protected static void init()
     {
@@ -124,6 +125,7 @@ public class MLItems {
         register_item(processed_cocaine = new ItemProcessedCocaine());
         register_item(purple_cocaine = new ItemAbstractDrug("purple_cocaine"));
         register_item(joint = new ItemJoint());
+        register_item(drug_test = new ItemDrugTest());
     }
 
     private static void register_item(Item item)
