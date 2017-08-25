@@ -1,4 +1,3 @@
-potion.x_ray_effect=X-Ray Vision
 # Gun Mod
 tile.zinc_ore.name=Zinc Ore
 item.AK47.name=AK-47
@@ -65,3 +64,6 @@ item.processed_cocaine.name=Processed Cocaine
 item.purple_cocaine.name=Purple Cocaine
 item.joint.name=Joint
 item.drug_test.name=Drug Test
+potion.x_ray_effect=X-Ray Vision
+potion.marijuana_effect=Detectable Marijuana
+potion.cocaine_effect=Detectable Cocaine

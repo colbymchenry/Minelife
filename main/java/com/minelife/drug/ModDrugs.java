@@ -3,6 +3,7 @@ package com.minelife.drug;
 import buildcraft.BuildCraftEnergy;
 import com.minelife.*;
 import com.minelife.drug.block.*;
+import com.minelife.drug.item.ItemDrugTest;
 import com.minelife.drug.tileentity.TileEntityCementMixer;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -25,7 +26,13 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+
 public class ModDrugs extends AbstractMod {
+
+    // TODO: Possible add syringe for shooting up cocaine for longer duration of effects, same for marjuana but maybe do oil
 
     public static final CreativeTabs tab_drugs = new CreativeTabs("tab_drugs") {
         @Override
@@ -35,12 +42,17 @@ public class ModDrugs extends AbstractMod {
     };
 
     public static Potion x_ray_potion;
+    public static Potion marijuana_potion;
+    public static Potion cocaine_potion;
 
     @Override
-    public void preInit(FMLPreInitializationEvent event)
-    {
+    public void preInit(FMLPreInitializationEvent event) {
         x_ray_potion = new XRayEffect(25, false, 0);
+        marijuana_potion = new MarijuanaEffect(26, false, 0);
+        cocaine_potion = new CocaineEffect(27, false, 0);
         MinecraftForge.EVENT_BUS.register(x_ray_potion);
+        MinecraftForge.EVENT_BUS.register(marijuana_potion);
+        MinecraftForge.EVENT_BUS.register(cocaine_potion);
 
         BucketHandler.INSTANCE.buckets.put(MLBlocks.ammonia, MLItems.ammonia);
         BucketHandler.INSTANCE.buckets.put(MLBlocks.sulfuric_acid, MLItems.sulfuric_acid);
@@ -54,7 +66,8 @@ public class ModDrugs extends AbstractMod {
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.joint), MLItems.cannabis_shredded, Items.paper);
         // register grinder recipes
         GameRegistry.addShapedRecipe(new ItemStack(MLItems.grinder), "AAA", "BBB", "AAA", 'A', Item.getItemFromBlock(Blocks.planks), 'B', Items.iron_ingot);
-        for(int i = 0; i < ItemDye.field_150921_b.length; i++) GameRegistry.addShapelessRecipe(new ItemStack(MLItems.grinder, 1, i), MLItems.grinder, new ItemStack(Items.dye, 1, i));
+        for (int i = 0; i < ItemDye.field_150921_b.length; i++)
+            GameRegistry.addShapelessRecipe(new ItemStack(MLItems.grinder, 1, i), MLItems.grinder, new ItemStack(Items.dye, 1, i));
         // continue with other recipes
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.potassium_hydroxide), Item.getItemFromBlock(MLBlocks.potash), MLItems.calcium_hydroxide);
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.potassium_permanganate), MLItems.sulfuric_acid, MLItems.potassium_manganate);
@@ -72,34 +85,29 @@ public class ModDrugs extends AbstractMod {
     }
 
     @Override
-    public void init(FMLInitializationEvent event)
-    {
+    public void init(FMLInitializationEvent event) {
         FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("ammonia", 1000), new ItemStack(MLItems.ammonia), new ItemStack(Items.bucket));
         FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("potassium_permanganate", 1000), new ItemStack(MLItems.potassium_permanganate), new ItemStack(Items.bucket));
         FluidContainerRegistry.registerFluidContainer(FluidRegistry.getFluidStack("sulfuric_acid", 1000), new ItemStack(MLItems.sulfuric_acid), new ItemStack(Items.bucket));
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxy()
-    {
+    public Class<? extends CommonProxy> getClientProxy() {
         return com.minelife.drug.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxy()
-    {
+    public Class<? extends CommonProxy> getServerProxy() {
         return com.minelife.drug.server.ServerProxy.class;
     }
 
     @Override
-    public AbstractGuiHandler gui_handler()
-    {
+    public AbstractGuiHandler gui_handler() {
         return new DrugsGuiHandler();
     }
 
     @Override
-    public void textureHook(TextureStitchEvent.Post event)
-    {
+    public void textureHook(TextureStitchEvent.Post event) {
         if (event.map.getTextureType() == 0) {
             BlockAmmonia.fluid().setIcons(MLBlocks.ammonia.getBlockTextureFromSide(1), MLBlocks.ammonia.getBlockTextureFromSide(2));
             BlockSulfuricAcid.fluid().setIcons(MLBlocks.sulfuric_acid.getBlockTextureFromSide(1), MLBlocks.sulfuric_acid.getBlockTextureFromSide(2));
@@ -108,26 +116,38 @@ public class ModDrugs extends AbstractMod {
     }
 
     @SideOnly(Side.SERVER)
-    public static boolean check_for_marijuana(EntityPlayer player, int days_in_minecraft) {
-        if(!player.getEntityData().hasKey("joint")) return false;
-        long last_use = player.getEntityData().getLong("joint");
-        long difference = System.currentTimeMillis() - last_use;
-        int seconds = (int) (difference / 1000) % 60 ;
-        int minutes = (int) ((difference / (1000*60)) % 60);
-        int hours   = (int) ((difference / (1000*60*60)) % 24);
-        int mc_days = minutes / 20;
-        return  mc_days < days_in_minecraft;
+    public static boolean check_for_marijuana(EntityPlayer player) {
+//        if (!player.getEntityData().hasKey("marijuana")) return false;
+//
+//        try {
+//            Date last_use = ItemDrugTest.df.parse(player.getEntityData().getString("marijuana"));
+//            int days_since_last_use = convert_to_mc_days(Calendar.getInstance().getTime(), last_use);
+//            return days_since_last_use < days_in_minecraft;
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+
+        return player.isPotionActive(marijuana_potion);
     }
 
     @SideOnly(Side.SERVER)
-    public static boolean check_for_cocaine(EntityPlayer player, int days_in_minecraft) {
-        if(!player.getEntityData().hasKey("cocaine")) return false;
-        long last_use = player.getEntityData().getLong("cocaine");
-        long difference = System.currentTimeMillis() - last_use;
-        int seconds = (int) (difference / 1000) % 60 ;
-        int minutes = (int) ((difference / (1000*60)) % 60);
-        int hours   = (int) ((difference / (1000*60*60)) % 24);
-        int mc_days = minutes / 20;
-        return  mc_days < days_in_minecraft;
+    public static boolean check_for_cocaine(EntityPlayer player) {
+//        if (!player.getEntityData().hasKey("cocaine")) return false;
+//
+//        try {
+//            Date last_use = ItemDrugTest.df.parse(player.getEntityData().getString("cocaine"));
+//            int days_since_last_use = convert_to_mc_days(Calendar.getInstance().getTime(), last_use);
+//            return days_since_last_use < days_in_minecraft;
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+
+        return player.isPotionActive(cocaine_potion);
+    }
+
+    public static int convert_to_mc_days(Date later, Date earlier) {
+        // gets the minute difference between the two dates
+        long result = ((earlier.getTime() / 60000) - (later.getTime() / 60000));
+        return (int) result / 20;
     }
 }

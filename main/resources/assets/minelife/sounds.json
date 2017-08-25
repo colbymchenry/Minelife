@@ -70,5 +70,13 @@
   "cement_mixer": {
     "category": "neutral",
     "sounds": ["minelife:cement_mixer"]
+  },
+  "smoke": {
+    "category": "neutral",
+    "sounds": ["minelife:smoke"]
+  },
+  "snort": {
+    "category": "neutral",
+    "sounds": ["minelife:snort"]
   }
 }
