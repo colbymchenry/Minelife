@@ -2,7 +2,7 @@ package com.minelife.realestate.client;
 
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
-import com.minelife.realestate.Region;
+import com.minelife.realestate.Plot;
 import com.minelife.realestate.client.packet.BlockPriceRequest;
 import com.minelife.realestate.client.packet.SelectionAvailabilityRequest;
 import com.minelife.realestate.client.packet.SelectionPurchaseRequest;
@@ -86,14 +86,14 @@ public class Selection {
         return (long) (dx * dy * dz * pricePerBlock);
     }
 
-    // TODO: Intersection with Region Check not working properly.
+    // TODO: Intersection with Plot Check not working properly.
     public boolean isAvailable() {
         if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
             try {
-                Region region = Region.create(this);
-                System.out.println("Region with UUID=" + region.getUniqueID() + " created!");
-                region.delete();
-                System.out.println("Region with UUID=" + region.getUniqueID() + " deleted!");
+                Plot plot = Plot.create(this);
+                System.out.println("Plot with UUID=" + plot.getUniqueID() + " created!");
+                plot.delete();
+                System.out.println("Plot with UUID=" + plot.getUniqueID() + " deleted!");
 //                System.out.println("[Server] Selection.isAvailable().");
                 return ModEconomy.getBalance(this.playerUniqueID, true) >= this.getPrice();
             } catch (Exception ignored) {
@@ -110,14 +110,14 @@ public class Selection {
     public void purchase() {
         if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
             if (this.isAvailable()) {
-                Region region = null;
+                Plot plot = null;
                 try {
-                    region = Region.create(this);
+                    plot = Plot.create(this);
                     // TODO: Create Estate
 
                     ModEconomy.withdraw(this.playerUniqueID, this.getPrice(), true);
                 } catch (Exception e) {
-                    if (region != null) try { region.delete(); }
+                    if (plot != null) try { plot.delete(); }
                     catch (Exception e1) { e1.printStackTrace(); }
                 }
             }
