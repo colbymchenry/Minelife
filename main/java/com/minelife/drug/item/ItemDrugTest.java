@@ -18,7 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class ItemDrugTest extends Item implements Callback {
+public class ItemDrugTest extends Item {
 
     public static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -46,8 +46,7 @@ public class ItemDrugTest extends Item implements Callback {
 
 
         add_drug_test_results(item_stack, (EntityPlayer) entity_clicked);
-        player.inventoryContainer.detectAndSendChanges();
-        ((EntityPlayerMP) player).sendContainerToPlayer(player.inventoryContainer);
+        player.inventory.setInventorySlotContents(player.inventory.currentItem, item_stack);
         return true;
     }
 
@@ -80,6 +79,7 @@ public class ItemDrugTest extends Item implements Callback {
         NBTTagCompound tag_compound = item_stack.hasTagCompound() ? item_stack.stackTagCompound : new NBTTagCompound();
 
         tag_compound.setString("player", player.getUniqueID().toString());
+        tag_compound.setString("player_name", player.getDisplayName());
 
         if (ModDrugs.check_for_marijuana(player))
             tag_compound.setString("marijuana", df.format(Calendar.getInstance().getTime()));
@@ -87,38 +87,6 @@ public class ItemDrugTest extends Item implements Callback {
             tag_compound.setString("cocaine", df.format(Calendar.getInstance().getTime()));
 
         item_stack.stackTagCompound = tag_compound;
-
-        // thread the NameFetcher class so that it doesn't cause lag
-        new Thread(new FetchName(this, item_stack, player.getUniqueID())).start();
     }
 
-
-    @Override
-    public void callback(Object... objects) {
-        ItemStack stack = (ItemStack) objects[0];
-        UUID player_uuid = (UUID) objects[1];
-        String player_name = (String) objects[2];
-        stack.stackTagCompound.setString("player_name", player_name);
-        System.out.println(stack.stackTagCompound.getString("player") + stack.stackTagCompound.getString("player_name"));
-    }
-
-    class FetchName implements Runnable {
-
-        Callback callback;
-        ItemStack stack;
-        UUID player;
-        String name;
-
-        public FetchName(Callback callback, ItemStack stack, UUID player) {
-            this.callback = callback;
-            this.stack = stack;
-            this.player = player;
-        }
-
-        @Override
-        public void run() {
-            name = NameFetcher.get(player);
-            callback.callback(stack, player, name);
-        }
-    }
 }
