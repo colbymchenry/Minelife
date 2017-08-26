@@ -32,6 +32,10 @@ public class ItemDrugTest extends Item {
     public boolean itemInteractionForEntity(ItemStack item_stack, EntityPlayer player, EntityLivingBase entity_clicked) {
         if (!(entity_clicked instanceof EntityPlayer)) return false;
         if (player.worldObj.isRemote) return true;
+        if(item_stack.hasTagCompound() && item_stack.stackTagCompound.hasKey("player")) {
+            player.addChatComponentMessage(new ChatComponentText("This has already been used."));
+            return false;
+        }
 
         if (ModDrugs.check_for_cocaine((EntityPlayer) entity_clicked))
             player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Cocaine detected!"));
