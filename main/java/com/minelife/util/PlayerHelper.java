@@ -2,6 +2,7 @@ package com.minelife.util;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
+import com.minelife.gun.client.RenderBulletLine;
 import com.minelife.util.server.PacketUpdatePlayerInventory;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -22,6 +23,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldServer;
+import org.lwjgl.opengl.GL11;
 
 import javax.vecmath.Vector3d;
 import java.lang.reflect.Field;
@@ -69,6 +71,11 @@ public class PlayerHelper {
 
             // may have to move the yCoord down by 0.2f for everything to make it work right, we'll see
 
+            if(player.worldObj.isRemote) {
+                RenderBulletLine.currentPosVec = currentPosVec;
+                RenderBulletLine.yaw = player.rotationYaw;
+            }
+
             int x = MathHelper.floor_double(currentPosVec.xCoord);
             int y = MathHelper.floor_double(currentPosVec.yCoord);
             int z = MathHelper.floor_double(currentPosVec.zCoord);
@@ -88,8 +95,8 @@ public class PlayerHelper {
                 }
             }
 
-            for(EntityLivingBase e : surrounding_entities) {
-                if(e != player && e.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(currentPosVec)) {
+            for (EntityLivingBase e : surrounding_entities) {
+                if (e != player && e.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(currentPosVec)) {
                     result.entity = e;
                     return result;
                 }
@@ -143,5 +150,7 @@ public class PlayerHelper {
             return block;
         }
     }
+
+
 
 }

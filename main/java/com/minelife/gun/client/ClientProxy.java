@@ -20,6 +20,7 @@ public class ClientProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(new OverlayRenderer());
         MinecraftForge.EVENT_BUS.register(this);
         ItemGun.registerRenderers();
+        MinecraftForge.EVENT_BUS.register(new RenderBulletLine());
     }
 
     /**
