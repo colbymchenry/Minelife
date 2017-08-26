@@ -13,6 +13,8 @@ import net.minecraftforge.common.MinecraftForge;
 
 public class ClientProxy extends CommonProxy {
 
+    public static RenderBulletLine renderBulletLine;
+
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         FMLCommonHandler.instance().bus().register(new KeyStrokeListener());
@@ -20,7 +22,7 @@ public class ClientProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(new OverlayRenderer());
         MinecraftForge.EVENT_BUS.register(this);
         ItemGun.registerRenderers();
-        MinecraftForge.EVENT_BUS.register(new RenderBulletLine());
+        MinecraftForge.EVENT_BUS.register(renderBulletLine = new RenderBulletLine());
     }
 
     /**

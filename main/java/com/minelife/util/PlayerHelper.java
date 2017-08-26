@@ -42,8 +42,6 @@ public class PlayerHelper {
         Minelife.NETWORK.sendTo(new PacketUpdatePlayerInventory(player), player);
     }
 
-    public static List<Vec3> VECTORS = Lists.newArrayList();
-
     public static TargetResult getTarget(EntityPlayer player, int range, String effect) {
         TargetResult result = new TargetResult();
 
@@ -54,22 +52,29 @@ public class PlayerHelper {
         List<EntityLivingBase> surrounding_entities = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check);
         Vec3 lookVec = player.getLookVec();
         Vec3 currentPosVec = Vec3.createVectorHelper(player.posX, player.posY + player.eyeHeight, player.posZ);
-        if (player.worldObj.isRemote) RenderBulletLine.origin = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
+
+        // TODO: Call RenderBulletLine.shot
+        if (player.worldObj.isRemote) {
+            RenderBulletLine.lookVec = lookVec;
+        }
         Block block;
 
         for (int i = 0; i < range; i++) {
+
+            if(i == 1 && player.worldObj.isRemote) {
+                RenderBulletLine.origin = currentPosVec;
+            }
+
             currentPosVec = currentPosVec.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
+
+            if(i == 1 && player.worldObj.isRemote) {
+                RenderBulletLine.target = currentPosVec;
+            }
 
             if (i < 10 && effect != null && !effect.isEmpty())
                 player.worldObj.spawnParticle(effect, currentPosVec.xCoord, currentPosVec.yCoord - 0.2f, currentPosVec.zCoord, 0.0F, 0.0F, 0.0F);
 
             // may have to move the yCoord down by 0.2f for everything to make it work right, we'll see
-
-            if(player.worldObj.isRemote) {
-                RenderBulletLine.target = currentPosVec;
-//                RenderBulletLine.currentPosVec = currentPosVec;
-//                RenderBulletLine.yaw = player.rotationYaw;
-            }
 
             int x = MathHelper.floor_double(currentPosVec.xCoord);
             int y = MathHelper.floor_double(currentPosVec.yCoord);

@@ -2,31 +2,72 @@ package com.minelife.gun.client;
 
 import com.minelife.realestate.util.GUIUtil;
 import com.minelife.util.Vector;
+import com.minelife.util.server.Callback;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-public class RenderBulletLine {
+public class RenderBulletLine implements Callback {
 
-    public static Vec3 origin;
-    public static Vec3 target;
+    private Vec3 origin;
+    private Vec3 target;
+    private Vec3 lookVec;
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {
 
-        if (origin != null && target != null) {
-
+        if (origin != null && target != null && lookVec != null) {
             Vector topLeft = new Vector(origin.xCoord, origin.yCoord, origin.zCoord);
             Vector bottomLeft = new Vector(origin.xCoord, origin.yCoord - 0.01, origin.zCoord);
             Vector topRight = new Vector(target.xCoord, target.yCoord, target.zCoord);
-
             GUIUtil.drawRect(Minecraft.getMinecraft(), topLeft, bottomLeft, null, topRight, event.partialTicks, Color.red, true);
-
         }
 
+    }
+
+    @Override
+    public void callback(Object... objects) {
+        origin = (Vec3) objects[0];
+        target = (Vec3) objects[1];
+    }
+
+    public void doShot(Vec3 origin, Vec3 target, Vec3 lookVec) {
+        this.origin = origin;
+        this.target = target;
+        this.lookVec = lookVec;
+        new Thread(new RenderThread(origin, target, lookVec, this)).start();
+    }
+
+    class RenderThread implements Runnable {
+        public Vec3 origin;
+        public Vec3 target;
+        public Vec3 lookVec;
+        public Callback callback;
+
+        public RenderThread(Vec3 origin, Vec3 target, Vec3 lookVec, Callback callback) {
+            this.origin = origin;
+            this.target = target;
+            this.lookVec = lookVec;
+            this.callback = callback;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < 50; i++) {
+                origin = origin.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
+                target = target.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
+                callback.callback(origin, target);
+                try {
+                    Thread.sleep(500L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 //    public static Vec3 shotFrom;
