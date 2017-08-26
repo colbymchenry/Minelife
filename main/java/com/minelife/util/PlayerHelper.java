@@ -7,25 +7,18 @@ import com.minelife.util.server.PacketUpdatePlayerInventory;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldServer;
-import org.lwjgl.opengl.GL11;
 
-import javax.vecmath.Vector3d;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,13 +47,14 @@ public class PlayerHelper {
     public static TargetResult getTarget(EntityPlayer player, int range, String effect) {
         TargetResult result = new TargetResult();
 
-        List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(new Block[]{Blocks.tallgrass, Blocks.water,
-                Blocks.flowing_water, Blocks.double_plant, Blocks.red_flower, Blocks.yellow_flower}));
+        List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(Blocks.tallgrass, Blocks.water,
+                Blocks.flowing_water, Blocks.double_plant, Blocks.red_flower, Blocks.yellow_flower));
 
         AxisAlignedBB surrounding_check = AxisAlignedBB.getBoundingBox(player.posX - range, player.posY - range, player.posZ - range, player.posX + range, player.posY + range, player.posZ + range);
         List<EntityLivingBase> surrounding_entities = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check);
         Vec3 lookVec = player.getLookVec();
         Vec3 currentPosVec = Vec3.createVectorHelper(player.posX, player.posY + player.eyeHeight, player.posZ);
+        if (player.worldObj.isRemote) RenderBulletLine.origin = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
         Block block;
 
         for (int i = 0; i < range; i++) {
@@ -72,8 +66,9 @@ public class PlayerHelper {
             // may have to move the yCoord down by 0.2f for everything to make it work right, we'll see
 
             if(player.worldObj.isRemote) {
-                RenderBulletLine.currentPosVec = currentPosVec;
-                RenderBulletLine.yaw = player.rotationYaw;
+                RenderBulletLine.target = currentPosVec;
+//                RenderBulletLine.currentPosVec = currentPosVec;
+//                RenderBulletLine.yaw = player.rotationYaw;
             }
 
             int x = MathHelper.floor_double(currentPosVec.xCoord);
