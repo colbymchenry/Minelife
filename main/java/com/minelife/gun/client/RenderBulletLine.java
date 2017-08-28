@@ -15,11 +15,10 @@ import java.util.ListIterator;
 
 public class RenderBulletLine {
 
-    private RenderThread renderThread;
     private volatile List<Bullet> bulletList = Lists.newArrayList();
 
     public RenderBulletLine() {
-        new Thread(renderThread = new RenderThread()).start();
+        new Thread(new RenderThread()).start();
     }
 
     @SubscribeEvent
