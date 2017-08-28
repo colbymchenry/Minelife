@@ -2,6 +2,7 @@ package com.minelife.util;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
+import com.minelife.gun.client.ClientProxy;
 import com.minelife.gun.client.RenderBulletLine;
 import com.minelife.util.server.PacketUpdatePlayerInventory;
 import cpw.mods.fml.relauncher.Side;
@@ -53,22 +54,20 @@ public class PlayerHelper {
         Vec3 lookVec = player.getLookVec();
         Vec3 currentPosVec = Vec3.createVectorHelper(player.posX, player.posY + player.eyeHeight, player.posZ);
 
-        // TODO: Call RenderBulletLine.shot
-        if (player.worldObj.isRemote) {
-            RenderBulletLine.lookVec = lookVec;
-        }
+        Vec3 origin = null, target = null;
         Block block;
 
         for (int i = 0; i < range; i++) {
 
             if(i == 1 && player.worldObj.isRemote) {
-                RenderBulletLine.origin = currentPosVec;
+                origin = currentPosVec;
             }
 
             currentPosVec = currentPosVec.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
 
             if(i == 1 && player.worldObj.isRemote) {
-                RenderBulletLine.target = currentPosVec;
+               target = currentPosVec;
+                ClientProxy.renderBulletLine.shot(origin, target, lookVec);
             }
 
             if (i < 10 && effect != null && !effect.isEmpty())

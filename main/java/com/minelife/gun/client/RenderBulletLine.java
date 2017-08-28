@@ -35,10 +35,11 @@ public class RenderBulletLine implements Callback {
         target = (Vec3) objects[1];
     }
 
-    public void doShot(Vec3 origin, Vec3 target, Vec3 lookVec) {
+    public void shot(Vec3 origin, Vec3 target, Vec3 lookVec) {
         this.origin = origin;
         this.target = target;
         this.lookVec = lookVec;
+        // TODO: Instead make a thread pool
         new Thread(new RenderThread(origin, target, lookVec, this)).start();
     }
 
@@ -62,7 +63,7 @@ public class RenderBulletLine implements Callback {
                 target = target.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
                 callback.callback(origin, target);
                 try {
-                    Thread.sleep(500L);
+                    Thread.sleep(5L);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
