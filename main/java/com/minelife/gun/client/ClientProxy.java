@@ -1,19 +1,21 @@
 package com.minelife.gun.client;
 
 import com.minelife.CommonProxy;
+import com.minelife.Minelife;
+import com.minelife.bullets.BulletRenderer;
 import com.minelife.gun.item.guns.ItemGun;
+import com.minelife.gun.packet.PacketMouseClick;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
+import org.lwjgl.input.Mouse;
 
 public class ClientProxy extends CommonProxy {
-
-    public static RenderBulletLine renderBulletLine;
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
@@ -21,8 +23,9 @@ public class ClientProxy extends CommonProxy {
         FMLCommonHandler.instance().bus().register(new TickHandler());
         MinecraftForge.EVENT_BUS.register(new OverlayRenderer());
         MinecraftForge.EVENT_BUS.register(this);
+        FMLCommonHandler.instance().bus().register(this);
         ItemGun.registerRenderers();
-        MinecraftForge.EVENT_BUS.register(renderBulletLine = new RenderBulletLine());
+        MinecraftForge.EVENT_BUS.register(new BulletRenderer());
     }
 
     /**
@@ -42,5 +45,21 @@ public class ClientProxy extends CommonProxy {
 
         event.setCanceled(true);
     }
+
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent event){
+        if(Minecraft.getMinecraft().thePlayer == null) return;
+
+        ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
+
+        if(heldItem == null || !(heldItem.getItem() instanceof ItemGun)) return;
+
+        if (ItemGun.getCurrentClipHoldings(heldItem) < 1) return;
+
+        if(Minecraft.getMinecraft().currentScreen != null) return;
+
+        if (Mouse.isButtonDown(0)) Minelife.NETWORK.sendToServer(new PacketMouseClick(!Mouse.isButtonDown(0)));
+    }
+
 
 }

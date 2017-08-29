@@ -3,19 +3,18 @@ package com.minelife.gun.item.guns;
 import com.google.common.collect.Lists;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
+import com.minelife.bullets.BulletHandler;
 import com.minelife.gun.client.RenderGun;
 import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.ModGun;
 import com.minelife.gun.item.ammos.ItemAmmo;
-import com.minelife.gun.server.EntityShotEvent;
-import com.minelife.util.PlayerHelper;
-import cpw.mods.fml.common.registry.GameRegistry;
+import com.minelife.gun.packet.PacketBullet;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -24,7 +23,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
 
@@ -106,30 +104,31 @@ public abstract class ItemGun extends Item {
 
         stack.stackTagCompound = stackData;
 
-        player.worldObj.playSoundToNearExcept(player, Minelife.MOD_ID + ":guns." + getName() + ".shot", 0.5F, 1.0F);
+        player.worldObj.playSoundAtEntity(player,Minelife.MOD_ID + ":guns." + getName() + ".shot", 0.5F, 1.0F);
 
-        PlayerHelper.TargetResult target = PlayerHelper.getTarget(player, 75, "smoke");
+//        PlayerHelper.TargetResult target = PlayerHelper.getTarget(player, 75, "smoke");
+        Minelife.NETWORK.sendToAllAround(new PacketBullet(BulletHandler.addBullet(player, ammoType)), new NetworkRegistry.TargetPoint(player.worldObj.provider.dimensionId, player.posX, player.posY, player.posZ, 50));
 
-        if(target.getBlock() != null) {
-            if(ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
-                player.worldObj.createExplosion(player, target.getBlockVector().getX(), target.getBlockVector().getY(), target.getBlockVector().getZ(), 4.0F, false);
-            } else if (ammoType == ItemAmmo.AmmoType.INCENDIARY) {
-                if(player.worldObj.getBlock(target.getBlockVector().getBlockX(), target.getBlockVector().getBlockY() + 1, target.getBlockVector().getBlockZ()) == Blocks.air) {
-                    player.worldObj.setBlock(target.getBlockVector().getBlockX(), target.getBlockVector().getBlockY() + 1, target.getBlockVector().getBlockZ(), Blocks.fire);
-                }
-            }
-        }
+//        if(target.getBlock() != null) {
+//            if(ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
+//                player.worldObj.createExplosion(player, target.getBlockVector().getX(), target.getBlockVector().getY(), target.getBlockVector().getZ(), 4.0F, false);
+//            } else if (ammoType == ItemAmmo.AmmoType.INCENDIARY) {
+//                if(player.worldObj.getBlock(target.getBlockVector().getBlockX(), target.getBlockVector().getBlockY() + 1, target.getBlockVector().getBlockZ()) == Blocks.air) {
+//                    player.worldObj.setBlock(target.getBlockVector().getBlockX(), target.getBlockVector().getBlockY() + 1, target.getBlockVector().getBlockZ(), Blocks.fire);
+//                }
+//            }
+//        }
 
-        if (target.getEntity() != null) {
-
-            if(ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
-                player.worldObj.createExplosion(player, target.getEntity().posX, target.getEntity().posY, target.getEntity().posZ, 4.0F, false);
-            } else if (ammoType == ItemAmmo.AmmoType.INCENDIARY) {
-                target.getEntity().setFire(6);
-            }
-
-            MinecraftForge.EVENT_BUS.post(new EntityShotEvent(player, target.getEntity(), player.getHeldItem()));
-        }
+//        if (target.getEntity() != null) {
+//
+//            if(ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
+//                player.worldObj.createExplosion(player, target.getEntity().posX, target.getEntity().posY, target.getEntity().posZ, 4.0F, false);
+//            } else if (ammoType == ItemAmmo.AmmoType.INCENDIARY) {
+//                target.getEntity().setFire(6);
+//            }
+//
+//            MinecraftForge.EVENT_BUS.post(new EntityShotEvent(player, target.getEntity(), player.getHeldItem()));
+//        }
     }
 
     public abstract String getName();

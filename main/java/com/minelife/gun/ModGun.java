@@ -1,14 +1,15 @@
 package com.minelife.gun;
 
 import com.minelife.*;
-import com.minelife.gun.block.BlockZincOre;
-import com.minelife.gun.item.*;
+import com.minelife.bullets.BulletHandler;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.item.parts.ItemGunPart;
+import com.minelife.gun.packet.PacketBullet;
 import com.minelife.gun.packet.PacketMouseClick;
 import com.minelife.gun.packet.PacketReload;
 import com.minelife.gun.packet.PacketSetAmmoType;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -53,6 +54,7 @@ public class ModGun extends AbstractMod {
         );
 
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.zinc_plate), new ItemStack(ForgeHammer.getItem(), 1, OreDictionary.WILDCARD_VALUE), MLItems.zinc_ingot);
+        FMLCommonHandler.instance().bus().register(new BulletHandler());
     }
 
     @Override
@@ -60,6 +62,7 @@ public class ModGun extends AbstractMod {
         registerPacket(PacketMouseClick.Handler.class, PacketMouseClick.class, Side.SERVER);
         registerPacket(PacketReload.Handler.class, PacketReload.class, Side.SERVER);
         registerPacket(PacketSetAmmoType.Handler.class, PacketSetAmmoType.class, Side.SERVER);
+        registerPacket(PacketBullet.Handler.class, PacketBullet.class, Side.CLIENT);
 
         ItemGunPart.registerRecipes();
         ItemAmmo.registerRecipes();

@@ -3,7 +3,6 @@ package com.minelife.util;
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.gun.client.ClientProxy;
-import com.minelife.gun.client.RenderBulletLine;
 import com.minelife.util.server.PacketUpdatePlayerInventory;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -43,7 +42,7 @@ public class PlayerHelper {
         Minelife.NETWORK.sendTo(new PacketUpdatePlayerInventory(player), player);
     }
 
-    public static TargetResult getTarget(EntityPlayer player, int range, String effect) {
+    public static TargetResult getTrget(EntityPlayer player, int range, String effect) {
         TargetResult result = new TargetResult();
 
         List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(Blocks.tallgrass, Blocks.water,
@@ -67,7 +66,7 @@ public class PlayerHelper {
 
             if(i == 1 && player.worldObj.isRemote) {
                target = currentPosVec;
-                ClientProxy.renderBulletLine.shot(origin, target, lookVec);
+//                ClientProxy.renderBulletLine.shot(origin, target, lookVec);
             }
 
             if (i < 10 && effect != null && !effect.isEmpty())
@@ -105,9 +104,9 @@ public class PlayerHelper {
         return result;
     }
 
-    public static TargetResult getTarget(EntityPlayer player, int range) {
-        return getTarget(player, range, null);
-    }
+//    public static TargetResult getTrget(EntityPlayer player, int range) {
+//        return getTarget(player, range, null);
+//    }
 
     @SideOnly(Side.CLIENT)
     public static final void zoom(double amount) {

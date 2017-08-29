@@ -33,9 +33,9 @@ public abstract class ItemGunClient {
     private final IModelCustom model;
     private final ItemGun gun;
     private Animation animation;
-    private boolean mouseDown = false;
+//    private boolean mouseDown = false;
 
-    private long nextFire;
+//    private long nextFire;
 
     public ItemGunClient(ItemGun gun) {
         this.gun = gun;
@@ -55,37 +55,37 @@ public abstract class ItemGunClient {
     public abstract void shootBullet();
 
     public void onUpdate(ItemStack stack, World world, EntityPlayer holder, int slot, boolean inHand) {
-        if (!inHand) return;
-
-        if (ItemGun.getCurrentClipHoldings(stack) < 1) return;
-
-        if(Minecraft.getMinecraft().currentScreen != null) return;
-
-        if (Mouse.isButtonDown(0)) {
-            if (!gun.isFullAuto()) {
-                if (System.currentTimeMillis() > nextFire) {
-                    if (!mouseDown) {
-                        nextFire = System.currentTimeMillis() + gun.getFireRate();
-                        Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
-                        shootBullet();
-                        Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":guns." + gun.getName() + ".shot", 5F, 1.0F);
-                        PlayerHelper.getTarget(holder, 11, "smoke");
-                    }
-                }
-            } else {
-                if (System.currentTimeMillis() > nextFire) {
-                    nextFire = System.currentTimeMillis() + gun.getFireRate();
-                    Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
-                    shootBullet();
-                    Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":guns." + gun.getName() + ".shot", 5F, 1.0F);
-                    PlayerHelper.getTarget(holder, 11, "smoke");
-                }
-            }
-
-            mouseDown = true;
-        } else {
-            mouseDown = false;
-        }
+//        if (!inHand) return;
+//
+//        if (ItemGun.getCurrentClipHoldings(stack) < 1) return;
+//
+//        if(Minecraft.getMinecraft().currentScreen != null) return;
+//
+//        if (Mouse.isButtonDown(0)) {
+//            if (!gun.isFullAuto()) {
+//                if (System.currentTimeMillis() > nextFire) {
+//                    if (!mouseDown) {
+//                        nextFire = System.currentTimeMillis() + gun.getFireRate();
+//                        Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
+//                        shootBullet();
+//                        Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":guns." + gun.getName() + ".shot", 5F, 1.0F);
+//                        PlayerHelper.getTarget(holder, 11, "smoke");
+//                    }
+//                }
+//            } else {
+//                if (System.currentTimeMillis() > nextFire) {
+//                    nextFire = System.currentTimeMillis() + gun.getFireRate();
+//                    Minelife.NETWORK.sendToServer(new PacketMouseClick(false));
+//                    shootBullet();
+//                    Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":guns." + gun.getName() + ".shot", 5F, 1.0F);
+//                    PlayerHelper.getTarget(holder, 11, "smoke");
+//                }
+//            }
+//
+//            mouseDown = true;
+//        } else {
+//            mouseDown = false;
+//        }
     }
 
     public IModelCustom getModel() {

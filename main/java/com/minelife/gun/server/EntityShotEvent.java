@@ -17,16 +17,6 @@ public class EntityShotEvent extends Event {
         this.entityShooter = entityShooter;
         this.entityDamaged = entityDamaged;
         this.gun = gun;
-
-        if(!(gun.getItem() instanceof ItemGun)) return;
-
-        if (this.isCanceled()) return;
-
-        if(ItemGun.getCurrentClipHoldings(gun) < 1) return;
-
-        this.damage = ((ItemGun) gun.getItem()).getDamage();
-
-        entityDamaged.attackEntityFrom(DamageSource.causeMobDamage(entityShooter), this.damage);
     }
 
     public EntityLivingBase getEntityShooter() {

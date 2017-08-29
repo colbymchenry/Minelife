@@ -1,6 +1,7 @@
 package com.minelife.gun.server;
 
 import com.minelife.CommonProxy;
+import com.minelife.bullets.BulletHandler;
 import com.minelife.gun.item.guns.ItemGun;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
