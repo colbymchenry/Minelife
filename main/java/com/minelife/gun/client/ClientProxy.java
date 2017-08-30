@@ -33,32 +33,38 @@ public class ClientProxy extends CommonProxy {
      */
     @SubscribeEvent
     public void onClick(MouseEvent event) {
-        if(Minecraft.getMinecraft().thePlayer == null) return;
+        if (Minecraft.getMinecraft().thePlayer == null) return;
 
         ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
 
-        if(heldItem == null || !(heldItem.getItem() instanceof ItemGun)) return;
+        if (heldItem == null || !(heldItem.getItem() instanceof ItemGun)) return;
 
-        if(event.button == 1) return;
+        if (event.button == 1) return;
 
-        if(event.dwheel != 0) return;
+        if (event.dwheel != 0) return;
 
         event.setCanceled(true);
+
+        if (event.button == 0 && event.buttonstate && !((ItemGun) heldItem.getItem()).isFullAuto()) {
+            Minelife.NETWORK.sendToServer(new PacketMouseClick());
+        }
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.ClientTickEvent event){
-        if(Minecraft.getMinecraft().thePlayer == null) return;
+    public void onTick(TickEvent.ClientTickEvent event) {
+        if (Minecraft.getMinecraft().thePlayer == null) return;
 
         ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
 
-        if(heldItem == null || !(heldItem.getItem() instanceof ItemGun)) return;
+        if (heldItem == null || !(heldItem.getItem() instanceof ItemGun)) return;
 
         if (ItemGun.getCurrentClipHoldings(heldItem) < 1) return;
 
-        if(Minecraft.getMinecraft().currentScreen != null) return;
+        if (Minecraft.getMinecraft().currentScreen != null) return;
 
-        if (Mouse.isButtonDown(0)) Minelife.NETWORK.sendToServer(new PacketMouseClick(!Mouse.isButtonDown(0)));
+        if (Mouse.isButtonDown(0) && ((ItemGun) heldItem.getItem()).isFullAuto()) {
+            Minelife.NETWORK.sendToServer(new PacketMouseClick());
+        }
     }
 
 

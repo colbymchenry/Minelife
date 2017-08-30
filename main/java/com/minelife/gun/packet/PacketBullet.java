@@ -51,8 +51,6 @@ public class PacketBullet implements IMessage {
 
                 if(Minecraft.getMinecraft().currentScreen != null) return null;
 
-                if (Mouse.isButtonDown(0)) Minelife.NETWORK.sendToServer(new PacketMouseClick(!Mouse.isButtonDown(0)));
-
                 ItemGun gun = (ItemGun) heldItem.getItem();
                 gun.getClientHandler().shootBullet();
             }

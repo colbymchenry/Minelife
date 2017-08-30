@@ -68,8 +68,8 @@ public abstract class ItemGun extends Item {
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean inHand) {
         if (!world.isRemote) {
-            if(stack.hasTagCompound() && stack.stackTagCompound.hasKey("reloadTime")) {
-                if(System.currentTimeMillis() > stack.stackTagCompound.getLong("reloadTime")) {
+            if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("reloadTime")) {
+                if (System.currentTimeMillis() > stack.stackTagCompound.getLong("reloadTime")) {
                     reload((EntityPlayer) entity, stack);
                     stack.stackTagCompound.removeTag("reloadTime");
                 }
@@ -87,14 +87,14 @@ public abstract class ItemGun extends Item {
 
     @SideOnly(Side.SERVER)
     public final void shootBullet(EntityPlayer player, ItemStack stack) {
-        if(stack == null || !(stack.getItem() instanceof ItemGun)) return;
+        if (stack == null || !(stack.getItem() instanceof ItemGun)) return;
 
         NBTTagCompound stackData = !stack.hasTagCompound() ? new NBTTagCompound() : stack.stackTagCompound;
 
         ItemAmmo.AmmoType ammoType = stack.stackTagCompound != null && stack.stackTagCompound.hasKey("ammoType") ?
                 ItemAmmo.AmmoType.valueOf(stack.stackTagCompound.getString("ammoType")) : ItemAmmo.AmmoType.NORMAL;
 
-        boolean canFire = System.currentTimeMillis() > (!stackData.hasKey("nextFire") ? 0 : stackData.getLong("nextFire"))
+        boolean canFire = (stack.hasTagCompound() && !stack.stackTagCompound.hasKey("reloadTime")) && System.currentTimeMillis() > (!stackData.hasKey("nextFire") ? 0 : stackData.getLong("nextFire"))
                 && getCurrentClipHoldings(stack) > 0;
 
         if (!canFire) return;
@@ -104,31 +104,9 @@ public abstract class ItemGun extends Item {
 
         stack.stackTagCompound = stackData;
 
-        player.worldObj.playSoundAtEntity(player,Minelife.MOD_ID + ":guns." + getName() + ".shot", 0.5F, 1.0F);
+        player.worldObj.playSoundAtEntity(player, Minelife.MOD_ID + ":guns." + getName() + ".shot", 0.5F, 1.0F);
 
-//        PlayerHelper.TargetResult target = PlayerHelper.getTarget(player, 75, "smoke");
         Minelife.NETWORK.sendToAllAround(new PacketBullet(BulletHandler.addBullet(player, ammoType)), new NetworkRegistry.TargetPoint(player.worldObj.provider.dimensionId, player.posX, player.posY, player.posZ, 50));
-
-//        if(target.getBlock() != null) {
-//            if(ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
-//                player.worldObj.createExplosion(player, target.getBlockVector().getX(), target.getBlockVector().getY(), target.getBlockVector().getZ(), 4.0F, false);
-//            } else if (ammoType == ItemAmmo.AmmoType.INCENDIARY) {
-//                if(player.worldObj.getBlock(target.getBlockVector().getBlockX(), target.getBlockVector().getBlockY() + 1, target.getBlockVector().getBlockZ()) == Blocks.air) {
-//                    player.worldObj.setBlock(target.getBlockVector().getBlockX(), target.getBlockVector().getBlockY() + 1, target.getBlockVector().getBlockZ(), Blocks.fire);
-//                }
-//            }
-//        }
-
-//        if (target.getEntity() != null) {
-//
-//            if(ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
-//                player.worldObj.createExplosion(player, target.getEntity().posX, target.getEntity().posY, target.getEntity().posZ, 4.0F, false);
-//            } else if (ammoType == ItemAmmo.AmmoType.INCENDIARY) {
-//                target.getEntity().setFire(6);
-//            }
-//
-//            MinecraftForge.EVENT_BUS.post(new EntityShotEvent(player, target.getEntity(), player.getHeldItem()));
-//        }
     }
 
     public abstract String getName();
@@ -175,7 +153,7 @@ public abstract class ItemGun extends Item {
 
         ItemStack[] ammoFromInventory = getAmmoFromInventory(player, stack, ammoType);
 
-        if(ammoFromInventory.length == 0) {
+        if (ammoFromInventory.length == 0) {
             player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Could not find any " + ammoType.name().toLowerCase() + " rounds."));
             return;
         }
@@ -187,9 +165,9 @@ public abstract class ItemGun extends Item {
             int needed = maxAmmo - currentHoldings;
             int insertingCount = 0;
 
-            for(ItemStack itemStack : ammoFromInventory) {
-                if(insertingCount < needed) {
-                    if(itemStack.stackSize - (needed - insertingCount) < 1) {
+            for (ItemStack itemStack : ammoFromInventory) {
+                if (insertingCount < needed) {
+                    if (itemStack.stackSize - (needed - insertingCount) < 1) {
                         insertingCount += itemStack.stackSize;
                         itemStack.stackSize = 0;
                     } else {
@@ -204,7 +182,7 @@ public abstract class ItemGun extends Item {
             stackData.setInteger("ammo." + ammoType.name(), currentHoldings + insertingCount);
 
             for (int i = 0; i < player.inventory.mainInventory.length; i++) {
-                for(ItemStack itemStack : ammoFromInventory) {
+                for (ItemStack itemStack : ammoFromInventory) {
                     if (ItemStack.areItemStacksEqual(player.inventory.mainInventory[i], itemStack)) {
                         if (itemStack.stackSize < 1) {
                             player.inventory.mainInventory[i] = null;
@@ -234,13 +212,12 @@ public abstract class ItemGun extends Item {
                 if (gun.getAmmo().contains(itemStack.getItem()) && ammoType == ((ItemAmmo) itemStack.getItem()).getAmmoType()) {
                     obtained += itemStack.stackSize;
                     itemStacks.add(itemStack);
-                    if(obtained >= needed) {
+                    if (obtained >= needed) {
                         break;
                     }
                 }
             }
         }
-
 
 
         return itemStacks.toArray(new ItemStack[itemStacks.size()]);

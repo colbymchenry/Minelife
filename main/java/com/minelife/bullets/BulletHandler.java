@@ -1,5 +1,6 @@
 package com.minelife.bullets;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
@@ -27,7 +28,7 @@ public class BulletHandler {
     private static final List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(Blocks.tallgrass, Blocks.water,
             Blocks.flowing_water, Blocks.double_plant, Blocks.red_flower, Blocks.yellow_flower));
 
-    public static volatile ConcurrentLinkedQueue bulletList = Queues.newConcurrentLinkedQueue();
+    public static volatile List<Bullet> bulletList = Lists.newArrayList();
 
     public static Bullet addBullet(EntityPlayer player, ItemAmmo.AmmoType ammoType) {
         Vec3 lookVec = player.getLookVec();
@@ -76,6 +77,7 @@ public class BulletHandler {
                                 }
                             }
                             iterator.remove();
+                            continue;
                         }
                     }
                 }
@@ -99,6 +101,7 @@ public class BulletHandler {
                         }
 
                         iterator.remove();
+                        continue;
                     }
                 }
             }
