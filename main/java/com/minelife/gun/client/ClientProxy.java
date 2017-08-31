@@ -2,7 +2,7 @@ package com.minelife.gun.client;
 
 import com.minelife.CommonProxy;
 import com.minelife.Minelife;
-import com.minelife.bullets.BulletRenderer;
+import com.minelife.gun.bullets.BulletRenderer;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketMouseClick;
 import cpw.mods.fml.common.FMLCommonHandler;

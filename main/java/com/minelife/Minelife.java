@@ -10,6 +10,7 @@ import com.minelife.permission.ModPermission;
 import com.minelife.police.ModPolice;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.region.ModRegion;
+import com.minelife.tracker.ModTracker;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.server.PacketUpdatePlayerInventory;
 import cpw.mods.fml.common.Mod;
@@ -53,6 +54,7 @@ public class Minelife {
 
     public Minelife() {
         MODS.add(new ModPermission());
+        MODS.add(new ModTracker());
         MODS.add(new ModNotifications());
         MODS.add(new ModEconomy());
         MODS.add(new ModPolice());

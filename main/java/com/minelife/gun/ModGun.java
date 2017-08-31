@@ -1,7 +1,7 @@
 package com.minelife.gun;
 
 import com.minelife.*;
-import com.minelife.bullets.BulletHandler;
+import com.minelife.gun.bullets.BulletHandler;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.item.parts.ItemGunPart;

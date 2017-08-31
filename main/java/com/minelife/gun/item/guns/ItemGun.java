@@ -3,7 +3,7 @@ package com.minelife.gun.item.guns;
 import com.google.common.collect.Lists;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
-import com.minelife.bullets.BulletHandler;
+import com.minelife.gun.bullets.BulletHandler;
 import com.minelife.gun.client.RenderGun;
 import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.ModGun;

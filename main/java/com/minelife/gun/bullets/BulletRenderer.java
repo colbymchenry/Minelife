@@ -1,4 +1,4 @@
-package com.minelife.bullets;
+package com.minelife.gun.bullets;
 
 import com.minelife.realestate.util.GUIUtil;
 import com.minelife.util.Vector;

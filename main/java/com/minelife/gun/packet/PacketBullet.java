@@ -1,8 +1,7 @@
 package com.minelife.gun.packet;
 
-import com.minelife.Minelife;
-import com.minelife.bullets.Bullet;
-import com.minelife.bullets.BulletHandler;
+import com.minelife.gun.bullets.Bullet;
+import com.minelife.gun.bullets.BulletHandler;
 import com.minelife.gun.item.guns.ItemGun;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -12,7 +11,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import org.lwjgl.input.Mouse;
 
 public class PacketBullet implements IMessage {
 

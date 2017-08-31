@@ -20,9 +20,8 @@ public class ItemProcessedCocaine extends Item {
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int m, float f, float f1, float f2)
-    {
-        if(world.isRemote) return true;
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+        if(world.isRemote) return super.onItemRightClick(stack, world, player);
         player.addPotionEffect(new PotionEffect(Potion.digSpeed.id, 20 * 300, 3, false));
         player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 20 * 300, 3, false));
         player.addPotionEffect(new PotionEffect(Potion.jump.id, 20 * 300, 2, false));
@@ -31,8 +30,9 @@ public class ItemProcessedCocaine extends Item {
         player.addPotionEffect(new PotionEffect(Potion.hunger.id, 20 * 300, 0, false));
         // 60 * 20 = 1 minute, 20 * 60 * 20 = 1 mc day, 7 * 20 * 60 * 20 = 7 mc days
         player.addPotionEffect(new PotionEffect(ModDrugs.cocaine_potion.id, 1 *(20 * (60 * 20)) , 0, false));
-        player.worldObj.playSoundEffect(x, y, z, Minelife.MOD_ID + ":snort", 0.5F, 0.5F);
+        player.worldObj.playSoundEffect(player.posX, player.posY, player.posZ, Minelife.MOD_ID + ":snort", 0.5F, 0.5F);
 //        player.getEntityData().setString("cocaine", ItemDrugTest.df.format(Calendar.getInstance().getTime()));
-        return true;
+        return super.onItemRightClick(stack, world, player);
     }
+
 }

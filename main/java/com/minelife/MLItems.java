@@ -7,6 +7,7 @@ import com.minelife.gun.item.ItemZincPlate;
 import com.minelife.gun.item.ammos.*;
 import com.minelife.gun.item.guns.*;
 import com.minelife.gun.item.parts.*;
+import com.minelife.police.ItemTicket;
 import com.minelife.realestate.items.ItemEstateClaimForm;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.Item;
@@ -69,6 +70,7 @@ public class MLItems {
     public static ItemProcessedCocaine processed_cocaine;
     public static ItemJoint joint;
     public static ItemDrugTest drug_test;
+    public static ItemTicket ticket;
 
     protected static void init()
     {
@@ -126,6 +128,7 @@ public class MLItems {
         register_item(purple_cocaine = new ItemAbstractDrug("purple_cocaine"));
         register_item(joint = new ItemJoint());
         register_item(drug_test = new ItemDrugTest());
+        register_item(ticket = new ItemTicket());
     }
 
     private static void register_item(Item item)

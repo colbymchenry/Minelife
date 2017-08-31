@@ -1,7 +1,6 @@
-package com.minelife.bullets;
+package com.minelife.gun.bullets;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.server.EntityShotEvent;
@@ -19,7 +18,6 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BulletHandler {
 

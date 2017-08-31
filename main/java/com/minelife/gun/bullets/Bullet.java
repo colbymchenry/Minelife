@@ -1,4 +1,4 @@
-package com.minelife.bullets;
+package com.minelife.gun.bullets;
 
 import com.minelife.gun.item.ammos.ItemAmmo;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -6,7 +6,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;

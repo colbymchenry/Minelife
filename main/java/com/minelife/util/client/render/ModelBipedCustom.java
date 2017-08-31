@@ -148,10 +148,12 @@ public class ModelBipedCustom extends ModelBiped {
             this.bipedHead.rotationPointY = 0.0F;
             this.bipedHeadwear.rotationPointY = 0.0F;
         }
+//
+//        if (ModPolice.isPlayerArrested(player)) {
+//            ModPolice.applyPlayerArmRotations(this, p_78087_3_);
+//        }
 
-        if (ModPolice.isPlayerArrested(player)) {
-            ModPolice.applyPlayerArmRotations(this, p_78087_3_);
-        } else if (gun != null) {
+        if (gun != null) {
             gun.getClientHandler().setArmRotations(this, p_78087_3_);
         } else {
             this.bipedRightArm.rotateAngleZ += MathHelper.cos(p_78087_3_ * 0.09F) * 0.05F + 0.05F;
