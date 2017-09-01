@@ -230,7 +230,7 @@ public abstract class GuiScrollableContent extends Gui {
 
     public void drawScrollbar(float gripSize) {
         GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glColor4f(128f / 255f, 128f / 255f, 128f / 255f, 1f);
+        GL11.glColor4f(90f / 255f, 90f / 255f, 90f / 255f, 1f);
 
         GL11.glBegin(GL11.GL_QUADS);
 

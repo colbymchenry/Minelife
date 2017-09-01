@@ -62,13 +62,13 @@ public class ItemDrugTest extends Item {
                 Date now = Calendar.getInstance().getTime();
 
                 if (stack.stackTagCompound.hasKey("marijuana")) {
-                    list.add(EnumChatFormatting.RED + "Tested POSITIVE for marijuana " + ModDrugs.convert_to_mc_days(now, df.parse(stack.stackTagCompound.getString("marijuana"))) + " days ago.");
+                    list.add(EnumChatFormatting.RED + "Tested POSITIVE for marijuana " + ModDrugs.convert_to_mc_days(now, df.parse(stack.stackTagCompound.getString("marijuana"))) + " MC days ago.");
                 } else {
                     list.add(EnumChatFormatting.GREEN + "Tested NEGATIVE for marijuana.");
                 }
 
                 if (stack.stackTagCompound.hasKey("cocaine")) {
-                    list.add(EnumChatFormatting.RED + "Tested POSITIVE for cocaine " + ModDrugs.convert_to_mc_days(now, df.parse(stack.stackTagCompound.getString("cocaine"))) + " days ago.");
+                    list.add(EnumChatFormatting.RED + "Tested POSITIVE for cocaine " + ModDrugs.convert_to_mc_days(now, df.parse(stack.stackTagCompound.getString("cocaine"))) + " MC days ago.");
                 } else {
                     list.add(EnumChatFormatting.GREEN + "Tested NEGATIVE for cocaine.");
                 }

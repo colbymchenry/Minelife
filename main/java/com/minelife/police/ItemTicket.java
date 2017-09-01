@@ -2,8 +2,11 @@ package com.minelife.police;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
+import com.minelife.police.client.GuiCreateTicket;
 import com.minelife.police.client.GuiTicket;
 import com.minelife.util.ArrayUtil;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,6 +27,11 @@ public class ItemTicket extends Item {
         setCreativeTab(CreativeTabs.tabMisc);
     }
 
+    @SideOnly(Side.CLIENT)
+    private void openGui(ItemStack itemStack) {
+        Minecraft.getMinecraft().displayGuiScreen(new GuiCreateTicket(itemStack));
+    }
+
     @Override
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
         if(!world.isRemote) return super.onItemRightClick(itemStack, world, player);
@@ -36,7 +44,7 @@ public class ItemTicket extends Item {
             itemStack.stackTagCompound = tagCompound;
         }
 
-        Minecraft.getMinecraft().displayGuiScreen(new GuiTicket(itemStack));
+        openGui(itemStack);
         return super.onItemRightClick(itemStack, world, player);
     }
 

@@ -20,8 +20,9 @@ public class GuiTicket extends GuiScreen {
     @Override
     public void drawScreen(int x, int y, float f) {
         super.drawScreen(x, y, f);
-
-
+        int w = 100, h = 100;
+        int posX = (this.width - 100) / 2;
+        int posY = (this.height - 100) /2;
     }
 
     @Override

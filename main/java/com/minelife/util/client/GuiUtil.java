@@ -319,7 +319,7 @@ public class GuiUtil {
 
     public static final void drawDefaultBackground(float x, float y, float width, float height, Color color) {
         Color bottomBorder = color.darker().darker();
-        Color topColor = color.brighter().brighter().brighter().brighter().brighter().brighter().brighter();
+        Color topColor = color.brighter().brighter();
         Color border = color.darker().darker().darker().darker().darker().darker().darker();
 
         GL11.glColor4f(1, 1, 1, 1);
