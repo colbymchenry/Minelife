@@ -51,7 +51,7 @@ public class GuiChargeList extends GuiScrollableContent {
     }
 
     private String[] getText(Charge charge) {
-        String[] lines = new String[]{charge.counts + " count(s) of " + charge.description + ".", EnumChatFormatting.BOLD.toString() + EnumChatFormatting.GREEN.toString() + " Bail: $" + NumberConversions.formatter.format(charge.bail), EnumChatFormatting.GOLD + " Jail Time: " + (charge.jailTime / 20) + " mc days."};
+        String[] lines = new String[]{charge.counts + " count(s) of " + charge.description + ".", EnumChatFormatting.BOLD.toString() + EnumChatFormatting.GREEN.toString() + " Bail: $" + NumberConversions.formatter.format(charge.bail), EnumChatFormatting.GOLD + " Jail Time: " + (charge.jailTime / 20.0D) + " mc days."};
         return lines;
     }
 }

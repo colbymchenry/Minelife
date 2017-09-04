@@ -28,8 +28,13 @@ public class ItemTicket extends Item {
     }
 
     @SideOnly(Side.CLIENT)
-    private void openGui(ItemStack itemStack) {
-        Minecraft.getMinecraft().displayGuiScreen(new GuiCreateTicket(itemStack));
+    private void openGui(int slot) {
+        Minecraft.getMinecraft().displayGuiScreen(new GuiCreateTicket(slot));
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void openGui(ItemStack ticketStack) {
+        Minecraft.getMinecraft().displayGuiScreen(new GuiTicket(ticketStack));
     }
 
     @Override
@@ -42,9 +47,11 @@ public class ItemTicket extends Item {
             NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.stackTagCompound : new NBTTagCompound();
             tagCompound.setInteger("id", MathHelper.getRandomIntegerInRange(world.rand, 1000000, 1999999));
             itemStack.stackTagCompound = tagCompound;
+            openGui(player.inventory.currentItem);
+        } else {
+            openGui(itemStack);
         }
 
-        openGui(itemStack);
         return super.onItemRightClick(itemStack, world, player);
     }
 
