@@ -1,9 +1,12 @@
 package com.minelife.police.client;
 
 import com.google.common.collect.Lists;
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.police.Charge;
+import com.minelife.police.GuiHandler;
 import com.minelife.police.network.PacketCreateTicket;
+import com.minelife.police.network.PacketOpenTicketInventory;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -83,6 +86,10 @@ public class GuiCreateTicket extends GuiScreen {
             Minecraft.getMinecraft().displayGuiScreen(new GuiAddCharge(this));
         } else if (guiButton.id == 1) {
             Minelife.NETWORK.sendToServer(new PacketCreateTicket(slot, chargeList, playerField.getText()));
+        } else if (guiButton.id == 2) {
+            if (mc.thePlayer.inventory.getStackInSlot(slot) != null && mc.thePlayer.inventory.getStackInSlot(slot).getItem() == MLItems.ticket) {
+                Minelife.NETWORK.sendToServer(new PacketOpenTicketInventory(slot));
+            }
         }
     }
 
@@ -137,6 +144,7 @@ public class GuiCreateTicket extends GuiScreen {
             Color c2 = new Color(0, 40, 81, 184);
             ResourceLocation icon = new ResourceLocation(Minelife.MOD_ID, "textures/gui/chest.png");
             List<String> displayText = new ArrayList<>(Arrays.asList(new Object[]{"Inventory"}));
+
             @Override
             public void drawButton(Minecraft mc, int x, int y) {
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -152,7 +160,7 @@ public class GuiCreateTicket extends GuiScreen {
                 GL11.glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
                 mc.getTextureManager().bindTexture(icon);
                 GuiUtil.drawImage(xPosition + ((width - (width - 8)) / 2), yPosition + ((height - (height - 8)) / 2), width - 8, height - 8);
-                if(hovered) drawHoveringText(displayText, x, y, fontRendererObj);
+                if (hovered) drawHoveringText(displayText, x, y, fontRendererObj);
             }
         };
     }

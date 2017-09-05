@@ -5,6 +5,7 @@ import com.minelife.Minelife;
 import com.minelife.police.client.GuiCreateTicket;
 import com.minelife.police.client.GuiTicket;
 import com.minelife.util.ArrayUtil;
+import com.minelife.util.ItemUtil;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
@@ -81,6 +82,17 @@ public class ItemTicket extends Item {
         return chargeList;
     }
 
+    public static List<ItemStack> getItemsForTicket(ItemStack stack) {
+        NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
+        List<ItemStack> itemList = Lists.newArrayList();
+        if(tagCompound.hasKey("items")) {
+            String[] items = ArrayUtil.fromString(tagCompound.getString("items"));
+            for (String item : items) itemList.add(ItemUtil.itemFromString(item));
+        }
+
+        return itemList;
+    }
+
     public static void setPlayerForTicket(ItemStack stack, UUID playerUUID) {
         NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
         tagCompound.setString("playerUUID", playerUUID.toString());
@@ -98,6 +110,15 @@ public class ItemTicket extends Item {
         String[] chargesArray = new String[charges.size()];
         for(int i = 0; i < charges.size(); i++) chargesArray[i] = charges.get(i).toString();
         tagCompound.setString("charges", ArrayUtil.toString(chargesArray));
+        stack.stackTagCompound = tagCompound;
+    }
+
+    public static void setItemsForTicket(ItemStack stack, List<ItemStack> stackList) {
+        NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
+        String[] itemsArray = new String[stackList.size()];
+        for(int i = 0; i < stackList.size(); i++) itemsArray[i] = ItemUtil.itemToString(stackList.get(i));
+        tagCompound.setString("items", ArrayUtil.toString(itemsArray));
+        stack.stackTagCompound = tagCompound;
     }
 
 }
