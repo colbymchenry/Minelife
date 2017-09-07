@@ -9,5 +9,6 @@ public class ServerProxy extends CommonProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS policeofficers (playerUUID TEXT, xp INT)");
+        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS policetickers (ticketID INT, ticketNBT TEXT)");
     }
 }

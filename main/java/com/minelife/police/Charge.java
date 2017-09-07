@@ -24,9 +24,10 @@ public class Charge {
 
     public static Charge fromString(String str) {
         String[] data = str.split(",");
-        int counts = Integer.parseInt(data[0]);
-        int bail = Integer.parseInt(data[1]);
-        int jailTime = Integer.parseInt(data[2]);
+        if(data.length < 4) return new Charge(0, 0, 0, "null");
+        int counts = data[0].isEmpty() ? 0 : Integer.parseInt(data[0]);
+        int bail = data[1].isEmpty() ? 0 : Integer.parseInt(data[1]);
+        int jailTime = data[2].isEmpty() ? 0 : Integer.parseInt(data[2]);
         String description = data[3];
         return new Charge(counts, bail, jailTime, description);
     }

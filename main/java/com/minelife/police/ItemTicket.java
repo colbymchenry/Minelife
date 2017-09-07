@@ -10,6 +10,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,31 +30,43 @@ public class ItemTicket extends Item {
     }
 
     @SideOnly(Side.CLIENT)
-    private void openGui(int slot) {
+    private void openCreateGui(int slot) {
         Minecraft.getMinecraft().displayGuiScreen(new GuiCreateTicket(slot));
     }
 
     @SideOnly(Side.CLIENT)
-    private void openGui(ItemStack ticketStack) {
-        Minecraft.getMinecraft().displayGuiScreen(new GuiTicket(ticketStack));
+    private void openTicketGui(int slot) {
+        Minecraft.getMinecraft().displayGuiScreen(new GuiTicket(slot));
     }
 
     @Override
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
-        if(!world.isRemote) return super.onItemRightClick(itemStack, world, player);
+        if (!world.isRemote) return super.onItemRightClick(itemStack, world, player);
 
-        int ticketID = getTicketID(itemStack);
-
-        if(ticketID == 0) {
+        if (getPlayerForTicket(itemStack) == null) {
             NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.stackTagCompound : new NBTTagCompound();
             tagCompound.setInteger("id", MathHelper.getRandomIntegerInRange(world.rand, 1000000, 1999999));
             itemStack.stackTagCompound = tagCompound;
-            openGui(player.inventory.currentItem);
+            openCreateGui(player.inventory.currentItem);
         } else {
-            openGui(itemStack);
+            openTicketGui(player.inventory.currentItem);
         }
 
         return super.onItemRightClick(itemStack, world, player);
+    }
+
+    @Override
+    public void onUpdate(ItemStack stack, World world, Entity entity, int i, boolean b) {
+        if (getTicketID(stack) == 0) {
+            NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
+            tagCompound.setInteger("id", MathHelper.getRandomIntegerInRange(world.rand, 1000000, 1999999));
+            stack.stackTagCompound = tagCompound;
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public String getItemStackDisplayName(ItemStack stack) {
+        return getTicketID(stack) == 0 ? super.getItemStackDisplayName(stack) : super.getItemStackDisplayName(stack) + " #" + getTicketID(stack);
     }
 
     public static int getTicketID(ItemStack stack) {
@@ -74,9 +87,13 @@ public class ItemTicket extends Item {
     public static List<Charge> getChargesForTicket(ItemStack stack) {
         NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
         List<Charge> chargeList = Lists.newArrayList();
-        if(tagCompound.hasKey("charges")) {
+        if (tagCompound.hasKey("charges")) {
+            System.out.println(tagCompound.getString("charges"));
             String[] charges = ArrayUtil.fromString(tagCompound.getString("charges"));
-            for (String charge : charges) chargeList.add(Charge.fromString(charge));
+            for (String charge : charges) {
+                if (!charge.isEmpty())
+                    chargeList.add(Charge.fromString(charge));
+            }
         }
 
         return chargeList;
@@ -85,9 +102,12 @@ public class ItemTicket extends Item {
     public static List<ItemStack> getItemsForTicket(ItemStack stack) {
         NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
         List<ItemStack> itemList = Lists.newArrayList();
-        if(tagCompound.hasKey("items")) {
+        if (tagCompound.hasKey("items")) {
             String[] items = ArrayUtil.fromString(tagCompound.getString("items"));
-            for (String item : items) itemList.add(ItemUtil.itemFromString(item));
+            for (String item : items) {
+                if (!item.isEmpty())
+                    itemList.add(ItemUtil.itemFromString(item));
+            }
         }
 
         return itemList;
@@ -108,7 +128,7 @@ public class ItemTicket extends Item {
     public static void setChargesForTicket(ItemStack stack, List<Charge> charges) {
         NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
         String[] chargesArray = new String[charges.size()];
-        for(int i = 0; i < charges.size(); i++) chargesArray[i] = charges.get(i).toString();
+        for (int i = 0; i < charges.size(); i++) chargesArray[i] = charges.get(i).toString();
         tagCompound.setString("charges", ArrayUtil.toString(chargesArray));
         stack.stackTagCompound = tagCompound;
     }
@@ -116,7 +136,7 @@ public class ItemTicket extends Item {
     public static void setItemsForTicket(ItemStack stack, List<ItemStack> stackList) {
         NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
         String[] itemsArray = new String[stackList.size()];
-        for(int i = 0; i < stackList.size(); i++) itemsArray[i] = ItemUtil.itemToString(stackList.get(i));
+        for (int i = 0; i < stackList.size(); i++) itemsArray[i] = ItemUtil.itemToString(stackList.get(i));
         tagCompound.setString("items", ArrayUtil.toString(itemsArray));
         stack.stackTagCompound = tagCompound;
     }

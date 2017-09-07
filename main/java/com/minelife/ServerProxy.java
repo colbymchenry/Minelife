@@ -1,5 +1,6 @@
 package com.minelife;
 
+import com.minelife.util.server.FetchNameThread;
 import com.minelife.util.server.UUIDFetcher;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -13,6 +14,7 @@ public class ServerProxy extends CommonProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         FMLCommonHandler.instance().bus().register(new UUIDFetcher());
+        new Thread(FetchNameThread.instance = new FetchNameThread()).start();
 
         initSQLite();
         Minelife.MODS.forEach(mod -> {

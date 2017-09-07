@@ -15,7 +15,7 @@ import java.awt.*;
 public class GuiAddCharge extends GuiScreen {
 
     private GuiCreateTicket guiCreateTicket;
-    private GuiTextField descriptionField, countsField, bailField, jailTime;
+    protected GuiTextField descriptionField, countsField, bailField, jailTime;
     private int xPosition, yPosition, bgWidth = 140, bgHeight = 170;
     private Color bgColor = new Color(0, 63, 126, 255);
 
@@ -84,6 +84,11 @@ public class GuiAddCharge extends GuiScreen {
 
     @Override
     protected void keyTyped(char keyChar, int keyCode) {
+        if(keyCode == Keyboard.KEY_ESCAPE) {
+            Minecraft.getMinecraft().displayGuiScreen(guiCreateTicket);
+            return;
+        }
+
         super.keyTyped(keyChar, keyCode);
         descriptionField.textboxKeyTyped(keyChar, keyCode);
 
