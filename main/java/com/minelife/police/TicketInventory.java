@@ -99,4 +99,10 @@ public class TicketInventory implements IInventory {
         return true;
     }
 
+    public String getInventoryAsString() {
+        NBTTagCompound invTag = new NBTTagCompound();
+        inv.writeToNBT(invTag);
+        return inv.toString();
+    }
+
 }

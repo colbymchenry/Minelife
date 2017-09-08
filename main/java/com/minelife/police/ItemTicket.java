@@ -2,6 +2,7 @@ package com.minelife.police;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
+import com.minelife.minebay.ItemListing;
 import com.minelife.police.client.GuiCreateTicket;
 import com.minelife.police.client.GuiTicket;
 import com.minelife.util.ArrayUtil;
@@ -18,6 +19,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,6 +78,25 @@ public class ItemTicket extends Item {
         return tagCompound.hasKey("id") ? tagCompound.getInteger("id") : 0;
     }
 
+    public static int getTimeToPay(ItemStack stack) {
+        NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
+        try {
+            if(tagCompound.hasKey("dueDate")) {
+                Date dueDate = ItemListing.df.parse(tagCompound.getString("dueDate"));
+                Date now = Calendar.getInstance().getTime();
+                long diff = dueDate.getTime() - now.getTime();
+                long diffSeconds = diff / 1000 % 60;
+                long diffMinutes = diff / (60 * 1000) % 60;
+                System.out.println("getTimeToPay(): " + diffMinutes);
+                return (int) diffMinutes;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
     public static UUID getPlayerForTicket(ItemStack stack) {
         NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
         return tagCompound.hasKey("playerUUID") ? UUID.fromString(tagCompound.getString("playerUUID")) : null;
@@ -112,6 +135,15 @@ public class ItemTicket extends Item {
         return itemList;
     }
 
+    public static void setTimeToPay(ItemStack stack, int minutes) {
+        Calendar now = Calendar.getInstance();
+        now.add(Calendar.MINUTE, minutes);
+        System.out.println("setTimeToPay(): " + minutes);
+        NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
+        tagCompound.setString("dueDate", ItemListing.df.format(now.getTime()));
+        stack.stackTagCompound = tagCompound;
+    }
+
     public static void setPlayerForTicket(ItemStack stack, UUID playerUUID) {
         NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
         tagCompound.setString("playerUUID", playerUUID.toString());
@@ -131,13 +163,5 @@ public class ItemTicket extends Item {
         tagCompound.setString("charges", ArrayUtil.toString(chargesArray));
         stack.stackTagCompound = tagCompound;
     }
-
-//    public static void setItemsForTicket(ItemStack stack, List<ItemStack> stackList) {
-//        NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
-//        String[] itemsArray = new String[stackList.size()];
-//        for (int i = 0; i < stackList.size(); i++) itemsArray[i] = ItemUtil.itemToString(stackList.get(i));
-//        tagCompound.setString("items", ArrayUtil.toString(itemsArray));
-//        stack.stackTagCompound = tagCompound;
-//    }
 
 }

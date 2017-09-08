@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.server.EntityShotEvent;
+import com.minelife.util.server.FetchNameThread;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.block.Block;
@@ -44,11 +45,11 @@ public class BulletHandler {
         // TODO: Add bullet speed
         if (tickCount < 2) return;
 
-        Iterator iterator = bulletList.iterator();
+        ListIterator<Bullet> iterator = bulletList.listIterator();
 
         Bullet bullet;
         while (iterator.hasNext()) {
-            bullet = (Bullet) iterator.next();
+            bullet = iterator.next();
 
             bullet.origin = bullet.origin.addVector(bullet.lookVec.xCoord, bullet.lookVec.yCoord, bullet.lookVec.zCoord);
             bullet.target = bullet.target.addVector(bullet.lookVec.xCoord, bullet.lookVec.yCoord, bullet.lookVec.zCoord);
@@ -103,8 +104,9 @@ public class BulletHandler {
                     }
                 }
             }
-        }
 
+            if(bullet.target.distanceTo(Vec3.createVectorHelper(bullet.shooter.posX, bullet.shooter.posY, bullet.shooter.posZ)) > 500) iterator.remove();
+        }
 
         tickCount = 0;
     }

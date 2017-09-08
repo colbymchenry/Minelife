@@ -14,7 +14,9 @@ import com.minelife.tracker.ModTracker;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.PacketPopupMessage;
 import com.minelife.util.client.PacketRequestName;
+import com.minelife.util.client.PacketRequestUUID;
 import com.minelife.util.server.PacketResponseName;
+import com.minelife.util.server.PacketResponseUUID;
 import com.minelife.util.server.PacketUpdatePlayerInventory;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -79,6 +81,8 @@ public class Minelife {
         AbstractMod.registerPacket(PacketPopupMessage.Handler.class, PacketPopupMessage.class, Side.CLIENT);
         AbstractMod.registerPacket(PacketRequestName.Handler.class, PacketRequestName.class, Side.SERVER);
         AbstractMod.registerPacket(PacketResponseName.Handler.class, PacketResponseName.class, Side.CLIENT);
+        AbstractMod.registerPacket(PacketRequestUUID.Handler.class, PacketRequestUUID.class, Side.SERVER);
+        AbstractMod.registerPacket(PacketResponseUUID.Handler.class, PacketResponseUUID.class, Side.CLIENT);
         MODS.forEach(mod -> mod.preInit(event));
         try {
             PROXY.preInit(event);

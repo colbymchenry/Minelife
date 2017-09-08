@@ -7,12 +7,14 @@ import com.minelife.police.Charge;
 import com.minelife.police.GuiHandler;
 import com.minelife.police.network.PacketCreateTicket;
 import com.minelife.police.network.PacketOpenTicketInventory;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import scala.actors.threadpool.Arrays;
@@ -26,7 +28,7 @@ public class GuiCreateTicket extends GuiScreen {
     private int slot;
 
     private int xPosition, yPosition, bgWidth = 200, bgHeight = 235;
-    private GuiTextField playerField;
+    private GuiTextField playerField, timeToPayField;
     public List<Charge> chargeList;
     private GuiChargeList guiDefaultList, guiChargeList;
     private Color bgColor = new Color(0, 63, 126, 255);
@@ -42,13 +44,14 @@ public class GuiCreateTicket extends GuiScreen {
         xPosition = (width - bgWidth) / 2;
         yPosition = (height - bgHeight) / 2;
         playerField = new GuiTextField(fontRendererObj, xPosition + 40, yPosition + 10, 75, 10);
+        timeToPayField = new GuiTextField(fontRendererObj, xPosition + 60, yPosition + bgHeight - 20, 30, 10);
         super.buttonList.clear();
         buttonList.add(getCustomButton(0, xPosition + bgWidth + 5, yPosition + 35, 16, 16, "+", false));
         buttonList.add(getCustomButton(1, xPosition + bgWidth - 42, yPosition + 8, 35, 15, "Submit", true));
         buttonList.add(getChestButton(2, xPosition + bgWidth + 5, yPosition + 35 + 20, 16, 16));
         ((GuiButton) buttonList.get(1)).enabled = false;
-        guiChargeList = new GuiChargeList(xPosition + 5, yPosition + 40, bgWidth - 10, (bgHeight / 2) - 30, chargeList);
-        guiDefaultList = new GuiChargeList(xPosition + 5, guiChargeList.yPosition + guiChargeList.height + 15, bgWidth - 10, (bgHeight / 2) - 30, Charge.getDefaultCharges()) {
+        guiChargeList = new GuiChargeList(xPosition + 5, yPosition + 40, bgWidth - 10, (bgHeight / 2) - 40, chargeList);
+        guiDefaultList = new GuiChargeList(xPosition + 5, guiChargeList.yPosition + guiChargeList.height + 15, bgWidth - 10, (bgHeight / 2) - 40, Charge.getDefaultCharges()) {
 
             @Override
             public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
@@ -68,6 +71,7 @@ public class GuiCreateTicket extends GuiScreen {
 
         GuiUtil.drawDefaultBackground(xPosition, yPosition, bgWidth, bgHeight, bgColor);
         playerField.drawTextBox();
+        timeToPayField.drawTextBox();
         guiChargeList.draw(x, y, dWheel);
         guiDefaultList.draw(x, y, dWheel);
 
@@ -75,6 +79,9 @@ public class GuiCreateTicket extends GuiScreen {
         drawString(fontRendererObj, "Player:", xPosition + 10, yPosition + 10, 0xFFFFFF);
         drawString(fontRendererObj, "Charges:", guiChargeList.xPosition, guiChargeList.yPosition - 10, 0xFFFFFF);
         drawString(fontRendererObj, "Common Charges:", guiDefaultList.xPosition, guiDefaultList.yPosition - 10, 0xFFFFFF);
+        drawString(fontRendererObj, "Time to Pay: ", timeToPayField.xPosition - 50, timeToPayField.yPosition, 0xFFFFFF);
+        double timeToPay = timeToPayField.getText().isEmpty() ? 0.0D : Double.parseDouble(timeToPayField.getText()) / 20.0D;
+        drawString(fontRendererObj, "= " + timeToPay + " MC Days.", timeToPayField.xPosition + timeToPayField.getWidth() + 13, timeToPayField.yPosition, 0xFFFFFF);
         fontRendererObj.setUnicodeFlag(false);
 
         super.drawScreen(x, y, f);
@@ -85,7 +92,7 @@ public class GuiCreateTicket extends GuiScreen {
         if (guiButton.id == 0) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiAddCharge(this));
         } else if (guiButton.id == 1) {
-            Minelife.NETWORK.sendToServer(new PacketCreateTicket(slot, chargeList, playerField.getText(), true));
+            Minelife.NETWORK.sendToServer(new PacketCreateTicket(slot, chargeList, playerField.getText(), timeToPayField.getText().isEmpty() ? 0 : NumberConversions.toInt(timeToPayField.getText()), true));
         } else if (guiButton.id == 2) {
             if (mc.thePlayer.inventory.getStackInSlot(slot) != null && mc.thePlayer.inventory.getStackInSlot(slot).getItem() == MLItems.ticket) {
                 Minelife.NETWORK.sendToServer(new PacketOpenTicketInventory(slot));
@@ -97,18 +104,23 @@ public class GuiCreateTicket extends GuiScreen {
     protected void mouseClicked(int x, int y, int btn) {
         super.mouseClicked(x, y, btn);
         playerField.mouseClicked(x, y, btn);
+        timeToPayField.mouseClicked(x, y, btn);
     }
 
     @Override
     protected void keyTyped(char keyChar, int keyCode) {
         super.keyTyped(keyChar, keyCode);
         playerField.textboxKeyTyped(keyChar, keyCode);
+
+        if (!NumberConversions.isInt(String.valueOf(keyChar)) && keyCode != Keyboard.KEY_BACK) return;
+        timeToPayField.textboxKeyTyped(keyChar, keyCode);
     }
 
     @Override
     public void updateScreen() {
         super.updateScreen();
         playerField.updateCursorCounter();
+        timeToPayField.updateCursorCounter();
         ((GuiButton) buttonList.get(1)).enabled = !chargeList.isEmpty() && !playerField.getText().isEmpty();
     }
 

@@ -6,10 +6,12 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 import java.util.List;
 import java.util.ListIterator;
+import java.util.UUID;
 
 public class FetchNameThread implements Runnable {
 
     private static final List<NameThreadObject> queList = Lists.newArrayList();
+    private static final List<SimpleNameThreadObject> simpleQueList = Lists.newArrayList();
     public static FetchNameThread instance;
 
     @Override
@@ -27,6 +29,20 @@ public class FetchNameThread implements Runnable {
             }
 
             queList.removeAll(que);
+
+            // --------------------------------------------------
+
+            List<SimpleNameThreadObject> simpleQue = Lists.newArrayList();
+            simpleQue.addAll(simpleQueList);
+            ListIterator<SimpleNameThreadObject> simpleIterator = simpleQue.listIterator();
+
+            while(simpleIterator.hasNext()) {
+                SimpleNameThreadObject object = simpleIterator.next();
+                String name = NameFetcher.get(object.uuid);
+                object.callback.callback(object.uuid, name, object.includes);
+            }
+
+            simpleQueList.removeAll(simpleQue);
         }
 
     }
@@ -39,9 +55,23 @@ public class FetchNameThread implements Runnable {
         queList.add(threadObject);
     }
 
+    public void fetchName(UUID uuid, Callback callback, Object... includes) {
+        SimpleNameThreadObject threadObject = new SimpleNameThreadObject();
+        threadObject.uuid = uuid;
+        threadObject.callback = callback;
+        threadObject.includes = includes;
+        simpleQueList.add(threadObject);
+    }
+
     private class NameThreadObject {
         public PacketRequestName message;
         public MessageContext ctx;
         public Callback callback;
+    }
+
+    private class SimpleNameThreadObject {
+        public UUID uuid;
+        public Callback callback;
+        public Object[] includes;
     }
 }

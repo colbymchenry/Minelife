@@ -36,7 +36,7 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
     private List<Charge> chargeList;
     private int xPosition, yPosition;
     private int width = 200, height = 235;
-    private double totalBail, totalJailTime;
+    private double totalBail, totalJailTime, timeToPay;
     private String player, officer;
 
     public GuiTicket(int ticketSlot) {
@@ -45,6 +45,8 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
         this.chargeList = Lists.newArrayList();
         this.player = PacketRequestName.requestName(ItemTicket.getPlayerForTicket(ticketStack), this);
         this.officer = PacketRequestName.requestName(ItemTicket.getOfficerForTicket(ticketStack), this);
+        this.timeToPay = ItemTicket.getTimeToPay(ticketStack);
+        System.out.println(this.timeToPay);
         chargeList.addAll(ItemTicket.getChargesForTicket(ticketStack));
     }
 
@@ -60,6 +62,7 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
         fontRendererObj.drawString("Officer: " + officer, xPosition + 5, yPosition + 25, 0xFFFFFF);
         fontRendererObj.drawString("Total Bail: $" + NumberConversions.formatter.format(totalBail), xPosition + 5, guiChargeList.yPosition + guiChargeList.height + 6, 0xFFFFFF);
         fontRendererObj.drawString("Total Jail Time: " + (totalJailTime / 20.0D) + " mc days.", xPosition + 5, guiChargeList.yPosition + guiChargeList.height + 16, 0xFFFFFF);
+        fontRendererObj.drawString("Time Left To Pay: " + (timeToPay / 20.0D) + " mc days.", xPosition + 5, guiChargeList.yPosition + guiChargeList.height + 26, 0xFFFFFF);
         fontRendererObj.setUnicodeFlag(false);
 
         super.drawScreen(x, y, f);
@@ -86,7 +89,9 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
     @Override
     public void onGuiClosed() {
         super.onGuiClosed();
-        Minelife.NETWORK.sendToServer(new PacketCreateTicket(ticketSlot, chargeList, player, false));
+        System.out.println(ItemTicket.getTimeToPay(ticketStack));
+        // TODO: Don'e use ItemTicket.getTimeToPay here. It's causing the time to reset.
+        Minelife.NETWORK.sendToServer(new PacketCreateTicket(ticketSlot, chargeList, player, ItemTicket.getTimeToPay(ticketStack), false));
     }
 
     @Override

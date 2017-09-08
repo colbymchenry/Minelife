@@ -23,6 +23,7 @@ import java.util.UUID;
 public class PacketCreateTicket implements IMessage {
 
     private int slot;
+    private int timeToPay;
     private List<Charge> chargeList;
     private String player;
     private boolean closeScreen;
@@ -30,10 +31,11 @@ public class PacketCreateTicket implements IMessage {
     public PacketCreateTicket() {
     }
 
-    public PacketCreateTicket(int slot, List<Charge> chargeList, String player, boolean closeScreen) {
+    public PacketCreateTicket(int slot, List<Charge> chargeList, String player, int timeToPay, boolean closeScreen) {
         this.slot = slot;
         this.chargeList = chargeList;
         this.player = player;
+        this.timeToPay = timeToPay;
         this.closeScreen = closeScreen;
     }
 
@@ -42,6 +44,7 @@ public class PacketCreateTicket implements IMessage {
         slot = buf.readInt();
         player = ByteBufUtils.readUTF8String(buf);
         chargeList = Lists.newArrayList();
+        timeToPay = buf.readInt();
         closeScreen = buf.readBoolean();
 
         int chargesSize = buf.readInt();
@@ -52,6 +55,7 @@ public class PacketCreateTicket implements IMessage {
     public void toBytes(ByteBuf buf) {
         buf.writeInt(slot);
         ByteBufUtils.writeUTF8String(buf, player);
+        buf.writeInt(timeToPay);
         buf.writeBoolean(closeScreen);
         buf.writeInt(chargeList.size());
         for (Charge charge : chargeList) ByteBufUtils.writeUTF8String(buf, charge.toString());
@@ -79,6 +83,7 @@ public class PacketCreateTicket implements IMessage {
             ItemTicket.setPlayerForTicket(ticketStack, playerUUID);
             ItemTicket.setOfficerForTicket(ticketStack, sender.getUniqueID());
             ItemTicket.setChargesForTicket(ticketStack, message.chargeList);
+            ItemTicket.setTimeToPay(ticketStack, message.timeToPay);
             sender.inventory.setInventorySlotContents(message.slot, ticketStack);
             if (message.closeScreen) sender.closeScreen();
             return null;
