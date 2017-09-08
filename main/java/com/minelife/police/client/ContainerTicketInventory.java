@@ -38,12 +38,9 @@ public class ContainerTicketInventory extends Container {
     }
 
     @Override
-    public void onContainerClosed(EntityPlayer player) {
-        super.onContainerClosed(player);
-        if (!player.worldObj.isRemote) {
-            ticketInventory.closeInventory();
-            ticketInventory.updateCreative((EntityPlayerMP) player);
-        }
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+        ticketInventory.closeInventory();
     }
 
     /**
@@ -85,6 +82,10 @@ public class ContainerTicketInventory extends Container {
             }
 
             slot.onPickupFromSlot(par1EntityPlayer, itemstack1);
+        }
+
+        if(!par1EntityPlayer.worldObj.isRemote) {
+            System.out.println("BOOM");
         }
 
         return itemstack;

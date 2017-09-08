@@ -81,10 +81,7 @@ public class TicketInventory implements IInventory {
 
     @Override
     public void openInventory() {
-
     }
-
-    // TODO: Figure out why opening of inventory and reopening changes modified items back and forth.
 
     @Override
     public void closeInventory() {

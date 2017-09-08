@@ -65,7 +65,6 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
         super.drawScreen(x, y, f);
     }
 
-    // TODO: Figure out why GUI closes when clicking chest or add charge
     @Override
     protected void actionPerformed(GuiButton button) {
         super.actionPerformed(button);
