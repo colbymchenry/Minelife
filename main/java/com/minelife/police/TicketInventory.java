@@ -2,9 +2,16 @@ package com.minelife.police;
 
 import buildcraft.core.lib.inventory.SimpleInventory;
 import com.google.common.collect.Lists;
+import com.minelife.MLItems;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.List;
 
@@ -12,12 +19,14 @@ public class TicketInventory implements IInventory {
 
     private final SimpleInventory inv;
     private final ItemStack ticketStack;
+    private final int slot;
 
-    public TicketInventory(ItemStack ticketStack) {
+    public TicketInventory(ItemStack ticketStack, int slot) {
         inv = new SimpleInventory(9, "ticketInventory", 64);
         this.ticketStack = ticketStack;
-        List<ItemStack> itemStackList = ItemTicket.getItemsForTicket(ticketStack);
-        for(int i = 0; i < itemStackList.size(); i++) inv.setInventorySlotContents(i, itemStackList.get(i));
+        this.slot = slot;
+        if (ticketStack.stackTagCompound.hasKey("items"))
+            inv.readFromNBT(ticketStack.stackTagCompound.getCompoundTag("items"));
     }
 
     @Override
@@ -75,11 +84,17 @@ public class TicketInventory implements IInventory {
 
     }
 
+    // TODO: Figure out why opening of inventory and reopening changes modified items back and forth.
+
     @Override
     public void closeInventory() {
-        List<ItemStack> itemStacks = Lists.newArrayList();
-        for (ItemStack itemStack : inv.getItemStacks()) if(itemStack != null)itemStacks.add(itemStack);
-        ItemTicket.setItemsForTicket(ticketStack,itemStacks);
+        NBTTagCompound invTag = new NBTTagCompound();
+        inv.writeToNBT(invTag);
+        ticketStack.stackTagCompound.setTag("items", invTag);
+    }
+
+    public void updateCreative(EntityPlayerMP player) {
+        player.inventory.setInventorySlotContents(slot, ticketStack);
     }
 
     @Override

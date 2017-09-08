@@ -15,7 +15,7 @@ public class GuiHandler extends AbstractGuiHandler {
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if(ID == ticketInventoryID) {
-            return new ContainerTicketInventory(player.inventory, new TicketInventory(player.inventory.getStackInSlot(x)));
+            return new ContainerTicketInventory(player.inventory, new TicketInventory(player.inventory.getStackInSlot(x), x));
         }
         return null;
     }
@@ -24,7 +24,7 @@ public class GuiHandler extends AbstractGuiHandler {
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if(ID == ticketInventoryID) {
             GuiScreen previousScreen = Minecraft.getMinecraft().currentScreen;
-            return new GuiTicketInventory(player.inventory, new TicketInventory(player.inventory.getStackInSlot(x)), previousScreen);
+            return new GuiTicketInventory(player.inventory, new TicketInventory(player.inventory.getStackInSlot(x), x), previousScreen);
         }
         return null;
     }

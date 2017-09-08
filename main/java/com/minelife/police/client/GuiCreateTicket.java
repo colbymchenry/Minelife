@@ -85,7 +85,7 @@ public class GuiCreateTicket extends GuiScreen {
         if (guiButton.id == 0) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiAddCharge(this));
         } else if (guiButton.id == 1) {
-            Minelife.NETWORK.sendToServer(new PacketCreateTicket(slot, chargeList, playerField.getText()));
+            Minelife.NETWORK.sendToServer(new PacketCreateTicket(slot, chargeList, playerField.getText(), true));
         } else if (guiButton.id == 2) {
             if (mc.thePlayer.inventory.getStackInSlot(slot) != null && mc.thePlayer.inventory.getStackInSlot(slot).getItem() == MLItems.ticket) {
                 Minelife.NETWORK.sendToServer(new PacketOpenTicketInventory(slot));

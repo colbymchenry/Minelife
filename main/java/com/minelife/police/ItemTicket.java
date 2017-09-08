@@ -88,7 +88,6 @@ public class ItemTicket extends Item {
         NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
         List<Charge> chargeList = Lists.newArrayList();
         if (tagCompound.hasKey("charges")) {
-            System.out.println(tagCompound.getString("charges"));
             String[] charges = ArrayUtil.fromString(tagCompound.getString("charges"));
             for (String charge : charges) {
                 if (!charge.isEmpty())
@@ -133,12 +132,12 @@ public class ItemTicket extends Item {
         stack.stackTagCompound = tagCompound;
     }
 
-    public static void setItemsForTicket(ItemStack stack, List<ItemStack> stackList) {
-        NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
-        String[] itemsArray = new String[stackList.size()];
-        for (int i = 0; i < stackList.size(); i++) itemsArray[i] = ItemUtil.itemToString(stackList.get(i));
-        tagCompound.setString("items", ArrayUtil.toString(itemsArray));
-        stack.stackTagCompound = tagCompound;
-    }
+//    public static void setItemsForTicket(ItemStack stack, List<ItemStack> stackList) {
+//        NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
+//        String[] itemsArray = new String[stackList.size()];
+//        for (int i = 0; i < stackList.size(); i++) itemsArray[i] = ItemUtil.itemToString(stackList.get(i));
+//        tagCompound.setString("items", ArrayUtil.toString(itemsArray));
+//        stack.stackTagCompound = tagCompound;
+//    }
 
 }

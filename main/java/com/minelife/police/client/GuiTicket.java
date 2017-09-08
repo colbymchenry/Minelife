@@ -1,6 +1,7 @@
 package com.minelife.police.client;
 
 import com.google.common.collect.Lists;
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.police.Charge;
 import com.minelife.police.ItemTicket;
@@ -77,14 +78,16 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
                 chargeList.get(guiChargeList.getSelected()).counts -= 1;
             }
         } else if (button.id == 2) {
-            Minelife.NETWORK.sendToServer(new PacketOpenTicketInventory(ticketSlot));
+            if (mc.thePlayer.inventory.getStackInSlot(ticketSlot) != null && mc.thePlayer.inventory.getStackInSlot(ticketSlot).getItem() == MLItems.ticket) {
+                Minelife.NETWORK.sendToServer(new PacketOpenTicketInventory(ticketSlot));
+            }
         }
     }
 
     @Override
     public void onGuiClosed() {
         super.onGuiClosed();
-        Minelife.NETWORK.sendToServer(new PacketCreateTicket(ticketSlot, chargeList, player));
+        Minelife.NETWORK.sendToServer(new PacketCreateTicket(ticketSlot, chargeList, player, false));
     }
 
     @Override
