@@ -3,8 +3,7 @@ package com.minelife.gun.bullets;
 import com.google.common.collect.Lists;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
-import com.minelife.gun.server.EntityShotEvent;
-import com.minelife.util.server.FetchNameThread;
+import com.minelife.gun.server.BulletHitEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.block.Block;
@@ -68,6 +67,12 @@ public class BulletHandler {
 
                     if (axisalignedbb != null && axisalignedbb.isVecInside(Vec3.createVectorHelper(bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord))) {
                         if (!blackListedBlocks.contains(block)) {
+
+                            BulletHitEvent shotEvent = new BulletHitEvent(bullet.shooter, bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord, bullet.shooter.getHeldItem());
+                            MinecraftForge.EVENT_BUS.post(shotEvent);
+
+                            if (shotEvent.isCanceled()) return;
+
                             if (bullet.ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
                                 bullet.world.createExplosion(bullet.shooter, bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord, 4.0F, false);
                             } else if (bullet.ammoType == ItemAmmo.AmmoType.INCENDIARY) {
@@ -86,7 +91,7 @@ public class BulletHandler {
                 AxisAlignedBB surrounding_check = AxisAlignedBB.getBoundingBox(bullet.target.xCoord - offset, bullet.target.yCoord - offset, bullet.target.zCoord - offset, bullet.target.xCoord + offset, bullet.target.yCoord + offset, bullet.target.zCoord + offset);
                 for (EntityLivingBase e : (List<EntityLivingBase>) bullet.world.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check)) {
                     if (e != bullet.shooter && e.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(bullet.target)) {
-                        EntityShotEvent shotEvent = new EntityShotEvent(bullet.shooter, e, bullet.shooter.getHeldItem());
+                        BulletHitEvent shotEvent = new BulletHitEvent(bullet.shooter, e, bullet.shooter.getHeldItem());
                         MinecraftForge.EVENT_BUS.post(shotEvent);
 
                         if (shotEvent.isCanceled()) return;

@@ -6,17 +6,26 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 
-public class EntityShotEvent extends Event {
+public class BulletHitEvent extends Event {
 
     private EntityLivingBase entityShooter;
     private EntityLivingBase entityDamaged;
     private ItemStack gun;
     private int damage;
+    public double x, y, z;
 
-    public EntityShotEvent(EntityLivingBase entityShooter, EntityLivingBase entityDamaged, ItemStack gun) {
+    public BulletHitEvent(EntityLivingBase entityShooter, EntityLivingBase entityDamaged, ItemStack gun) {
         this.entityShooter = entityShooter;
         this.entityDamaged = entityDamaged;
         this.gun = gun;
+    }
+
+    public BulletHitEvent(EntityLivingBase entityShooter, double x, double y, double z, ItemStack gun) {
+        this.entityShooter = entityShooter;
+        this.gun = gun;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public EntityLivingBase getEntityShooter() {
@@ -35,4 +44,8 @@ public class EntityShotEvent extends Event {
         return damage;
     }
 
+    @Override
+    public boolean isCancelable() {
+        return true;
+    }
 }

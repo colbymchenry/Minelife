@@ -87,7 +87,6 @@ public class ItemTicket extends Item {
                 long diff = dueDate.getTime() - now.getTime();
                 long diffSeconds = diff / 1000 % 60;
                 long diffMinutes = diff / (60 * 1000) % 60;
-                System.out.println("getTimeToPay(): " + diffMinutes);
                 return (int) diffMinutes;
             }
         } catch (ParseException e) {
@@ -138,7 +137,6 @@ public class ItemTicket extends Item {
     public static void setTimeToPay(ItemStack stack, int minutes) {
         Calendar now = Calendar.getInstance();
         now.add(Calendar.MINUTE, minutes);
-        System.out.println("setTimeToPay(): " + minutes);
         NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
         tagCompound.setString("dueDate", ItemListing.df.format(now.getTime()));
         stack.stackTagCompound = tagCompound;

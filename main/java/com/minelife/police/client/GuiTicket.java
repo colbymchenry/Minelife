@@ -46,7 +46,6 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
         this.player = PacketRequestName.requestName(ItemTicket.getPlayerForTicket(ticketStack), this);
         this.officer = PacketRequestName.requestName(ItemTicket.getOfficerForTicket(ticketStack), this);
         this.timeToPay = ItemTicket.getTimeToPay(ticketStack);
-        System.out.println(this.timeToPay);
         chargeList.addAll(ItemTicket.getChargesForTicket(ticketStack));
     }
 
@@ -89,9 +88,7 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
     @Override
     public void onGuiClosed() {
         super.onGuiClosed();
-        System.out.println(ItemTicket.getTimeToPay(ticketStack));
-        // TODO: Don'e use ItemTicket.getTimeToPay here. It's causing the time to reset.
-        Minelife.NETWORK.sendToServer(new PacketCreateTicket(ticketSlot, chargeList, player, ItemTicket.getTimeToPay(ticketStack), false));
+        Minelife.NETWORK.sendToServer(new PacketCreateTicket(ticketSlot, chargeList, player, -1, false));
     }
 
     @Override
@@ -111,6 +108,7 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
         buttonList.add(getChestButton(2, xPosition + width + 2, yPosition + 45, 16, 16));
         ((GuiButton) buttonList.get(1)).enabled = false;
         guiChargeList = new GuiChargeList(xPosition + 5, yPosition + 40, width - 10, height - 80, chargeList);
+        guiChargeList.unicodeFlag = true;
 
         chargeList.forEach(charge -> totalBail += charge.bail);
         chargeList.forEach(charge -> totalJailTime += charge.jailTime);

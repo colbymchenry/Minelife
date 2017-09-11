@@ -83,7 +83,8 @@ public class PacketCreateTicket implements IMessage {
             ItemTicket.setPlayerForTicket(ticketStack, playerUUID);
             ItemTicket.setOfficerForTicket(ticketStack, sender.getUniqueID());
             ItemTicket.setChargesForTicket(ticketStack, message.chargeList);
-            ItemTicket.setTimeToPay(ticketStack, message.timeToPay);
+            if (message.timeToPay != -1)
+                ItemTicket.setTimeToPay(ticketStack, message.timeToPay);
             sender.inventory.setInventorySlotContents(message.slot, ticketStack);
             if (message.closeScreen) sender.closeScreen();
             return null;

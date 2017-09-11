@@ -1,5 +1,6 @@
 package com.minelife;
 
+import com.minelife.util.server.EntityCleaner;
 import com.minelife.util.server.FetchNameThread;
 import com.minelife.util.server.FetchUUIDThread;
 import com.minelife.util.server.UUIDFetcher;
@@ -17,6 +18,8 @@ public class ServerProxy extends CommonProxy {
         FMLCommonHandler.instance().bus().register(new UUIDFetcher());
         new Thread(FetchNameThread.instance = new FetchNameThread()).start();
         new Thread(FetchUUIDThread.instance = new FetchUUIDThread()).start();
+
+        MinecraftForge.EVENT_BUS.register(new EntityCleaner());
 
         initSQLite();
         Minelife.MODS.forEach(mod -> {
