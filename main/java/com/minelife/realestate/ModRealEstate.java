@@ -27,12 +27,12 @@ public class ModRealEstate extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxy() {
+    public Class<? extends CommonProxy> getClientProxyClass() {
         return com.minelife.realestate.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxy() {
+    public Class<? extends CommonProxy> getServerProxyClass() {
         return com.minelife.realestate.server.ServerProxy.class;
     }
 

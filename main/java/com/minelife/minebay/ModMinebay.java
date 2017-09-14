@@ -19,13 +19,13 @@ public class ModMinebay extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxy()
+    public Class<? extends CommonProxy> getClientProxyClass()
     {
         return com.minelife.minebay.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxy()
+    public Class<? extends CommonProxy> getServerProxyClass()
     {
         return com.minelife.minebay.server.ServerProxy.class;
     }

@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class ModTracker extends AbstractMod {
 
     @Override
-    public Class<? extends CommonProxy> getServerProxy() {
+    public Class<? extends CommonProxy> getServerProxyClass() {
         return ServerProxy.class;
     }
 

@@ -17,13 +17,13 @@ public class ModNotifications extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxy()
+    public Class<? extends CommonProxy> getClientProxyClass()
     {
         return com.minelife.notification.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxy()
+    public Class<? extends CommonProxy> getServerProxyClass()
     {
         return com.minelife.notification.ServerProxy.class;
     }

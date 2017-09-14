@@ -14,6 +14,7 @@ public class MLConfig extends YamlConfiguration {
 
     public MLConfig(String name) throws IOException, InvalidConfigurationException
     {
+        name = name.contains(".yml") ? name.replaceAll(".yml", "") : name;
         this.file = new File(Minelife.getConfigDirectory(), name + ".yml");
         if(!this.file.exists()) {
             this.file.getParentFile().mkdirs();

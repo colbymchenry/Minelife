@@ -31,6 +31,7 @@ public class ItemTicket extends Item {
         setUnlocalizedName("ticket");
         setTextureName(Minelife.MOD_ID + ":ticket");
         setCreativeTab(CreativeTabs.tabMisc);
+
     }
 
     @SideOnly(Side.CLIENT)

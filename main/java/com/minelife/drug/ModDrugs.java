@@ -92,12 +92,12 @@ public class ModDrugs extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxy() {
+    public Class<? extends CommonProxy> getClientProxyClass() {
         return com.minelife.drug.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxy() {
+    public Class<? extends CommonProxy> getServerProxyClass() {
         return com.minelife.drug.server.ServerProxy.class;
     }
 
