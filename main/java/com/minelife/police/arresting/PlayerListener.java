@@ -36,7 +36,9 @@ public class PlayerListener {
                 ArrestingHandler.freePlayer(target);
         }
     }
-
+    /*
+    Stop damage when dropping players
+     */
     @SubscribeEvent
     public void onDamageTaken(LivingFallEvent event) {
         if(event.entity instanceof EntityPlayer) {
