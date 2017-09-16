@@ -36,6 +36,7 @@ public class PlayerListener {
                 ArrestingHandler.freePlayer(target);
         }
     }
+
     /*
     Stop damage when dropping players
      */

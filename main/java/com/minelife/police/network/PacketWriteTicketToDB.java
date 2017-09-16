@@ -5,6 +5,7 @@ import com.minelife.Minelife;
 import com.minelife.police.Charge;
 import com.minelife.police.ItemTicket;
 import com.minelife.police.TicketInventory;
+import com.minelife.util.ItemUtil;
 import com.minelife.util.ListToString;
 import com.minelife.util.client.PacketPopupMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -49,25 +50,16 @@ public class PacketWriteTicketToDB implements IMessage {
 
             UUID playerUUID = ItemTicket.getPlayerForTicket(ticketStack);
             UUID officerUUID = ItemTicket.getOfficerForTicket(ticketStack);
-            List<Charge> chargeList = ItemTicket.getChargesForTicket(ticketStack);
-            TicketInventory ticketInventory = new TicketInventory(ticketStack, player.inventory.currentItem);
 
             if(playerUUID == null || officerUUID == null) {
                 Minelife.NETWORK.sendTo(new PacketPopupMessage("Incomplete ticket.", 0xC6C6C6), player);
                 return null;
             }
 
-            ListToString<Charge> listToString = new ListToString<Charge>(chargeList) {
-                @Override
-                public String toString(Charge o) {
-                    return o.toString();
-                }
-            };
-
             try {
-                Minelife.SQLITE.query("INSERT INTO policetickets (ticketID, playerUUID, officerUUID, charges, inventory) VALUES " +
+                Minelife.SQLITE.query("INSERT INTO policetickets (ticketID, playerUUID, officerUUID, ticketNBT) VALUES " +
                         "('" + ItemTicket.getTicketID(ticketStack) + "', '" + playerUUID.toString() + "', '" + officerUUID.toString() + "', " +
-                        "'" + listToString.getListAsString() + "', '" + ticketInventory.getInventoryAsString() + "')");
+                        "'" + ItemUtil.itemToString(ticketStack) + "')");
             } catch (SQLException e) {
                 e.printStackTrace();
                 return null;
