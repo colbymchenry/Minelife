@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import org.lwjgl.input.Keyboard;
 
@@ -26,13 +27,22 @@ public class PlayerListener {
         boolean holdingHandcuffs = officer.getHeldItem() != null && officer.getHeldItem().getItem() == MLItems.handcuff;
         boolean isArrested = ArrestingHandler.isArrested(target);
 
-        if (!holdingHandcuffs) {
+        if (!holdingHandcuffs && isArrested) {
             target.mountEntity(officer);
         } else {
             if (!isArrested)
                 ArrestingHandler.arrestPlayer(target);
             else
                 ArrestingHandler.freePlayer(target);
+        }
+    }
+
+    @SubscribeEvent
+    public void onDamageTaken(LivingFallEvent event) {
+        if(event.entity instanceof EntityPlayer) {
+            if(ArrestingHandler.isArrested((EntityPlayer) event.entity)) {
+                event.setCanceled(true);
+            }
         }
     }
 

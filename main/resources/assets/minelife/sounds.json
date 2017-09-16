@@ -78,5 +78,9 @@
   "snort": {
     "category": "neutral",
     "sounds": ["minelife:snort"]
+  },
+  "handcuff": {
+    "category": "neutral",
+    "sounds": ["minelife:handcuff"]
   }
 }

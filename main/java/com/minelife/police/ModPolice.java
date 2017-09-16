@@ -27,8 +27,6 @@ public class ModPolice extends AbstractMod {
         MinecraftForge.EVENT_BUS.register(new PlayerListener());
     }
 
-    // TODO: Stop player from dismounting. Gonna be a lot of work. May want to lay in bed on macbook
-
     @Override
     public Class<? extends CommonProxy> getServerProxy() {
         return ServerProxy.class;
