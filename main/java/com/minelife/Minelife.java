@@ -146,4 +146,8 @@ public class Minelife {
         }
     }
 
+    public static AbstractMod getModInstance(Class<? extends AbstractMod> modClass) {
+        return MODS.stream().filter(m -> m.getClass().equals(modClass)).findFirst().orElse(null);
+    }
+
 }

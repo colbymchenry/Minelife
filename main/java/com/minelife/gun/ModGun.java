@@ -70,12 +70,12 @@ public class ModGun extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxy() {
+    public Class<? extends CommonProxy> getClientProxyClass() {
         return com.minelife.gun.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxy() {
+    public Class<? extends CommonProxy> getServerProxyClass() {
         return com.minelife.gun.server.ServerProxy.class;
     }
 

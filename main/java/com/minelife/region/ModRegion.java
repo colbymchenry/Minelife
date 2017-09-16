@@ -11,12 +11,12 @@ import cpw.mods.fml.relauncher.Side;
 public class ModRegion extends AbstractMod {
 
     @Override
-    public Class<? extends CommonProxy> getServerProxy() {
+    public Class<? extends CommonProxy> getServerProxyClass() {
         return com.minelife.region.server.ServerProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxy()
+    public Class<? extends CommonProxy> getClientProxyClass()
     {
         return com.minelife.region.client.ClientProxy.class;
     }

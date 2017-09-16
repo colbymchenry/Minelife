@@ -7,13 +7,15 @@ import lib.PatPeter.SQLibrary.SQLite;
 public class ClientProxy extends CommonProxy {
 
     @Override
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(FMLPreInitializationEvent event)
+    {
         initSQLite();
         MLKeys.registerKeys();
 
         Minelife.MODS.forEach(mod -> {
             try {
-                mod.getClientProxy().newInstance().preInit(event);
+                mod.clientProxy = mod.getClientProxyClass().newInstance();
+                mod.clientProxy.preInit(event);
             } catch (InstantiationException | IllegalAccessException | NullPointerException ignored) {
             } catch (Exception e) {
                 e.printStackTrace();
@@ -22,10 +24,11 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void init(FMLInitializationEvent event) {
+    public void init(FMLInitializationEvent event)
+    {
         Minelife.MODS.forEach(mod -> {
             try {
-                mod.getClientProxy().newInstance().init(event);
+                mod.clientProxy.init(event);
             } catch (InstantiationException | IllegalAccessException | NullPointerException e) {
             } catch (Exception e) {
                 e.printStackTrace();
@@ -33,7 +36,8 @@ public class ClientProxy extends CommonProxy {
         });
     }
 
-    private void initSQLite() {
+    private void initSQLite()
+    {
         String prefix = "[" + Minelife.NAME + "]";
         String directory = Minelife.getConfigDirectory().getAbsolutePath();
         String dbName = Minelife.MOD_ID;

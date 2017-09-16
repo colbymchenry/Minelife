@@ -18,7 +18,13 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
-public class AbstractMod {
+public abstract class AbstractMod {
+
+    @SideOnly(Side.SERVER)
+    public CommonProxy serverProxy;
+
+    @SideOnly(Side.CLIENT)
+    public CommonProxy clientProxy;
 
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -40,12 +46,12 @@ public class AbstractMod {
     {
     }
 
-    public Class<? extends CommonProxy> getClientProxy()
+    public Class<? extends CommonProxy> getClientProxyClass()
     {
         return null;
     }
 
-    public Class<? extends CommonProxy> getServerProxy()
+    public Class<? extends CommonProxy> getServerProxyClass()
     {
         return null;
     }

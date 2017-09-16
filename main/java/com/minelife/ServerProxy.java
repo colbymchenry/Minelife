@@ -24,7 +24,8 @@ public class ServerProxy extends CommonProxy {
         initSQLite();
         Minelife.MODS.forEach(mod -> {
             try {
-                mod.getServerProxy().newInstance().preInit(event);
+                mod.serverProxy = mod.getServerProxyClass().newInstance();
+                mod.serverProxy.preInit(event);
             } catch (InstantiationException | IllegalAccessException | NullPointerException ignored) {
             } catch (Exception e) {
                 e.printStackTrace();
@@ -36,7 +37,7 @@ public class ServerProxy extends CommonProxy {
     public void init(FMLInitializationEvent event) {
         Minelife.MODS.forEach(mod -> {
             try {
-                mod.getServerProxy().newInstance().init(event);
+                mod.serverProxy.init(event);
             } catch (InstantiationException | IllegalAccessException | NullPointerException ignored) {
             } catch (Exception e) {
                 e.printStackTrace();

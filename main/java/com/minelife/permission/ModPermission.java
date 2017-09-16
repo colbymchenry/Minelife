@@ -16,7 +16,7 @@ public class ModPermission extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxy() {
+    public Class<? extends CommonProxy> getServerProxyClass() {
         return com.minelife.permission.ServerProxy.class;
     }
 
