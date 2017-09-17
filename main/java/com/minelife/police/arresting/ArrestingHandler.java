@@ -48,15 +48,19 @@ public class ArrestingHandler {
 
         // 20 ticks = 1 second
         if (tick > 19) {
-            List<ServerProxy.TicketInfo> tickets = ModPolice.getServerProxy().getTickets(event.player);
+            List<ServerProxy.TicketInfo> tickets = ModPolice.getServerProxy().getTickets(event.player.getUniqueID());
             boolean wasEmpty = tickets.isEmpty();
             for (ServerProxy.TicketInfo ticket : tickets) {
-                ticket.setTimeServed(ticket.timeServed + (1.0D / 60.0D));
+                if (ModPolice.getServerProxy().getPrisonRegion() != null &&
+                        ModPolice.getServerProxy().getPrisonRegion().contains(event.player.worldObj, event.player.posX, event.player.posY, event.player.posZ)) {
+                    ticket.setTimeServed(ticket.timeServed + (1.0D / 60.0D));
+                }
+
                 if (ticket.timeServed >= ticket.getTimeToServe()) ticket.delete();
                 else if (ticket.amountPayed >= ticket.getAmountToPay()) ticket.delete();
             }
 
-            if (!wasEmpty && ModPolice.getServerProxy().getTickets(event.player).isEmpty()) {
+            if (!wasEmpty && ModPolice.getServerProxy().getTickets(event.player.getUniqueID()).isEmpty()) {
                 Vec3 tpVec = ModPolice.getServerProxy().getPrisonExit();
                 event.player.mountEntity(null);
                 ((EntityPlayerMP) event.player).playerNetServerHandler.setPlayerLocation(tpVec.xCoord, tpVec.yCoord, tpVec.zCoord, event.player.rotationYaw, event.player.rotationPitch);

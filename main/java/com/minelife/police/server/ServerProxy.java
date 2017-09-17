@@ -13,6 +13,7 @@ import com.minelife.util.NBTUtil;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,6 +31,8 @@ public class ServerProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS policeofficers (playerUUID TEXT, xp INT)");
         Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS policetickets (ticketID INT, playerUUID VARCHAR(36), officerUUID VARCHAR(36), ticketNBT TEXT, timeServed DOUBLE DEFAULT '0.0', amountPayed DOUBLE DEFAULT '0.0D')");
+        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS policelockup (playerUUID VARCHAR(36))");
+        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS policepardon (playerUUID VARCHAR(36))");
         MinecraftForge.EVENT_BUS.register(this);
 
         config = new MLConfig("police");
@@ -92,17 +95,17 @@ public class ServerProxy extends CommonProxy {
         return x == 0.0D && y == 0.0D && z == 0.0D ? null : Vec3.createVectorHelper(x, y, z);
     }
 
-    public List<TicketInfo> getTickets(EntityPlayer player) {
+    public List<TicketInfo> getTickets(UUID playerUUID) {
         List<TicketInfo> ticketList = Lists.newArrayList();
         try {
-            ResultSet result = Minelife.SQLITE.query("SELECT * FROM policetickets WHERE playerUUID='" + player.getUniqueID().toString() + "'");
+            ResultSet result = Minelife.SQLITE.query("SELECT * FROM policetickets WHERE playerUUID='" + playerUUID.toString() + "'");
             while(result.next()) {
                 int ticketID = result.getInt("ticketID");
                 UUID officer = UUID.fromString(result.getString("officer"));
                 ItemStack ticketStack = ItemStack.loadItemStackFromNBT(NBTUtil.fromString(result.getString("ticketNBT")));
                 double timeServed = result.getDouble("timeServed");
                 double amountPayed = result.getDouble("amountPayed");
-                ticketList.add(new TicketInfo(ticketID, player.getUniqueID(), officer, ticketStack, timeServed, amountPayed));
+                ticketList.add(new TicketInfo(ticketID, playerUUID, officer, ticketStack, timeServed, amountPayed));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -110,8 +113,6 @@ public class ServerProxy extends CommonProxy {
 
         return ticketList;
     }
-
-
 
     public class TicketInfo {
         public int ticketID;
@@ -170,6 +171,18 @@ public class ServerProxy extends CommonProxy {
             for (Charge charge : getCharges()) totalAmountPayed += charge.bail;
             return totalAmountPayed;
         }
+    }
+
+    public void sendToPrison(EntityPlayerMP player) {
+        Vec3 tpVec = getPrisonEntrance();
+        player.mountEntity(null);
+        player.playerNetServerHandler.setPlayerLocation(tpVec.xCoord, tpVec.yCoord, tpVec.zCoord, player.rotationYaw, player.rotationPitch);
+    }
+
+    public void sendToPrisonExit(EntityPlayerMP player) {
+        Vec3 tpVec = getPrisonExit();
+        player.mountEntity(null);
+        player.playerNetServerHandler.setPlayerLocation(tpVec.xCoord, tpVec.yCoord, tpVec.zCoord, player.rotationYaw, player.rotationPitch);
     }
 
 }
