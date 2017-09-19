@@ -82,5 +82,9 @@
   "handcuff": {
     "category": "neutral",
     "sounds": ["minelife:handcuff"]
+  },
+  "key_stroke": {
+    "category": "neutral",
+    "sounds": ["minelife:key_stroke"]
   }
 }

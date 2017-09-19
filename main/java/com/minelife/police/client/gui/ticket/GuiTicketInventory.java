@@ -1,6 +1,7 @@
-package com.minelife.police.client;
+package com.minelife.police.client.gui.ticket;
 
 import com.minelife.police.TicketInventory;
+import com.minelife.police.client.ContainerTicketInventory;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;

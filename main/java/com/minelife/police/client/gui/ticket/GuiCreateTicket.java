@@ -1,10 +1,9 @@
-package com.minelife.police.client;
+package com.minelife.police.client.gui.ticket;
 
 import com.google.common.collect.Lists;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.police.Charge;
-import com.minelife.police.GuiHandler;
 import com.minelife.police.network.PacketCreateTicket;
 import com.minelife.police.network.PacketOpenTicketInventory;
 import com.minelife.util.NumberConversions;

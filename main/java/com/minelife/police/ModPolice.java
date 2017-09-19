@@ -7,6 +7,7 @@ import com.minelife.Minelife;
 import com.minelife.police.arresting.PacketDropPlayer;
 import com.minelife.police.arresting.PlayerListener;
 import com.minelife.police.client.ClientProxy;
+import com.minelife.police.computer.TileEntityPoliceComputer;
 import com.minelife.police.network.PacketCreateTicket;
 import com.minelife.police.network.PacketOpenTicketInventory;
 import com.minelife.police.network.PacketWriteTicketToDB;
@@ -15,6 +16,7 @@ import com.minelife.police.server.ServerProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,6 +34,8 @@ public class ModPolice extends AbstractMod {
 
         MinecraftForge.EVENT_BUS.register(PlayerListener.instance);
         FMLCommonHandler.instance().bus().register(PlayerListener.instance);
+
+        GameRegistry.registerTileEntity(TileEntityPoliceComputer.class, "police_computer");
     }
 
     @Override

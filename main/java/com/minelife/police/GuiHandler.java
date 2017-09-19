@@ -2,7 +2,7 @@ package com.minelife.police;
 
 import com.minelife.AbstractGuiHandler;
 import com.minelife.police.client.ContainerTicketInventory;
-import com.minelife.police.client.GuiTicketInventory;
+import com.minelife.police.client.gui.ticket.GuiTicketInventory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;

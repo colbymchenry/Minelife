@@ -1,4 +1,4 @@
-package com.minelife.police.client;
+package com.minelife.police.client.gui.ticket;
 
 import com.minelife.util.client.GuiScrollableContent;
 import net.minecraft.client.gui.GuiButton;

@@ -1,4 +1,4 @@
-package com.minelife.police.client;
+package com.minelife.police.client.gui.ticket;
 
 import com.minelife.police.Charge;
 import com.minelife.util.NumberConversions;
