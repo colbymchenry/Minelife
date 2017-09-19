@@ -11,6 +11,7 @@ import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiUtil;
 import com.minelife.util.client.INameReceiver;
 import com.minelife.util.client.PacketRequestName;
+import com.minelife.util.server.NameFetcher;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -42,8 +43,8 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
         this.ticketSlot = ticketSlot;
         this.ticketStack = Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(ticketSlot);
         this.chargeList = Lists.newArrayList();
-        this.player = PacketRequestName.requestName(ItemTicket.getPlayerForTicket(ticketStack), this);
-        this.officer = PacketRequestName.requestName(ItemTicket.getOfficerForTicket(ticketStack), this);
+        this.player = NameFetcher.asyncFetchClient(ItemTicket.getPlayerForTicket(ticketStack), this);
+        this.officer = NameFetcher.asyncFetchClient(ItemTicket.getOfficerForTicket(ticketStack), this);
         this.timeToPay = ItemTicket.getTimeToPay(ticketStack);
         chargeList.addAll(ItemTicket.getChargesForTicket(ticketStack));
     }

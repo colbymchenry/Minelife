@@ -23,6 +23,14 @@ public abstract class GuiComputer extends GuiScreen {
     public void initGui() {
         super.initGui();
         this.sectionHeight = this.height / 8;
+        this.buttonList.clear();
+    }
+
+    @Override
+    protected void mouseClicked(int x, int y, int btn)
+    {
+        super.mouseClicked(x, y, btn);
+        mc.thePlayer.playSound(Minelife.MOD_ID + ":" + "gui.atm.click", 0.5F, 1.0F);
     }
 
     public void drawBackground() {
@@ -98,7 +106,7 @@ public abstract class GuiComputer extends GuiScreen {
 
         @Override
         public void func_146113_a(SoundHandler soundHandlerIn) {
-            mc.thePlayer.playSound(Minelife.MOD_ID + ":" + "gui.atm.click", 0.5F, 1.0F);
+//            mc.thePlayer.playSound(Minelife.MOD_ID + ":" + "gui.atm.click", 0.5F, 1.0F);
         }
     }
 

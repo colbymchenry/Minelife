@@ -2,8 +2,13 @@ package com.minelife.util.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.minelife.Minelife;
+import com.minelife.util.client.IUUIDReceiver;
+import com.minelife.util.client.PacketRequestName;
+import com.minelife.util.client.PacketRequestUUID;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.relauncher.Side;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -23,7 +28,7 @@ public final class UUIDFetcher {
     * 600 requests per 10 minutes for username -> UUID.
     * Up to 100 names in each request.
     */
-    public static final UUID get(String player) {
+    protected static final UUID get(String player) {
         if (player == null || player.isEmpty()) return null;
 
         // search through the cached players first
@@ -60,6 +65,15 @@ public final class UUIDFetcher {
     @SubscribeEvent
     public void onJoin(PlayerEvent.PlayerLoggedInEvent event) {
         CACHE.put(event.player.getUniqueID(), event.player.getDisplayName());
+    }
+
+    public static void asyncFetchServer(String name, Callback callback, Object... objects) {
+            FetchUUIDThread.instance.fetchUUID(name, callback, objects);
+    }
+
+    public static UUID asyncFetchClient(String name, IUUIDReceiver receiver) {
+        Minelife.NETWORK.sendToServer(new PacketRequestUUID(name, receiver.getClass().getName()));
+        return null;
     }
 
 }

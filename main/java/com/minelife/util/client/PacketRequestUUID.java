@@ -28,12 +28,6 @@ public class PacketRequestUUID implements IMessage {
         this.receiver = receiver;
     }
 
-    @SideOnly(Side.CLIENT)
-    public static UUID requestUUID(String playerName, IUUIDReceiver receiver) {
-        Minelife.NETWORK.sendToServer(new PacketRequestUUID(playerName, receiver.getClass().getName()));
-        return null;
-    }
-
     @Override
     public void fromBytes(ByteBuf buf) {
         playerName = ByteBufUtils.readUTF8String(buf);

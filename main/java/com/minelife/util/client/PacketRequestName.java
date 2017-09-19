@@ -26,12 +26,6 @@ public class PacketRequestName implements IMessage {
         this.receiver = receiver;
     }
 
-    @SideOnly(Side.CLIENT)
-    public static String requestName(UUID playerUUID, INameReceiver receiver) {
-        Minelife.NETWORK.sendToServer(new PacketRequestName(playerUUID, receiver.getClass().getName()));
-        return "Fetching...";
-    }
-
     @Override
     public void fromBytes(ByteBuf buf) {
         playerUUID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
