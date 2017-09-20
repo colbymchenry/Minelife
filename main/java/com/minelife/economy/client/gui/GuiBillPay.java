@@ -58,7 +58,15 @@ public class GuiBillPay extends GuiATM {
     protected void keyTyped(char p_73869_1_, int p_73869_2_)
     {
         super.keyTyped(p_73869_1_, p_73869_2_);
-        if (content != null) content.keyTyped(p_73869_1_, p_73869_2_);
+        if (content != null) {
+            content.keyTyped(p_73869_1_, p_73869_2_);
+
+            if(p_73869_2_ == Keyboard.KEY_BACK) {
+                Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":key_stroke", 1.0F, mc.theWorld.rand.nextFloat() * 0.1F + 0.8F);
+            } else {
+                Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":key_stroke", 1.0F, mc.theWorld.rand.nextFloat() * 0.1F + 0.9F);
+            }
+        }
     }
 
     @Override

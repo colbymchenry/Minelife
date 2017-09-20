@@ -28,7 +28,7 @@ public final class UUIDFetcher {
     * 600 requests per 10 minutes for username -> UUID.
     * Up to 100 names in each request.
     */
-    protected static final UUID get(String player) {
+    public static final UUID get(String player) {
         if (player == null || player.isEmpty()) return null;
 
         // search through the cached players first

@@ -6,7 +6,9 @@ import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
 import com.minelife.permission.ModPermission;
 import com.minelife.permission.Player;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.server.Callback;
+import com.minelife.util.server.MLCommand;
 import com.minelife.util.server.NameFetcher;
 import com.minelife.util.server.UUIDFetcher;
 import net.minecraft.command.ICommand;
@@ -19,21 +21,20 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class CommandEconomy implements ICommand, Callback {
+public class CommandEconomy extends MLCommand {
 
     @Override
-    public String getCommandName()
-    {
+    public String getCommandName() {
         return "economy";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender)
-    {
-        String commandUsage = "/economy balance <player> <wallet:TRUE-FALSE>\n" +
-                "/economy set <player> <amount> <wallet:TRUE-FALSE>\n" +
-                "/economy withdraw <player> <amount> <wallet:TRUE-FALSE>\n" +
-                "/economy deposit <player> <amount> <wallet:TRUE-FALSE>\n";
+    public String getCommandUsage(ICommandSender sender) {
+        String commandUsage =
+                "/economy balance <player> <wallet:TRUE-FALSE>\n" +
+                        "/economy set <player> <amount> <wallet:TRUE-FALSE>\n" +
+                        "/economy withdraw <player> <amount> <wallet:TRUE-FALSE>\n" +
+                        "/economy deposit <player> <amount> <wallet:TRUE-FALSE>\n";
 
         for (String s : commandUsage.split("\n")) {
             sender.addChatMessage(new ChatComponentText(s));
@@ -43,20 +44,12 @@ public class CommandEconomy implements ICommand, Callback {
     }
 
     @Override
-    public List getCommandAliases()
-    {
+    public List getCommandAliases() {
         return Lists.newArrayList();
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args)
-    {
-        new Thread(new ProcessCommand(this, sender, args)).start();
-    }
-
-    @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender)
-    {
+    public boolean canCommandSenderUseCommand(ICommandSender sender) {
         if (!(sender instanceof EntityPlayer)) return true;
 
         Player player = ModPermission.get(((EntityPlayer) sender).getUniqueID());
@@ -65,138 +58,79 @@ public class CommandEconomy implements ICommand, Callback {
     }
 
     @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args)
-    {
+    public List addTabCompletionOptions(ICommandSender sender, String[] args) {
         return null;
     }
 
     @Override
-    public boolean isUsernameIndex(String[] args, int index)
-    {
+    public boolean isUsernameIndex(String[] args, int index) {
         return index == 2;
     }
 
     @Override
-    public int compareTo(Object o)
-    {
+    public int compareTo(Object o) {
         return 0;
     }
 
     @Override
-    public void callback(Object... objects)
-    {
-        try {
-            ICommandSender sender = (ICommandSender) objects[0];
-            String message = (String) objects[1];
+    public synchronized void execute(ICommandSender sender, String[] args) throws Exception {
+        if (args.length == 0) {
+            getCommandUsage(sender);
+            return;
+        }
 
-            if (objects.length == 6) {
-                double amount = (double) objects[2];
-                boolean wallet = (boolean) objects[3];
-                String command = (String) objects[4];
-                UUID player_uuid = (UUID) objects[5];
+        String cmd = args[0].toLowerCase();
+        double amount = 0;
+        boolean wallet;
 
-
-                if (command.equals("set")) {
-                    ModEconomy.set(player_uuid, amount, wallet);
-                } else if (command.equals("withdraw")) {
-                    ModEconomy.withdraw(player_uuid, amount, wallet);
-                } else if (command.equals("deposit")) {
-                    ModEconomy.deposit(player_uuid, amount, wallet);
-                }
+        if (cmd.equalsIgnoreCase("balance")) {
+            if (args.length != 3) {
+                getCommandUsage(sender);
+                return;
             }
 
-            sender.addChatMessage(new ChatComponentText(message));
-        }catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
+            wallet = "true".contains(args[2].toLowerCase()) ? true : false;
+        } else {
+            if (args.length != 4) {
+                getCommandUsage(sender);
+                return;
+            }
 
-    class ProcessCommand implements Runnable {
-
-        private Callback callback;
-        private ICommandSender sender;
-        private String[] args;
-
-        ProcessCommand(Callback callback, ICommandSender sender, String[] args) {
-            this.callback = callback;
-            this.sender = sender;
-            this.args = args;
+            amount = Double.parseDouble(args[2]);
+            wallet = "true".contains(args[3].toLowerCase()) ? true : false;
         }
 
-        @Override
-        public void run()
-        {
-            try {
-                if (args.length < 2) {
-                    callback.callback(sender, getCommandUsage(sender));
-                    return;
-                }
+        String playerName = args[1];
+        UUID playerUUID = UUIDFetcher.get(playerName);
 
-                String player = args[1];
-                UUID playerUUID = UUIDFetcher.get(player);
-                double amount = 0;
-                boolean wallet;
+        if(playerUUID == null) {
+            sender.addChatMessage(new ChatComponentText("Player not found."));
+            return;
+        }
 
-                if (playerUUID == null) throw new CustomMessageException("Player not found.");
-
-                String playerName = NameFetcher.get(playerUUID);
-
-                if (playerName == null) throw new CustomMessageException("Player not found.");
-
-                if (args[0].equalsIgnoreCase("balance")) {
-                    if (args.length < 3) {
-                        getCommandUsage(sender);
-                        return;
-                    }
-                    wallet = args[2].equalsIgnoreCase("t") || !args[2].equalsIgnoreCase("f") && Boolean.parseBoolean(args[2]);
-                } else {
-                    if (args.length < 4) {
-                        getCommandUsage(sender);
-                        return;
-                    }
-                    amount = Double.parseDouble(args[2]);
-                    wallet = args[3].equalsIgnoreCase("t") || !args[3].equalsIgnoreCase("f") && Boolean.parseBoolean(args[3]);
-                }
-
-                switch (args[0].toLowerCase()) {
-                    case "balance": {
-                        callback.callback(sender, ModEconomy.getMessage("messages.balance")
-                                .replace("%b", String.valueOf(ModEconomy.getBalance(playerUUID, wallet))));
-                        break;
-                    }
-                    case "set": {
-                        callback.callback(sender, ModEconomy.getMessage("messages.set")
-                                .replace("%p", playerName)
-                                .replace("%b", String.valueOf(amount))
-                                .replace("%w", wallet ? "wallet" : "account"), amount, wallet, "set", playerUUID);
-                        break;
-                    }
-                    case "withdraw": {
-                        callback.callback(sender, ModEconomy.getMessage("messages.withdraw")
-                                .replace("%b", String.valueOf(amount))
-                                .replace("%p", playerName)
-                                .replace("%w", wallet ? "wallet" : "account"), amount, wallet, "withdraw", playerUUID);
-                        break;
-                    }
-                    case "deposit": {
-                        callback.callback(sender, ModEconomy.getMessage("messages.deposit")
-                                .replace("%b", String.valueOf(amount))
-                                .replace("%p", playerName)
-                                .replace("%w", wallet ? "wallet" : "account"), amount, wallet, "deposit", playerUUID);
-                        break;
-                    }
-                    default: {
-                        callback.callback(sender, getCommandUsage(sender));
-                    }
-                }
-            } catch (Exception e) {
-                if (e instanceof CustomMessageException) {
-                    callback.callback(sender, EnumChatFormatting.RED + e.getMessage());
-                } else {
-                    e.printStackTrace();
-                    Minelife.getLogger().log(Level.SEVERE, "", e);
-                    callback.callback(sender, Minelife.default_error_message);
-                }
+        switch (cmd.toLowerCase()) {
+            case "balance": {
+                sender.addChatMessage(new ChatComponentText("$" + NumberConversions.formatter.format(ModEconomy.getBalance(playerUUID, wallet))));
+                return;
+            }
+            case "set": {
+                ModEconomy.set(playerUUID, amount, wallet);
+                sender.addChatMessage(new ChatComponentText("Balance updated."));
+                return;
+            }
+            case "withdraw": {
+                ModEconomy.withdraw(playerUUID, amount, wallet);
+                sender.addChatMessage(new ChatComponentText("Balance updated."));
+                return;
+            }
+            case "deposit": {
+                ModEconomy.deposit(playerUUID, amount, wallet);
+                sender.addChatMessage(new ChatComponentText("Balance updated."));
+                return;
+            }
+            default: {
+                getCommandUsage(sender);
+                return;
             }
         }
     }

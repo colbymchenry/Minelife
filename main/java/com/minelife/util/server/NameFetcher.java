@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public final class NameFetcher  {
 
-    protected static final String get(UUID id) {
+    public static final String get(UUID id) {
         try {
             // Return cached name if it exists
             String cachedName = UUIDFetcher.CACHE.get(id);

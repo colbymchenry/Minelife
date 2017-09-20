@@ -120,7 +120,6 @@ public class ItemListing extends Listing {
             EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
             entity_item.delayBeforeCanPickup = 0;
 
-            System.out.println(price() + "," + (double) amount + "," + price + "," + (price() / (double) amount));
             ModEconomy.withdraw(player.getUniqueID(), price, false);
             ModEconomy.deposit(seller(), price, false);
 

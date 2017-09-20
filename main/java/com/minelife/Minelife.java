@@ -27,7 +27,9 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import lib.PatPeter.SQLibrary.Database;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -136,13 +138,15 @@ public class Minelife {
         getLogger().log(Level.SEVERE, "", e);
     }
 
-    public static void handle_exception(Exception e, EntityPlayer player) {
-        player.closeScreen();
+    public static void handle_exception(Exception e, ICommandSender player) {
+        if(player instanceof EntityPlayer) {
+            ((EntityPlayer) player).closeScreen();
+        }
         if(e instanceof CustomMessageException) {
-            player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
+            player.addChatMessage(new ChatComponentText(e.getMessage()));
         } else {
             Minelife.log(e);
-            player.addChatComponentMessage(new ChatComponentText(Minelife.default_error_message));
+            player.addChatMessage(new ChatComponentText(Minelife.default_error_message));
         }
     }
 

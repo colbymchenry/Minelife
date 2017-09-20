@@ -8,9 +8,7 @@ import com.minelife.police.arresting.PacketDropPlayer;
 import com.minelife.police.arresting.PlayerListener;
 import com.minelife.police.client.ClientProxy;
 import com.minelife.police.computer.TileEntityPoliceComputer;
-import com.minelife.police.network.PacketCreateTicket;
-import com.minelife.police.network.PacketOpenTicketInventory;
-import com.minelife.police.network.PacketWriteTicketToDB;
+import com.minelife.police.network.*;
 import com.minelife.police.server.CommandPolice;
 import com.minelife.police.server.ServerProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -31,6 +29,8 @@ public class ModPolice extends AbstractMod {
         registerPacket(PacketOpenTicketInventory.Handler.class, PacketOpenTicketInventory.class, Side.SERVER);
         registerPacket(PacketWriteTicketToDB.Handler.class, PacketWriteTicketToDB.class, Side.SERVER);
         registerPacket(PacketDropPlayer.Handler.class, PacketDropPlayer.class, Side.SERVER);
+        registerPacket(PacketRequestTicketSearch.Handler.class, PacketRequestTicketSearch.class, Side.SERVER);
+        registerPacket(PacketResponseTicketSearch.Handler.class, PacketResponseTicketSearch.class, Side.CLIENT);
 
         MinecraftForge.EVENT_BUS.register(PlayerListener.instance);
         FMLCommonHandler.instance().bus().register(PlayerListener.instance);

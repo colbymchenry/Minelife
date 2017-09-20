@@ -19,12 +19,18 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PacketListings implements IMessage {
 
+    private static final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
     public static String[] options = new String[]{"Price", "Date", "Damage", "Stack Size"};
 
-    public PacketListings() {}
+    public PacketListings() {
+    }
 
     private int page;
     private String search_for;
@@ -39,8 +45,7 @@ public class PacketListings implements IMessage {
     }
 
     @Override
-    public void fromBytes(ByteBuf buf)
-    {
+    public void fromBytes(ByteBuf buf) {
         this.page = buf.readInt();
         this.search_for = ByteBufUtils.readUTF8String(buf);
         this.order_by = buf.readInt();
@@ -48,95 +53,68 @@ public class PacketListings implements IMessage {
     }
 
     @Override
-    public void toBytes(ByteBuf buf)
-    {
+    public void toBytes(ByteBuf buf) {
         buf.writeInt(this.page);
         ByteBufUtils.writeUTF8String(buf, this.search_for);
         buf.writeInt(this.order_by);
         buf.writeBoolean(this.ascend);
     }
 
-    public static class Handler implements IMessageHandler<PacketListings, IMessage>, Callback {
+    public static class Handler implements IMessageHandler<PacketListings, IMessage> {
 
         private EntityPlayer player;
 
         @SideOnly(Side.SERVER)
-        public IMessage onMessage(PacketListings message, MessageContext ctx)
-        {
+        public IMessage onMessage(PacketListings message, MessageContext ctx) {
             int min_row = 100 * message.page;
             int max_row = 100 * (message.page + 1);
             this.player = ctx.getServerHandler().playerEntity;
-            try {
-                // ASCENDING = ASC
-                // DESCENDING = DESC
-                String query = "";
+            // ASCENDING = ASC
+            // DESCENDING = DESC
+            String query = "";
 
-                if(!message.search_for.trim().isEmpty())
-                    query += "WHERE title LIKE '%" + message.search_for + "%' ";
+            if (!message.search_for.trim().isEmpty())
+                query += "WHERE title LIKE '%" + message.search_for + "%' ";
 
-                switch(message.order_by) {
-                    case 0:
-                        query += "ORDER BY price";
-                        break;
-                    case 1:
-                        query += "ORDER BY datetime(date_published)";
-                        break;
-                    case 2:
-                        query += "ORDER BY damage";
-                        break;
-                    case 3:
-                        query += "ORDER BY stack_size";
-                        break;
-                }
-
-                query += message.ascend ? " ASC " : " DESC ";
-                ResultSet result_count = Minelife.SQLITE.query("SELECT COUNT(*) AS count FROM item_listings " + query);
-                query += "LIMIT " + min_row + "," + max_row;
-                new Thread(new GetListings(this, Minelife.SQLITE.query("SELECT * FROM item_listings " + query),  result_count)).start();
-            } catch (SQLException e) {
-                e.printStackTrace();
-                Minelife.handle_exception(e, ctx.getServerHandler().playerEntity);
-                ctx.getServerHandler().playerEntity.closeScreen();
+            switch (message.order_by) {
+                case 0:
+                    query += "ORDER BY price";
+                    break;
+                case 1:
+                    query += "ORDER BY datetime(date_published)";
+                    break;
+                case 2:
+                    query += "ORDER BY damage";
+                    break;
+                case 3:
+                    query += "ORDER BY stack_size";
+                    break;
             }
+
+            query += message.ascend ? " ASC " : " DESC ";
+            final String query_count = query;
+            query += "LIMIT " + min_row + "," + max_row;
+            final String query_final = query;
+            pool.submit(() -> {
+                try {
+                    getListings(Minelife.SQLITE.query("SELECT * FROM item_listings " + query_final), Minelife.SQLITE.query("SELECT COUNT(*) AS count FROM item_listings " + query_count));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
             return null;
         }
 
-        @Override
-        public void callback(Object... objects)
-        {
-            Minelife.NETWORK.sendTo(new PacketResponseListings((List<ItemListing>) objects[0], (int) objects[1]), (EntityPlayerMP) player);
-        }
-    }
-
-    static class GetListings implements Runnable {
-
-        private ResultSet result;
-        private ResultSet result_count;
-        private Callback callback;
-        private List<ItemListing> listings = Lists.newArrayList();
-
-        public GetListings(Callback callback, ResultSet result, ResultSet result_count) {
-            this.callback = callback;
-            this.result = result;
-            this.result_count = result_count;
-        }
-
-        @Override
-        public void run()
-        {
+        public synchronized void getListings(ResultSet result, ResultSet result_count) throws Exception {
             double pages = 0;
-            try {
-                while(result.next()) listings.add(new ItemListing(UUID.fromString(result.getString("uuid"))));
-
-                pages = Math.floor(result_count.getInt("count") / 100D);
-                pages += result_count.getInt("count") % 100 != 0 ? 1 : 0;
-            } catch (SQLException | ParseException e) {
-                e.printStackTrace();
+            List<ItemListing> listings = Lists.newArrayList();
+            while (result.next()) {
+                listings.add(new ItemListing(UUID.fromString(result.getString("uuid"))));
             }
-
-
-
-            callback.callback(listings, (int) pages);
+            pages = Math.floor(result_count.getInt("count") / 100D);
+            pages += result_count.getInt("count") % 100 != 0 ? 1 : 0;
+            Minelife.NETWORK.sendTo(new PacketResponseListings(listings, (int) pages), (EntityPlayerMP) player);
         }
     }
+
 }

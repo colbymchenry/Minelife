@@ -200,7 +200,7 @@ public class CommandPolice implements ICommand {
         }
     }
 
-    private final ExecutorService pool = Executors.newFixedThreadPool(10);
+    private static final ExecutorService pool = Executors.newFixedThreadPool(10);
 
 
 }

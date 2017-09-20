@@ -1,6 +1,7 @@
 package com.minelife.police.computer;
 
 import com.minelife.Minelife;
+import com.minelife.police.client.gui.computer.GuiTicketSearch;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.BlockContainer;
@@ -52,7 +53,7 @@ public class BlockPoliceComputer extends BlockContainer {
 
     @SideOnly(Side.CLIENT)
     public void openComputer() {
-        Minecraft.getMinecraft().displayGuiScreen(new GuiMainMenu());
+        Minecraft.getMinecraft().displayGuiScreen(new GuiTicketSearch());
     }
 
     @Override

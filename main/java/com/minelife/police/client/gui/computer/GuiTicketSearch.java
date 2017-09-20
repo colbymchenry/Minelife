@@ -1,8 +1,11 @@
 package com.minelife.police.client.gui.computer;
 
+import com.minelife.Minelife;
 import com.minelife.police.TicketSearchResult;
+import com.minelife.police.network.PacketRequestTicketSearch;
 import com.minelife.util.client.GuiLoadingAnimation;
 import com.minelife.util.client.GuiScrollableContent;
+import org.lwjgl.input.Mouse;
 
 import java.util.List;
 
@@ -11,10 +14,12 @@ public class GuiTicketSearch extends GuiComputer {
     private List<TicketSearchResult> results;
     private boolean fetchingResults;
     private GuiLoadingAnimation loadingAnimation;
+    private GuiResultList guiResultList;
 
     public GuiTicketSearch()
     {
         fetchingResults = true;
+        Minelife.NETWORK.sendToServer(new PacketRequestTicketSearch(null, null, 0));
     }
 
     public GuiTicketSearch(List<TicketSearchResult> results)
@@ -28,11 +33,14 @@ public class GuiTicketSearch extends GuiComputer {
     {
         super.initGui();
         if(fetchingResults) {
-            loadingAnimation = new GuiLoadingAnimation(this.width / 2, this.height / 2, this.width / 4, this.height / 4);
+            loadingAnimation = new GuiLoadingAnimation((this.width - 72) / 2, 10 + (this.height - 72) / 2, 72, 72);
             return;
         }
 
-        this.buttonList.add(new ComputerButton(0, this.width - 60, this.sectionHeight + 5, 50, 20, "Search", 2));
+        int resultListW = this.width - 20, resultListH = this.height - 100;
+        guiResultList = new GuiResultList((this.width - resultListW) / 2, 38 + (this.height - resultListH) /2 , resultListW, resultListH);
+        this.buttonList.add(new ComputerButton(0, this.width - 90, guiResultList.yPosition - 30, 80, 20, "Search", 2));
+        this.buttonList.add(new ComputerButton(1, this.width - 90, guiResultList.yPosition - 60, 80, 20, "Submit", 2));
     }
 
     @Override
@@ -40,6 +48,7 @@ public class GuiTicketSearch extends GuiComputer {
     {
         super.keyTyped(keyChar, keyCode);
         if (fetchingResults) return;
+        guiResultList.keyTyped(keyChar, keyCode);
     }
 
     @Override
@@ -52,6 +61,7 @@ public class GuiTicketSearch extends GuiComputer {
         }
 
         super.drawScreen(mouse_x, mouse_y, f);
+        guiResultList.draw(mouse_x, mouse_y, Mouse.getDWheel());
     }
 
     @Override

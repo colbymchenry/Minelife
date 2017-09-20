@@ -34,6 +34,7 @@ public class GuiATM extends GuiScreen {
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
+
     @Override
     public void initGui() {
         super.initGui();

@@ -68,6 +68,12 @@ public class GuiTransfer extends GuiDeposit {
                 if (!m.find())
                     this.player += typedChar;
             }
+
+            if(keyCode == Keyboard.KEY_BACK) {
+                Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":key_stroke", 1.0F, mc.theWorld.rand.nextFloat() * 0.1F + 0.8F);
+            } else {
+                Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":key_stroke", 1.0F, mc.theWorld.rand.nextFloat() * 0.1F + 0.9F);
+            }
         }
 
         @Override
