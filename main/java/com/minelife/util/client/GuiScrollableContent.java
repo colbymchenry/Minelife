@@ -18,7 +18,8 @@ public abstract class GuiScrollableContent extends Gui {
     public boolean drawScrollbarOnTop = true;
     protected Minecraft mc;
 
-    public GuiScrollableContent(Minecraft mc, int xPosition, int yPosition, int width, int height) {
+    public GuiScrollableContent(Minecraft mc, int xPosition, int yPosition, int width, int height)
+    {
         this.mc = mc;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
@@ -26,30 +27,36 @@ public abstract class GuiScrollableContent extends Gui {
         this.height = height;
     }
 
-    public int getGripWidth() {
+    public int getGripWidth()
+    {
         return 5;
     }
 
-    public float getSingleUnit() {
+    public float getSingleUnit()
+    {
         int contentHeight = getContentHeight();
         contentHeight = contentHeight == 0 ? 1 : contentHeight;
         return 10 * ((float) contentHeight / (float) height);
     }
-    
-    public boolean contains(int x, int y) {
+
+    public boolean contains(int x, int y)
+    {
         return x >= xPosition && x <= xPosition + width && y >= yPosition && y <= yPosition + height;
     }
 
-    public int getMaximumGripSize() {
+    public int getMaximumGripSize()
+    {
         return height;
     }
 
-    public int getMinimumGripSize() {
+    public int getMinimumGripSize()
+    {
         return 20;
     }
 
     // have to ask for dWheel to prevent scrolling not working when two scroll lists are in use.
-    public void draw(int mouseX, int mouseY, int dWheel) {
+    public void draw(int mouseX, int mouseY, int dWheel)
+    {
         int contentHeight = getContentHeight();
         contentHeight = contentHeight == 0 ? 1 : contentHeight;
 
@@ -82,7 +89,7 @@ public abstract class GuiScrollableContent extends Gui {
                     } else {
                         int totalHeight = 0;
                         for (int i = 0; i < getSize(); i++) {
-                            if (mouseY >= yPosition + totalHeight - scrollY && mouseY <= (yPosition + totalHeight - scrollY) + getObjectHeight(i)) {
+                            if (mouseY >= yPosition + totalHeight - scrollY && mouseY <= (yPosition + totalHeight - scrollY) + getObjectHeight(i) && mouseX >= xPosition && mouseX <= xPosition + width - getGripWidth()) {
 
                                 int mX = (mouseX - xPosition);
                                 int mY = mouseY - ((int) ((yPosition + totalHeight) - scrollY));
@@ -102,7 +109,7 @@ public abstract class GuiScrollableContent extends Gui {
                 float newGripPosition = (mouseY - yPosition) + (above ? 0 : -initialMouseClickY);
                 newGripPosition = newGripPosition < 0 ? 0 : newGripPosition > trackScrollAreaSize ? trackScrollAreaSize : newGripPosition;
                 float newGripPositionRatio = newGripPosition / trackScrollAreaSize;
-                 scrollY = newGripPositionRatio * windowScrollAreaSize;
+                scrollY = newGripPositionRatio * windowScrollAreaSize;
 
                 gripPosition = newGripPosition;
             }
@@ -111,7 +118,7 @@ public abstract class GuiScrollableContent extends Gui {
             if (isHovering && scroll != 0) {
                 if (scroll > 0) scroll = -1;
                 else if (scroll < 0) scroll = 1;
-                this.scrollY += (float) (scroll * 10 / 2);
+                this.scrollY += scroll * getSingleUnit() / 2;
             }
 
             initialMouseClickY = -1f;
@@ -138,13 +145,13 @@ public abstract class GuiScrollableContent extends Gui {
 
         boolean drawScrollbar = gripSize != height;
 
-        if(!drawScrollbarOnTop && drawScrollbar) {
+        if (!drawScrollbarOnTop && drawScrollbar) {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glPushMatrix();
             GL11.glTranslatef(scrollBarLeft, yPosition + gripPosition, 0);
             drawScrollbar(gripSize);
             GL11.glPopMatrix();
-             GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
         }
 
         // use scissoring to make the drawing seem seamless and continuous
@@ -173,18 +180,19 @@ public abstract class GuiScrollableContent extends Gui {
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
-        if(drawScrollbarOnTop && drawScrollbar) {
+        if (drawScrollbarOnTop && drawScrollbar) {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glPushMatrix();
             GL11.glTranslatef(scrollBarLeft, yPosition + gripPosition, 0);
             drawScrollbar(gripSize);
             GL11.glPopMatrix();
-             GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
         }
     }
 
-    public void keyTyped(char keycode, int keynum) {
-        float aSingleUnit = 10; //10 unknown units
+    public void keyTyped(char keycode, int keynum)
+    {
+        float aSingleUnit = getSingleUnit();
 
         if (keynum == Keyboard.KEY_UP) {
             scrollY = scrollY - aSingleUnit;
@@ -201,7 +209,8 @@ public abstract class GuiScrollableContent extends Gui {
         }
     }
 
-    public int getContentHeight() {
+    public int getContentHeight()
+    {
         int contentHeight = 0;
 
         for (int i = 0; i < getSize(); i++)
@@ -210,57 +219,28 @@ public abstract class GuiScrollableContent extends Gui {
         return contentHeight;
     }
 
-    public void drawBackground() {
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glColor4f(0f, 0f, 0f, 1f);
-        GL11.glBegin(GL11.GL_QUADS);
-
-        {
-            GL11.glVertex2f(xPosition, yPosition);
-            GL11.glVertex2f(xPosition + width, yPosition);
-            GL11.glVertex2f(xPosition + width, yPosition + height);
-            GL11.glVertex2f(xPosition, yPosition + height);
-        }
-        GL11.glEnd();
-        GL11.glEnable(GL11.GL_CULL_FACE);
-    }
-
-    public void drawScrollbar(float gripSize) {
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glColor4f(90f / 255f, 90f / 255f, 90f / 255f, 1f);
-
-        GL11.glBegin(GL11.GL_QUADS);
-
-        {
-            GL11.glVertex2f(0, 0);
-            GL11.glVertex2f(5, 0);
-            GL11.glVertex2f(5, gripSize);
-            GL11.glVertex2f(0, gripSize);
-        }
-        GL11.glEnd();
-        GL11.glEnable(GL11.GL_CULL_FACE);
-    }
-
-    public void drawSelectionBox(int index, int width, int height) {
+    public void drawBackground()
+    {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_CULL_FACE);
+        GL11.glColor4f(0f, 0f, 0f, 1f);
+        GuiUtil.drawImage(xPosition, yPosition, width, height);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
 
+    public void drawScrollbar(float gripHeight)
+    {
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(90f / 255f, 90f / 255f, 90f / 255f, 1f);
+        GuiUtil.drawImage(0, 0, getGripWidth(), gripHeight);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
+
+    public void drawSelectionBox(int index, int width, int height)
+    {
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glColor4f(128f / 255f, 128f / 255f, 128f / 255f, 1f);
-
-        GL11.glBegin(GL11.GL_QUADS);
-
-        {
-            GL11.glVertex2f(0, 0);
-            GL11.glVertex2f(width, 0);
-            GL11.glVertex2f(width, height);
-            GL11.glVertex2f(0, height);
-        }
-        GL11.glEnd();
-
-        GL11.glColor4f(1, 1, 1, 1);
-
-         GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_CULL_FACE);
+        GuiUtil.drawImage(0, 0, width, height);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
     public abstract int getObjectHeight(int index);
@@ -271,16 +251,19 @@ public abstract class GuiScrollableContent extends Gui {
 
     public abstract void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick);
 
-    public float getScrollY() {
+    public float getScrollY()
+    {
         return scrollY;
     }
 
-    public void setScrollY(float scrollY) {
+    public void setScrollY(float scrollY)
+    {
         float windowScrollAreaSize = getMaxScrollY();
         this.scrollY = scrollY < 0 ? 0 : scrollY > windowScrollAreaSize ? windowScrollAreaSize : scrollY;
     }
 
-    public float getMaxScrollY() {
+    public float getMaxScrollY()
+    {
         return getContentHeight() - height;
     }
 }
