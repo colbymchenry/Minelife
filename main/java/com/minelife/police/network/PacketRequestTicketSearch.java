@@ -101,7 +101,7 @@ public class PacketRequestTicketSearch implements IMessage {
             while(result.next()) {
                 String playerName = NameFetcher.get(UUID.fromString(result.getString("playerUUID")));
                 String officerName = NameFetcher.get(UUID.fromString(result.getString("officerUUID")));
-                resultList.add(new TicketSearchResult(ItemStack.loadItemStackFromNBT(NBTUtil.fromString(result.getString("ticketNBT"))), playerName, officerName));
+                resultList.add(new TicketSearchResult(result.getInt("ticketID"), ItemStack.loadItemStackFromNBT(NBTUtil.fromString(result.getString("ticketNBT"))), playerName, officerName));
             }
 
             Minelife.NETWORK.sendTo(new PacketResponseTicketSearch(resultList), ctx.getServerHandler().playerEntity);

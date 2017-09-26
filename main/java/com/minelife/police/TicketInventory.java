@@ -19,12 +19,10 @@ public class TicketInventory implements IInventory {
 
     private final SimpleInventory inv;
     private final ItemStack ticketStack;
-    private final int slot;
 
-    public TicketInventory(ItemStack ticketStack, int slot) {
+    public TicketInventory(ItemStack ticketStack) {
         inv = new SimpleInventory(9, "ticketInventory", 64);
         this.ticketStack = ticketStack;
-        this.slot = slot;
         if (ticketStack.stackTagCompound.hasKey("items"))
             inv.readFromNBT(ticketStack.stackTagCompound.getCompoundTag("items"));
     }
@@ -90,19 +88,9 @@ public class TicketInventory implements IInventory {
         ticketStack.stackTagCompound.setTag("items", invTag);
     }
 
-    public void updateCreative(EntityPlayerMP player) {
-        player.inventory.setInventorySlotContents(slot, ticketStack);
-    }
-
     @Override
     public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
         return true;
-    }
-
-    public String getInventoryAsString() {
-        NBTTagCompound invTag = new NBTTagCompound();
-        inv.writeToNBT(invTag);
-        return inv.toString();
     }
 
 }

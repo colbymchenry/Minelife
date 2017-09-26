@@ -5,6 +5,7 @@ import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.police.Charge;
 import com.minelife.police.ItemTicket;
+import com.minelife.police.TicketSearchResult;
 import com.minelife.police.network.PacketCreateTicket;
 import com.minelife.police.network.PacketOpenTicketInventory;
 import com.minelife.util.NumberConversions;
@@ -29,15 +30,15 @@ import java.util.UUID;
 
 public class GuiTicket extends GuiScreen implements INameReceiver {
 
-    private ItemStack ticketStack;
-    private int ticketSlot;
-    private Color bgColor = new Color(0, 63, 126, 255);
-    private GuiChargeList guiChargeList;
-    private List<Charge> chargeList;
-    private int xPosition, yPosition;
-    private int width = 200, height = 235;
-    private double totalBail, totalJailTime, timeToPay;
-    private String player, officer;
+    public ItemStack ticketStack;
+    public int ticketSlot;
+    public Color bgColor = new Color(0, 63, 126, 255);
+    public GuiChargeList guiChargeList;
+    public List<Charge> chargeList;
+    public int xPosition, yPosition;
+    public int width = 200, height = 235;
+    public double totalBail, totalJailTime, timeToPay;
+    public String player, officer;
 
     public GuiTicket(int ticketSlot) {
         this.ticketSlot = ticketSlot;
@@ -48,6 +49,17 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
         this.timeToPay = ItemTicket.getTimeToPay(ticketStack);
         chargeList.addAll(ItemTicket.getChargesForTicket(ticketStack));
     }
+
+    public GuiTicket(ItemStack ticketStack) {
+        this.ticketSlot = -1;
+        this.ticketStack = ticketStack;
+        this.chargeList = Lists.newArrayList();
+        this.player = NameFetcher.asyncFetchClient(ItemTicket.getPlayerForTicket(ticketStack), this);
+        this.officer = NameFetcher.asyncFetchClient(ItemTicket.getOfficerForTicket(ticketStack), this);
+        this.timeToPay = ItemTicket.getTimeToPay(ticketStack);
+        chargeList.addAll(ItemTicket.getChargesForTicket(ticketStack));
+    }
+
 
     @Override
     public void drawScreen(int x, int y, float f) {
@@ -79,8 +91,12 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
                 chargeList.get(guiChargeList.getSelected()).counts -= 1;
             }
         } else if (button.id == 2) {
-            if (mc.thePlayer.inventory.getStackInSlot(ticketSlot) != null && mc.thePlayer.inventory.getStackInSlot(ticketSlot).getItem() == MLItems.ticket) {
-                Minelife.NETWORK.sendToServer(new PacketOpenTicketInventory(ticketSlot));
+            if(ticketSlot == -1) {
+                Minelife.NETWORK.sendToServer(new PacketOpenTicketInventory(ticketStack));
+            } else {
+                if (mc.thePlayer.inventory.getStackInSlot(ticketSlot) != null && mc.thePlayer.inventory.getStackInSlot(ticketSlot).getItem() == MLItems.ticket) {
+                    Minelife.NETWORK.sendToServer(new PacketOpenTicketInventory(ticketSlot));
+                }
             }
         }
     }
@@ -167,7 +183,7 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
         };
     }
 
-    class GuiAddCharge2 extends GuiAddCharge {
+    public class GuiAddCharge2 extends GuiAddCharge {
 
         private GuiTicket guiTicket;
 

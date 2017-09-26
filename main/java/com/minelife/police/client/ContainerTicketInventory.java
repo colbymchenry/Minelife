@@ -84,10 +84,6 @@ public class ContainerTicketInventory extends Container {
             slot.onPickupFromSlot(par1EntityPlayer, itemstack1);
         }
 
-        if(!par1EntityPlayer.worldObj.isRemote) {
-            System.out.println("BOOM");
-        }
-
         return itemstack;
     }
 
