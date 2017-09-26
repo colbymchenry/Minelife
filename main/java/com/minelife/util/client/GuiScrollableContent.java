@@ -93,8 +93,7 @@ public abstract class GuiScrollableContent extends Gui {
                 }
             } else {
                 boolean above = ((mouseY - bounds.getY()) - gripPosition) < 0;
-                // changed the above ? initialMouseClickY to above ? 0
-                float newGripPosition = (mouseY - bounds.getY()) + (above ? initialMouseClickY : -initialMouseClickY);
+                float newGripPosition = (mouseY - bounds.getY()) + (above ? 0 : -initialMouseClickY);
                 newGripPosition = newGripPosition < 0 ? 0 : newGripPosition > trackScrollAreaSize ? trackScrollAreaSize : newGripPosition;
                 float newGripPositionRatio = newGripPosition / trackScrollAreaSize;
                  scrollY = newGripPositionRatio * windowScrollAreaSize;
