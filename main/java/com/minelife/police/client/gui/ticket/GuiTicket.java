@@ -85,10 +85,10 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
         if(button.id == 0) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiAddCharge2(this));
         } else if (button.id == 1) {
-            if(chargeList.get(guiChargeList.getSelected()).counts == 1) {
-                chargeList.remove(guiChargeList.getSelected());
+            if(chargeList.get(guiChargeList.selected).counts == 1) {
+                chargeList.remove(guiChargeList.selected);
             } else {
-                chargeList.get(guiChargeList.getSelected()).counts -= 1;
+                chargeList.get(guiChargeList.selected).counts -= 1;
             }
         } else if (button.id == 2) {
             if(ticketSlot == -1) {
@@ -110,7 +110,7 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        ((GuiButton) buttonList.get(1)).enabled = guiChargeList.getSelected() != -1;
+        ((GuiButton) buttonList.get(1)).enabled = guiChargeList.selected != -1;
     }
 
     @Override
@@ -123,7 +123,7 @@ public class GuiTicket extends GuiScreen implements INameReceiver {
         buttonList.add(getCustomButton(1, xPosition + width + 2, yPosition + 25, 16, 16, "-", true));
         buttonList.add(getChestButton(2, xPosition + width + 2, yPosition + 45, 16, 16));
         ((GuiButton) buttonList.get(1)).enabled = false;
-        guiChargeList = new GuiChargeList(xPosition + 5, yPosition + 40, width - 10, height - 80, chargeList);
+        guiChargeList = new GuiChargeList(mc,xPosition + 5, yPosition + 40, width - 10, height - 80, chargeList);
         guiChargeList.unicodeFlag = true;
 
         chargeList.forEach(charge -> totalBail += charge.bail);

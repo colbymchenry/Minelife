@@ -1,19 +1,20 @@
 package com.minelife.util.client;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import org.lwjgl.opengl.GL11;
 
 public class GuiScrollingTextField extends GuiScrollableContent {
 
     private GuiTextField textField;
 
-    public GuiScrollingTextField(int x, int y, int width, int height)
+    public GuiScrollingTextField(Minecraft mc, FontRenderer fontRenderer, int x, int y, int width, int height)
     {
-        super(x, y, width, height);
-        textField = new GuiTextField(x, y, width - 5, height) {
+        super(mc, x, y, width, height);
+        textField = new GuiTextField(fontRenderer, x, y, width, height) {
             @Override
             public void drawBackground()
             {
-//                super.drawBackground();
             }
         };
         textField.ignoreHeight = true;
@@ -22,11 +23,11 @@ public class GuiScrollingTextField extends GuiScrollableContent {
     @Override
     public int getObjectHeight(int index)
     {
-        int totalHeight = mc.fontRenderer.FONT_HEIGHT * (mc.fontRenderer.listFormattedStringToWidth(textField.getText(), textField.getBounds().getWidth()).size());
-        if (totalHeight >= bounds.getHeight()) {
-            return bounds.getHeight() + (totalHeight - bounds.getHeight());
+        int totalHeight = mc.fontRenderer.FONT_HEIGHT * (mc.fontRenderer.listFormattedStringToWidth(textField.text, textField.width).size());
+        if (totalHeight >= height) {
+            return height + (totalHeight - height);
         } else {
-            return bounds.getHeight();
+            return height;
         }
     }
 
@@ -34,10 +35,13 @@ public class GuiScrollingTextField extends GuiScrollableContent {
     public void drawObject(int index, int mouseX, int mouseY, boolean isHovering)
     {
         GL11.glPushMatrix();
-        GL11.glTranslatef(-bounds.getX(), -bounds.getY(), 0);
+        GL11.glTranslatef(-xPosition, -yPosition, 0);
         textField.drawTextBox();
         GL11.glPopMatrix();
-        textField.setBounds(bounds.getX(), bounds.getY(), bounds.getWidth() - 5, getObjectHeight(0));
+        textField.xPosition = xPosition;
+        textField.yPosition = yPosition;
+        textField.width = width;
+        textField.height = getObjectHeight(0);
     }
 
     @Override
@@ -59,8 +63,8 @@ public class GuiScrollingTextField extends GuiScrollableContent {
     @Override
     public void drawBackground()
     {
-        drawRect(bounds.getX() - 2, bounds.getY() - 2, bounds.getX() + bounds.getWidth() + 2, bounds.getY() + bounds.getHeight() + 2, -6250336);
-        drawRect(bounds.getX() - 1, bounds.getY() - 1, bounds.getX() + bounds.getWidth() + 1, bounds.getY() + bounds.getHeight() + 1, -16777216);
+        drawRect(xPosition - 2, yPosition - 2, xPosition + width + 2, yPosition + height + 2, -6250336);
+        drawRect(xPosition - 1, yPosition - 1, xPosition + width + 1, yPosition + height + 1, -16777216);
     }
     @Override
     public void keyTyped(char keycode, int keynum)
@@ -74,9 +78,9 @@ public class GuiScrollingTextField extends GuiScrollableContent {
 
     public void mouseClicked(int mouseX, int mouseY)
     {
-        textField.setFocused(textField.getBounds().contains(mouseX, mouseY));
-        if (mouseY >= bounds.getX() && mouseY <= bounds.getY() + bounds.getHeight() && mouseX >= textField.getBounds().getX() &&
-                mouseX <= textField.getBounds().getX() + textField.getBounds().getWidth()) {
+        textField.setFocused(textField.contains(mouseX, mouseY));
+        if (mouseY >= yPosition && mouseY <= yPosition + height && mouseX >= textField.xPosition &&
+                mouseX <= textField.xPosition + textField.width) {
             int y = (mouseY + (int) (getScrollY()));
             textField.mouseClicked(mouseX, y);
         }

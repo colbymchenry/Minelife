@@ -7,6 +7,7 @@ import com.minelife.police.network.PacketRequestTicketSearch;
 import com.minelife.util.client.GuiLoadingAnimation;
 import com.minelife.util.client.GuiScrollableContent;
 import com.minelife.util.client.GuiTextField;
+import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Mouse;
 
 import java.util.List;
@@ -41,12 +42,12 @@ public class GuiTicketSearch extends GuiComputer {
         }
 
         int resultListW = this.width - 20, resultListH = this.height - 100;
-        guiResultList = new GuiResultList((this.width - resultListW) / 2, 38 + (this.height - resultListH) /2 , resultListW, resultListH);
+        guiResultList = new GuiResultList(mc,(this.width - resultListW) / 2, 38 + (this.height - resultListH) /2 , resultListW, resultListH);
         this.buttonList.add(new ComputerButton(0, this.width - 90, guiResultList.yPosition - 30, 80, 20, "Search", 2));
         this.buttonList.add(new ComputerButton(1, this.width - 90, guiResultList.yPosition - 60, 80, 20, "Submit", 2));
-        ticketField = new GuiTextField(10, this.sectionHeight, 50, 20);
-        officerField = new GuiTextField(10 + 50, this.sectionHeight, 50, 20);
-        playerField = new GuiTextField(10 + 50 + 50, this.sectionHeight, 50, 20);
+        ticketField = new GuiTextField(fontRendererObj, 10, this.sectionHeight, 50, 20);
+        officerField = new GuiTextField(fontRendererObj,10 + 50, this.sectionHeight, 50, 20);
+        playerField = new GuiTextField(fontRendererObj,10 + 50 + 50, this.sectionHeight, 50, 20);
     }
 
     @Override
@@ -55,9 +56,9 @@ public class GuiTicketSearch extends GuiComputer {
         super.keyTyped(keyChar, keyCode);
         if (fetchingResults) return;
         guiResultList.keyTyped(keyChar, keyCode);
-        ticketField.textboxKeyTyped(keyChar, keyCode);
-        officerField.textboxKeyTyped(keyChar, keyCode);
-        playerField.textboxKeyTyped(keyChar, keyCode);
+        ticketField.keyTyped(keyChar, keyCode);
+        officerField.keyTyped(keyChar, keyCode);
+        playerField.keyTyped(keyChar, keyCode);
     }
 
     @Override
@@ -98,9 +99,9 @@ public class GuiTicketSearch extends GuiComputer {
 
     class GuiResultList extends GuiScrollableContent {
 
-        GuiResultList(int xPosition, int yPosition, int width, int height)
+        GuiResultList(Minecraft mc, int xPosition, int yPosition, int width, int height)
         {
-            super(xPosition, yPosition, width, height);
+            super(mc, xPosition, yPosition, width, height);
         }
 
         @Override

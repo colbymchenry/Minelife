@@ -13,14 +13,17 @@ public abstract class GuiScrollableContent extends Gui {
     public int xPosition, yPosition, width, height;
 
     private float scrollY = 0, initialMouseClickY = -1f;
-    protected Rectangle bounds;
-    protected Minecraft mc = Minecraft.getMinecraft();
-    private int selected = -1;
+    public int selected = -1;
     private long lastClickTime = 0L;
-    protected boolean drawScrollbarOnTop = true;
+    public boolean drawScrollbarOnTop = true;
+    protected Minecraft mc;
 
-    public GuiScrollableContent(int xPosition, int yPosition, int width, int height) {
-        bounds = new Rectangle(this.xPosition = xPosition, this.yPosition = yPosition, this.width = width, this.height = height);
+    public GuiScrollableContent(Minecraft mc, int xPosition, int yPosition, int width, int height) {
+        this.mc = mc;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+        this.width = width;
+        this.height = height;
     }
 
     public int getGripWidth() {
@@ -30,11 +33,15 @@ public abstract class GuiScrollableContent extends Gui {
     public float getSingleUnit() {
         int contentHeight = getContentHeight();
         contentHeight = contentHeight == 0 ? 1 : contentHeight;
-        return 10 * ((float) contentHeight / (float) bounds.getHeight());
+        return 10 * ((float) contentHeight / (float) height);
+    }
+    
+    public boolean contains(int x, int y) {
+        return x >= xPosition && x <= xPosition + width && y >= yPosition && y <= yPosition + height;
     }
 
     public int getMaximumGripSize() {
-        return bounds.getHeight();
+        return height;
     }
 
     public int getMinimumGripSize() {
@@ -46,9 +53,9 @@ public abstract class GuiScrollableContent extends Gui {
         int contentHeight = getContentHeight();
         contentHeight = contentHeight == 0 ? 1 : contentHeight;
 
-        float ratio = (float) bounds.getHeight() / (float) contentHeight;
-        float gripSize = bounds.getHeight() * ratio;
-        float trackSize = bounds.getHeight();
+        float ratio = (float) height / (float) contentHeight;
+        float gripSize = height * ratio;
+        float trackSize = height;
 
         // keep the gripSize reasonable.
         gripSize = gripSize > getMaximumGripSize() ? getMaximumGripSize() : gripSize < getMinimumGripSize() ? getMinimumGripSize() : gripSize;
@@ -58,28 +65,27 @@ public abstract class GuiScrollableContent extends Gui {
         float windowPositionRatio = scrollY / windowScrollAreaSize;
         float gripPosition = trackScrollAreaSize * windowPositionRatio;
 
-        boolean isHovering = mouseX >= bounds.getX() && mouseX <= bounds.getX() + bounds.getWidth() &&
-                mouseY >= bounds.getY() && mouseY <= bounds.getY() + bounds.getHeight();
+        boolean isHovering = contains(mouseX, mouseY);
 
-        float scrollBarLeft = bounds.getX() + bounds.getWidth() - getGripWidth();
-        float scrollBarRight = bounds.getX() + bounds.getWidth();
+        float scrollBarLeft = xPosition + width - getGripWidth();
+        float scrollBarRight = xPosition + width;
 
         if (Mouse.isButtonDown(0)) {
             if (this.initialMouseClickY == -1.0F) {
                 if (isHovering) {
 
-                    if (mouseX >= scrollBarLeft && mouseX <= scrollBarRight && (mouseY - bounds.getY()) < gripPosition) {
+                    if (mouseX >= scrollBarLeft && mouseX <= scrollBarRight && (mouseY - yPosition) < gripPosition) {
                         scrollY -= getSingleUnit();
-                    } else if (mouseX >= scrollBarLeft && mouseX <= scrollBarRight && (mouseY - bounds.getY()) > gripPosition + gripSize) {
+                    } else if (mouseX >= scrollBarLeft && mouseX <= scrollBarRight && (mouseY - yPosition) > gripPosition + gripSize) {
                         scrollY += getSingleUnit();
 
                     } else {
                         int totalHeight = 0;
                         for (int i = 0; i < getSize(); i++) {
-                            if (mouseY >= bounds.getY() + totalHeight - scrollY && mouseY <= (bounds.getY() + totalHeight - scrollY) + getObjectHeight(i)) {
+                            if (mouseY >= yPosition + totalHeight - scrollY && mouseY <= (yPosition + totalHeight - scrollY) + getObjectHeight(i)) {
 
                                 int mX = (mouseX - xPosition);
-                                int mY = mouseY - ((int) ((bounds.getY() + totalHeight) - scrollY));
+                                int mY = mouseY - ((int) ((yPosition + totalHeight) - scrollY));
 
                                 this.elementClicked(i, mX, mY, i == this.selected && System.currentTimeMillis() - this.lastClickTime < 250L);
                                 this.selected = i;
@@ -87,13 +93,13 @@ public abstract class GuiScrollableContent extends Gui {
                             }
                             totalHeight += getObjectHeight(i);
                         }
-                        this.initialMouseClickY = Math.abs((mouseY - bounds.getY()) - gripPosition);
+                        this.initialMouseClickY = Math.abs((mouseY - yPosition) - gripPosition);
                     }
 
                 }
             } else {
-                boolean above = ((mouseY - bounds.getY()) - gripPosition) < 0;
-                float newGripPosition = (mouseY - bounds.getY()) + (above ? 0 : -initialMouseClickY);
+                boolean above = ((mouseY - yPosition) - gripPosition) < 0;
+                float newGripPosition = (mouseY - yPosition) + (above ? 0 : -initialMouseClickY);
                 newGripPosition = newGripPosition < 0 ? 0 : newGripPosition > trackScrollAreaSize ? trackScrollAreaSize : newGripPosition;
                 float newGripPositionRatio = newGripPosition / trackScrollAreaSize;
                  scrollY = newGripPositionRatio * windowScrollAreaSize;
@@ -125,17 +131,17 @@ public abstract class GuiScrollableContent extends Gui {
         double scaleW = Minecraft.getMinecraft().displayWidth / res.getScaledWidth_double();
         double scaleH = Minecraft.getMinecraft().displayHeight / res.getScaledHeight_double();
 
-        int left = bounds.getX();
-        int bottom = bounds.getY() + bounds.getHeight();
-        int listWidth = bounds.getWidth();
-        int viewHeight = bounds.getHeight();
+        int left = xPosition;
+        int bottom = yPosition + height;
+        int listWidth = width - getGripWidth();
+        int viewHeight = height;
 
-        boolean drawScrollbar = gripSize != bounds.getHeight();
+        boolean drawScrollbar = gripSize != height;
 
         if(!drawScrollbarOnTop && drawScrollbar) {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glPushMatrix();
-            GL11.glTranslatef(scrollBarLeft, bounds.getY() + gripPosition, 0);
+            GL11.glTranslatef(scrollBarLeft, yPosition + gripPosition, 0);
             drawScrollbar(gripSize);
             GL11.glPopMatrix();
              GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -150,14 +156,14 @@ public abstract class GuiScrollableContent extends Gui {
         int totalHeight = 0;
         for (int i = 0; i < getSize(); i++) {
             GL11.glPushMatrix();
-            GL11.glTranslatef(bounds.getX(), (bounds.getY() + totalHeight) - scrollY, 0);
+            GL11.glTranslatef(xPosition, (yPosition + totalHeight) - scrollY, 0);
 
             if (selected == i) {
-                drawSelectionBox(i, bounds.getWidth(), getObjectHeight(i));
+                drawSelectionBox(i, width, getObjectHeight(i));
             }
 
             int mX = (mouseX - xPosition);
-            int mY = mouseY - ((int) ((bounds.getY() + totalHeight) - scrollY));
+            int mY = mouseY - ((int) ((yPosition + totalHeight) - scrollY));
             boolean hovering = mX > 0 && mX < listWidth && mY > 0 && mY < getObjectHeight(i);
 
             drawObject(i, mX, mY, hovering);
@@ -170,7 +176,7 @@ public abstract class GuiScrollableContent extends Gui {
         if(drawScrollbarOnTop && drawScrollbar) {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glPushMatrix();
-            GL11.glTranslatef(scrollBarLeft, bounds.getY() + gripPosition, 0);
+            GL11.glTranslatef(scrollBarLeft, yPosition + gripPosition, 0);
             drawScrollbar(gripSize);
             GL11.glPopMatrix();
              GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -187,20 +193,12 @@ public abstract class GuiScrollableContent extends Gui {
         }
 
         if (keynum == Keyboard.KEY_DOWN) {
-            float windowScrollAreaSize = getContentHeight() - bounds.getHeight();
+            float windowScrollAreaSize = getContentHeight() - height;
 
             scrollY = scrollY + aSingleUnit;
             if (scrollY > windowScrollAreaSize)
                 scrollY = windowScrollAreaSize;
         }
-    }
-
-    public int getSelected() {
-        return selected;
-    }
-
-    public void setSelected(int selected) {
-        this.selected = selected;
     }
 
     public int getContentHeight() {
@@ -218,10 +216,10 @@ public abstract class GuiScrollableContent extends Gui {
         GL11.glBegin(GL11.GL_QUADS);
 
         {
-            GL11.glVertex2f(bounds.getX(), bounds.getY());
-            GL11.glVertex2f(bounds.getX() + bounds.getWidth(), bounds.getY());
-            GL11.glVertex2f(bounds.getX() + bounds.getWidth(), bounds.getY() + bounds.getHeight());
-            GL11.glVertex2f(bounds.getX(), bounds.getY() + bounds.getHeight());
+            GL11.glVertex2f(xPosition, yPosition);
+            GL11.glVertex2f(xPosition + width, yPosition);
+            GL11.glVertex2f(xPosition + width, yPosition + height);
+            GL11.glVertex2f(xPosition, yPosition + height);
         }
         GL11.glEnd();
         GL11.glEnable(GL11.GL_CULL_FACE);
@@ -283,6 +281,6 @@ public abstract class GuiScrollableContent extends Gui {
     }
 
     public float getMaxScrollY() {
-        return getContentHeight() - bounds.getHeight();
+        return getContentHeight() - height;
     }
 }

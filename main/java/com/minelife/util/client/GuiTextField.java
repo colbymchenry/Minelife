@@ -1,91 +1,34 @@
 package com.minelife.util.client;
 
-import net.minecraft.client.Minecraft;
-
-
 import net.minecraft.client.gui.FontRenderer;
-
-
 import net.minecraft.client.gui.Gui;
-
-
 import net.minecraft.client.renderer.Tessellator;
-
-
 import org.lwjgl.input.Keyboard;
-
-
 import org.lwjgl.opengl.GL11;
-
-
-import org.lwjgl.util.Rectangle;
-
-
 import java.util.List;
-
-
 import java.util.regex.Matcher;
-
-
 import java.util.regex.Pattern;
 
 
 public class GuiTextField extends Gui {
 
-    private static final Minecraft mc = Minecraft.getMinecraft();
-    private static final FontRenderer fontRenderer = mc.fontRenderer;
-    private final Rectangle bounds;
-    private String text = "";
-    private int cursorPos = 0;
-    private boolean focused = false;
-    private boolean unicodeFlag = false;
-    private boolean enabled = true;
-    public boolean ignoreHeight = false;
-    private int cursorCounter;
+    public String text = "";
+    public boolean focused, unicodeFlag, ignoreHeight = false, enabled = true;
+    private int cursorCounter, cursorPos;
+    public int xPosition, yPosition, width, height;
+    public FontRenderer fontRenderer;
 
-    public GuiTextField(int x, int y, int width, int height)
+    public GuiTextField(FontRenderer fontRenderer, int x, int y, int width, int height)
     {
-        bounds = new Rectangle(x, y, width, height);
+        this.fontRenderer = fontRenderer;
+        this.xPosition = x;
+        this.yPosition = y;
+        this.width = width;
+        this.height = height;
     }
 
-    public Rectangle getBounds()
-    {
-        return bounds;
-    }
-
-    public void setBounds(int x, int y, int width, int height)
-    {
-        bounds.setBounds(x, y, width, height);
-    }
-
-    public String getText()
-    {
-        return text;
-    }
-
-    public void setText(String text)
-    {
-        this.text = text;
-    }
-
-    public void setUnicodeFlag(boolean unicodeFlag)
-    {
-        this.unicodeFlag = unicodeFlag;
-    }
-
-    public boolean isUnicodeFlagEnabled()
-    {
-        return unicodeFlag;
-    }
-
-    public void setEnabled(boolean enabled)
-    {
-        this.enabled = enabled;
-    }
-
-    public boolean isEnabled()
-    {
-        return enabled;
+    public boolean contains(int x, int y) {
+        return x >= xPosition && x <= xPosition + width && y >= yPosition && y <= yPosition + height;
     }
 
     public void drawTextBox()
@@ -93,18 +36,18 @@ public class GuiTextField extends Gui {
         if (unicodeFlag)
             fontRenderer.setUnicodeFlag(true);
         drawBackground();
-        fontRenderer.drawSplitString(text, bounds.getX(), bounds.getY(), bounds.getWidth(), 0xFFFFFF);
+        fontRenderer.drawSplitString(text, xPosition, yPosition, width, 0xFFFFFF);
         if (unicodeFlag)
             fontRenderer.setUnicodeFlag(false);
-        if (isFocused()) {
+        if (focused) {
             drawCursor();
         }
     }
 
     public void keyTyped(char typedChar, int keyCode)
     {
-        if (!isFocused()) return;
-        if (!isEnabled()) return;
+        if (!focused) return;
+        if (!enabled) return;
         Pattern p = Pattern.compile("[^a-z0-9 ^!-+ ^`~ ^_= - , ? !]", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher("" + typedChar);
         boolean b = m.find();
@@ -118,8 +61,8 @@ public class GuiTextField extends Gui {
             if (keyCode != Keyboard.KEY_BACK) {
                 if (!ignoreHeight) {
                     if (unicodeFlag) fontRenderer.setUnicodeFlag(true);
-                    int lines = fontRenderer.listFormattedStringToWidth(text + typedChar, getBounds().getWidth()).size();
-                    if (lines * fontRenderer.FONT_HEIGHT >= getBounds().getHeight()) {
+                    int lines = fontRenderer.listFormattedStringToWidth(text + typedChar, width).size();
+                    if (lines * fontRenderer.FONT_HEIGHT >= height) {
                         if (unicodeFlag) fontRenderer.setUnicodeFlag(false);
                         return;
                     }
@@ -135,9 +78,9 @@ public class GuiTextField extends Gui {
 
     public void mouseClicked(int mouseX, int mouseY)
     {
-        if (!isEnabled()) return;
-        setFocused(bounds.contains(mouseX, mouseY));
-        if (!isFocused()) return;
+        if (!enabled) return;
+        setFocused(contains(mouseX, mouseY));
+        if (!focused) return;
         if (text.isEmpty()) {
             cursorPos = 0;
             return;
@@ -146,16 +89,16 @@ public class GuiTextField extends Gui {
         if (unicodeFlag)
             fontRenderer.setUnicodeFlag(true);
 
-        List<String> formattedStringList = fontRenderer.listFormattedStringToWidth(text, bounds.getWidth());
-        int line = (mouseY - bounds.getY()) / fontRenderer.FONT_HEIGHT;
+        List<String> formattedStringList = fontRenderer.listFormattedStringToWidth(text, width);
+        int line = (mouseY - yPosition) / fontRenderer.FONT_HEIGHT;
         line = line > formattedStringList.size() - 1 ? formattedStringList.size() - 1 : line;
         cursorPos = 0;
         for (int i = 0; i < line; i++) {
             cursorPos += formattedStringList.get(i).length();
             if (text.charAt(cursorPos) == ' ') cursorPos += 1;
         }
-        int x = mouseX - bounds.getX();
-        x = x > bounds.getWidth() ? bounds.getWidth() : x < 0 ? 0 : x;
+        int x = mouseX - xPosition;
+        x = x > width ? width : x < 0 ? 0 : x;
         cursorPos += fontRenderer.trimStringToWidth(formattedStringList.get(line), x).length() + 1;
         cursorPos = cursorPos > text.length() ? text.length() : cursorPos < 0 ? 0 : cursorPos;
         if (!unicodeFlag)
@@ -167,15 +110,11 @@ public class GuiTextField extends Gui {
         ++this.cursorCounter;
     }
 
-    public void initGui()
-    {
-    }
-
     private void drawCursor()
     {
         if (unicodeFlag)
             fontRenderer.setUnicodeFlag(true);
-        List<String> formattedStringList = fontRenderer.listFormattedStringToWidth(text, bounds.getWidth());
+        List<String> formattedStringList = fontRenderer.listFormattedStringToWidth(text, width);
 
         try {
             int cursor = 0;
@@ -202,9 +141,9 @@ public class GuiTextField extends Gui {
             }
 
             int strWidth = fontRenderer.getStringWidth(formattedStringList.get(line).substring(0, cursorPos - count));
-            int x = bounds.getX() + strWidth;
-            int y = bounds.getY() + (line * fontRenderer.FONT_HEIGHT);
-            boolean drawCursor = this.isFocused() && this.cursorCounter / 6 % 2 == 0;
+            int x = xPosition + strWidth;
+            int y = yPosition + (line * fontRenderer.FONT_HEIGHT);
+            boolean drawCursor = this.focused && this.cursorCounter / 6 % 2 == 0;
             if (drawCursor) {
                 Tessellator tessellator = Tessellator.instance;
                 GL11.glColor4f(0.0F, 0.0F, 255.0F, 255.0F);
@@ -233,8 +172,8 @@ public class GuiTextField extends Gui {
 
     public void drawBackground()
     {
-        drawRect(bounds.getX() - 2, bounds.getY() - 2, bounds.getX() + bounds.getWidth() + 2, bounds.getY() + bounds.getHeight() + 2, -6250336);
-        drawRect(bounds.getX() - 1, bounds.getY() - 1, bounds.getX() + bounds.getWidth() + 1, bounds.getY() + bounds.getHeight() + 1, -16777216);
+        drawRect(xPosition - 2, yPosition - 2, xPosition + width + 2, yPosition + height + 2, -6250336);
+        drawRect(xPosition - 1, yPosition - 1, xPosition + width + 1, yPosition + height + 1, -16777216);
     }
 
     public void setFocused(boolean focused)
@@ -243,21 +182,11 @@ public class GuiTextField extends Gui {
         this.cursorCounter = 0;
     }
 
-    public boolean isFocused()
-    {
-        return focused;
-    }
-
-    public int getCursorPos()
-    {
-        return cursorPos;
-    }
-
     public int getCursorLine()
     {
         if (unicodeFlag)
             fontRenderer.setUnicodeFlag(true);
-        List<String> formattedStringList = fontRenderer.listFormattedStringToWidth(text, bounds.getWidth());
+        List<String> formattedStringList = fontRenderer.listFormattedStringToWidth(text, width);
         try {
             int cursor = 0;
             int line = 0;

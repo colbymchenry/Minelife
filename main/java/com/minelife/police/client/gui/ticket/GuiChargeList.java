@@ -3,6 +3,7 @@ package com.minelife.police.client.gui.ticket;
 import com.minelife.police.Charge;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiScrollableContent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.List;
@@ -12,8 +13,8 @@ public class GuiChargeList extends GuiScrollableContent {
     public List<Charge> chargeList;
     public boolean unicodeFlag = false;
 
-    public GuiChargeList(int xPosition, int yPosition, int width, int height, List<Charge> charges) {
-        super(xPosition, yPosition, width, height);
+    public GuiChargeList(Minecraft mc, int xPosition, int yPosition, int width, int height, List<Charge> charges) {
+        super(mc, xPosition, yPosition, width, height);
         this.chargeList = charges;
     }
 

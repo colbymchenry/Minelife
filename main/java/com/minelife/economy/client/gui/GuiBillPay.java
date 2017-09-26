@@ -84,15 +84,15 @@ public class GuiBillPay extends GuiATM {
             return;
         }
 
-        content = new Content((this.width - 200) / 2, (this.height - 200) / 2, 200, 200);
+        content = new Content(mc, (this.width - 200) / 2, (this.height - 200) / 2, 200, 200);
         this.buttonList.add(new ButtonATM(0, 2, this.height - 30 - 2, 75, 30, "Cancel", 2.0));
     }
 
     private class Content extends GuiScrollableContent {
 
-        private Content(int xPosition, int yPosition, int width, int height)
+        private Content(Minecraft mc, int xPosition, int yPosition, int width, int height)
         {
-            super(xPosition, yPosition, width, height);
+            super(mc, xPosition, yPosition, width, height);
         }
 
         @Override

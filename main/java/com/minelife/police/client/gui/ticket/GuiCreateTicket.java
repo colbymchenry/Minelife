@@ -49,8 +49,8 @@ public class GuiCreateTicket extends GuiScreen {
         buttonList.add(getCustomButton(1, xPosition + bgWidth - 42, yPosition + 8, 35, 15, "Submit", true));
         buttonList.add(getChestButton(2, xPosition + bgWidth + 5, yPosition + 35 + 20, 16, 16));
         ((GuiButton) buttonList.get(1)).enabled = false;
-        guiChargeList = new GuiChargeList(xPosition + 5, yPosition + 40, bgWidth - 10, (bgHeight / 2) - 40, chargeList);
-        guiDefaultList = new GuiChargeList(xPosition + 5, guiChargeList.yPosition + guiChargeList.height + 15, bgWidth - 10, (bgHeight / 2) - 40, Charge.getDefaultCharges()) {
+        guiChargeList = new GuiChargeList(mc,xPosition + 5, yPosition + 40, bgWidth - 10, (bgHeight / 2) - 40, chargeList);
+        guiDefaultList = new GuiChargeList(mc,xPosition + 5, guiChargeList.yPosition + guiChargeList.height + 15, bgWidth - 10, (bgHeight / 2) - 40, Charge.getDefaultCharges()) {
 
             @Override
             public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {

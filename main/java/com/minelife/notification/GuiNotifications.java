@@ -3,6 +3,7 @@ package com.minelife.notification;
 import com.google.common.collect.Lists;
 import com.minelife.util.client.GuiRemoveBtn;
 import com.minelife.util.client.GuiScrollableContent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Mouse;
@@ -36,7 +37,7 @@ public class GuiNotifications extends GuiScreen {
     {
         this.xPosition = (this.width - bgWidth) / 2;
         this.yPosition = (this.height - bgHeight) / 2;
-        this.content = new Content(xPosition, yPosition, bgWidth, bgHeight);
+        this.content = new Content(mc, xPosition, yPosition, bgWidth, bgHeight);
     }
 
     private void drawBackground()
@@ -53,9 +54,9 @@ public class GuiNotifications extends GuiScreen {
 
         private List<GuiRemoveBtn> removeBtnList = Lists.newArrayList();
 
-        private Content(int xPosition, int yPosition, int width, int height)
+        private Content(Minecraft mc, int xPosition, int yPosition, int width, int height)
         {
-            super(xPosition, yPosition, width, height);
+            super(mc, xPosition, yPosition, width, height);
             AbstractGuiNotification.notifications.forEach(notification -> removeBtnList.add(new GuiRemoveBtn(width - 25, 2)));
         }
 

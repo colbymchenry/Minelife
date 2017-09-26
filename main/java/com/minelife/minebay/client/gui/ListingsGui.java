@@ -180,7 +180,7 @@ public class ListingsGui extends MasterGui {
             return;
         }
 
-        this.listings_gui = new Listings(this.left, this.top + 26, this.bg_width, this.bg_height - 30, listings, this);
+        this.listings_gui = new Listings(mc, this.left, this.top + 26, this.bg_width, this.bg_height - 30, listings, this);
         if (search_field == null)
             search_field = new GuiTextField(mc.fontRenderer, this.left + 1, this.top + 1, (bg_width / 2) - 27, 20);
         else {
@@ -232,9 +232,9 @@ public class ListingsGui extends MasterGui {
         private final List<ItemListing> item_listings;
         private final GuiScreen parent;
 
-        public Listings(int xPosition, int yPosition, int width, int height, List<ItemListing> item_listings, GuiScreen parent)
+        public Listings(Minecraft mc, int xPosition, int yPosition, int width, int height, List<ItemListing> item_listings, GuiScreen parent)
         {
-            super(xPosition, yPosition, width, height);
+            super(mc, xPosition, yPosition, width, height);
             this.item_listings = item_listings;
             this.parent = parent;
         }
