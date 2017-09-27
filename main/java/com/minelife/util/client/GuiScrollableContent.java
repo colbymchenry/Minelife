@@ -6,7 +6,6 @@ import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Rectangle;
 
 public abstract class GuiScrollableContent extends Gui {
 
@@ -149,7 +148,7 @@ public abstract class GuiScrollableContent extends Gui {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glPushMatrix();
             GL11.glTranslatef(scrollBarLeft, yPosition + gripPosition, 0);
-            drawScrollbar(gripSize);
+            drawGrip(gripSize);
             GL11.glPopMatrix();
             GL11.glEnable(GL11.GL_TEXTURE_2D);
         }
@@ -180,11 +179,13 @@ public abstract class GuiScrollableContent extends Gui {
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
+        drawTrack();
+
         if (drawScrollbarOnTop && drawScrollbar) {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glPushMatrix();
             GL11.glTranslatef(scrollBarLeft, yPosition + gripPosition, 0);
-            drawScrollbar(gripSize);
+            drawGrip(gripSize);
             GL11.glPopMatrix();
             GL11.glEnable(GL11.GL_TEXTURE_2D);
         }
@@ -227,7 +228,7 @@ public abstract class GuiScrollableContent extends Gui {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
-    public void drawScrollbar(float gripHeight)
+    public void drawGrip(float gripHeight)
     {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glColor4f(90f / 255f, 90f / 255f, 90f / 255f, 1f);
@@ -240,6 +241,13 @@ public abstract class GuiScrollableContent extends Gui {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glColor4f(128f / 255f, 128f / 255f, 128f / 255f, 1f);
         GuiUtil.drawImage(0, 0, width, height);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
+
+    public void drawTrack() {
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(60f / 255f, 60f / 255f, 60f / 255f, 1f);
+        GuiUtil.drawImage(xPosition + width - getGripWidth(), yPosition, getGripWidth(), height);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 

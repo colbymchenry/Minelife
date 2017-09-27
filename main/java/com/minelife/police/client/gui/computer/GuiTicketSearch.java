@@ -8,6 +8,7 @@ import com.minelife.util.client.GuiLoadingAnimation;
 import com.minelife.util.client.GuiScrollableContent;
 import com.minelife.util.client.GuiTextField;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import org.lwjgl.input.Mouse;
 
 import java.util.List;
@@ -48,6 +49,19 @@ public class GuiTicketSearch extends GuiComputer {
         ticketField = new GuiTextField(fontRendererObj, 10, this.sectionHeight, 50, 20);
         officerField = new GuiTextField(fontRendererObj,10 + 50, this.sectionHeight, 50, 20);
         playerField = new GuiTextField(fontRendererObj,10 + 50 + 50, this.sectionHeight, 50, 20);
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton btn)
+    {
+        // search
+        if(btn.id == 0) {
+
+        }
+        // submit
+        else if (btn.id == 1) {
+            Minecraft.getMinecraft().displayGuiScreen(new GuiSubmitTicket());
+        }
     }
 
     @Override
@@ -107,7 +121,7 @@ public class GuiTicketSearch extends GuiComputer {
         @Override
         public int getObjectHeight(int index)
         {
-            return getLines(index).length * fontRendererObj.FONT_HEIGHT;
+            return getLines(index).length * fontRendererObj.FONT_HEIGHT + 2;
         }
 
         @Override
@@ -116,7 +130,7 @@ public class GuiTicketSearch extends GuiComputer {
             String[] lines = getLines(index);
             fontRendererObj.drawString(lines[0], 2, 2, 0xFFFFFF);
             fontRendererObj.drawString(lines[1], 2, 2 + fontRendererObj.FONT_HEIGHT, 0xFFFFFF);
-            fontRendererObj.drawString(lines[3], 2, 2 + (fontRendererObj.FONT_HEIGHT * 2), 0xFFFFFF);
+            fontRendererObj.drawString(lines[2], 2, 2 + (fontRendererObj.FONT_HEIGHT * 2), 0xFFFFFF);
         }
 
         @Override
@@ -128,6 +142,7 @@ public class GuiTicketSearch extends GuiComputer {
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick)
         {
+            // TODO: Can't view inventory of ticket when coming from here.
             if(doubleClick) mc.displayGuiScreen(new GuiTicket(results.get(index).ticketStack));
         }
 

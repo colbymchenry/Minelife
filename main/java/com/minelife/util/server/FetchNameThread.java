@@ -18,31 +18,33 @@ public class FetchNameThread implements Runnable {
     public void run() {
         System.out.println("**** NAME FETCHER THREAD STARTED! ****");
         while(true) {
-            List<NameThreadObject> que = Lists.newArrayList();
-            que.addAll(queList);
-            ListIterator<NameThreadObject> iterator = que.listIterator();
+            try {
+                List<NameThreadObject> que = Lists.newArrayList();
+                que.addAll(queList);
+                ListIterator<NameThreadObject> iterator = que.listIterator();
 
-            while(iterator.hasNext()) {
-                NameThreadObject object = iterator.next();
-                String name = NameFetcher.get(object.message.playerUUID);
-                object.callback.callback(name, object.message, object.ctx);
-            }
+                while (iterator.hasNext()) {
+                    NameThreadObject object = iterator.next();
+                    String name = NameFetcher.get(object.message.playerUUID);
+                    object.callback.callback(name, object.message, object.ctx);
+                }
 
-            queList.removeAll(que);
+                queList.removeAll(que);
 
-            // --------------------------------------------------
+                // --------------------------------------------------
 
-            List<SimpleNameThreadObject> simpleQue = Lists.newArrayList();
-            simpleQue.addAll(simpleQueList);
-            ListIterator<SimpleNameThreadObject> simpleIterator = simpleQue.listIterator();
+                List<SimpleNameThreadObject> simpleQue = Lists.newArrayList();
+                simpleQue.addAll(simpleQueList);
+                ListIterator<SimpleNameThreadObject> simpleIterator = simpleQue.listIterator();
 
-            while(simpleIterator.hasNext()) {
-                SimpleNameThreadObject object = simpleIterator.next();
-                String name = NameFetcher.get(object.uuid);
-                object.callback.callback(object.uuid, name, object.includes);
-            }
+                while (simpleIterator.hasNext()) {
+                    SimpleNameThreadObject object = simpleIterator.next();
+                    String name = NameFetcher.get(object.uuid);
+                    object.callback.callback(object.uuid, name, object.includes);
+                }
 
-            simpleQueList.removeAll(simpleQue);
+                simpleQueList.removeAll(simpleQue);
+            }catch(Exception e) {}
         }
 
     }

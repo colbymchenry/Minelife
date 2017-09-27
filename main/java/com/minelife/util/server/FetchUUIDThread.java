@@ -18,33 +18,35 @@ public class FetchUUIDThread implements Runnable {
     public void run() {
         System.out.println("**** UUID FETCHER THREAD STARTED! ****");
         while(true) {
-            List<UUIDThreadObject> que = Lists.newArrayList();
-            que.addAll(queList);
-            ListIterator<UUIDThreadObject> iterator = que.listIterator();
+            try {
+                List<UUIDThreadObject> que = Lists.newArrayList();
+                que.addAll(queList);
+                ListIterator<UUIDThreadObject> iterator = que.listIterator();
 
-            while(iterator.hasNext()) {
-                UUIDThreadObject object = iterator.next();
-                UUID uuid = UUIDFetcher.get(object.message.playerName);
-                String name = NameFetcher.get(uuid);
-                object.callback.callback(uuid, name, object.message, object.ctx);
-            }
+                while (iterator.hasNext()) {
+                    UUIDThreadObject object = iterator.next();
+                    UUID uuid = UUIDFetcher.get(object.message.playerName);
+                    String name = NameFetcher.get(uuid);
+                    object.callback.callback(uuid, name, object.message, object.ctx);
+                }
 
-            queList.removeAll(que);
+                queList.removeAll(que);
 
-            // ----------------------------------------
+                // ----------------------------------------
 
-            List<SimpleUUIDThreadObject> simpleQue = Lists.newArrayList();
-            simpleQue.addAll(simpleQueList);
-            ListIterator<SimpleUUIDThreadObject> simpleIterator = simpleQue.listIterator();
+                List<SimpleUUIDThreadObject> simpleQue = Lists.newArrayList();
+                simpleQue.addAll(simpleQueList);
+                ListIterator<SimpleUUIDThreadObject> simpleIterator = simpleQue.listIterator();
 
-            while(simpleIterator.hasNext()) {
-                SimpleUUIDThreadObject object = simpleIterator.next();
-                UUID uuid = UUIDFetcher.get(object.name);
-                String name = NameFetcher.get(uuid);
-                object.callback.callback(uuid, name, object.includes);
-            }
+                while (simpleIterator.hasNext()) {
+                    SimpleUUIDThreadObject object = simpleIterator.next();
+                    UUID uuid = UUIDFetcher.get(object.name);
+                    String name = NameFetcher.get(uuid);
+                    object.callback.callback(uuid, name, object.includes);
+                }
 
-            simpleQueList.removeAll(simpleQue);
+                simpleQueList.removeAll(simpleQue);
+            }catch(Exception e) {}
         }
 
     }

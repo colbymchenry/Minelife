@@ -273,7 +273,7 @@ public class ListingsGui extends MasterGui {
         }
 
         @Override
-        public void drawScrollbar(float gripHeight)
+        public void drawGrip(float gripHeight)
         {
             GuiUtil.drawDefaultBackground(0, -5, 8, gripHeight + 7, new Color(186, 0, 184));
         }
