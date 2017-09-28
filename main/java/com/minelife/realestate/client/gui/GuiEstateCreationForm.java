@@ -1,19 +1,26 @@
 package com.minelife.realestate.client.gui;
 
 import com.google.common.collect.Maps;
+import com.minelife.Minelife;
+import com.minelife.police.network.PacketCreateTicket;
 import com.minelife.realestate.EnumPermission;
+import com.minelife.realestate.network.PacketCreateEstate;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiScrollableContent;
 import com.minelife.util.client.GuiTickBox;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.awt.Color;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class GuiEstateCreationForm extends GuiScreen {
 
@@ -22,6 +29,7 @@ public class GuiEstateCreationForm extends GuiScreen {
     private GuiTextField fieldRentPrice, fieldPurchasePrice, fieldRentPeriodInDays;
     private GuiTickBox forRent;
     private Map<EnumPermission, GuiTickBox> permissionTickBoxSet, allowedToChangeTickBoxSet;
+    private GuiButton btnCreate;
     private Color bgColor = new Color(108, 108, 108, 255);
 
     private static int width = 200, height = 200;
@@ -87,6 +95,7 @@ public class GuiEstateCreationForm extends GuiScreen {
             forRent = new GuiTickBox(mc, (width / 2) + 10, 140, false);
             permissionTickBoxSet = Maps.newHashMap();
             allowedToChangeTickBoxSet = Maps.newHashMap();
+            btnCreate = new GuiButton(0, (width - 50) / 2, getObjectHeight(0) - 40, 50, 20, "Create");
 
             /*
             * Only allow the player to modify the permissions that they are allowed to modify themselves,
@@ -136,6 +145,8 @@ public class GuiEstateCreationForm extends GuiScreen {
             allowedToChangeTickBoxSet.forEach((p, t) -> {
                 t.drawTickBox();
             });
+
+            btnCreate.drawButton(mc, mouseX, mouseY);
         }
 
         @Override
@@ -154,12 +165,37 @@ public class GuiEstateCreationForm extends GuiScreen {
 
             permissionTickBoxSet.forEach((p, t) -> t.mouseClicked(mouseX, mouseY));
             allowedToChangeTickBoxSet.forEach((p, t) -> t.mouseClicked(mouseX, mouseY));
+
+            if (btnCreate.mousePressed(mc, mouseX, mouseY)) {
+                double purchasePrice = fieldPurchasePrice.getText().isEmpty() ? 0.0D : Double.parseDouble(fieldPurchasePrice.getText());
+                double rentPrice = fieldRentPrice.getText().isEmpty() ? 0.0D : Double.parseDouble(fieldRentPrice.getText());
+                int rentPeriodInDays = fieldRentPeriodInDays.getText().isEmpty() ? 0 : Integer.parseInt(fieldRentPeriodInDays.getText());
+
+                Set<EnumPermission> permissions = new TreeSet<>();
+                permissionTickBoxSet.forEach((p, t) -> {
+                    if (t.isChecked()) permissions.add(p);
+                });
+
+                Set<EnumPermission> permsAllowedToChange = new TreeSet<>();
+                allowedToChangeTickBoxSet.forEach((p, t) -> {
+                    if (t.isChecked()) permsAllowedToChange.add(p);
+                });
+
+                Minelife.NETWORK.sendToServer(new PacketCreateEstate(permissions, permsAllowedToChange, purchasePrice, rentPrice, rentPeriodInDays, forRent.isChecked()));
+            }
         }
 
         @Override
         public void keyTyped(char keycode, int keynum)
         {
             super.keyTyped(keycode, keynum);
+
+            if(!NumberConversions.isInt("" + keycode) && keynum != Keyboard.KEY_BACK && keynum != Keyboard.KEY_PERIOD) return;
+
+            if(fieldRentPrice.isFocused() && keynum == Keyboard.KEY_PERIOD && (fieldRentPrice.getText().isEmpty() || fieldRentPrice.getText().contains("."))) return;
+            if(fieldPurchasePrice.isFocused() && keynum == Keyboard.KEY_PERIOD && (fieldPurchasePrice.getText().isEmpty() || fieldPurchasePrice.getText().contains("."))) return;
+            if(fieldRentPeriodInDays.isFocused() && keynum == Keyboard.KEY_PERIOD && (fieldRentPeriodInDays.getText().isEmpty() || fieldRentPeriodInDays.getText().contains("."))) return;
+
             fieldRentPrice.textboxKeyTyped(keycode, keynum);
             fieldPurchasePrice.textboxKeyTyped(keycode, keynum);
             fieldRentPeriodInDays.textboxKeyTyped(keycode, keynum);

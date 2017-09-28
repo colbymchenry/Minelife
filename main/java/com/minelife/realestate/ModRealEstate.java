@@ -2,6 +2,7 @@ package com.minelife.realestate;
 
 import com.minelife.AbstractMod;
 import com.minelife.CommonProxy;
+import com.minelife.realestate.network.PacketCreateEstate;
 import com.minelife.realestate.network.PacketOpenEstateGui;
 import com.minelife.realestate.network.PacketRequestToOpenEstateCreationForm;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -14,6 +15,7 @@ public class ModRealEstate extends AbstractMod {
     {
         registerPacket(PacketOpenEstateGui.Handler.class, PacketOpenEstateGui.class, Side.CLIENT);
         registerPacket(PacketRequestToOpenEstateCreationForm.Handler.class, PacketRequestToOpenEstateCreationForm.class, Side.SERVER);
+        registerPacket(PacketCreateEstate.Handler.class, PacketCreateEstate.class, Side.SERVER);
     }
 
     @Override

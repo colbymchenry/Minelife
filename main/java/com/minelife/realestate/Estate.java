@@ -52,7 +52,9 @@ public class Estate implements Comparable<Estate> {
             if(!s.isEmpty()) permissions.add(EnumPermission.values()[Integer.parseInt(s)]);
     }
 
-    private Estate() {}
+    public Estate(Region region) {
+        this.region = region;
+    }
 
     public void setOwner(UUID owner) throws SQLException
     {
@@ -93,9 +95,16 @@ public class Estate implements Comparable<Estate> {
     public void setPermissions(Set<EnumPermission> permissions) throws SQLException
     {
         this.permissions = permissions;
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         permissions.forEach(p -> builder.append(p.ordinal()).append(","));
         Minelife.SQLITE.query("UPDATE estates SET permissions='" + builder.toString() + "' WHERE region='" + region.getUniqueID().toString() + "'");
+    }
+
+    public void setPermissionsAllowedToChange(Set<EnumPermission> permissions) throws SQLException
+    {
+        final StringBuilder builder = new StringBuilder();
+        permissions.forEach(p -> builder.append(p.ordinal()).append(","));
+        Minelife.SQLITE.query("UPDATE estates SET permsAllowedToChange='" + builder.toString() + "' WHERE region='" + region.getUniqueID().toString() + "'");
     }
 
     public void setMembers(Set<Member> members) throws SQLException
@@ -198,8 +207,8 @@ public class Estate implements Comparable<Estate> {
 
     public static Estate fromBytes(ByteBuf buf)
     {
-        Estate estate = new Estate();
         Region region = Region.fromBytes(buf);
+        Estate estate = new Estate(region);
         Set<Member> members = new TreeSet<>();
         int membersSize = buf.readInt();
         for(int i = 0; i < membersSize; i++) members.add(Member.fromBytes(buf));
