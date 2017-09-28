@@ -90,7 +90,10 @@ public class GuiEstateCreationForm extends GuiScreen {
 
             /*
             * Only allow the player to modify the permissions that they are allowed to modify themselves,
-            * including allowing modification to permission by new renter or buyer
+            * including allowing modification to permission by new renter or buyer. So essentially, a person
+            * cannot create a region that allows any permissions that their parent region does not have. And they
+            * can only modify permissions that the parent region either is allowed to modify themselves or that the
+            * parent region owner allows them to.
             */
             int y = 200;
             for (EnumPermission p : permissionsAllowedToChange) {
