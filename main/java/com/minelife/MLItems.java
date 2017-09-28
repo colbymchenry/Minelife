@@ -9,7 +9,7 @@ import com.minelife.gun.item.guns.*;
 import com.minelife.gun.item.parts.*;
 import com.minelife.police.ItemTicket;
 import com.minelife.police.arresting.ItemHandcuff;
-import com.minelife.realestate.items.ItemEstateClaimForm;
+import com.minelife.realestate.ItemEstateForm;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.Item;
 
@@ -66,13 +66,13 @@ public class MLItems {
     public static ItemAbstractDrug waxy_cocaine;
     public static ItemAbstractDrug heated_cocaine;
     public static ItemAbstractDrug pressed_cocaine;
-    public static ItemEstateClaimForm estate_claim_form;
     public static ItemAbstractDrug purple_cocaine;
     public static ItemProcessedCocaine processed_cocaine;
     public static ItemJoint joint;
     public static ItemDrugTest drug_test;
     public static ItemTicket ticket;
     public static ItemHandcuff handcuff;
+    public static ItemEstateForm estateForm;
 
     protected static void init()
     {
@@ -125,13 +125,13 @@ public class MLItems {
         register_item(waxy_cocaine = new ItemAbstractDrug("waxy_cocaine"));
         register_item(heated_cocaine = new ItemAbstractDrug("heated_cocaine"));
         register_item(pressed_cocaine = new ItemAbstractDrug("pressed_cocaine"));
-        register_item(estate_claim_form = new ItemEstateClaimForm());
         register_item(processed_cocaine = new ItemProcessedCocaine());
         register_item(purple_cocaine = new ItemAbstractDrug("purple_cocaine"));
         register_item(joint = new ItemJoint());
         register_item(drug_test = new ItemDrugTest());
         register_item(ticket = new ItemTicket());
         register_item(handcuff = new ItemHandcuff());
+        register_item(estateForm = new ItemEstateForm());
     }
 
     private static void register_item(Item item)

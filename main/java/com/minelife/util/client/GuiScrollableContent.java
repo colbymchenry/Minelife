@@ -16,6 +16,7 @@ public abstract class GuiScrollableContent extends Gui {
     private long lastClickTime = 0L;
     public boolean drawScrollbarOnTop = true;
     protected Minecraft mc;
+    private boolean mouseDown = false;
 
     public GuiScrollableContent(Minecraft mc, int xPosition, int yPosition, int width, int height)
     {
@@ -80,26 +81,31 @@ public abstract class GuiScrollableContent extends Gui {
             if (this.initialMouseClickY == -1.0F) {
                 if (isHovering) {
 
-                    if (mouseX >= scrollBarLeft && mouseX <= scrollBarRight && (mouseY - yPosition) < gripPosition) {
-                        scrollY -= getSingleUnit();
-                    } else if (mouseX >= scrollBarLeft && mouseX <= scrollBarRight && (mouseY - yPosition) > gripPosition + gripSize) {
-                        scrollY += getSingleUnit();
+                    if(!mouseDown) {
+                        if (mouseX >= scrollBarLeft && mouseX <= scrollBarRight && (mouseY - yPosition) < gripPosition) {
+                            scrollY -= getSingleUnit();
+                        } else if (mouseX >= scrollBarLeft && mouseX <= scrollBarRight && (mouseY - yPosition) > gripPosition + gripSize) {
+                            scrollY += getSingleUnit();
+                        } else {
+                            int totalHeight = 0;
+                            for (int i = 0; i < getSize(); i++) {
+                                if (mouseY >= yPosition + totalHeight - scrollY && mouseY <= (yPosition + totalHeight - scrollY) + getObjectHeight(i) && mouseX >= xPosition && mouseX <= xPosition + width - getGripWidth()) {
 
-                    } else {
-                        int totalHeight = 0;
-                        for (int i = 0; i < getSize(); i++) {
-                            if (mouseY >= yPosition + totalHeight - scrollY && mouseY <= (yPosition + totalHeight - scrollY) + getObjectHeight(i) && mouseX >= xPosition && mouseX <= xPosition + width - getGripWidth()) {
+                                    int mX = (mouseX - xPosition);
+                                    int mY = mouseY - ((int) ((yPosition + totalHeight) - scrollY));
 
-                                int mX = (mouseX - xPosition);
-                                int mY = mouseY - ((int) ((yPosition + totalHeight) - scrollY));
-
-                                this.elementClicked(i, mX, mY, i == this.selected && System.currentTimeMillis() - this.lastClickTime < 250L);
-                                this.selected = i;
-                                this.lastClickTime = System.currentTimeMillis();
+                                    this.elementClicked(i, mX, mY, i == this.selected && System.currentTimeMillis() - this.lastClickTime < 250L);
+                                    this.selected = i;
+                                    this.lastClickTime = System.currentTimeMillis();
+                                }
+                                totalHeight += getObjectHeight(i);
                             }
-                            totalHeight += getObjectHeight(i);
+
+                            if (mouseX >= scrollBarLeft && mouseX <= scrollBarRight)
+                                this.initialMouseClickY = Math.abs((mouseY - yPosition) - gripPosition);
                         }
-                        this.initialMouseClickY = Math.abs((mouseY - yPosition) - gripPosition);
+
+                        mouseDown = true;
                     }
 
                 }
@@ -113,6 +119,8 @@ public abstract class GuiScrollableContent extends Gui {
                 gripPosition = newGripPosition;
             }
         } else {
+            mouseDown = false;
+
             int scroll = dWheel;
             if (isHovering && scroll != 0) {
                 if (scroll > 0) scroll = -1;
@@ -244,7 +252,8 @@ public abstract class GuiScrollableContent extends Gui {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
-    public void drawTrack() {
+    public void drawTrack()
+    {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glColor4f(60f / 255f, 60f / 255f, 60f / 255f, 1f);
         GuiUtil.drawImage(xPosition + width - getGripWidth(), yPosition, getGripWidth(), height);

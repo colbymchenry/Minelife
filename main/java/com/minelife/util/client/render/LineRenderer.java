@@ -1,16 +1,13 @@
-package com.minelife.realestate.util;
+package com.minelife.util.client.render;
 
 import com.minelife.util.Vector;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-@SideOnly(Side.CLIENT)
-public class GUIUtil {
+public class LineRenderer {
 
     public static void drawCuboidAroundsBlocks(Minecraft minecraft, AxisAlignedBB bounds, float partialTickTime, Color color, boolean depth_test) {
         Vector start = new Vector(bounds.minX, bounds.minY, bounds.minZ);
@@ -187,7 +184,7 @@ public class GUIUtil {
         GL11.glColor4d(1, 1, 1, 1);
         GL11.glColor4d(1, 1, 1, 1);
         GL11.glDepthMask(true);
-       if (!depth_test) GL11.glEnable(GL11.GL_DEPTH_TEST);
+        if (!depth_test) GL11.glEnable(GL11.GL_DEPTH_TEST);
 
     }
 

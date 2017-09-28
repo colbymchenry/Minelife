@@ -188,7 +188,7 @@ public class CommandPolice implements ICommand {
                 Minelife.SQLITE.query("INSERT INTO policepardon (playerUUID) VALUES ('" + playerUUID.toString() + "', '1')");
                 player.addChatComponentMessage(new ChatComponentText("The player is not online, but will be pardoned from the prison upon logging in."));
             } else {
-                if (ModPolice.getServerProxy().getPrisonRegion().contains(playerFromCMD.worldObj, playerFromCMD.posX, playerFromCMD.posY, playerFromCMD.posZ)) {
+                if (ModPolice.getServerProxy().getPrisonRegion().contains(playerFromCMD.worldObj.getWorldInfo().getWorldName(), playerFromCMD.posX, playerFromCMD.posY, playerFromCMD.posZ)) {
                     ModPolice.getServerProxy().sendToPrisonExit(PlayerHelper.getPlayer(playerUUID));
                 }
                 player.addChatComponentMessage(new ChatComponentText("Player has been pardoned."));

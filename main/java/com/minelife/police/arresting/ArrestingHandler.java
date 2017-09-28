@@ -52,7 +52,7 @@ public class ArrestingHandler {
             boolean wasEmpty = tickets.isEmpty();
             for (ServerProxy.TicketInfo ticket : tickets) {
                 if (ModPolice.getServerProxy().getPrisonRegion() != null &&
-                        ModPolice.getServerProxy().getPrisonRegion().contains(event.player.worldObj, event.player.posX, event.player.posY, event.player.posZ)) {
+                        ModPolice.getServerProxy().getPrisonRegion().contains(event.player.worldObj.getWorldInfo().getWorldName(), event.player.posX, event.player.posY, event.player.posZ)) {
                     ticket.setTimeServed(ticket.timeServed + (1.0D / 60.0D));
                 }
 

@@ -10,6 +10,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
@@ -63,7 +64,8 @@ public class Region implements Comparable<Region> {
     }
 
     @SideOnly(Side.CLIENT)
-    public World getEntityWorldClient() {
+    public World getEntityWorldClient()
+    {
         return Minecraft.getMinecraft().theWorld;
     }
 
@@ -72,8 +74,18 @@ public class Region implements Comparable<Region> {
         return bounds;
     }
 
-    public boolean contains(World world, double x, double y, double z) {
-        return Objects.equals(world.getWorldInfo().getWorldName(), this.world) && (bounds.isVecInside(Vec3.createVectorHelper(x, y, z)) || bounds.isVecInside(Vec3.createVectorHelper(x - 1, y - 1, z - 1)));
+    public boolean contains(String world, double x, double y, double z)
+    {
+        return world.equals(this.world) && (bounds.isVecInside(Vec3.createVectorHelper(x, y, z)) || bounds.isVecInside(Vec3.createVectorHelper(x - 1, y - 1, z - 1)));
+    }
+
+    public boolean contains(Region region)
+    {
+        return contains(region.world, region.getBounds().minX, region.getBounds().minY, region.getBounds().minZ) && contains(region.world, region.getBounds().maxX, region.getBounds().maxY, region.getBounds().maxZ);
+    }
+
+    public boolean contains(EntityPlayer player) {
+        return contains(player.getEntityWorld().getWorldInfo().getWorldName(), player.posX, player.posY, player.posZ);
     }
 
     public Region getParentRegion()
@@ -81,10 +93,11 @@ public class Region implements Comparable<Region> {
         return Region.getContainingRegion(getWorldName(), getBounds());
     }
 
-    public List<Region> getContainingRegions() {
+    public List<Region> getContainingRegions()
+    {
         List<Region> containingRegions = Lists.newArrayList();
         for (Region region : REGIONS) {
-            if(!region.getUniqueID().equals(getUniqueID()) && isVecInside(Vec3.createVectorHelper(region.bounds.minX, region.bounds.minY, region.bounds.minZ)) &&
+            if (!region.getUniqueID().equals(getUniqueID()) && isVecInside(Vec3.createVectorHelper(region.bounds.minX, region.bounds.minY, region.bounds.minZ)) &&
                     isVecInside(Vec3.createVectorHelper(region.bounds.maxX, region.bounds.maxY, region.bounds.maxZ)))
                 containingRegions.add(region);
         }
@@ -92,7 +105,7 @@ public class Region implements Comparable<Region> {
         List<Region> regionsInOrder = Lists.newArrayList();
         double difference = 100;
         Region r = null;
-        for(int i = 0; i < containingRegions.size(); i++) {
+        for (int i = 0; i < containingRegions.size(); i++) {
             for (Region containingRegion : containingRegions) {
                 if (containingRegion.bounds.minX - bounds.minX < difference && !regionsInOrder.contains(containingRegion)) {
                     difference = containingRegion.bounds.minX - bounds.minX;
@@ -105,9 +118,10 @@ public class Region implements Comparable<Region> {
         return regionsInOrder;
     }
 
-    public Region getMasterRegion() {
+    public Region getMasterRegion()
+    {
         Region region = this;
-        while(region.getParentRegion() != null) region = region.getParentRegion();
+        while (region.getParentRegion() != null) region = region.getParentRegion();
         return region;
     }
 
@@ -179,7 +193,7 @@ public class Region implements Comparable<Region> {
                 "'" + regionUniqueID.toString() + "'," +
                 "'" + world + "'," +
                 "'" + cuboidRegion.getMinimumPoint().getBlockX() + "', '" + cuboidRegion.getMinimumPoint().getBlockY() + "', '" + cuboidRegion.getMinimumPoint().getBlockZ() + "'," +
-                "'" +  cuboidRegion.getMaximumPoint().getBlockX() + "', '" +  cuboidRegion.getMaximumPoint().getBlockY()  + "', '" +  cuboidRegion.getMaximumPoint().getBlockZ()  + "')");
+                "'" + cuboidRegion.getMaximumPoint().getBlockX() + "', '" + cuboidRegion.getMaximumPoint().getBlockY() + "', '" + cuboidRegion.getMaximumPoint().getBlockZ() + "')");
 
         Region region = new Region(regionUniqueID);
         REGIONS.add(region);

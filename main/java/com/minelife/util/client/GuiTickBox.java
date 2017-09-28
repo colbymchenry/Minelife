@@ -11,7 +11,7 @@ public class GuiTickBox extends Gui {
     private static final ResourceLocation switchOn = new ResourceLocation(Minelife.MOD_ID, "textures/gui/switchOn.png");
     private static final ResourceLocation switchOff = new ResourceLocation(Minelife.MOD_ID, "textures/gui/switchOff.png");
 
-    private static final int WIDTH = 36, HEIGHT = 18;
+    public static final int WIDTH = 36, HEIGHT = 18;
 
     public int xPosition, yPosition;
     private boolean value;
