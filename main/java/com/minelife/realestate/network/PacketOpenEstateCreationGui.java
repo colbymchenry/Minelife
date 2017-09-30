@@ -13,16 +13,16 @@ import net.minecraft.client.Minecraft;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class PacketOpenEstateGui implements IMessage {
+public class PacketOpenEstateCreationGui implements IMessage {
 
     private Set<EnumPermission> permissionsAllowedToEdit;
 
-    public PacketOpenEstateGui(Set<EnumPermission> permissionsAllowedToEdit)
+    public PacketOpenEstateCreationGui(Set<EnumPermission> permissionsAllowedToEdit)
     {
         this.permissionsAllowedToEdit = permissionsAllowedToEdit;
     }
 
-    public PacketOpenEstateGui()
+    public PacketOpenEstateCreationGui()
     {
     }
 
@@ -42,10 +42,10 @@ public class PacketOpenEstateGui implements IMessage {
         permissionsAllowedToEdit.forEach(p -> buf.writeInt(p.ordinal()));
     }
 
-    public static class Handler implements IMessageHandler<PacketOpenEstateGui, IMessage> {
+    public static class Handler implements IMessageHandler<PacketOpenEstateCreationGui, IMessage> {
 
         @SideOnly(Side.CLIENT)
-        public IMessage onMessage(PacketOpenEstateGui message, MessageContext ctx)
+        public IMessage onMessage(PacketOpenEstateCreationGui message, MessageContext ctx)
         {
             Minecraft.getMinecraft().displayGuiScreen(new GuiEstateCreationForm(message.permissionsAllowedToEdit));
             return null;

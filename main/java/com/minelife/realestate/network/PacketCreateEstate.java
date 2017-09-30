@@ -82,11 +82,18 @@ public class PacketCreateEstate implements IMessage {
                 return null;
             }
 
+            Estate estateAtRegion = Estate.estates.stream().filter(e -> e.getRegion().equals(region)).findFirst().orElse(null);
+            if(estateAtRegion != null) {
+                Minelife.NETWORK.sendTo(new PacketPopupMessage("Estate already registered here.",  0xC6C6C6), player);
+                return null;
+            }
+
             try {
                 Minelife.SQLITE.query("INSERT INTO estates (region, owner) VALUES ('" + region.getUniqueID().toString() + "', '" + player.getUniqueID().toString() + "')");
                 Estate estate = new Estate(region);
                 estate.setOwner(player.getUniqueID());
                 estate.setForRent(message.forRent);
+                estate.setMembers(new TreeSet<>());
                 estate.setPermissions(message.permissions);
                 estate.setPermissionsAllowedToChange(message.permissionsAllowedToChange);
                 estate.setPurchasePrice(message.purchasePrice);

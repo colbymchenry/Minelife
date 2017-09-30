@@ -79,7 +79,7 @@ public class GuiEstateCreationForm extends GuiScreen {
     /**
      * All drawing is done here since the gui will have to scroll due to so many options
      */
-    class GuiContent extends GuiScrollableContent {
+    private class GuiContent extends GuiScrollableContent {
 
         private int widthOffset = 30;
         private int columnWidth = (width - widthOffset) / 3;

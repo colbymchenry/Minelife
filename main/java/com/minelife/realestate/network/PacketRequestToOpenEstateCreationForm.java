@@ -4,6 +4,7 @@ import com.minelife.Minelife;
 import com.minelife.realestate.EnumPermission;
 import com.minelife.realestate.Estate;
 import com.minelife.region.server.Region;
+import com.minelife.util.client.PacketPopupMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -11,6 +12,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.Vec3;
 
@@ -50,9 +52,25 @@ public class PacketRequestToOpenEstateCreationForm implements IMessage {
             }
 
             Estate estate = Estate.estates.stream().filter(e -> e.getRegion().equals(region)).findFirst().orElse(null);
+
+            if(estate == null) {
+                Region r = region.getParentRegion();
+                while(estate == null) {
+                    if(r == null) break;
+                    for (Estate e : Estate.estates) {
+                        if(e.getRegion().equals(r)) estate = e;
+                    }
+                    r = region.getParentRegion();
+                }
+            }
+
             if (estate != null) {
                 try {
-                    Minelife.NETWORK.sendTo(new PacketOpenEstateGui(estate.getPermissionsAllowedToChange()), player);
+                    if(estate.getOwner().equals(player.getUniqueID()) || (estate.getRenter() != null && estate.getRenter().equals(player.getUniqueID()))) {
+                        Minelife.NETWORK.sendTo(new PacketOpenEstateInfoGui(estate, estate.getPermissionsAllowedToChange(player.getUniqueID()), estate.getPermissionsAllowedToChangeEnabled(), estate.showPermsAllowedToChange(player.getUniqueID())), player);
+                    } else {
+                        Minelife.NETWORK.sendTo(new PacketPopupMessage("You are not allowed to view this estates info.", 0xC6C6C6), player);
+                    }
                 } catch (SQLException e) {
                     e.printStackTrace();
                     player.addChatComponentMessage(new ChatComponentText(Minelife.default_error_message));
@@ -60,7 +78,7 @@ public class PacketRequestToOpenEstateCreationForm implements IMessage {
             } else {
                 Set<EnumPermission> permissions = new TreeSet<>();
                 permissions.addAll(Arrays.asList(EnumPermission.values()));
-                Minelife.NETWORK.sendTo(new PacketOpenEstateGui(permissions), player);
+                Minelife.NETWORK.sendTo(new PacketOpenEstateCreationGui(permissions), player);
             }
             return null;
         }

@@ -4,6 +4,7 @@ import com.minelife.CommonProxy;
 import com.minelife.Minelife;
 import com.minelife.realestate.Estate;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.sql.ResultSet;
 
@@ -16,7 +17,9 @@ public class ServerProxy extends CommonProxy {
                 "rentPrice DOUBLE DEFAULT 0.0, purchasePrice DOUBLE DEFAULT 0.0, forRent BOOLEAN DEFAULT 0, rentPeriodInDays INT DEFAULT 0, " +
                 "owner VARCHAR(36) NOT NULL, renter VARCHAR(36) NOT NULL DEFAULT '', permsAllowedToChange TEXT NOT NULL DEFAULT '')");
 
-        ResultSet result = Minelife.SQLITE.query("SELECT region AS r FROM estates");
+        ResultSet result = Minelife.SQLITE.query("SELECT * FROM estates");
         while(result.next()) Estate.estates.add(new Estate(result));
+
+        MinecraftForge.EVENT_BUS.register(new PlayerListener());
     }
 }

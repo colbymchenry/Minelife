@@ -177,11 +177,11 @@ public class Region implements Comparable<Region> {
         if (parentRegion != null) {
             //check if intersects with another SubRegion
             if (Region.getIntersectingRegion(world, bounds) != null)
-                throw new CustomMessageException("Intersecting with another region2.");
+                throw new CustomMessageException("Intersecting with another region.");
         } else {
             // If we have an intersecting region do not create a region
             if (Region.getIntersectingRegion(world, bounds) != null)
-                throw new CustomMessageException("Intersecting with another region1.");
+                throw new CustomMessageException("Intersecting with another region.");
         }
 
         UUID regionUniqueID = UUID.randomUUID();
@@ -232,9 +232,6 @@ public class Region implements Comparable<Region> {
 
             parentRegions.add(containingRegion);
             Region parentRegion = containingRegion.getParentRegion();
-
-            parentRegion.getEntityWorld().setBlock((int) parentRegion.getBounds().minX, (int) parentRegion.getBounds().maxY, (int) parentRegion.getBounds().minZ, Blocks.diamond_block);
-            containingRegion.getEntityWorld().setBlock((int) containingRegion.getBounds().minX, (int) containingRegion.getBounds().maxY, (int) containingRegion.getBounds().minZ, Blocks.gold_block);
 
             while (parentRegion != null) {
                 parentRegions.add(parentRegion);

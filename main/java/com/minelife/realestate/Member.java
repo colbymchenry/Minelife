@@ -1,5 +1,7 @@
 package com.minelife.realestate;
 
+import com.minelife.util.server.Callback;
+import com.minelife.util.server.NameFetcher;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 
@@ -7,7 +9,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
-public class Member implements Comparable<Member> {
+public class Member implements Comparable<Member>, Callback {
 
     public Estate estate;
     public Set<EnumPermission> permissions;
@@ -21,7 +23,10 @@ public class Member implements Comparable<Member> {
         this.permissions = new TreeSet<>();
     }
 
-    private Member() {}
+    private Member(UUID playerUUID) {
+        this.playerUUID = playerUUID;
+        this.playerName = NameFetcher.asyncFetchServer(playerUUID, this);
+    }
 
     public void toBytes(ByteBuf buf) {
         estate.toBytes(buf);
@@ -50,9 +55,8 @@ public class Member implements Comparable<Member> {
         String[] permsArray = str.split(";")[1].split(",");
         for (String s : permsArray)
             if(!s.isEmpty()) permissions.add(EnumPermission.values()[Integer.parseInt(s)]);
-        Member member = new Member();
+        Member member = new Member(playerUUID);
         member.permissions = permissions;
-        member.playerUUID = playerUUID;
         return member;
     }
 
@@ -68,5 +72,11 @@ public class Member implements Comparable<Member> {
     public int compareTo(Member o)
     {
         return o.playerUUID.equals(playerUUID) && o.estate.getRegion().getUniqueID().equals(estate.getRegion().getUniqueID()) ? 0 : -1;
+    }
+
+    @Override
+    public void callback(Object... objects)
+    {
+        playerName = (String) objects[1];
     }
 }
