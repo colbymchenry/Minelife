@@ -19,20 +19,16 @@ public class GuiEstateInfo extends GuiScreen {
 
     private Estate estate;
     private Set<EnumPermission> permsAllowedToChange;
-    private Set<EnumPermission> getPermsAllowedToChangeEnabled;
     private Map<EnumPermission, GuiTickBox> permissionTickBoxSet, allowedToChangeTickBoxSet;
     private int xPosition, yPosition, bgWidth = 200, bgHeight = 200;
     private GuiContent guiContent;
     private Color bgColor = new Color(108, 108, 108, 255);
-    private boolean showPermsAllowedToChange;
 
     // Only show the "PermsAllowedToChange" tick boxs if it is inside one of their estate
-    public GuiEstateInfo(Estate estate, Set<EnumPermission> permsAllowedToChange, Set<EnumPermission> getPermsAllowedToChangeEnabled, boolean showPermsAllowedToChange)
+    public GuiEstateInfo(Estate estate, Set<EnumPermission> permsAllowedToChange)
     {
         this.estate = estate;
         this.permsAllowedToChange = permsAllowedToChange;
-        this.getPermsAllowedToChangeEnabled = getPermsAllowedToChangeEnabled;
-        this.showPermsAllowedToChange = showPermsAllowedToChange;
     }
 
     @Override
@@ -69,7 +65,7 @@ public class GuiEstateInfo extends GuiScreen {
     private class GuiContent extends GuiScrollableContent {
 
         private int widthOffset = 30;
-        private int columnWidth = (width - widthOffset) / (showPermsAllowedToChange ? 3 : 2);
+        private int columnWidth = (width - widthOffset) / 3;
 
         public GuiContent(Minecraft mc, int xPosition, int yPosition, int width, int height)
         {
@@ -80,8 +76,9 @@ public class GuiEstateInfo extends GuiScreen {
             int y = 200;
             for (EnumPermission p : permsAllowedToChange) {
                 permissionTickBoxSet.put(p, new GuiTickBox(mc, (columnWidth * 1) + ((columnWidth - GuiTickBox.WIDTH) / 2) + (widthOffset / 2), y, estate.getPermissions().contains(p)));
-                if (showPermsAllowedToChange)
-                    allowedToChangeTickBoxSet.put(p, new GuiTickBox(mc, (columnWidth * 2) + ((columnWidth - GuiTickBox.WIDTH) / 2) + (widthOffset / 2), y, getPermsAllowedToChangeEnabled.contains(p)));
+                GuiTickBox tickBox = new GuiTickBox(mc, (columnWidth * 2) + ((columnWidth - GuiTickBox.WIDTH) / 2) + (widthOffset / 2), y, permsAllowedToChange.contains(p));
+                tickBox.enabled = estate.getOwner().equals(mc.thePlayer.getUniqueID());
+                allowedToChangeTickBoxSet.put(p, new GuiTickBox(mc, (columnWidth * 2) + ((columnWidth - GuiTickBox.WIDTH) / 2) + (widthOffset / 2), y, permsAllowedToChange.contains(p)));
                 y += 30;
             }
         }
@@ -100,21 +97,17 @@ public class GuiEstateInfo extends GuiScreen {
             String allowColumn = EnumChatFormatting.BOLD.toString() + EnumChatFormatting.UNDERLINE.toString() + "Allow";
             fontRendererObj.drawString(allowColumn, (columnWidth * 1) + ((columnWidth - fontRendererObj.getStringWidth(allowColumn)) / 2) + (widthOffset / 2), 180, 0xFFFFFF);
 
-            if (showPermsAllowedToChange) {
-                String modifyColumn = EnumChatFormatting.BOLD.toString() + EnumChatFormatting.UNDERLINE.toString() + "Can Modify";
-                fontRendererObj.drawString(modifyColumn, (columnWidth * 2) + ((columnWidth - fontRendererObj.getStringWidth(modifyColumn)) / 2) + (widthOffset / 2), 180, 0xFFFFFF);
-            }
+            String modifyColumn = EnumChatFormatting.BOLD.toString() + EnumChatFormatting.UNDERLINE.toString() + "Can Modify";
+            fontRendererObj.drawString(modifyColumn, (columnWidth * 2) + ((columnWidth - fontRendererObj.getStringWidth(modifyColumn)) / 2) + (widthOffset / 2), 180, 0xFFFFFF);
 
             permissionTickBoxSet.forEach((p, t) -> {
                 fontRendererObj.drawString(p.name(), (columnWidth * 0) + ((columnWidth - fontRendererObj.getStringWidth(p.name())) / 2) + (widthOffset / 2), t.yPosition + 5, 0xFFFFFF);
                 t.drawTickBox();
             });
 
-            if (showPermsAllowedToChange) {
-                allowedToChangeTickBoxSet.forEach((p, t) -> {
-                    t.drawTickBox();
-                });
-            }
+            allowedToChangeTickBoxSet.forEach((p, t) -> {
+                t.drawTickBox();
+            });
         }
 
         @Override
@@ -127,8 +120,7 @@ public class GuiEstateInfo extends GuiScreen {
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick)
         {
             permissionTickBoxSet.forEach((p, t) -> t.mouseClicked(mouseX, mouseY));
-            if (showPermsAllowedToChange)
-                allowedToChangeTickBoxSet.forEach((p, t) -> t.mouseClicked(mouseX, mouseY));
+            allowedToChangeTickBoxSet.forEach((p, t) -> t.mouseClicked(mouseX, mouseY));
         }
 
         @Override

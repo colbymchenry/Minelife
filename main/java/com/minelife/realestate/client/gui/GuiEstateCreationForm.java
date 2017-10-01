@@ -105,9 +105,11 @@ public class GuiEstateCreationForm extends GuiScreen {
             * parent region owner allows them to.
             */
             int y = 200;
-            for (EnumPermission p : permissionsAllowedToChange) {
+            for (EnumPermission p : EnumPermission.values()) {
                 permissionTickBoxSet.put(p, new GuiTickBox(mc, (columnWidth * 1) + ((columnWidth - GuiTickBox.WIDTH) / 2) + (widthOffset / 2), y, false));
-                allowedToChangeTickBoxSet.put(p, new GuiTickBox(mc, (columnWidth * 2) + ((columnWidth - GuiTickBox.WIDTH) / 2) + (widthOffset / 2), y, false));
+                GuiTickBox tickBox = new GuiTickBox(mc, (columnWidth * 2) + ((columnWidth - GuiTickBox.WIDTH) / 2) + (widthOffset / 2), y, false);
+                tickBox.enabled = permissionsAllowedToChange.contains(p);
+                allowedToChangeTickBoxSet.put(p, tickBox);
                 y += 30;
             }
         }

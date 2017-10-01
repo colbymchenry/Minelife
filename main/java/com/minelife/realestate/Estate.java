@@ -200,35 +200,6 @@ public class Estate implements Comparable<Estate> {
         return permissions;
     }
 
-    public Set<EnumPermission> getPermissionsAllowedToChangeEnabled() throws SQLException
-    {
-        Set<EnumPermission> permissions = new TreeSet<>();
-        ResultSet result = Minelife.SQLITE.query("SELECT * FROM estates WHERE region='" + getRegion().getUniqueID().toString() + "'");
-        if(result.next()) {
-            String[] data = result.getString("permsAllowedToChange").split(",");
-            for (String datum : data) {
-                if(!datum.isEmpty()) permissions.add(EnumPermission.values()[Integer.parseInt(datum)]);
-            }
-        }
-        return permissions;
-    }
-
-    public boolean showPermsAllowedToChange(UUID playerUUID) {
-        Map<Integer, Estate> parentEstates = getEstatesInOrder();
-        Set<Integer> keySet = parentEstates.keySet();
-
-        // check if they are the top level owner, if so they get all the permissions
-        if(parentEstates.isEmpty() || parentEstates.get(keySet.toArray()[0]).getOwner().equals(owner)) return true;
-
-        // if not top level go through the estates until we reach the owner.
-        for (Estate estate : parentEstates.values()) {
-            if(estate.owner.equals(playerUUID)) {
-                if(getRegion().contains(estate.region)) return true;
-            }
-        }
-
-        return false;
-    }
 
     public boolean hasPermission(UUID playerUUID, EnumPermission permission)
     {
