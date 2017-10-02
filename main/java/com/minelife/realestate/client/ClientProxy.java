@@ -9,6 +9,5 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
-        MinecraftForge.EVENT_BUS.register(new SelectionHandler.Client());
     }
 }

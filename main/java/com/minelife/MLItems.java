@@ -9,7 +9,6 @@ import com.minelife.gun.item.guns.*;
 import com.minelife.gun.item.parts.*;
 import com.minelife.police.ItemTicket;
 import com.minelife.police.arresting.ItemHandcuff;
-import com.minelife.realestate.ItemEstateForm;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.Item;
 
@@ -72,7 +71,6 @@ public class MLItems {
     public static ItemDrugTest drug_test;
     public static ItemTicket ticket;
     public static ItemHandcuff handcuff;
-    public static ItemEstateForm estateForm;
 
     protected static void init()
     {
@@ -131,7 +129,6 @@ public class MLItems {
         register_item(drug_test = new ItemDrugTest());
         register_item(ticket = new ItemTicket());
         register_item(handcuff = new ItemHandcuff());
-        register_item(estateForm = new ItemEstateForm());
     }
 
     private static void register_item(Item item)

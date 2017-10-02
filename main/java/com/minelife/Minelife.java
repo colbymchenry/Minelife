@@ -43,6 +43,8 @@ import java.util.logging.Logger;
 @Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="after:BuildCraft|Transport;after:BuildCraft|Energy;after:IC2;after:WorldEdit")
 public class Minelife {
 
+    private static Side side;
+
     public static final String MOD_ID = "minelife", VERSION = "2017.1", NAME = "Minelife";
 
     @SidedProxy(clientSide = "com.minelife.ClientProxy", serverSide = "com.minelife.ServerProxy")
@@ -74,6 +76,7 @@ public class Minelife {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        side = event.getSide();
         NETWORK = new SimpleNetworkWrapper(MOD_ID);
         MLBlocks.init();
         MLItems.init();
@@ -152,6 +155,10 @@ public class Minelife {
 
     public static AbstractMod getModInstance(Class<? extends AbstractMod> modClass) {
         return MODS.stream().filter(m -> m.getClass().equals(modClass)).findFirst().orElse(null);
+    }
+
+    public static Side getSide() {
+        return side;
     }
 
 }

@@ -5,16 +5,19 @@ import com.minelife.CommonProxy;
 import com.minelife.Minelife;
 import com.minelife.realestate.client.ClientProxy;
 import com.minelife.realestate.server.PacketSendSelection;
+import com.minelife.realestate.server.SelectionHandler;
 import com.minelife.realestate.server.ServerProxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.common.MinecraftForge;
 
-public class ModRegion extends AbstractMod {
+public class ModRealEstate extends AbstractMod {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         registerPacket(PacketSendSelection.Handler.class, PacketSendSelection.class, Side.CLIENT);
+        MinecraftForge.EVENT_BUS.register(new SelectionHandler());
     }
 
     @Override
@@ -33,11 +36,11 @@ public class ModRegion extends AbstractMod {
     }
 
     public static ServerProxy getServerProxy() {
-        return (ServerProxy) Minelife.getModInstance(ModRegion.class).serverProxy;
+        return (ServerProxy) Minelife.getModInstance(ModRealEstate.class).serverProxy;
     }
 
     public static ClientProxy getClientProxy() {
-        return (ClientProxy) Minelife.getModInstance(ModRegion.class).clientProxy;
+        return (ClientProxy) Minelife.getModInstance(ModRealEstate.class).clientProxy;
     }
 
 }

@@ -23,6 +23,16 @@ public class MLConfig extends YamlConfiguration {
         this.load(this.file);
     }
 
+    public MLConfig(File directory, String name) throws IOException, InvalidConfigurationException {
+        name = name.contains(".yml") ? name.replaceAll(".yml", "") : name;
+        this.file = new File(directory, name + ".yml");
+        if(!this.file.exists()) {
+            this.file.getParentFile().mkdirs();
+            this.file.createNewFile();
+        }
+        this.load(this.file);
+    }
+
     public void save() {
         try {
             options().copyDefaults(true);
