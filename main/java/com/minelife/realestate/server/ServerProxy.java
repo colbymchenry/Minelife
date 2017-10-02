@@ -2,24 +2,33 @@ package com.minelife.realestate.server;
 
 import com.minelife.CommonProxy;
 import com.minelife.Minelife;
-import com.minelife.realestate.Estate;
+import com.minelife.util.MLConfig;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import lib.PatPeter.SQLibrary.Database;
+import lib.PatPeter.SQLibrary.SQLite;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.sql.ResultSet;
+import java.util.logging.Logger;
 
 public class ServerProxy extends CommonProxy {
 
+    public MLConfig config;
+    public Database db;
+
     @Override
-    public void preInit(FMLPreInitializationEvent event) throws Exception
-    {
-        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS estates (region VARCHAR(36) NOT NULL, members TEXT NOT NULL DEFAULT '', permissions TEXT NOT NULL DEFAULT '', " +
-                "rentPrice DOUBLE DEFAULT 0.0, purchasePrice DOUBLE DEFAULT 0.0, forRent BOOLEAN DEFAULT 0, rentPeriodInDays INT DEFAULT 0, " +
-                "owner VARCHAR(36) NOT NULL, renter VARCHAR(36) NOT NULL DEFAULT '', permsAllowedToChange TEXT NOT NULL DEFAULT '')");
+    public void preInit(FMLPreInitializationEvent event) throws Exception {
+        config = new MLConfig("realestate");
+        config.addDefault("selection_tool", Item.getIdFromItem(Items.golden_hoe));
+        config.save();
 
-        ResultSet result = Minelife.SQLITE.query("SELECT * FROM estates");
-        while(result.next()) Estate.estates.add(new Estate(result));
+        db = new SQLite(Logger.getLogger("Minecraft"), "[RealEstate]", Minelife.getConfigDirectory().getAbsolutePath(), "realestate");
+        db.open();
 
-        MinecraftForge.EVENT_BUS.register(new PlayerListener());
+        db.query("CREATE TABLE IF NOT EXISTS")
+
+        MinecraftForge.EVENT_BUS.register(new SelectionHandler.Server());
     }
+
 }
