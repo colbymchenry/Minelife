@@ -1,7 +1,7 @@
 package com.minelife.gun.bullets;
 
-import com.minelife.realestate.util.GUIUtil;
 import com.minelife.util.Vector;
+import com.minelife.util.client.render.LineRenderer;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -21,7 +21,7 @@ public class BulletRenderer {
             Vector topLeft = new Vector(bullet.origin.xCoord, bullet.origin.yCoord, bullet.origin.zCoord);
             Vector bottomLeft = new Vector(bullet.origin.xCoord, bullet.origin.yCoord - 0.01, bullet.origin.zCoord);
             Vector topRight = new Vector(bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord);
-            GUIUtil.drawRect(Minecraft.getMinecraft(), topLeft, bottomLeft, null, topRight, event.partialTicks, Color.orange, true);
+            LineRenderer.drawRect(Minecraft.getMinecraft(), topLeft, bottomLeft, null, topRight, event.partialTicks, Color.orange, true);
         }
 
     }

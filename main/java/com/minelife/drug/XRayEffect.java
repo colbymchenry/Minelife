@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.MLBlocks;
 import com.minelife.Minelife;
-import com.minelife.realestate.util.GUIUtil;
 import com.minelife.util.Vector;
+import com.minelife.util.client.render.LineRenderer;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -89,7 +89,7 @@ public class XRayEffect extends Potion {
 
         for (Vector block_vector : block_vectors) {
             Block block = player.worldObj.getBlock(block_vector.getBlockX(), block_vector.getBlockY(), block_vector.getBlockZ());
-            GUIUtil.drawCuboidAroundBlocks(Minecraft.getMinecraft(), block_vector, block_vector, event.partialTicks, whitelist.get(block), false);
+            LineRenderer.drawCuboidAroundBlocks(Minecraft.getMinecraft(), block_vector, block_vector, event.partialTicks, whitelist.get(block), false);
         }
 
     }

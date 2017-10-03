@@ -1,6 +1,5 @@
 package com.minelife.police.client;
 
-import com.minelife.realestate.util.GUIUtil;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;

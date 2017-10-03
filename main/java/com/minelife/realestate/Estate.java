@@ -26,6 +26,33 @@ public class Estate implements Comparable<Estate> {
         this.config = new MLConfig(ModRealEstate.getServerProxy().estatesDir, String.valueOf(id));
     }
 
+    public int getID() { return id; }
+
+    public MLConfig getConfig() {
+        return config;
+    }
+
+    public double getPurchasePrice() {
+        return config.getDouble("price.purchase", -1);
+    }
+
+    public boolean isPurchasable() {
+        return getPurchasePrice() != -1;
+    }
+
+    public double getRentPrice() {
+        return config.getDouble("price.rent", -1);
+    }
+
+    public boolean isForRent() {
+        return getRentPrice() != -1;
+    }
+
+    public int getRentPeriod() {
+        return config.getInt("price.rent_period", 1);
+    }
+
+
     public List<Permission> getGlobalPermissions() {
         List<Permission> permissions = Lists.newArrayList();
         config.getStringList("permissions.global").forEach(p -> permissions.add(Permission.valueOf(p)));
@@ -112,7 +139,7 @@ public class Estate implements Comparable<Estate> {
 
     public Estate getParentEstate() {
         Map<Double, Estate> parentEstates = Maps.newTreeMap();
-        for (Estate estate : ModRealEstate.getServerProxy().loadedEstates) {
+        for (Estate estate : EstateHandler.loadedEstates) {
             if(estate.contains(this)) {
                 Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
                 parentEstates.put(min.distanceTo(Vec3.createVectorHelper(getBounds().minX, getBounds().minY, getBounds().minZ)), estate);
@@ -123,7 +150,7 @@ public class Estate implements Comparable<Estate> {
 
     public List<Estate> getContainingEstates() {
         List<Estate> estates = Lists.newArrayList();
-        for (Estate estate : ModRealEstate.getServerProxy().loadedEstates) if (contains(estate)) estates.add(estate);
+        for (Estate estate : EstateHandler.loadedEstates) if (contains(estate)) estates.add(estate);
         return estates;
     }
 
@@ -131,6 +158,50 @@ public class Estate implements Comparable<Estate> {
         Estate estate = this;
         while(estate.getParentEstate() != null) estate = estate.getParentEstate();
         return estate;
+    }
+
+    public void deleteEstate() {
+        EstateHandler.loadedEstates.remove(this);
+        config.getFile().delete();
+    }
+
+    public List<Permission> getPlayerPermissions(EntityPlayer player) {
+        Estate masterEstate = getMasterEstate();
+
+        // if player is owner
+        if (masterEstate.getOwner() != null && masterEstate.getOwner().equals(player.getUniqueID())) {
+            return Arrays.asList(Permission.values());
+        }
+        // if player is renter
+        else if (masterEstate.getRenter() != null && masterEstate.getRenter().equals(player.getUniqueID())) {
+            return masterEstate.getRenterPermissions();
+        }
+        // if player is member
+        else if (masterEstate.getMembers().containsKey(player.getUniqueID())) {
+            return masterEstate.getMembers().get(player.getUniqueID());
+        }
+        // if player is not owner, renter, or member of master estate we loop through the estates inside the
+        // master estate
+        else {
+            List<Estate> containingEstates = masterEstate.getContainingEstates();
+
+            for (Estate e : containingEstates) {
+                // if player is owner
+                if (e.getOwner() != null && e.getOwner().equals(player.getUniqueID()) && e.contains(this)) {
+                    return e.getOwnerPermissions();
+                }
+                // if player is renter
+                else if (e.getRenter() != null && e.getRenter().equals(player.getUniqueID()) && e.contains(this)) {
+                    return e.getRenterPermissions();
+                }
+                // if player is member
+                else if (e.getMembers().containsKey(player.getUniqueID()) && e.contains(this)) {
+                    return e.getMembers().get(player.getUniqueID());
+                }
+            }
+        }
+
+        return getGlobalPermissions();
     }
 
     @Override

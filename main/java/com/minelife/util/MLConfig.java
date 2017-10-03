@@ -50,4 +50,6 @@ public class MLConfig extends YamlConfiguration {
         this.set(path, vector.serialize());
     }
 
+    public File getFile() { return file; }
+
 }

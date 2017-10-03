@@ -79,6 +79,7 @@ public class SelectionHandler {
         if (selection == null || selection.getMin() == null) return;
         Vec3 min = selection.getMin(), max = selection.getMax();
         AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord);
+//        LineRenderer.drawCuboidAroundBlocks(Minecraft.getMinecraft(), block_vector, block_vector, event.partialTicks, whitelist.get(block), false);
         LineRenderer.drawCuboidAroundsBlocks(Minecraft.getMinecraft(), bounds, event.partialTicks, selectionColor, false);
     }
 
