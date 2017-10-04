@@ -1,6 +1,7 @@
-package com.minelife.realestate.server;
+package com.minelife.realestate.network;
 
 import com.minelife.realestate.Selection;
+import com.minelife.realestate.server.SelectionHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

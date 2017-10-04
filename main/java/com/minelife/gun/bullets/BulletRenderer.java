@@ -21,7 +21,7 @@ public class BulletRenderer {
             Vector topLeft = new Vector(bullet.origin.xCoord, bullet.origin.yCoord, bullet.origin.zCoord);
             Vector bottomLeft = new Vector(bullet.origin.xCoord, bullet.origin.yCoord - 0.01, bullet.origin.zCoord);
             Vector topRight = new Vector(bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord);
-            LineRenderer.drawRect(Minecraft.getMinecraft(), topLeft, bottomLeft, null, topRight, event.partialTicks, Color.orange, true);
+            LineRenderer.drawRect(Minecraft.getMinecraft(), topLeft, bottomLeft, null, topRight, event.partialTicks, Color.orange, true, true);
         }
 
     }

@@ -34,6 +34,10 @@ public class Selection {
         return Vec3.createVectorHelper(Math.max(pos1.xCoord, pos2.xCoord), Math.max(pos1.yCoord, pos2.yCoord), Math.max(pos1.zCoord, pos2.zCoord));
     }
 
+    public boolean isComplete() {
+        return pos1 != null && pos2 != null;
+    }
+
     public boolean contains(Selection selection) {
         AxisAlignedBB b = AxisAlignedBB.getBoundingBox(getMin().xCoord, getMin().yCoord, getMin().zCoord, getMax().xCoord, getMax().yCoord, getMax().zCoord);
         AxisAlignedBB b1 = AxisAlignedBB.getBoundingBox(selection.getMin().xCoord, selection.getMin().yCoord, selection.getMin().zCoord,

@@ -4,10 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.util.MLConfig;
 import com.minelife.util.configuration.InvalidConfigurationException;
-import cpw.mods.fml.common.Mod;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
-import scala.actors.threadpool.Arrays;
+import net.minecraft.world.World;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +20,36 @@ public class EstateHandler {
     public static Set<Estate> loadedEstates = new TreeSet<>();
 
     public static Estate createEstate(EntityPlayer player, Selection selection) throws Exception {
+        if(!canCreateEstate(player, selection)) return null;
+
+        // if they are allowed to create estates inside all of the estates; create the estate
+        int id = getMaxEstateID() + 1;
+        MLConfig estate_config = new MLConfig(ModRealEstate.getServerProxy().estatesDir, String.valueOf(id));
+        estate_config.addDefault("owner", player.getUniqueID().toString());
+        estate_config.addDefault("renter", "");
+        estate_config.addDefault("members", new String[]{});
+        estate_config.addDefault("permissions.global", new String[]{});
+        estate_config.addDefault("permissions.renter", new String[]{});
+        estate_config.addDefault("permissions.owner", new String[]{});
+        estate_config.addDefault("permissions.allowedToChange", new String[]{});
+        estate_config.addDefault("world", selection.world.getWorldInfo().getWorldName());
+        estate_config.addDefault("pos1.x", selection.getMin().xCoord);
+        estate_config.addDefault("pos1.y", selection.getMin().yCoord);
+        estate_config.addDefault("pos1.z", selection.getMin().zCoord);
+        estate_config.addDefault("pos2.x", selection.getMax().xCoord);
+        estate_config.addDefault("pos2.y", selection.getMax().yCoord);
+        estate_config.addDefault("pos2.z", selection.getMax().zCoord);
+        estate_config.save();
+        Estate createdEstate = new Estate(id);
+        loadedEstates.add(createdEstate);
+        return createdEstate;
+    }
+
+    public static boolean canCreateEstate(EntityPlayer player, Selection selection) throws Exception {
         List<Estate> childEstates = Lists.newArrayList();
         Map<Double, Estate> parentEstates = Maps.newTreeMap();
+
+        if(!selection.isComplete()) throw new Exception("Please make a full selection.");
 
         for (Estate estate : loadedEstates) {
             // check if the current estate in for loop intersects with any estates
@@ -48,54 +75,29 @@ public class EstateHandler {
         // add parent estate
         if (!parentEstates.isEmpty()) childEstates.add(parentEstates.get(0));
         // use estates inside selection
-        return createAroundEstates(player, selection,
-                childEstates.toArray(new Estate[childEstates.size()]));
-    }
-
-
-    // TODO: May still need this, not sure
-//    private static Estate createInsideEstate(EntityPlayer player, Selection selection, Estate estate) throws Exception {
-//        Map<Double, Estate> parentEstates = Maps.newTreeMap();
-//        for (Estate e : estate.getContainingEstates()) {
-//            Vec3 min = Vec3.createVectorHelper(e.getBounds().minX, e.getBounds().minY, e.getBounds().minZ);
-//            parentEstates.put(min.distanceTo(Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ)), e);
-//        }
-//
-//        Estate parentEstate = parentEstates.isEmpty() ? estate : parentEstates.get(0);
-//        if(!getPlayerPermissions(player, estate).contains(Permission.ESTATE_CREATION))
-//            throw new Exception("You do not have permission to create an estate here.");
-//
-//
-//    }
-
-    private static Estate createAroundEstates(EntityPlayer player, Selection selection, Estate[] estates) throws Exception {
-        // check if they are not allowed to create an estate an ANY of the estates
-        for (Estate estate : estates)
+        for (Estate estate : childEstates.toArray(new Estate[childEstates.size()]))
             if (!estate.getPlayerPermissions(player).contains(Permission.ESTATE_CREATION))
                 throw new Exception("You cannot create an estate around that estate.");
 
+        return true;
+    }
 
-        // if they are allowed to create estates inside all of the estates; create the estate
-        int id = getMaxEstateID() + 1;
-        MLConfig estate_config = new MLConfig(ModRealEstate.getServerProxy().estatesDir, String.valueOf(id));
-        estate_config.addDefault("owner", player.getUniqueID().toString());
-        estate_config.addDefault("renter", "");
-        estate_config.addDefault("members", new String[]{});
-        estate_config.addDefault("permissions.global", new String[]{});
-        estate_config.addDefault("permissions.renter", new String[]{});
-        estate_config.addDefault("permissions.owner", new String[]{});
-        estate_config.addDefault("permissions.allowedToChange", new String[]{});
-        estate_config.addDefault("world", selection.world.getWorldInfo().getWorldName());
-        estate_config.addDefault("pos1.x", selection.getMin().xCoord);
-        estate_config.addDefault("pos1.y", selection.getMin().yCoord);
-        estate_config.addDefault("pos1.z", selection.getMin().zCoord);
-        estate_config.addDefault("pos2.x", selection.getMax().xCoord);
-        estate_config.addDefault("pos2.y", selection.getMax().yCoord);
-        estate_config.addDefault("pos2.z", selection.getMax().zCoord);
-        estate_config.save();
-        Estate createdEstate = new Estate(id);
-        loadedEstates.add(createdEstate);
-        return createdEstate;
+    public static boolean canDeleteEstate(EntityPlayer player, Estate estate) {
+        return true;
+    }
+
+    public static Estate getEstateAt(World world, Vec3 vec3)
+    {
+        Map<Double, Estate> parentEstates = Maps.newTreeMap();
+        for (Estate estate : loadedEstates) {
+            if(estate.getWorld().getWorldInfo().getWorldName().equals(world.getWorldInfo().getWorldName())) {
+                if(estate.contains(world, vec3.xCoord, vec3.yCoord, vec3.zCoord)) {
+                    Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
+                    parentEstates.put(min.distanceTo(vec3), estate);
+                }
+            }
+        }
+        return parentEstates.isEmpty() ? null : parentEstates.get(0);
     }
 
     public static int getMaxEstateID() {

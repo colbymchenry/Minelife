@@ -9,33 +9,33 @@ import java.awt.*;
 
 public class LineRenderer {
 
-    public static void drawCuboidAroundsBlocks(Minecraft minecraft, AxisAlignedBB bounds, float partialTickTime, Color color, boolean depth_test) {
+    public static void drawCuboidAroundsBlocks(Minecraft minecraft, AxisAlignedBB bounds, float partialTickTime, Color color, boolean depth_test_faces, boolean depth_test_borders) {
         Vector start = new Vector(bounds.minX, bounds.minY, bounds.minZ);
         Vector end = new Vector(bounds.maxX, bounds.maxY, bounds.maxZ);
-        drawCuboidAroundBlocks(minecraft, start, end, partialTickTime, color, depth_test);
+        drawCuboidAroundBlocks(minecraft, start, end, partialTickTime, color, depth_test_faces, depth_test_borders);
     }
 
-    public static void drawCuboidAroundBlocks(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color, boolean depth_test) {
+    public static void drawCuboidAroundBlocks(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color, boolean depth_test_faces, boolean depth_test_borders) {
 
         Vector smallest = new Vector(Math.min(start.getBlockX(), end.getBlockX()), Math.min(start.getBlockY(), end.getBlockY()), Math.min(start.getBlockZ(), end.getBlockZ()));
 
         Vector largest = new Vector(Math.max(start.getBlockX(), end.getBlockX()) + 1, Math.max(start.getBlockY(), end.getBlockY()) + 1, Math.max(start.getBlockZ(), end.getBlockZ()) + 1);
 
-        renderCuboid(minecraft, smallest, largest, partialTickTime, color, depth_test);
+        renderCuboid(minecraft, smallest, largest, partialTickTime, color, depth_test_faces, depth_test_borders);
 
     }
 
-    public static void drawCuboid(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color, boolean depth_test) {
+    public static void drawCuboid(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color, boolean depth_test_faces, boolean depth_test_borders) {
 
         Vector smallest = new Vector(Math.min(start.getX(), end.getX()), Math.min(start.getY(), end.getY()), Math.min(start.getZ(), end.getZ()));
 
         Vector largest = new Vector(Math.max(start.getX(), end.getX()), Math.max(start.getY(), end.getY()), Math.max(start.getZ(), end.getZ()));
 
-        renderCuboid(minecraft, smallest, largest, partialTickTime, color, depth_test);
+        renderCuboid(minecraft, smallest, largest, partialTickTime, color, depth_test_faces, depth_test_borders);
 
     }
 
-    private static void renderCuboid(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color, boolean depth_test) {
+    private static void renderCuboid(Minecraft minecraft, Vector start, Vector end, float partialTickTime, Color color, boolean depth_test_faces, boolean depth_test_borders) {
 
         Vector[] points = new Vector[4];
 
@@ -45,7 +45,7 @@ public class LineRenderer {
         points[2] = new Vector(end.getX(), end.getY(), end.getZ());
         points[3] = new Vector(end.getX(), end.getY(), start.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test_faces, depth_test_borders);
 
         // Bottom
 
@@ -54,7 +54,7 @@ public class LineRenderer {
         points[2] = new Vector(end.getX(), start.getY(), end.getZ());
         points[3] = new Vector(end.getX(), start.getY(), start.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test_faces, depth_test_borders);
 
         // Face 1
 
@@ -63,7 +63,7 @@ public class LineRenderer {
         points[2] = new Vector(start.getX(), end.getY(), end.getZ());
         points[3] = new Vector(start.getX(), end.getY(), start.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test_faces, depth_test_borders);
 
         // Face 2
 
@@ -72,7 +72,7 @@ public class LineRenderer {
         points[2] = new Vector(end.getX(), end.getY(), end.getZ());
         points[3] = new Vector(start.getX(), end.getY(), end.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test_faces, depth_test_borders);
 
         // Face 3
 
@@ -81,7 +81,7 @@ public class LineRenderer {
         points[2] = new Vector(end.getX(), end.getY(), start.getZ());
         points[3] = new Vector(end.getX(), end.getY(), end.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test_faces, depth_test_borders);
 
         // Face 4
 
@@ -90,11 +90,11 @@ public class LineRenderer {
         points[2] = new Vector(start.getX(), end.getY(), start.getZ());
         points[3] = new Vector(end.getX(), end.getY(), start.getZ());
 
-        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test);
+        drawRect(minecraft, points[0], points[1], points[2], points[3], partialTickTime, color, depth_test_faces, depth_test_borders);
 
     }
 
-    public static void drawRect(Minecraft minecraft, Vector topLeft, Vector bottomLeft, Vector bottomRight, Vector topRight, float partialTickTime, Color color, boolean depth_test) {
+    public static void drawRect(Minecraft minecraft, Vector topLeft, Vector bottomLeft, Vector bottomRight, Vector topRight, float partialTickTime, Color color, boolean depth_test_faces, boolean depth_test_borders) {
 
         double playerX = minecraft.thePlayer.lastTickPosX + (minecraft.thePlayer.posX - minecraft.thePlayer.lastTickPosX) * partialTickTime;
         double playerY = minecraft.thePlayer.lastTickPosY + (minecraft.thePlayer.posY - minecraft.thePlayer.lastTickPosY) * partialTickTime;
@@ -112,26 +112,26 @@ public class LineRenderer {
         Vector translate = new Vector(dx, dy, dz);
 
         GL11.glPushMatrix();
-        drawRectSetUp(depth_test);
+        drawRectSetUp();
 
         GL11.glPushMatrix();
-        drawRectRenderRect(new Vector().copy(translate).add(dr), length, height, true, color.getRGB());
+        drawRectRenderRect(new Vector().copy(translate).add(dr), length, height, true, color.getRGB(), depth_test_faces, depth_test_borders);
         GL11.glPopMatrix();
 
         GL11.glPushMatrix();
-        drawRectRenderRect(new Vector().copy(translate).subtract(dr), length, height, false, color.getRGB());
+        drawRectRenderRect(new Vector().copy(translate).subtract(dr), length, height, false, color.getRGB(), depth_test_faces, depth_test_borders);
         GL11.glPopMatrix();
 
-        drawRectCleanUp(depth_test);
+        drawRectCleanUp();
         GL11.glPopMatrix();
 
     }
 
-    private static void drawRectSetUp(boolean depth_test) {
+    private static void drawRectSetUp() {
 
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDepthMask(false);
-        if (!depth_test) GL11.glDisable(GL11.GL_DEPTH_TEST);
+//        if (!depth_test) GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -139,8 +139,7 @@ public class LineRenderer {
 
     }
 
-    private static void drawRectRenderRect(Vector translate, Vector length, Vector height, boolean counterClockwise, int color) {
-
+    private static void drawRectRenderRect(Vector translate, Vector length, Vector height, boolean counterClockwise, int color, boolean depth_test_faces, boolean depth_test_borders) {
         double red = (color >> 16 & 255) / 255.0;
         double green = (color >> 8 & 255) / 255.0;
         double blue = (color & 255) / 255.0;
@@ -149,6 +148,8 @@ public class LineRenderer {
         GL11.glColor4d(red, green, blue, alpha);
 
         GL11.glTranslated(translate.getX(), translate.getY(), translate.getZ());
+
+        if(!depth_test_faces) GL11.glDisable(GL11.GL_DEPTH_TEST);
 
         // Draw Rect
         GL11.glBegin(GL11.GL_QUADS);
@@ -160,8 +161,11 @@ public class LineRenderer {
         else GL11.glVertex3d(height.getX(), height.getY(), height.getZ());
         GL11.glEnd();
 
+        if(!depth_test_faces) GL11.glEnable(GL11.GL_DEPTH_TEST);
+
         GL11.glColor4d(red, green, blue, 2 * alpha);
 
+        if(!depth_test_borders) GL11.glDisable(GL11.GL_DEPTH_TEST);
         // Draw Border
         GL11.glBegin(GL11.GL_LINES);
         GL11.glVertex3d(0, 0, 0);
@@ -176,16 +180,16 @@ public class LineRenderer {
         GL11.glVertex3d(0, 0, 0);
         GL11.glEnd();
 
+        if(!depth_test_borders) GL11.glEnable(GL11.GL_DEPTH_TEST);
     }
 
-    private static void drawRectCleanUp(boolean depth_test) {
+    private static void drawRectCleanUp() {
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4d(1, 1, 1, 1);
         GL11.glColor4d(1, 1, 1, 1);
         GL11.glDepthMask(true);
-        if (!depth_test) GL11.glEnable(GL11.GL_DEPTH_TEST);
-
+//        if (!depth_test) GL11.glEnable(GL11.GL_DEPTH_TEST);
     }
 
 }

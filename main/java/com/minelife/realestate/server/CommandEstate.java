@@ -1,8 +1,16 @@
 package com.minelife.realestate.server;
 
+import com.google.common.collect.Lists;
+import com.minelife.Minelife;
+import com.minelife.realestate.EstateHandler;
+import com.minelife.realestate.Permission;
+import com.minelife.realestate.network.PacketGuiCreateEstate;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.Vec3;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +34,29 @@ public class CommandEstate implements ICommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
+        EntityPlayerMP player = (EntityPlayerMP) sender;
+        try {
+            if (args.length == 0) throw new Exception(getCommandUsage(sender));
 
+            switch(args[0].toLowerCase()) {
+                case "create": {
+                    if(EstateHandler.canCreateEstate(player, SelectionHandler.getSelection(player))) {
+                        List<Permission> permissions = Lists.newArrayList();
+                        Vec3 playerVec = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
+                        if(EstateHandler.getEstateAt(player.worldObj, playerVec) == null)
+                            permissions.addAll(Arrays.asList(Permission.values()));
+                        else {
+                            permissions.addAll(EstateHandler.getEstateAt(player.worldObj, playerVec).getPlayerPermissions(player));
+                        }
+                        Minelife.NETWORK.sendTo(new PacketGuiCreateEstate(permissions), player);
+                    }
+                    break;
+                }
+                default: throw new Exception(getCommandUsage(sender));
+            }
+        } catch (Exception e) {
+            player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
+        }
     }
 
     @Override

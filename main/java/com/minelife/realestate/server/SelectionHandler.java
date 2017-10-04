@@ -4,8 +4,11 @@ import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.realestate.Selection;
+import com.minelife.realestate.network.PacketSendSelection;
 import com.minelife.util.client.render.LineRenderer;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
@@ -16,7 +19,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
@@ -27,6 +29,7 @@ public class SelectionHandler {
 
     private static Map<EntityPlayer, Selection> selections = Maps.newHashMap();
 
+    @SideOnly(Side.SERVER)
     @SubscribeEvent
     public void onInteract(PlayerInteractEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.entityPlayer;
@@ -66,21 +69,45 @@ public class SelectionHandler {
             Minelife.NETWORK.sendTo(new PacketSendSelection(getSelection(player)), player);
     }
 
+    @SideOnly(Side.SERVER)
+    @SubscribeEvent
+    public void onLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        selections.remove(event.player);
+    }
+
+    @SideOnly(Side.SERVER)
+    @SubscribeEvent
+    public void onLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        selections.remove(event.player);
+    }
+
     public static Selection getSelection(EntityPlayer player) {
         return selections.containsKey(player) ? selections.get(player) : new Selection().setWorld(player.getEntityWorld());
     }
 
     public static Selection selection;
-    private static Color selectionColor = new Color(255, 100, 100, 255);
+    private static Color selectionColor = new Color(255, 100, 100, 128);
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void renderSelection(RenderWorldLastEvent event) {
-        if (selection == null || selection.getMin() == null) return;
+        if (selection == null || !selection.isComplete()) return;
         Vec3 min = selection.getMin(), max = selection.getMax();
         AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord);
 //        LineRenderer.drawCuboidAroundBlocks(Minecraft.getMinecraft(), block_vector, block_vector, event.partialTicks, whitelist.get(block), false);
-        LineRenderer.drawCuboidAroundsBlocks(Minecraft.getMinecraft(), bounds, event.partialTicks, selectionColor, false);
+        LineRenderer.drawCuboidAroundsBlocks(Minecraft.getMinecraft(), bounds, event.partialTicks, selectionColor, true, false);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onLoggedOut(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        selection = null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onLoggedIn(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+        selection = null;
     }
 
 
