@@ -55,6 +55,9 @@ public class Estate implements Comparable<Estate> {
         return config.getInt("price.rent_period", 1);
     }
 
+    public String getOutro() { return config.getString("outro"); }
+
+    public String getIntro() { return config.getString("intro"); }
 
     public List<Permission> getGlobalPermissions() {
         List<Permission> permissions = Lists.newArrayList();

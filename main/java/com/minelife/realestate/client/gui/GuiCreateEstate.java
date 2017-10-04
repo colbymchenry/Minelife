@@ -56,7 +56,6 @@ public class GuiCreateEstate extends GuiScreen {
 
     private class GuiContent extends GuiScrollableContent {
         private GuiTextField purchaseField, rentField, rentPeriodField, introField, outroField;
-        private GuiTickBox rentTickBox;
         private Map<Permission, GuiTickBox> globalPermissions, renterPermissions, ownerPermissions;
         private GuiButton createBtn;
 
@@ -75,7 +74,6 @@ public class GuiCreateEstate extends GuiScreen {
             rentPeriodField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, y += 60, 100, 20);
             introField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, y += 60, 100, 20);
             outroField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, y += 60, 100, 20);
-            rentTickBox = new GuiTickBox(mc, (bgWidth - GuiTickBox.WIDTH) / 2, y += 60, false);
             y += 40;
             globalLabelY = y;
             for (Permission p : playerPermissions)
@@ -112,8 +110,6 @@ public class GuiCreateEstate extends GuiScreen {
             introField.drawTextBox();
             fontRendererObj.drawString(bold + "Outro", (bgWidth - fontRendererObj.getStringWidth(bold + "Outro")) / 2, outroField.yPosition - 15, 0xFFFFFF);
             outroField.drawTextBox();
-            fontRendererObj.drawString(bold + "For Rent", rentTickBox.xPosition - 5, rentTickBox.yPosition - 15, 0xFFFFFF);
-            rentTickBox.drawTickBox();
 
             fontRendererObj.drawString(bold + underline + "Global Permissions",
                     (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Global Permissions")) / 2,
@@ -157,7 +153,6 @@ public class GuiCreateEstate extends GuiScreen {
             rentPeriodField.mouseClicked(mouseX, mouseY, 0);
             introField.mouseClicked(mouseX, mouseY, 0);
             outroField.mouseClicked(mouseX, mouseY, 0);
-            rentTickBox.mouseClicked(mouseX, mouseY);
             globalPermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
             renterPermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
             ownerPermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
@@ -179,7 +174,7 @@ public class GuiCreateEstate extends GuiScreen {
                 int rentPeriod = rentPeriodField.getText().isEmpty() ? -1 : Integer.parseInt(rentPeriodField.getText());
 
                 Minelife.NETWORK.sendToServer(new PacketCreateEstate(globalPerms, ownerPerms, renterPerms, purchasePrice,
-                        rentPrice, rentPeriod, rentTickBox.isChecked(), introField.getText(), outroField.getText()));
+                        rentPrice, rentPeriod, introField.getText(), outroField.getText()));
             }
         }
 
