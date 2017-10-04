@@ -21,6 +21,7 @@ public class ServerProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         config = new MLConfig("realestate");
         config.addDefault("selection_tool", Item.getIdFromItem(Items.golden_hoe));
+        config.addDefault("messages.estate_create", "Estate created!");
         config.save();
 
         estatesDir.mkdir();

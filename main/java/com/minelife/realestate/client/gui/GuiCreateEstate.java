@@ -1,5 +1,6 @@
 package com.minelife.realestate.client.gui;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.realestate.Permission;
@@ -76,7 +77,7 @@ public class GuiCreateEstate extends GuiScreen {
             outroField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, y += 60, 100, 20);
             rentTickBox = new GuiTickBox(mc, (bgWidth - GuiTickBox.WIDTH) / 2, y += 60, false);
             y += 40;
-            globalLabelY= y;
+            globalLabelY = y;
             for (Permission p : playerPermissions)
                 globalPermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), y += 20, false));
             y += 40;
@@ -116,10 +117,10 @@ public class GuiCreateEstate extends GuiScreen {
 
             fontRendererObj.drawString(bold + underline + "Global Permissions",
                     (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Global Permissions")) / 2,
-                   globalLabelY, 0xFFFFFF);
+                    globalLabelY, 0xFFFFFF);
 
             globalPermissions.forEach((p, tB) -> {
-                fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold +  p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
+                fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
                 tB.drawTickBox();
             });
 
@@ -127,8 +128,8 @@ public class GuiCreateEstate extends GuiScreen {
                     (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Renter Permissions")) / 2,
                     renterLabelY, 0xFFFFFF);
 
-            renterPermissions.forEach((p, tB) ->  {
-                fontRendererObj.drawString(bold +  p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold +  p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
+            renterPermissions.forEach((p, tB) -> {
+                fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
                 tB.drawTickBox();
             });
 
@@ -136,8 +137,8 @@ public class GuiCreateEstate extends GuiScreen {
                     (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Owner Permissions")) / 2,
                     ownerLabelY, 0xFFFFFF);
 
-            ownerPermissions.forEach((p, tB) ->  {
-                fontRendererObj.drawString(bold +  p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold +  p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
+            ownerPermissions.forEach((p, tB) -> {
+                fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
                 tB.drawTickBox();
             });
 
@@ -161,26 +162,42 @@ public class GuiCreateEstate extends GuiScreen {
             renterPermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
             ownerPermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
 
-            if(createBtn.mousePressed(mc, mouseX, mouseY)) {
-                Minelife.NETWORK.sendToServer(new PacketCreateEstate());
+            if (createBtn.mousePressed(mc, mouseX, mouseY)) {
+                List<Permission> globalPerms = Lists.newArrayList(), renterPerms = Lists.newArrayList(), ownerPerms = Lists.newArrayList();
+                globalPermissions.forEach((p, tB) -> {
+                    if (tB.isChecked()) globalPerms.add(p);
+                });
+                renterPermissions.forEach((p, tB) -> {
+                    if (tB.isChecked()) renterPerms.add(p);
+                });
+                ownerPermissions.forEach((p, tB) -> {
+                    if (tB.isChecked()) ownerPerms.add(p);
+                });
+
+                double purchasePrice = purchaseField.getText().isEmpty() ? -1.0D : Double.parseDouble(purchaseField.getText());
+                double rentPrice = rentField.getText().isEmpty() ? -1.0D : Double.parseDouble(rentField.getText());
+                int rentPeriod = rentPeriodField.getText().isEmpty() ? -1 : Integer.parseInt(rentPeriodField.getText());
+
+                Minelife.NETWORK.sendToServer(new PacketCreateEstate(globalPerms, ownerPerms, renterPerms, purchasePrice,
+                        rentPrice, rentPeriod, rentTickBox.isChecked(), introField.getText(), outroField.getText()));
             }
         }
 
         @Override
         public void keyTyped(char keycode, int keynum) {
             super.keyTyped(keycode, keynum);
-            if((NumberConversions.isInt(String.valueOf(keycode)) && keynum != Keyboard.KEY_BACK) || keycode == '.') {
-                if(purchaseField.isFocused()) {
-                    if(keycode == '.') {
-                        if(!purchaseField.getText().contains("."))
+            if ((NumberConversions.isInt(String.valueOf(keycode)) && keynum != Keyboard.KEY_BACK) || keycode == '.') {
+                if (purchaseField.isFocused()) {
+                    if (keycode == '.') {
+                        if (!purchaseField.getText().contains("."))
                             purchaseField.textboxKeyTyped(keycode, keynum);
                     } else {
                         purchaseField.textboxKeyTyped(keycode, keynum);
                     }
                 }
-                if(rentField.isFocused()) {
-                    if(keycode == '.') {
-                        if(!purchaseField.getText().contains("."))
+                if (rentField.isFocused()) {
+                    if (keycode == '.') {
+                        if (!purchaseField.getText().contains("."))
                             purchaseField.textboxKeyTyped(keycode, keynum);
                     } else {
                         purchaseField.textboxKeyTyped(keycode, keynum);

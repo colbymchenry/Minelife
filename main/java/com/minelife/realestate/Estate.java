@@ -3,6 +3,7 @@ package com.minelife.realestate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
+import com.minelife.util.ArrayUtil;
 import com.minelife.util.MLConfig;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import cpw.mods.fml.relauncher.Side;
@@ -26,7 +27,9 @@ public class Estate implements Comparable<Estate> {
         this.config = new MLConfig(ModRealEstate.getServerProxy().estatesDir, String.valueOf(id));
     }
 
-    public int getID() { return id; }
+    public int getID() {
+        return id;
+    }
 
     public MLConfig getConfig() {
         return config;
@@ -104,7 +107,7 @@ public class Estate implements Comparable<Estate> {
     }
 
     public World getWorld() {
-        if(Minelife.getSide() == Side.SERVER) {
+        if (Minelife.getSide() == Side.SERVER) {
             return Arrays.stream(MinecraftServer.getServer().worldServers)
                     .filter(w -> w.getWorldInfo().getWorldName().equals(config.getString("world"))).findFirst().orElse(null);
         } else {
@@ -133,14 +136,14 @@ public class Estate implements Comparable<Estate> {
 
     public boolean intersects(Selection selection) {
         Vec3 min = selection.getMin(), max = selection.getMax();
-        if(contains(selection)) return false;
+        if (contains(selection)) return false;
         return getBounds().intersectsWith(AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord));
     }
 
     public Estate getParentEstate() {
         Map<Double, Estate> parentEstates = Maps.newTreeMap();
         for (Estate estate : EstateHandler.loadedEstates) {
-            if(estate.contains(this)) {
+            if (estate.contains(this)) {
                 Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
                 parentEstates.put(min.distanceTo(Vec3.createVectorHelper(getBounds().minX, getBounds().minY, getBounds().minZ)), estate);
             }
@@ -156,7 +159,7 @@ public class Estate implements Comparable<Estate> {
 
     public Estate getMasterEstate() {
         Estate estate = this;
-        while(estate.getParentEstate() != null) estate = estate.getParentEstate();
+        while (estate.getParentEstate() != null) estate = estate.getParentEstate();
         return estate;
     }
 
@@ -204,8 +207,89 @@ public class Estate implements Comparable<Estate> {
         return getGlobalPermissions();
     }
 
+
+    public void setGlobalPermissions(List<Permission> permissions) {
+        config.set("permissions.global", ArrayUtil.toStringList(permissions));
+        config.save();
+    }
+
+    public void setOwnerPermissions(List<Permission> permissions) {
+        config.set("permissions.owner", ArrayUtil.toStringList(permissions));
+        config.save();
+    }
+
+    public void setRenterPermissions(List<Permission> permissions) {
+        config.set("permissions.renter", ArrayUtil.toStringList(permissions));
+        config.save();
+    }
+
+    public void setRentPeriod(int period) {
+        config.set("price.rent_period", period);
+        config.save();
+    }
+
+    public void setOwner(UUID owner) {
+        config.set("owner", owner);
+        config.save();
+    }
+
+    public void setRenter(UUID renter) {
+        config.set("renter", renter);
+        config.save();
+    }
+
+    public void setMembers(Map<UUID, List<Permission>> members) {
+        List<UUID> uuids = Lists.newArrayList();
+        uuids.addAll(members.keySet());
+        config.set("members", ArrayUtil.toStringList(uuids));
+        for (UUID uuid : uuids)
+            config.set("members." + uuid.toString(), ArrayUtil.toStringList(members.get(uuid)));
+        config.save();
+    }
+
+    public void setPurchasePrice(double price) {
+        config.set("price.purchase", price);
+        config.save();
+    }
+
+    public void setRentPrice(double price) {
+        config.set("price.rent", price);
+        config.save();
+    }
+
+    public void setBounds(AxisAlignedBB bounds) {
+        config.set("pos1.x", bounds.minX);
+        config.set("pos1.y", bounds.minY);
+        config.set("pos1.z", bounds.minZ);
+        config.set("pos2.x", bounds.maxX);
+        config.set("pos2.y", bounds.maxY);
+        config.set("pos2.z", bounds.maxZ);
+        config.save();
+    }
+
+    public void setWorld(World world) {
+        config.set("world", world.getWorldInfo().getWorldName());
+        config.save();
+    }
+
+    public void setIntro(String intro) {
+        config.set("intro", intro);
+        config.save();
+    }
+
+    public void setOutro(String outro) {
+        config.set("outro", outro);
+        config.save();
+    }
+
+
     @Override
     public int compareTo(Estate o) {
         return o.id == id ? 0 : 1;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return !(obj instanceof Estate) ? false : ((Estate) obj).getID() == getID();
     }
 }

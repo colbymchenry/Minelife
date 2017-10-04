@@ -1,7 +1,9 @@
 package com.minelife.realestate.network;
 
 import com.google.common.collect.Lists;
+import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
+import com.minelife.realestate.ModRealEstate;
 import com.minelife.realestate.Permission;
 import com.minelife.realestate.server.SelectionHandler;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -21,17 +23,15 @@ public class PacketCreateEstate implements IMessage {
     private List<Permission> globalPermissions, ownerPermissions, renterPermissions;
     private double purchasePrice, rentPrice;
     private int rentPeriod;
-    private boolean forRent;
     private String intro, outro;
 
-    public PacketCreateEstate(List<Permission> globalPermissions, List<Permission> ownerPermissions, List<Permission> renterPermissions, double purchasePrice, double rentPrice, int rentPeriod, boolean forRent, String intro, String outro) {
+    public PacketCreateEstate(List<Permission> globalPermissions, List<Permission> ownerPermissions, List<Permission> renterPermissions, double purchasePrice, double rentPrice, int rentPeriod, String intro, String outro) {
         this.globalPermissions = globalPermissions;
         this.ownerPermissions = ownerPermissions;
         this.renterPermissions = renterPermissions;
         this.purchasePrice = purchasePrice;
         this.rentPrice = rentPrice;
         this.rentPeriod = rentPeriod;
-        this.forRent = forRent;
         this.intro = intro;
         this.outro = outro;
     }
@@ -47,7 +47,6 @@ public class PacketCreateEstate implements IMessage {
         double purchasePrice = buf.readDouble();
         double rentPrice = buf.readDouble();
         int rentPeriod = buf.readInt();
-        boolean forRent = buf.readBoolean();
         String intro = ByteBufUtils.readUTF8String(buf);
         String outro = ByteBufUtils.readUTF8String(buf);
         int globalPermsSize = buf.readInt();
@@ -66,7 +65,6 @@ public class PacketCreateEstate implements IMessage {
         buf.writeDouble(purchasePrice);
         buf.writeDouble(rentPrice);
         buf.writeInt(rentPeriod);
-        buf.writeBoolean(forRent);
         ByteBufUtils.writeUTF8String(buf, intro);
         ByteBufUtils.writeUTF8String(buf, outro);
         buf.writeInt(globalPermissions.size());
@@ -82,13 +80,27 @@ public class PacketCreateEstate implements IMessage {
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketCreateEstate message, MessageContext ctx) {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+            Estate estate = null;
             try {
-                EstateHandler.createEstate(player, SelectionHandler.getSelection(player));
+                estate = EstateHandler.createEstate(player, SelectionHandler.getSelection(player));
                 player.closeScreen();
             } catch (Exception e) {
                 e.printStackTrace();
                 player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
             }
+
+            if(estate != null) {
+                estate.setPurchasePrice(message.purchasePrice);
+                estate.setRentPrice(message.rentPrice);
+                estate.setRentPeriod(message.rentPeriod);
+                estate.setIntro(message.intro);
+                estate.setOutro(message.outro);
+                estate.setGlobalPermissions(message.globalPermissions);
+                estate.setOwnerPermissions(message.ownerPermissions);
+                estate.setRenterPermissions(message.renterPermissions);
+            }
+
+            player.addChatComponentMessage(new ChatComponentText(ModRealEstate.getServerProxy().config.getString("messages.estate_created")));
             return null;
         }
     }

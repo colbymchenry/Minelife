@@ -26,5 +26,11 @@ public class ArrayUtil {
     }
 
 
+    public static List<String> toStringList(List<?> objects) {
+        List<String> list = Lists.newArrayList();
+        objects.forEach(o -> list.add(o.toString()));
+        return list;
+    }
+
 
 }
