@@ -7,12 +7,14 @@ import com.minelife.util.ArrayUtil;
 import com.minelife.util.MLConfig;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import sun.reflect.generics.tree.Tree;
 
 import java.io.IOException;
 import java.util.*;
@@ -83,6 +85,12 @@ public class Estate implements Comparable<Estate> {
         return permissions;
     }
 
+    public List<Permission> getEstatePermissions() {
+        List<Permission> permissions = Lists.newArrayList();
+        config.getStringList("permissions.estate").forEach(p -> permissions.add(Permission.valueOf(p)));
+        return permissions;
+    }
+
     public UUID getOwner() {
         return config.getString("owner") != null ? UUID.fromString(config.getString("owner")) : null;
     }
@@ -114,8 +122,13 @@ public class Estate implements Comparable<Estate> {
             return Arrays.stream(MinecraftServer.getServer().worldServers)
                     .filter(w -> w.getWorldInfo().getWorldName().equals(config.getString("world"))).findFirst().orElse(null);
         } else {
-            return Minecraft.getMinecraft().theWorld;
+            return getClientWorld();
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public World getClientWorld() {
+        return Minecraft.getMinecraft().theWorld;
     }
 
     public boolean contains(Estate estate) {
@@ -144,14 +157,14 @@ public class Estate implements Comparable<Estate> {
     }
 
     public Estate getParentEstate() {
-        Map<Double, Estate> parentEstates = Maps.newTreeMap();
+        TreeMap<Double, Estate> parentEstates = Maps.newTreeMap();
         for (Estate estate : EstateHandler.loadedEstates) {
             if (estate.contains(this)) {
                 Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
                 parentEstates.put(min.distanceTo(Vec3.createVectorHelper(getBounds().minX, getBounds().minY, getBounds().minZ)), estate);
             }
         }
-        return parentEstates.get(0);
+        return parentEstates.isEmpty() ? null : parentEstates.firstEntry().getValue();
     }
 
     public List<Estate> getContainingEstates() {
@@ -223,6 +236,16 @@ public class Estate implements Comparable<Estate> {
 
     public void setRenterPermissions(List<Permission> permissions) {
         config.set("permissions.renter", ArrayUtil.toStringList(permissions));
+        config.save();
+    }
+
+    public void setPermissionsAllowedToChange(List<Permission> permissions) {
+        config.set("permissions.allowedToChange", ArrayUtil.toStringList(permissions));
+        config.save();
+    }
+
+    public void setEstatePermissions(List<Permission> permissions) {
+        config.set("permissions.estate", ArrayUtil.toStringList(permissions));
         config.save();
     }
 

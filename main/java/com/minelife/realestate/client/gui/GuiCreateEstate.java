@@ -56,10 +56,11 @@ public class GuiCreateEstate extends GuiScreen {
 
     private class GuiContent extends GuiScrollableContent {
         private GuiTextField purchaseField, rentField, rentPeriodField, introField, outroField;
-        private Map<Permission, GuiTickBox> globalPermissions, renterPermissions, ownerPermissions;
+        private Map<Permission, GuiTickBox> globalPermissions, renterPermissions, ownerPermissions, allowedToChangePermissions, estatePermissions;
         private GuiButton createBtn;
+        private int totalHeight = 0;
 
-        private int globalLabelY, renterLabelY, ownerLabelY;
+        private int globalLabelY, renterLabelY, ownerLabelY, allowedToChangeLabelY, estateLabelY;
 
         public GuiContent(Minecraft mc, int xPosition, int yPosition, int width, int height) {
             super(mc, xPosition, yPosition, width, height);
@@ -67,33 +68,53 @@ public class GuiCreateEstate extends GuiScreen {
             globalPermissions = Maps.newHashMap();
             renterPermissions = Maps.newHashMap();
             ownerPermissions = Maps.newHashMap();
+            allowedToChangePermissions = Maps.newHashMap();
+            estatePermissions = Maps.newHashMap();
 
-            int y = 0;
-            purchaseField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, y += 40, 100, 20);
-            rentField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, y += 60, 100, 20);
-            rentPeriodField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, y += 60, 100, 20);
-            introField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, y += 60, 100, 20);
-            outroField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, y += 60, 100, 20);
-            y += 40;
-            globalLabelY = y;
-            for (Permission p : playerPermissions)
-                globalPermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), y += 20, false));
-            y += 40;
-            renterLabelY = y;
-            for (Permission p : playerPermissions)
-                renterPermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), y += 20, false));
-            y += 40;
-            ownerLabelY = y;
-            for (Permission p : playerPermissions)
-                ownerPermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), y += 20, false));
+            purchaseField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, totalHeight += 40, 100, 20);
+            rentField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, totalHeight += 60, 100, 20);
+            rentPeriodField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, totalHeight += 60, 100, 20);
+            introField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, totalHeight += 60, 100, 20);
+            outroField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, totalHeight += 60, 100, 20);
+            totalHeight += 40;
+            globalLabelY = totalHeight;
+            for (Permission p : playerPermissions) {
+                if (!p.isEstatePermission())
+                    globalPermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2),totalHeight += 20, false));
+            }
+            totalHeight += 40;
+            renterLabelY = totalHeight;
+            for (Permission p : playerPermissions) {
+                if (!p.isEstatePermission())
+                    renterPermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, false));
+            }
+            totalHeight += 40;
+            ownerLabelY = totalHeight;
+            for (Permission p : playerPermissions) {
+                if (!p.isEstatePermission())
+                    ownerPermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, false));
+            }
+            totalHeight += 60;
+            allowedToChangeLabelY = totalHeight;
+            for(Permission p : playerPermissions) {
+                if (!p.isEstatePermission())
+                    allowedToChangePermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, false));
+            }
+            totalHeight += 40;
+            estateLabelY = totalHeight;
+            for(Permission p : playerPermissions) {
+                if (p.isEstatePermission())
+                    estatePermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, false));
+            }
 
-            y += 40;
-            createBtn = new GuiButton(0, (bgWidth - 50) / 2, y, 50, 20, "Create");
+            totalHeight+= 40;
+            createBtn = new GuiButton(0, (bgWidth - 50) / 2, totalHeight, 50, 20, "Create");
+            totalHeight += 40;
         }
 
         @Override
         public int getObjectHeight(int index) {
-            return 1450;
+            return totalHeight;
         }
 
         @Override
@@ -137,6 +158,33 @@ public class GuiCreateEstate extends GuiScreen {
                 fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
                 tB.drawTickBox();
             });
+
+            fontRendererObj.drawString(bold + underline + "Global Permissions",
+                    (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Global Permissions")) / 2,
+                    allowedToChangeLabelY - 25, 0xFFFFFF);
+            fontRendererObj.drawString(bold + underline + "Allowed to Change",
+                    (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Allowed to Change")) / 2,
+                    allowedToChangeLabelY - 10, 0xFFFFFF);
+
+            allowedToChangePermissions.forEach((p, tB) -> {
+                fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
+                tB.drawTickBox();
+            });
+
+            fontRendererObj.drawString(bold + underline + "Estate Permissions",
+                    (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Estate Permissions")) / 2,
+                    estateLabelY, 0xFFFFFF);
+
+            if(estatePermissions.isEmpty()) {
+                fontRendererObj.drawString(bold + EnumChatFormatting.RED.toString() + "Must be OP to modify",
+                        (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Must be OP to modify")) / 2,
+                        estateLabelY + 10, 0xFFFFFF);
+            } else {
+                estatePermissions.forEach((p, tB) -> {
+                    fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
+                    tB.drawTickBox();
+                });
+            }
 
             createBtn.drawButton(mc, mouseX, mouseY);
         }
@@ -192,13 +240,15 @@ public class GuiCreateEstate extends GuiScreen {
                 }
                 if (rentField.isFocused()) {
                     if (keycode == '.') {
-                        if (!purchaseField.getText().contains("."))
-                            purchaseField.textboxKeyTyped(keycode, keynum);
+                        if (!rentField.getText().contains("."))
+                            rentField.textboxKeyTyped(keycode, keynum);
                     } else {
-                        purchaseField.textboxKeyTyped(keycode, keynum);
+                        rentField.textboxKeyTyped(keycode, keynum);
                     }
                 }
-                rentPeriodField.textboxKeyTyped(keycode, keynum);
+
+                if (keycode != '.' || keynum == Keyboard.KEY_BACK)
+                    rentPeriodField.textboxKeyTyped(keycode, keynum);
             }
             introField.textboxKeyTyped(keycode, keynum);
             outroField.textboxKeyTyped(keycode, keynum);

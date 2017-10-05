@@ -10,6 +10,7 @@ import com.minelife.realestate.network.PacketSendSelection;
 import com.minelife.realestate.server.CommandEstate;
 import com.minelife.realestate.server.SelectionHandler;
 import com.minelife.realestate.server.ServerProxy;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -23,6 +24,7 @@ public class ModRealEstate extends AbstractMod {
         registerPacket(PacketGuiCreateEstate.Handler.class, PacketGuiCreateEstate.class, Side.CLIENT);
         registerPacket(PacketCreateEstate.Handler.class, PacketCreateEstate.class, Side.SERVER);
         MinecraftForge.EVENT_BUS.register(new SelectionHandler());
+        FMLCommonHandler.instance().bus().register(new SelectionHandler());
     }
 
     @Override

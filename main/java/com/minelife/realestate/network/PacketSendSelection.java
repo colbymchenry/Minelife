@@ -23,6 +23,7 @@ public class PacketSendSelection implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
+        if(buf.readBoolean()) return;
         selection = new Selection();
         selection.setPos1((int) buf.readDouble(), (int) buf.readDouble(), (int) buf.readDouble());
         selection.setPos2((int) buf.readDouble(), (int) buf.readDouble(), (int) buf.readDouble());
@@ -30,6 +31,8 @@ public class PacketSendSelection implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
+        buf.writeBoolean(selection == null);
+        if(selection == null) return;
         buf.writeDouble(selection.getMin().xCoord);
         buf.writeDouble(selection.getMin().yCoord);
         buf.writeDouble(selection.getMin().zCoord);
@@ -42,8 +45,12 @@ public class PacketSendSelection implements IMessage {
 
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketSendSelection message, MessageContext ctx) {
-            message.selection.world = Minecraft.getMinecraft().theWorld;
-            SelectionHandler.selection = message.selection;
+            if(message.selection != null) {
+                message.selection.world = Minecraft.getMinecraft().theWorld;
+                SelectionHandler.selection = message.selection;
+            } else {
+                SelectionHandler.selection = null;
+            }
             return null;
         }
 

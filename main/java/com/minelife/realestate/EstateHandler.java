@@ -10,10 +10,7 @@ import net.minecraft.world.World;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class EstateHandler {
 
@@ -32,6 +29,7 @@ public class EstateHandler {
         estate_config.addDefault("permissions.renter", new String[]{});
         estate_config.addDefault("permissions.owner", new String[]{});
         estate_config.addDefault("permissions.allowedToChange", new String[]{});
+        estate_config.addDefault("permissions.estate", new String[]{});
         estate_config.addDefault("world", selection.world.getWorldInfo().getWorldName());
         estate_config.addDefault("pos1.x", selection.getMin().xCoord);
         estate_config.addDefault("pos1.y", selection.getMin().yCoord);
@@ -47,7 +45,7 @@ public class EstateHandler {
 
     public static boolean canCreateEstate(EntityPlayer player, Selection selection) throws Exception {
         List<Estate> childEstates = Lists.newArrayList();
-        Map<Double, Estate> parentEstates = Maps.newTreeMap();
+        TreeMap<Double, Estate> parentEstates = Maps.newTreeMap();
 
         if(!selection.isComplete()) throw new Exception("Please make a full selection.");
 
@@ -73,7 +71,7 @@ public class EstateHandler {
         }
 
         // add parent estate
-        if (!parentEstates.isEmpty()) childEstates.add(parentEstates.get(0));
+        if (!parentEstates.isEmpty()) childEstates.add(parentEstates.firstEntry().getValue());
         // use estates inside selection
         for (Estate estate : childEstates.toArray(new Estate[childEstates.size()]))
             if (!estate.getPlayerPermissions(player).contains(Permission.ESTATE_CREATION))
@@ -88,7 +86,7 @@ public class EstateHandler {
 
     public static Estate getEstateAt(World world, Vec3 vec3)
     {
-        Map<Double, Estate> parentEstates = Maps.newTreeMap();
+        TreeMap<Double, Estate> parentEstates = Maps.newTreeMap();
         for (Estate estate : loadedEstates) {
             if(estate.getWorld().getWorldInfo().getWorldName().equals(world.getWorldInfo().getWorldName())) {
                 if(estate.contains(world, vec3.xCoord, vec3.yCoord, vec3.zCoord)) {
@@ -97,7 +95,7 @@ public class EstateHandler {
                 }
             }
         }
-        return parentEstates.isEmpty() ? null : parentEstates.get(0);
+        return parentEstates.isEmpty() ? null : parentEstates.firstEntry().getValue();
     }
 
     public static int getMaxEstateID() {

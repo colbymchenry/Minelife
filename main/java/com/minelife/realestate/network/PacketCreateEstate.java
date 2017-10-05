@@ -1,6 +1,7 @@
 package com.minelife.realestate.network;
 
 import com.google.common.collect.Lists;
+import com.minelife.Minelife;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
 import com.minelife.realestate.ModRealEstate;
@@ -44,11 +45,11 @@ public class PacketCreateEstate implements IMessage {
         globalPermissions = Lists.newArrayList();
         ownerPermissions = Lists.newArrayList();
         renterPermissions = Lists.newArrayList();
-        double purchasePrice = buf.readDouble();
-        double rentPrice = buf.readDouble();
-        int rentPeriod = buf.readInt();
-        String intro = ByteBufUtils.readUTF8String(buf);
-        String outro = ByteBufUtils.readUTF8String(buf);
+         purchasePrice = buf.readDouble();
+         rentPrice = buf.readDouble();
+         rentPeriod = buf.readInt();
+         intro = ByteBufUtils.readUTF8String(buf);
+         outro = ByteBufUtils.readUTF8String(buf);
         int globalPermsSize = buf.readInt();
         int ownerPermsSize = buf.readInt();
         int renterPermsSize = buf.readInt();
@@ -86,7 +87,7 @@ public class PacketCreateEstate implements IMessage {
                 player.closeScreen();
             } catch (Exception e) {
                 e.printStackTrace();
-                player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
+                player.addChatComponentMessage(new ChatComponentText(e.getMessage().substring(120)));
             }
 
             if(estate != null) {
@@ -100,7 +101,8 @@ public class PacketCreateEstate implements IMessage {
                 estate.setRenterPermissions(message.renterPermissions);
             }
 
-            player.addChatComponentMessage(new ChatComponentText(ModRealEstate.getServerProxy().config.getString("messages.estate_created")));
+            player.addChatComponentMessage(new ChatComponentText(ModRealEstate.getServerProxy().config.getString("messages.estate_create", "Please set estate creation message in the config.")));
+            Minelife.NETWORK.sendTo(new PacketSendSelection(null), player);
             return null;
         }
     }

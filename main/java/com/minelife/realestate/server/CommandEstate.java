@@ -5,6 +5,7 @@ import com.minelife.Minelife;
 import com.minelife.realestate.EstateHandler;
 import com.minelife.realestate.Permission;
 import com.minelife.realestate.network.PacketGuiCreateEstate;
+import com.minelife.util.PlayerHelper;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -46,6 +47,9 @@ public class CommandEstate implements ICommand {
                         if(EstateHandler.getEstateAt(player.worldObj, playerVec) == null)
                             permissions.addAll(Arrays.asList(Permission.values()));
                         else {
+                            List<Permission> perms = Lists.newArrayList();
+                            perms.addAll(EstateHandler.getEstateAt(player.worldObj, playerVec).getPlayerPermissions(player));
+                            if(!PlayerHelper.isOp(player)) perms.removeAll(Permission.getEstatePermissions());
                             permissions.addAll(EstateHandler.getEstateAt(player.worldObj, playerVec).getPlayerPermissions(player));
                         }
                         Minelife.NETWORK.sendTo(new PacketGuiCreateEstate(permissions), player);
@@ -55,6 +59,7 @@ public class CommandEstate implements ICommand {
                 default: throw new Exception(getCommandUsage(sender));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
         }
     }

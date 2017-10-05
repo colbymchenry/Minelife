@@ -149,6 +149,10 @@ public class PlayerHelper {
         }
     }
 
+    @SideOnly(Side.SERVER)
+    public static boolean isOp(EntityPlayerMP player) {
+        return MinecraftServer.getServer().getConfigurationManager().func_152596_g(player.getGameProfile());
+    }
 
 
 }
