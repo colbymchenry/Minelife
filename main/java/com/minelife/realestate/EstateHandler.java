@@ -118,4 +118,8 @@ public class EstateHandler {
         }
     }
 
+    public static Estate getEstate(int id) {
+        return loadedEstates.stream().filter(e -> e.getID() == id).findFirst().orElse(null);
+    }
+
 }

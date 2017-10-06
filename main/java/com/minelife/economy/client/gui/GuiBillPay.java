@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.economy.Billing;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.client.ClientProxy;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiLoadingAnimation;
 import com.minelife.util.client.GuiScrollableContent;
@@ -200,8 +201,12 @@ public class GuiBillPay extends GuiATM {
             }
 
             if (Double.parseDouble(amount) > 0) {
-                Billing.sendPayPacketToServer(bill.getUniqueID(), Double.parseDouble(amount));
-                Minecraft.getMinecraft().displayGuiScreen(new GuiBillPay());
+                if(Double.parseDouble(amount) > ModEconomy.BALANCE_BANK_CLIENT) {
+                    setStatusMessage("Insufficient funds");
+                } else {
+                    Billing.sendPayPacketToServer(bill.getUniqueID(), Double.parseDouble(amount));
+                    Minecraft.getMinecraft().displayGuiScreen(new GuiBillPay());
+                }
             }
         }
     }

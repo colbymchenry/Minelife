@@ -50,7 +50,7 @@ public class Estate implements Comparable<Estate> {
     }
 
     public boolean isForRent() {
-        return getRentPrice() != -1;
+        return getRentPrice() != -1 || getRenter() != null;
     }
 
     public int getRentPeriod() {
@@ -92,11 +92,11 @@ public class Estate implements Comparable<Estate> {
     }
 
     public UUID getOwner() {
-        return config.getString("owner") != null ? UUID.fromString(config.getString("owner")) : null;
+        return config.getUUID("owner", null);
     }
 
     public UUID getRenter() {
-        return config.getString("renter") != null ? UUID.fromString(config.getString("renter")) : null;
+        return config.getUUID("renter", null);
     }
 
     public Map<UUID, List<Permission>> getMembers() {

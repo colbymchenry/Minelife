@@ -425,6 +425,7 @@ public class Billing {
                             bill.billHandler.pay(bill, message.amount);
                             Minelife.NETWORK.sendTo(new PacketUpdateATMGui("billpay.success"), ctx.getServerHandler().playerEntity);
                         } else {
+                            System.out.println("CALLED");
                             Minelife.NETWORK.sendTo(new PacketUpdateATMGui("Insufficient funds."), ctx.getServerHandler().playerEntity);
                         }
                     } catch (Exception e) {

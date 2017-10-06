@@ -33,6 +33,7 @@ public class GuiCreateEstate extends GuiScreen {
 
     @Override
     public void drawScreen(int x, int y, float f) {
+        drawDefaultBackground();
         GuiUtil.drawDefaultBackground((this.width - bgWidth) / 2, (this.height - bgHeight) / 2, bgWidth, bgHeight);
         content.draw(x, y, Mouse.getDWheel());
     }
@@ -104,7 +105,7 @@ public class GuiCreateEstate extends GuiScreen {
             estateLabelY = totalHeight;
             for(Permission p : playerPermissions) {
                 if (p.isEstatePermission())
-                    estatePermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, false));
+                    estatePermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, true));
             }
 
             totalHeight+= 40;
@@ -204,6 +205,8 @@ public class GuiCreateEstate extends GuiScreen {
             globalPermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
             renterPermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
             ownerPermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
+            allowedToChangePermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
+            estatePermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
 
             if (createBtn.mousePressed(mc, mouseX, mouseY)) {
                 List<Permission> globalPerms = Lists.newArrayList(), renterPerms = Lists.newArrayList(), ownerPerms = Lists.newArrayList();

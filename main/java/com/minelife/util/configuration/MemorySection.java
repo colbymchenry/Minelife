@@ -444,13 +444,13 @@ public class MemorySection implements ConfigurationSection {
     @Override
     public UUID getUUID(String path, UUID def)
     {
-        return isString(path) ? UUID.fromString(getString(path)) : def;
+        return isString(path) && !getString(path).trim().isEmpty() ? UUID.fromString(getString(path)) : def;
     }
 
     @Override
     public boolean isUUID(String path)
     {
-        return isString(path) && UUID.fromString(getString(path)) != null;
+        return isString(path) && !getString(path).trim().isEmpty() && UUID.fromString(getString(path)) != null;
     }
 
     @Override

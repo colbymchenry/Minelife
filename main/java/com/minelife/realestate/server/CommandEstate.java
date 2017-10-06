@@ -2,9 +2,11 @@ package com.minelife.realestate.server;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
+import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
 import com.minelife.realestate.Permission;
 import com.minelife.realestate.network.PacketGuiCreateEstate;
+import com.minelife.realestate.network.PacketGuiPurchaseEstate;
 import com.minelife.util.PlayerHelper;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -39,21 +41,36 @@ public class CommandEstate implements ICommand {
         try {
             if (args.length == 0) throw new Exception(getCommandUsage(sender));
 
+            Estate estateAtLoc = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(player.posX, player.posY, player.posZ));
+
             switch(args[0].toLowerCase()) {
                 case "create": {
                     if(EstateHandler.canCreateEstate(player, SelectionHandler.getSelection(player))) {
                         List<Permission> permissions = Lists.newArrayList();
-                        Vec3 playerVec = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
-                        if(EstateHandler.getEstateAt(player.worldObj, playerVec) == null)
+                        if(estateAtLoc == null)
                             permissions.addAll(Arrays.asList(Permission.values()));
                         else {
                             List<Permission> perms = Lists.newArrayList();
-                            perms.addAll(EstateHandler.getEstateAt(player.worldObj, playerVec).getPlayerPermissions(player));
+                            perms.addAll(estateAtLoc.getPlayerPermissions(player));
                             if(!PlayerHelper.isOp(player)) perms.removeAll(Permission.getEstatePermissions());
-                            permissions.addAll(EstateHandler.getEstateAt(player.worldObj, playerVec).getPlayerPermissions(player));
+                            permissions.addAll(estateAtLoc.getPlayerPermissions(player));
                         }
                         Minelife.NETWORK.sendTo(new PacketGuiCreateEstate(permissions), player);
                     }
+                    break;
+                }
+                case "purchase": {
+                    if(estateAtLoc == null) {
+                        player.addChatComponentMessage(new ChatComponentText("There is no estate at your location."));
+                        return;
+                    }
+
+                    if(!estateAtLoc.isPurchasable() && !estateAtLoc.isForRent()) {
+                        player.addChatComponentMessage(new ChatComponentText("This estate is not for sale."));
+                        return;
+                    }
+
+                    Minelife.NETWORK.sendTo(new PacketGuiPurchaseEstate(estateAtLoc), player);
                     break;
                 }
                 default: throw new Exception(getCommandUsage(sender));
