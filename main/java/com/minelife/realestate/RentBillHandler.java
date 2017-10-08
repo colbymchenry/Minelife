@@ -27,6 +27,8 @@ public class RentBillHandler extends BillHandler {
 
     }
 
+
+    // TODO: What to do if they don't have enough to pay it? Evict?
     @Override
     public void pay(Billing.Bill bill, double amount) {
         Estate estate = EstateHandler.getEstate(estateID);

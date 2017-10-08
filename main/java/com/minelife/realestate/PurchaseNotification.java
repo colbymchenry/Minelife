@@ -11,7 +11,6 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.UUID;
 
-// TODO
 public class PurchaseNotification extends AbstractNotification{
 
     private static final ResourceLocation houseIcon = new ResourceLocation(Minelife.MOD_ID, "textures/gui/house-icon.png");
