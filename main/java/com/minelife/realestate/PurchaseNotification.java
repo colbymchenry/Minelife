@@ -1,34 +1,46 @@
 package com.minelife.realestate;
 
+import com.minelife.Minelife;
 import com.minelife.notification.AbstractGuiNotification;
 import com.minelife.notification.AbstractNotification;
 import com.minelife.util.NumberConversions;
+import com.minelife.util.client.GuiUtil;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.UUID;
 
 // TODO
 public class PurchaseNotification extends AbstractNotification{
 
+    private static final ResourceLocation houseIcon = new ResourceLocation(Minelife.MOD_ID, "textures/gui/house-icon.png");
+
+    private boolean rent;
     private double amount;
     private int estateID;
 
     public PurchaseNotification() {}
 
-    public PurchaseNotification(UUID playerUUID) {
+    public PurchaseNotification(UUID playerUUID, double amount, int estateID, boolean rent) {
         super(playerUUID);
+        this.amount = amount;
+        this.estateID = estateID;
+        this.rent = rent;
     }
 
     @Override
     public void writeToNBT(NBTTagCompound tagCompound) {
         tagCompound.setDouble("amount", amount);
         tagCompound.setInteger("estateID", estateID);
+        tagCompound.setBoolean("rent", rent);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         amount = tagCompound.getDouble("amount");
         estateID = tagCompound.getInteger("estateID");
+        rent = tagCompound.getBoolean("rent");
     }
 
     @Override
@@ -36,20 +48,24 @@ public class PurchaseNotification extends AbstractNotification{
         return GuiPurchaseNotification.class;
     }
 
-    public class GuiPurchaseNotification extends AbstractGuiNotification {
+    public static class GuiPurchaseNotification extends AbstractGuiNotification {
 
         private PurchaseNotification notification;
 
         public GuiPurchaseNotification() {}
 
-        public GuiPurchaseNotification(PurchaseNotification notification) {
-            this.notification = notification;
+        public GuiPurchaseNotification(AbstractNotification notification) {
+            super(notification);
+            this.notification = (PurchaseNotification) notification;
         }
 
         @Override
         protected void drawForeground() {
-            fontRenderer.drawString("Estate: #" + notification.estateID, 5, 5, 0xFFFFFF);
-            fontRenderer.drawString("Amount: $" + NumberConversions.formatter.format(notification.amount), 5, 5 + 12, 0xFFFFFF);
+            mc.getTextureManager().bindTexture(houseIcon);
+            GuiUtil.drawImage(5, 5, 16, 16);
+            fontRenderer.drawString(EnumChatFormatting.ITALIC + (notification.rent ? "Rent" : "Purchase"), 28, 9, 0xFFFFFF);
+            fontRenderer.drawString("Estate: #" + notification.estateID, 5, 5 + 12 + 5 + 5, 0xFFFFFF);
+            fontRenderer.drawString("Amount: $" + NumberConversions.formatter.format(notification.amount), 5, 5 + 12 + 12 + 5 + 5, 0xFFFFFF);
         }
 
         @Override
@@ -59,7 +75,7 @@ public class PurchaseNotification extends AbstractNotification{
 
         @Override
         protected int getHeight() {
-            return 20;
+            return 45;
         }
 
         @Override

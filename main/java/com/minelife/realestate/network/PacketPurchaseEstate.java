@@ -72,14 +72,23 @@ public class PacketPurchaseEstate implements IMessage {
                 }
 
                 if (message.renting) {
+                    if(ModEconomy.getBalance(player.getUniqueID(), true) < estate.getRentPrice()) {
+                        Minelife.NETWORK.sendTo(new PacketPopupMessage("Insufficient funds", 0xC6C6C6), player);
+                        return null;
+                    }
                     estate.setRenter(player.getUniqueID());
                     RentBillHandler billHandler = new RentBillHandler();
                     billHandler.estateID = estate.getID();
                     Billing.createBill(estate.getRentPeriod(), estate.getRentPrice(), player.getUniqueID(),
                             "Estate Rent: #" + estate.getID(), true, billHandler);
+                    ModEconomy.withdraw(player.getUniqueID(), estate.getRentPrice(), true);
+                    ModEconomy.deposit(estate.getOwner(), estate.getRentPrice(), false);
+                } else {
+                    ModEconomy.withdraw(player.getUniqueID(), estate.getPurchasePrice(), true);
+                    ModEconomy.deposit(estate.getOwner(), estate.getPurchasePrice(), false);
                 }
 
-                PurchaseNotification notification = new PurchaseNotification(estate.getOwner());
+                PurchaseNotification notification = new PurchaseNotification(estate.getOwner(), message.renting ? estate.getRentPrice() : estate.getPurchasePrice(), estate.getID(), message.renting);
                 if (PlayerHelper.getPlayer(estate.getOwner()) != null)
                     notification.sendTo(PlayerHelper.getPlayer(estate.getOwner()));
                 else

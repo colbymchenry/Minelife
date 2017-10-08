@@ -81,7 +81,7 @@ public class GuiCreateEstate extends GuiScreen {
             globalLabelY = totalHeight;
             for (Permission p : playerPermissions) {
                 if (!p.isEstatePermission())
-                    globalPermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2),totalHeight += 20, false));
+                    globalPermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, false));
             }
             totalHeight += 40;
             renterLabelY = totalHeight;
@@ -97,18 +97,18 @@ public class GuiCreateEstate extends GuiScreen {
             }
             totalHeight += 60;
             allowedToChangeLabelY = totalHeight;
-            for(Permission p : playerPermissions) {
+            for (Permission p : playerPermissions) {
                 if (!p.isEstatePermission())
                     allowedToChangePermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, false));
             }
             totalHeight += 40;
             estateLabelY = totalHeight;
-            for(Permission p : playerPermissions) {
+            for (Permission p : playerPermissions) {
                 if (p.isEstatePermission())
                     estatePermissions.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, true));
             }
 
-            totalHeight+= 40;
+            totalHeight += 40;
             createBtn = new GuiButton(0, (bgWidth - 50) / 2, totalHeight, 50, 20, "Create");
             totalHeight += 40;
         }
@@ -176,7 +176,7 @@ public class GuiCreateEstate extends GuiScreen {
                     (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Estate Permissions")) / 2,
                     estateLabelY, 0xFFFFFF);
 
-            if(estatePermissions.isEmpty()) {
+            if (estatePermissions.isEmpty()) {
                 fontRendererObj.drawString(bold + EnumChatFormatting.RED.toString() + "Must be OP to modify",
                         (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Must be OP to modify")) / 2,
                         estateLabelY + 10, 0xFFFFFF);
@@ -209,7 +209,8 @@ public class GuiCreateEstate extends GuiScreen {
             estatePermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
 
             if (createBtn.mousePressed(mc, mouseX, mouseY)) {
-                List<Permission> globalPerms = Lists.newArrayList(), renterPerms = Lists.newArrayList(), ownerPerms = Lists.newArrayList();
+                List<Permission> globalPerms = Lists.newArrayList(), renterPerms = Lists.newArrayList(),
+                        ownerPerms = Lists.newArrayList(), estatePerms = Lists.newArrayList();
                 globalPermissions.forEach((p, tB) -> {
                     if (tB.isChecked()) globalPerms.add(p);
                 });
@@ -219,12 +220,15 @@ public class GuiCreateEstate extends GuiScreen {
                 ownerPermissions.forEach((p, tB) -> {
                     if (tB.isChecked()) ownerPerms.add(p);
                 });
+                estatePermissions.forEach((p, tB) -> {
+                    if (tB.isChecked()) estatePerms.add(p);
+                });
 
                 double purchasePrice = purchaseField.getText().isEmpty() ? -1.0D : Double.parseDouble(purchaseField.getText());
                 double rentPrice = rentField.getText().isEmpty() ? -1.0D : Double.parseDouble(rentField.getText());
                 int rentPeriod = rentPeriodField.getText().isEmpty() ? -1 : Integer.parseInt(rentPeriodField.getText());
 
-                Minelife.NETWORK.sendToServer(new PacketCreateEstate(globalPerms, ownerPerms, renterPerms, purchasePrice,
+                Minelife.NETWORK.sendToServer(new PacketCreateEstate(globalPerms, ownerPerms, renterPerms, estatePerms, purchasePrice,
                         rentPrice, rentPeriod, introField.getText(), outroField.getText()));
             }
         }

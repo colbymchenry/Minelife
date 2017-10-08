@@ -21,15 +21,16 @@ import java.util.List;
 
 public class PacketCreateEstate implements IMessage {
 
-    private List<Permission> globalPermissions, ownerPermissions, renterPermissions;
+    private List<Permission> globalPermissions, ownerPermissions, renterPermissions, estatePermissions;
     private double purchasePrice, rentPrice;
     private int rentPeriod;
     private String intro, outro;
 
-    public PacketCreateEstate(List<Permission> globalPermissions, List<Permission> ownerPermissions, List<Permission> renterPermissions, double purchasePrice, double rentPrice, int rentPeriod, String intro, String outro) {
+    public PacketCreateEstate(List<Permission> globalPermissions, List<Permission> ownerPermissions, List<Permission> renterPermissions, List<Permission> estatePermissions, double purchasePrice, double rentPrice, int rentPeriod, String intro, String outro) {
         this.globalPermissions = globalPermissions;
         this.ownerPermissions = ownerPermissions;
         this.renterPermissions = renterPermissions;
+        this.estatePermissions = estatePermissions;
         this.purchasePrice = purchasePrice;
         this.rentPrice = rentPrice;
         this.rentPeriod = rentPeriod;
@@ -45,6 +46,7 @@ public class PacketCreateEstate implements IMessage {
         globalPermissions = Lists.newArrayList();
         ownerPermissions = Lists.newArrayList();
         renterPermissions = Lists.newArrayList();
+        estatePermissions = Lists.newArrayList();
          purchasePrice = buf.readDouble();
          rentPrice = buf.readDouble();
          rentPeriod = buf.readInt();
@@ -53,12 +55,15 @@ public class PacketCreateEstate implements IMessage {
         int globalPermsSize = buf.readInt();
         int ownerPermsSize = buf.readInt();
         int renterPermsSize = buf.readInt();
+        int estatePermsSize = buf.readInt();
         for (int i = 0; i < globalPermsSize; i++)
             globalPermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
         for (int i = 0; i < ownerPermsSize; i++)
             ownerPermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
         for (int i = 0; i < renterPermsSize; i++)
             renterPermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
+        for (int i = 0; i < estatePermsSize; i++)
+            estatePermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
     }
 
     @Override
@@ -71,9 +76,11 @@ public class PacketCreateEstate implements IMessage {
         buf.writeInt(globalPermissions.size());
         buf.writeInt(ownerPermissions.size());
         buf.writeInt(renterPermissions.size());
+        buf.writeInt(estatePermissions.size());
         globalPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
         ownerPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
         renterPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
+        estatePermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
     }
 
     public static class Handler implements IMessageHandler<PacketCreateEstate, IMessage> {
@@ -99,6 +106,7 @@ public class PacketCreateEstate implements IMessage {
                 estate.setGlobalPermissions(message.globalPermissions);
                 estate.setOwnerPermissions(message.ownerPermissions);
                 estate.setRenterPermissions(message.renterPermissions);
+                estate.setEstatePermissions(message.estatePermissions);
             }
 
             player.addChatComponentMessage(new ChatComponentText(ModRealEstate.getServerProxy().config.getString("messages.estate_create", "Please set estate creation message in the config.")));

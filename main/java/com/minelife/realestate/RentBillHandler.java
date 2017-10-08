@@ -36,7 +36,7 @@ public class RentBillHandler extends BillHandler {
                 ModEconomy.withdraw(estate.getRenter(), amount, false);
                 bill.setAmountDue(bill.getAmountDue() - amount);
                 // send notification to owner for payment
-                PurchaseNotification notification = new PurchaseNotification(estate.getOwner());
+                PurchaseNotification notification = new PurchaseNotification(estate.getOwner(), amount, estateID, true);
                 if (PlayerHelper.getPlayer(estate.getOwner()) != null)
                     notification.sendTo(PlayerHelper.getPlayer(estate.getOwner()));
                 else
