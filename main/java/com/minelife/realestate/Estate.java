@@ -3,6 +3,8 @@ package com.minelife.realestate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
+import com.minelife.economy.BillHandler;
+import com.minelife.economy.Billing;
 import com.minelife.util.ArrayUtil;
 import com.minelife.util.MLConfig;
 import com.minelife.util.configuration.InvalidConfigurationException;
@@ -50,7 +52,8 @@ public class Estate implements Comparable<Estate> {
     }
 
     public boolean isForRent() {
-        return getRentPrice() != -1 || getRenter() != null;
+        if(getRenter() != null) return false;
+        return getRentPrice() != -1;
     }
 
     public int getRentPeriod() {
@@ -306,6 +309,16 @@ public class Estate implements Comparable<Estate> {
     public void setOutro(String outro) {
         config.set("outro", outro);
         config.save();
+    }
+
+    public void setBill(RentBillHandler bill) {
+        config.set("bill", bill == null ? "" : bill.bill.getUniqueID().toString());
+        config.save();
+    }
+
+    public Billing.Bill getBill() {
+        if(config.getUUID("bill", null) == null) return null;
+        return Billing.getBill(config.getUUID("bill", null));
     }
 
 

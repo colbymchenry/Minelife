@@ -2,11 +2,9 @@ package com.minelife.realestate.network;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
-import com.minelife.realestate.Estate;
-import com.minelife.realestate.EstateHandler;
-import com.minelife.realestate.ModRealEstate;
-import com.minelife.realestate.Permission;
+import com.minelife.realestate.*;
 import com.minelife.realestate.server.SelectionHandler;
+import com.minelife.util.PlayerHelper;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -16,6 +14,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.Vec3;
 
 import java.util.List;
 
@@ -47,11 +46,11 @@ public class PacketCreateEstate implements IMessage {
         ownerPermissions = Lists.newArrayList();
         renterPermissions = Lists.newArrayList();
         estatePermissions = Lists.newArrayList();
-         purchasePrice = buf.readDouble();
-         rentPrice = buf.readDouble();
-         rentPeriod = buf.readInt();
-         intro = ByteBufUtils.readUTF8String(buf);
-         outro = ByteBufUtils.readUTF8String(buf);
+        purchasePrice = buf.readDouble();
+        rentPrice = buf.readDouble();
+        rentPeriod = buf.readInt();
+        intro = ByteBufUtils.readUTF8String(buf);
+        outro = ByteBufUtils.readUTF8String(buf);
         int globalPermsSize = buf.readInt();
         int ownerPermsSize = buf.readInt();
         int renterPermsSize = buf.readInt();
@@ -90,14 +89,31 @@ public class PacketCreateEstate implements IMessage {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
             Estate estate = null;
             try {
-                estate = EstateHandler.createEstate(player, SelectionHandler.getSelection(player));
+                Selection selection = SelectionHandler.getSelection(player);
+
+                if (!selection.isComplete()) {
+                    player.addChatComponentMessage(new ChatComponentText("Please make a full selection."));
+                    return null;
+                }
+
+                Vec3 min = selection.getMin();
+                min.zCoord -= 1;
+                min.xCoord -= 1;
+                min.yCoord -= 1;
+                Vec3 max = selection.getMax();
+                max.xCoord += 1;
+                max.zCoord += 1;
+                max.yCoord += 1;
+                selection.setPos1((int) min.xCoord, (int) min.yCoord, (int) min.zCoord);
+                selection.setPos2((int) max.xCoord, (int) max.yCoord, (int) max.zCoord);
+                estate = EstateHandler.createEstate(player, selection);
                 player.closeScreen();
             } catch (Exception e) {
                 e.printStackTrace();
                 player.addChatComponentMessage(new ChatComponentText(e.getMessage().substring(120)));
             }
 
-            if(estate != null) {
+            if (estate != null) {
                 estate.setPurchasePrice(message.purchasePrice);
                 estate.setRentPrice(message.rentPrice);
                 estate.setRentPeriod(message.rentPeriod);
@@ -106,7 +122,10 @@ public class PacketCreateEstate implements IMessage {
                 estate.setGlobalPermissions(message.globalPermissions);
                 estate.setOwnerPermissions(message.ownerPermissions);
                 estate.setRenterPermissions(message.renterPermissions);
-                estate.setEstatePermissions(message.estatePermissions);
+                if (PlayerHelper.isOp(player))
+                    estate.setEstatePermissions(message.estatePermissions);
+                else if (estate.getParentEstate() == null)
+                    estate.setEstatePermissions(Permission.getEstatePermissions());
             }
 
             player.addChatComponentMessage(new ChatComponentText(ModRealEstate.getServerProxy().config.getString("messages.estate_create", "Please set estate creation message in the config.")));

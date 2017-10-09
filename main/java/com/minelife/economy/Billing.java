@@ -73,10 +73,6 @@ public class Billing {
     public static void deleteBill(UUID uuid)
     {
         try {
-            Bill bill = getBill(uuid);
-            if (bill != null && bill.billHandler != null) {
-                bill.billHandler.delete();
-            }
             Minelife.SQLITE.query("DELETE FROM Economy_Bills WHERE uuid='" + uuid.toString() + "'");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -228,6 +224,10 @@ public class Billing {
         {
             this.amountDue = amountDue;
             writeToDB();
+        }
+
+        public void delete() {
+            Billing.deleteBill(uuid);
         }
 
         public boolean isAutoPay()

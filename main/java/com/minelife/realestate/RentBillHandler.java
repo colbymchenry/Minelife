@@ -6,8 +6,6 @@ import com.minelife.economy.ModEconomy;
 import com.minelife.util.PlayerHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
-import java.util.UUID;
-
 public class RentBillHandler extends BillHandler {
 
     public int estateID;
@@ -24,11 +22,10 @@ public class RentBillHandler extends BillHandler {
 
     @Override
     public void update() {
-
+        Estate estate = EstateHandler.getEstate(estateID);
+        if(estate == null) bill.delete();
     }
 
-
-    // TODO: What to do if they don't have enough to pay it? Evict?
     @Override
     public void pay(Billing.Bill bill, double amount) {
         Estate estate = EstateHandler.getEstate(estateID);
@@ -38,21 +35,22 @@ public class RentBillHandler extends BillHandler {
                 ModEconomy.withdraw(estate.getRenter(), amount, false);
                 bill.setAmountDue(bill.getAmountDue() - amount);
                 // send notification to owner for payment
-                PurchaseNotification notification = new PurchaseNotification(estate.getOwner(), amount, estateID, true);
+                PaymentNotification notification = new PaymentNotification(estate.getOwner(), amount, estateID, true);
                 if (PlayerHelper.getPlayer(estate.getOwner()) != null)
                     notification.sendTo(PlayerHelper.getPlayer(estate.getOwner()));
                 else
                     notification.writeToDB();
+            } else {
+                if(estate == null) bill.delete();
+                else {
+                    estate.setRenter(null);
+                    estate.setBill(null);
+                    bill.delete();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void delete() {
-        Estate estate = EstateHandler.getEstate(estateID);
-        if (estate != null) estate.setRenter(null);
     }
 
 }

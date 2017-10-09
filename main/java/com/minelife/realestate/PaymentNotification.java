@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.UUID;
 
-public class PurchaseNotification extends AbstractNotification{
+public class PaymentNotification extends AbstractNotification{
 
     private static final ResourceLocation houseIcon = new ResourceLocation(Minelife.MOD_ID, "textures/gui/house-icon.png");
 
@@ -19,9 +19,9 @@ public class PurchaseNotification extends AbstractNotification{
     private double amount;
     private int estateID;
 
-    public PurchaseNotification() {}
+    public PaymentNotification() {}
 
-    public PurchaseNotification(UUID playerUUID, double amount, int estateID, boolean rent) {
+    public PaymentNotification(UUID playerUUID, double amount, int estateID, boolean rent) {
         super(playerUUID);
         this.amount = amount;
         this.estateID = estateID;
@@ -49,13 +49,13 @@ public class PurchaseNotification extends AbstractNotification{
 
     public static class GuiPurchaseNotification extends AbstractGuiNotification {
 
-        private PurchaseNotification notification;
+        private PaymentNotification notification;
 
         public GuiPurchaseNotification() {}
 
         public GuiPurchaseNotification(AbstractNotification notification) {
             super(notification);
-            this.notification = (PurchaseNotification) notification;
+            this.notification = (PaymentNotification) notification;
         }
 
         @Override

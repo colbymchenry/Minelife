@@ -5,11 +5,10 @@ import com.minelife.economy.Billing;
 import com.minelife.economy.ModEconomy;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
-import com.minelife.realestate.PurchaseNotification;
+import com.minelife.realestate.PaymentNotification;
 import com.minelife.realestate.RentBillHandler;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.PacketPopupMessage;
-import com.minelife.util.configuration.InvalidConfigurationException;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -18,8 +17,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
-
-import java.io.IOException;
 
 public class PacketPurchaseEstate implements IMessage {
 
@@ -83,12 +80,13 @@ public class PacketPurchaseEstate implements IMessage {
                             "Estate Rent: #" + estate.getID(), true, billHandler);
                     ModEconomy.withdraw(player.getUniqueID(), estate.getRentPrice(), true);
                     ModEconomy.deposit(estate.getOwner(), estate.getRentPrice(), false);
+                    estate.setBill(billHandler);
                 } else {
                     ModEconomy.withdraw(player.getUniqueID(), estate.getPurchasePrice(), true);
                     ModEconomy.deposit(estate.getOwner(), estate.getPurchasePrice(), false);
                 }
 
-                PurchaseNotification notification = new PurchaseNotification(estate.getOwner(), message.renting ? estate.getRentPrice() : estate.getPurchasePrice(), estate.getID(), message.renting);
+                PaymentNotification notification = new PaymentNotification(estate.getOwner(), message.renting ? estate.getRentPrice() : estate.getPurchasePrice(), estate.getID(), message.renting);
                 if (PlayerHelper.getPlayer(estate.getOwner()) != null)
                     notification.sendTo(PlayerHelper.getPlayer(estate.getOwner()));
                 else

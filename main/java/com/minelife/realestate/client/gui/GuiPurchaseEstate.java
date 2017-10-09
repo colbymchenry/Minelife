@@ -127,18 +127,35 @@ public class GuiPurchaseEstate extends GuiScreen {
             fontRendererObj.drawString(bold + rentPeriodStr, (width - rentPeriodW) / 2, 60, 0xFFFFFF);
 
             fontRendererObj.drawString(bold + "Global Permissions", (width - fontRendererObj.getStringWidth(bold + "Global Permissions")) / 2, globalY, 0xFFFFFF);
+
+
+            if (globalTicks.isEmpty()) {
+                fontRendererObj.drawString(red + bold + "None", (width - fontRendererObj.getStringWidth(bold + red + "None")) / 2, globalY + 20, 0xFFFFFF);
+            }
+
             globalTicks.forEach((p, tB) -> {
                 fontRendererObj.drawString(bold + p.name(), 5 + (((width + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
                 tB.drawTickBox();
             });
 
             fontRendererObj.drawString(bold + "Renter Permissions", (width - fontRendererObj.getStringWidth(bold + "Renter Permissions")) / 2, renterY, 0xFFFFFF);
+
+
+            if (renterTicks.isEmpty()) {
+                fontRendererObj.drawString(red + bold + "None", (width - fontRendererObj.getStringWidth(bold + red + "None")) / 2, renterY + 20, 0xFFFFFF);
+            }
+
             renterTicks.forEach((p, tB) -> {
                 fontRendererObj.drawString(bold + p.name(), 5 + (((width + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
                 tB.drawTickBox();
             });
 
             fontRendererObj.drawString(bold + "Owner Permissions", (width - fontRendererObj.getStringWidth(bold + "Owner Permissions")) / 2, ownerY, 0xFFFFFF);
+
+            if (ownerTicks.isEmpty()) {
+                fontRendererObj.drawString(red + bold + "None", (width - fontRendererObj.getStringWidth(bold + red + "None")) / 2, ownerY + 20, 0xFFFFFF);
+            }
+
             ownerTicks.forEach((p, tB) -> {
                 fontRendererObj.drawString(bold + p.name(), 5 + (((width + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
                 tB.drawTickBox();

@@ -18,6 +18,4 @@ public abstract class BillHandler {
 
     public abstract void pay(Billing.Bill bill, double amount);
 
-    public abstract void delete();
-
 }
