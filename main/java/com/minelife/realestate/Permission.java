@@ -24,7 +24,10 @@ public enum Permission {
     PLAYER_DEATH(true),
     CREATURE_DEATH(true),
     MONSTER_DEATH(true),
-    FALL_DAMAGE(true);
+    FALL_DAMAGE(true),
+    SELL(false),
+    RENT(false),
+    MODIFY_RENT_PERIOD(false);
 
     private boolean isEstatePermission = false;
 

@@ -123,6 +123,7 @@ public class PacketCreateEstate implements IMessage {
                 estate.setOwnerPermissions(message.ownerPermissions);
                 estate.setRenterPermissions(message.renterPermissions);
                 if (PlayerHelper.isOp(player))
+                    // TODO: have to make sure the estate permissions do not override the parent estate estate permissions
                     estate.setEstatePermissions(message.estatePermissions);
                 else if (estate.getParentEstate() == null)
                     estate.setEstatePermissions(Permission.getEstatePermissions());

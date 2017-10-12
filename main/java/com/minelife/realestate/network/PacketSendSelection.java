@@ -46,7 +46,6 @@ public class PacketSendSelection implements IMessage {
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketSendSelection message, MessageContext ctx) {
             if(message.selection != null) {
-                message.selection.world = Minecraft.getMinecraft().theWorld;
                 SelectionHandler.selection = message.selection;
             } else {
                 SelectionHandler.selection = null;

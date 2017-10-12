@@ -39,7 +39,7 @@ public class SelectionHandler {
                 Item.getItemById(ModRealEstate.getServerProxy().config.getInt("selection_tool"))) return;
 
         // Make sure the selection is not within two different worlds
-        if (getSelection(player).world != event.world) {
+        if (getSelection(player).getWorld() != event.world) {
             player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You cannot make a selection within two worlds."));
             return;
         }

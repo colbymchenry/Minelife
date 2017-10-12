@@ -6,6 +6,7 @@ import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
 import com.minelife.realestate.Permission;
 import com.minelife.realestate.network.PacketGuiCreateEstate;
+import com.minelife.realestate.network.PacketGuiModifyEstate;
 import com.minelife.realestate.network.PacketGuiPurchaseEstate;
 import com.minelife.util.PlayerHelper;
 import net.minecraft.command.ICommand;
@@ -79,6 +80,7 @@ public class CommandEstate implements ICommand {
                         return;
                     }
 
+                    Minelife.NETWORK.sendTo(new PacketGuiModifyEstate(estateAtLoc, estateAtLoc.getPlayerPermissions(player)), player);
                     // TODO: Don't allow to open unless they are either A the owner B the renter or C the owner or renter of the land above
                     break;
                 }

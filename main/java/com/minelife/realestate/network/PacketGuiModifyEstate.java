@@ -3,7 +3,7 @@ package com.minelife.realestate.network;
 import com.google.common.collect.Lists;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.Permission;
-import com.minelife.realestate.client.ClientEstate;
+import com.minelife.realestate.EstateData;
 import com.minelife.realestate.client.gui.GuiModifyEstate;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -20,13 +20,12 @@ import java.util.List;
 
 public class PacketGuiModifyEstate implements IMessage {
 
-    private Estate estate;
-    private ClientEstate clientEstate;
+    private EstateData estateData;
     private List<Permission> playerPermissions;
 
     public PacketGuiModifyEstate(Estate estate, List<Permission> playerPermissions) {
-        this.estate = estate;
         this.playerPermissions = playerPermissions;
+        estateData = new EstateData(estate);
     }
 
     public PacketGuiModifyEstate() {
@@ -36,7 +35,7 @@ public class PacketGuiModifyEstate implements IMessage {
     public void fromBytes(ByteBuf buf) {
         try {
             playerPermissions = Lists.newArrayList();
-            clientEstate = Estate.fromBytes(buf);
+            estateData = EstateData.fromBytes(buf);
             int permsSize = buf.readInt();
             for (int i = 0; i < permsSize; i++) playerPermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
         } catch (IOException e) {
@@ -48,7 +47,7 @@ public class PacketGuiModifyEstate implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        estate.toBytes(buf);
+        estateData.toBytes(buf);
         buf.writeInt(playerPermissions.size());
         playerPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
     }
@@ -57,7 +56,7 @@ public class PacketGuiModifyEstate implements IMessage {
 
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketGuiModifyEstate message, MessageContext ctx) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiModifyEstate(message.clientEstate, message.playerPermissions));
+            Minecraft.getMinecraft().displayGuiScreen(new GuiModifyEstate(message.estateData, message.playerPermissions));
             return null;
         }
     }
