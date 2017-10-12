@@ -73,6 +73,15 @@ public class CommandEstate implements ICommand {
                     Minelife.NETWORK.sendTo(new PacketGuiPurchaseEstate(estateAtLoc), player);
                     break;
                 }
+                case "modify": {
+                    if(estateAtLoc == null) {
+                        player.addChatComponentMessage(new ChatComponentText("There is no estate at your location."));
+                        return;
+                    }
+
+                    // TODO: Don't allow to open unless they are either A the owner B the renter or C the owner or renter of the land above
+                    break;
+                }
                 default: throw new Exception(getCommandUsage(sender));
             }
         } catch (Exception e) {

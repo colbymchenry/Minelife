@@ -5,11 +5,14 @@ import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.economy.BillHandler;
 import com.minelife.economy.Billing;
+import com.minelife.realestate.client.ClientEstate;
 import com.minelife.util.ArrayUtil;
 import com.minelife.util.MLConfig;
 import com.minelife.util.configuration.InvalidConfigurationException;
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -25,6 +28,8 @@ public class Estate implements Comparable<Estate> {
 
     private int id;
     private MLConfig config;
+
+    protected Estate() {}
 
     public Estate(int id) throws IOException, InvalidConfigurationException {
         this.id = id;
@@ -52,7 +57,7 @@ public class Estate implements Comparable<Estate> {
     }
 
     public boolean isForRent() {
-        if(getRenter() != null) return false;
+        if (getRenter() != null) return false;
         return getRentPrice() != -1;
     }
 
@@ -60,9 +65,13 @@ public class Estate implements Comparable<Estate> {
         return config.getInt("price.rent_period", 1);
     }
 
-    public String getOutro() { return config.getString("outro"); }
+    public String getOutro() {
+        return config.getString("outro");
+    }
 
-    public String getIntro() { return config.getString("intro"); }
+    public String getIntro() {
+        return config.getString("intro");
+    }
 
     public List<Permission> getGlobalPermissions() {
         List<Permission> permissions = Lists.newArrayList();
@@ -121,17 +130,8 @@ public class Estate implements Comparable<Estate> {
     }
 
     public World getWorld() {
-        if (Minelife.getSide() == Side.SERVER) {
-            return Arrays.stream(MinecraftServer.getServer().worldServers)
-                    .filter(w -> w.getWorldInfo().getWorldName().equals(config.getString("world"))).findFirst().orElse(null);
-        } else {
-            return getClientWorld();
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    public World getClientWorld() {
-        return Minecraft.getMinecraft().theWorld;
+        return Arrays.stream(MinecraftServer.getServer().worldServers)
+                .filter(w -> w.getWorldInfo().getWorldName().equals(config.getString("world"))).findFirst().orElse(null);
     }
 
     public boolean contains(Estate estate) {
@@ -150,7 +150,7 @@ public class Estate implements Comparable<Estate> {
 
     public boolean contains(Selection selection) {
         Vec3 min = selection.getMin(), max = selection.getMax();
-        return contains(selection.world, min.xCoord, min.yCoord, min.zCoord) && contains(selection.world, max.xCoord, max.yCoord, max.zCoord);
+        return contains(selection.getWorld(), min.xCoord, min.yCoord, min.zCoord) && contains(selection.getWorld(), max.xCoord, max.yCoord, max.zCoord);
     }
 
     public boolean intersects(Selection selection) {
@@ -317,7 +317,7 @@ public class Estate implements Comparable<Estate> {
     }
 
     public Billing.Bill getBill() {
-        if(config.getUUID("bill", null) == null) return null;
+        if (config.getUUID("bill", null) == null) return null;
         return Billing.getBill(config.getUUID("bill", null));
     }
 
@@ -330,5 +330,81 @@ public class Estate implements Comparable<Estate> {
     @Override
     public boolean equals(Object obj) {
         return !(obj instanceof Estate) ? false : ((Estate) obj).getID() == getID();
+    }
+
+    public void toBytes(ByteBuf buf) {
+        buf.writeInt(id);
+        ByteBufUtils.writeUTF8String(buf, getOwner() != null ? getOwner().toString() : " ");
+        ByteBufUtils.writeUTF8String(buf, getRenter() != null ? getRenter().toString() : " ");
+        buf.writeInt(getRentPeriod());
+        buf.writeDouble(getPurchasePrice());
+        buf.writeDouble(getRentPrice());
+        ByteBufUtils.writeUTF8String(buf, getIntro() != null && !getIntro().trim().isEmpty() ? getIntro() : " ");
+        ByteBufUtils.writeUTF8String(buf, getOutro() != null && !getOutro().trim().isEmpty() ? getOutro() : " ");
+        buf.writeInt(getGlobalPermissions().size());
+        buf.writeInt(getOwnerPermissions().size());
+        buf.writeInt(getRenterPermissions().size());
+        buf.writeInt(getGlobalPermissionsAllowedToChange().size());
+        buf.writeInt(getEstatePermissions().size());
+        getGlobalPermissions().forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
+        getOwnerPermissions().forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
+        getRenterPermissions().forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
+        getGlobalPermissionsAllowedToChange().forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
+        getEstatePermissions().forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
+        buf.writeDouble(getBounds().minX);
+        buf.writeDouble(getBounds().minY);
+        buf.writeDouble(getBounds().minZ);
+        buf.writeDouble(getBounds().maxX);
+        buf.writeDouble(getBounds().maxY);
+        buf.writeDouble(getBounds().maxZ);
+        buf.writeInt(getMembers().size());
+        getMembers().forEach((uuid, permissions) -> {
+            ByteBufUtils.writeUTF8String(buf, uuid.toString());
+            buf.writeInt(permissions.size());
+            permissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
+        });
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static ClientEstate fromBytes(ByteBuf buf) throws IOException, InvalidConfigurationException {
+        int id = buf.readInt();
+        String ownerStr = ByteBufUtils.readUTF8String(buf);
+        String renterStr = ByteBufUtils.readUTF8String(buf);
+        UUID owner = ownerStr.trim().isEmpty() ? null : UUID.fromString(ownerStr);
+        UUID renter = renterStr.trim().isEmpty() ? null : UUID.fromString(renterStr);
+        int rentPeriod = buf.readInt();
+        double purchasePrice = buf.readDouble();
+        double rentPrice = buf.readDouble();
+        String intro = ByteBufUtils.readUTF8String(buf);
+        String outro = ByteBufUtils.readUTF8String(buf);
+        int globalPermsSize = buf.readInt();
+        int ownerPermsSize = buf.readInt();
+        int renterPermsSize = buf.readInt();
+        int permsAllowedToChangeSize = buf.readInt();
+        int estatePermsSize = buf.readInt();
+        List<Permission> globalPerms = Lists.newArrayList();
+        List<Permission> ownerPerms = Lists.newArrayList();
+        List<Permission> renterPerms = Lists.newArrayList();
+        List<Permission> allowedToChangePerms = Lists.newArrayList();
+        List<Permission> estatePerms = Lists.newArrayList();
+        for (int i = 0; i < globalPermsSize; i++) globalPerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
+        for (int i = 0; i < ownerPermsSize; i++) ownerPerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
+        for (int i = 0; i < renterPermsSize; i++) renterPerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
+        for (int i = 0; i < permsAllowedToChangeSize; i++) allowedToChangePerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
+        for (int i = 0; i < estatePermsSize; i++) estatePerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
+        AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble());
+        Map<UUID, List<Permission>> members = Maps.newHashMap();
+        int membersSize = buf.readInt();
+        for (int i = 0; i < membersSize; i++) {
+            UUID memberUUID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+            List<Permission> permissions = Lists.newArrayList();
+            int permsSize = buf.readInt();
+            for (int i1 = 0; i1 < permsSize; i1++) {
+                permissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
+            }
+            members.put(memberUUID, permissions);
+        }
+        return new ClientEstate(id, owner, renter, rentPeriod, purchasePrice, rentPrice, intro, outro, globalPerms, ownerPerms,
+                renterPerms, allowedToChangePerms, estatePerms, bounds, members);
     }
 }

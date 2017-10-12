@@ -43,6 +43,7 @@ public class PacketPurchaseEstate implements IMessage {
         buf.writeBoolean(renting);
     }
 
+    // TODO: When purchased for ownership change the price to -1
     public static class Handler implements IMessageHandler<PacketPurchaseEstate, IMessage> {
 
         @SideOnly(Side.SERVER)

@@ -1,5 +1,9 @@
 package com.minelife.realestate;
 
+import com.minelife.Minelife;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -7,7 +11,7 @@ import net.minecraft.world.World;
 public class Selection {
 
     private Vec3 pos1, pos2;
-    public World world;
+    private World world;
 
     public Selection setPos1(int x, int y, int z) {
         pos1 = Vec3.createVectorHelper(x, y, z);
@@ -45,6 +49,19 @@ public class Selection {
         return world.getWorldInfo().getWorldName().equals(selection.world.getWorldInfo().getWorldName())
                 && b.isVecInside(Vec3.createVectorHelper(b1.minX, b1.minY, b1.minZ))
                 && b.isVecInside(Vec3.createVectorHelper(b1.maxX, b1.maxY, b1.maxZ));
+    }
+
+    public World getWorld() {
+        if(Minelife.getSide() == Side.SERVER) {
+            return world;
+        } else {
+            return getClientWorld();
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private World getClientWorld() {
+        return Minecraft.getMinecraft().theWorld;
     }
 
 }
