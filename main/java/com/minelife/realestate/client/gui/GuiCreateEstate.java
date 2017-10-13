@@ -210,7 +210,7 @@ public class GuiCreateEstate extends GuiScreen {
 
             if (createBtn.mousePressed(mc, mouseX, mouseY)) {
                 List<Permission> globalPerms = Lists.newArrayList(), renterPerms = Lists.newArrayList(),
-                        ownerPerms = Lists.newArrayList(), estatePerms = Lists.newArrayList();
+                        ownerPerms = Lists.newArrayList(), estatePerms = Lists.newArrayList(), allowedToChangePerms = Lists.newArrayList();
                 globalPermissions.forEach((p, tB) -> {
                     if (tB.isChecked()) globalPerms.add(p);
                 });
@@ -223,12 +223,15 @@ public class GuiCreateEstate extends GuiScreen {
                 estatePermissions.forEach((p, tB) -> {
                     if (tB.isChecked()) estatePerms.add(p);
                 });
+                allowedToChangePermissions.forEach((p, tB) -> {
+                    if (tB.isChecked()) allowedToChangePerms.add(p);
+                });
 
                 double purchasePrice = purchaseField.getText().isEmpty() ? -1.0D : Double.parseDouble(purchaseField.getText());
                 double rentPrice = rentField.getText().isEmpty() ? -1.0D : Double.parseDouble(rentField.getText());
                 int rentPeriod = rentPeriodField.getText().isEmpty() ? -1 : Integer.parseInt(rentPeriodField.getText());
 
-                Minelife.NETWORK.sendToServer(new PacketCreateEstate(globalPerms, ownerPerms, renterPerms, estatePerms, purchasePrice,
+                Minelife.NETWORK.sendToServer(new PacketCreateEstate(globalPerms, ownerPerms, renterPerms, estatePerms, allowedToChangePerms, purchasePrice,
                         rentPrice, rentPeriod, introField.getText(), outroField.getText()));
             }
         }
@@ -236,7 +239,7 @@ public class GuiCreateEstate extends GuiScreen {
         @Override
         public void keyTyped(char keycode, int keynum) {
             super.keyTyped(keycode, keynum);
-            if ((NumberConversions.isInt(String.valueOf(keycode)) && keynum != Keyboard.KEY_BACK) || keycode == '.') {
+            if ((NumberConversions.isInt(String.valueOf(keycode)) && keynum != Keyboard.KEY_BACK) || keycode == '.' || keynum == Keyboard.KEY_BACK) {
                 if (purchaseField.isFocused()) {
                     if (keycode == '.') {
                         if (!purchaseField.getText().contains("."))

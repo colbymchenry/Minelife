@@ -2,8 +2,10 @@ package com.minelife.realestate.client.gui;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.minelife.Minelife;
 import com.minelife.realestate.Permission;
 import com.minelife.realestate.EstateData;
+import com.minelife.realestate.network.PacketUpdateEstate;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiScrollableContent;
 import com.minelife.util.client.GuiTickBox;
@@ -96,6 +98,12 @@ public class GuiModifyEstate extends GuiScreen {
             periodField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, totalHeight += 60, 100, 20);
             introField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, totalHeight += 60, 100, 20);
             outroField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, totalHeight += 60, 100, 20);
+
+            purchaseField.setEnabled(playerPermissions.contains(Permission.MODIFY_PURCHASE_PRICE));
+            rentField.setEnabled(playerPermissions.contains(Permission.MODIFY_RENT_PRICE));
+            periodField.setEnabled(playerPermissions.contains(Permission.MODIFY_RENT_PERIOD));
+            introField.setEnabled(playerPermissions.contains(Permission.MODIFY_INTRO));
+            outroField.setEnabled(playerPermissions.contains(Permission.MODIFY_OUTRO));
 
             purchaseField.setText(estateData.getPurchasePrice() != -1 ? "" + estateData.getPurchasePrice() : "");
             rentField.setText(estateData.getRentPrice() != -1 ? "" + estateData.getRentPrice() : "");
@@ -236,7 +244,7 @@ public class GuiModifyEstate extends GuiScreen {
 
             if (updateBtn.mousePressed(mc, mouseX, mouseY)) {
                 List<Permission> globalPerms = Lists.newArrayList(), renterPerms = Lists.newArrayList(),
-                        ownerPerms = Lists.newArrayList(), estatePerms = Lists.newArrayList();
+                        ownerPerms = Lists.newArrayList(), estatePerms = Lists.newArrayList(), globalAllowedToChangePerms = Lists.newArrayList();
                 this.globalPerms.forEach((p, tB) -> {
                     if (tB.isChecked()) globalPerms.add(p);
                 });
@@ -249,21 +257,34 @@ public class GuiModifyEstate extends GuiScreen {
                 this.estatePerms.forEach((p, tB) -> {
                     if (tB.isChecked()) estatePerms.add(p);
                 });
+                this.allowedToChangePerms.forEach((p, tB) -> {
+                    if (tB.isChecked()) globalAllowedToChangePerms.add(p);
+                });
 
                 double purchasePrice = purchaseField.getText().isEmpty() ? -1.0D : Double.parseDouble(purchaseField.getText());
                 double rentPrice = rentField.getText().isEmpty() ? -1.0D : Double.parseDouble(rentField.getText());
                 int rentPeriod = periodField.getText().isEmpty() ? -1 : Integer.parseInt(periodField.getText());
 
+                estateData.setPurchasePrice(purchasePrice);
+                estateData.setRentPrice(rentPrice);
+                estateData.setRentPeriod(rentPeriod);
+                estateData.setIntro(introField.getText());
+                estateData.setOutro(outroField.getText());
+                estateData.setOwnerPermissions(ownerPerms);
+                estateData.setRenterPermissions(ownerPerms);
+                estateData.setGlobalPermissions(ownerPerms);
+                estateData.setPermissionsAllowedToChange(ownerPerms);
+                estateData.setEstatePermissions(ownerPerms);
+
                 // TODO: Update
-//                Minelife.NETWORK.sendToServer(new PacketCreateEstate(globalPerms, ownerPerms, renterPerms, estatePerms, purchasePrice,
-//                        rentPrice, rentPeriod, introField.getText(), outroField.getText()));
+                Minelife.NETWORK.sendToServer(new PacketUpdateEstate(estateData));
             }
         }
 
         @Override
         public void keyTyped(char keycode, int keynum) {
             super.keyTyped(keycode, keynum);
-            if ((NumberConversions.isInt(String.valueOf(keycode)) && keynum != Keyboard.KEY_BACK) || keycode == '.') {
+            if ((NumberConversions.isInt(String.valueOf(keycode)) && keynum != Keyboard.KEY_BACK) || keycode == '.' || keynum == Keyboard.KEY_BACK) {
                 if (purchaseField.isFocused()) {
                     if (keycode == '.') {
                         if (!purchaseField.getText().contains("."))

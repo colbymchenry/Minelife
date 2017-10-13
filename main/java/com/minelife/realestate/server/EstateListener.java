@@ -146,10 +146,12 @@ public class EstateListener {
     public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         EstateHandler.loadedEstates.forEach(e -> {
             if (e.getRenter() != null && e.getRenter().equals(event.player.getUniqueID())) {
-                long diff = e.getBill().getDueDate().getTime() - Calendar.getInstance().getTime().getTime();
-                if (e.getBill().getAmountDue() > 0) {
-                    RentDueNotification notification = new RentDueNotification(event.player.getUniqueID(), (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS), e.getID(), e.getBill().getAmountDue());
-                    notification.sendTo((EntityPlayerMP) event.player);
+                if(e.getBill() != null) {
+                    long diff = e.getBill().getDueDate().getTime() - Calendar.getInstance().getTime().getTime();
+                    if (e.getBill().getAmountDue() > 0) {
+                        RentDueNotification notification = new RentDueNotification(event.player.getUniqueID(), (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS), e.getID(), e.getBill().getAmountDue());
+                        notification.sendTo((EntityPlayerMP) event.player);
+                    }
                 }
             }
         });

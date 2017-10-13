@@ -103,6 +103,7 @@ public class GuiPurchaseEstate extends GuiScreen {
             ownerPerms.forEach(p -> ownerTicks.put(p, new GuiTickBox(mc, section * 1 + ((section - GuiTickBox.WIDTH) / 2), totalHeight += 20, true)));
             totalHeight += 40;
             allowedToChangeY = totalHeight;
+            totalHeight += 20;
             allowedToChangePerms.forEach(p -> allowedToChangeTicks.put(p, new GuiTickBox(mc, section * 1 + ((section - GuiTickBox.WIDTH) / 2), totalHeight += 20, true)));
             totalHeight += 60;
             estateY = totalHeight;

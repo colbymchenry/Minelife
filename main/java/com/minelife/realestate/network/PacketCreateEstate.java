@@ -20,16 +20,17 @@ import java.util.List;
 
 public class PacketCreateEstate implements IMessage {
 
-    private List<Permission> globalPermissions, ownerPermissions, renterPermissions, estatePermissions;
+    private List<Permission> globalPermissions, ownerPermissions, renterPermissions, estatePermissions, globalAllowedToChangePerms;
     private double purchasePrice, rentPrice;
     private int rentPeriod;
     private String intro, outro;
 
-    public PacketCreateEstate(List<Permission> globalPermissions, List<Permission> ownerPermissions, List<Permission> renterPermissions, List<Permission> estatePermissions, double purchasePrice, double rentPrice, int rentPeriod, String intro, String outro) {
+    public PacketCreateEstate(List<Permission> globalPermissions, List<Permission> ownerPermissions, List<Permission> renterPermissions, List<Permission> estatePermissions, List<Permission> globalAllowedToChangePerms, double purchasePrice, double rentPrice, int rentPeriod, String intro, String outro) {
         this.globalPermissions = globalPermissions;
         this.ownerPermissions = ownerPermissions;
         this.renterPermissions = renterPermissions;
         this.estatePermissions = estatePermissions;
+        this.globalAllowedToChangePerms = globalAllowedToChangePerms;
         this.purchasePrice = purchasePrice;
         this.rentPrice = rentPrice;
         this.rentPeriod = rentPeriod;
@@ -46,6 +47,7 @@ public class PacketCreateEstate implements IMessage {
         ownerPermissions = Lists.newArrayList();
         renterPermissions = Lists.newArrayList();
         estatePermissions = Lists.newArrayList();
+        globalAllowedToChangePerms = Lists.newArrayList();
         purchasePrice = buf.readDouble();
         rentPrice = buf.readDouble();
         rentPeriod = buf.readInt();
@@ -55,6 +57,7 @@ public class PacketCreateEstate implements IMessage {
         int ownerPermsSize = buf.readInt();
         int renterPermsSize = buf.readInt();
         int estatePermsSize = buf.readInt();
+        int allowedToChangePermsSize = buf.readInt();
         for (int i = 0; i < globalPermsSize; i++)
             globalPermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
         for (int i = 0; i < ownerPermsSize; i++)
@@ -63,6 +66,8 @@ public class PacketCreateEstate implements IMessage {
             renterPermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
         for (int i = 0; i < estatePermsSize; i++)
             estatePermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
+        for (int i = 0; i < allowedToChangePermsSize; i++)
+            globalAllowedToChangePerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
     }
 
     @Override
@@ -76,10 +81,12 @@ public class PacketCreateEstate implements IMessage {
         buf.writeInt(ownerPermissions.size());
         buf.writeInt(renterPermissions.size());
         buf.writeInt(estatePermissions.size());
+        buf.writeInt(globalAllowedToChangePerms.size());
         globalPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
         ownerPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
         renterPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
         estatePermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
+        globalAllowedToChangePerms.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
     }
 
     public static class Handler implements IMessageHandler<PacketCreateEstate, IMessage> {
@@ -122,8 +129,10 @@ public class PacketCreateEstate implements IMessage {
                 estate.setGlobalPermissions(message.globalPermissions);
                 estate.setOwnerPermissions(message.ownerPermissions);
                 estate.setRenterPermissions(message.renterPermissions);
+                estate.setPermissionsAllowedToChange(message.globalAllowedToChangePerms);
                 if (PlayerHelper.isOp(player))
                     // TODO: have to make sure the estate permissions do not override the parent estate estate permissions
+                    // TODO: make sure the rentperiod is greater than 0 if the rent price is greater than 0
                     estate.setEstatePermissions(message.estatePermissions);
                 else if (estate.getParentEstate() == null)
                     estate.setEstatePermissions(Permission.getEstatePermissions());

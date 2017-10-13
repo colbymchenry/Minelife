@@ -27,7 +27,9 @@ public enum Permission {
     FALL_DAMAGE(true),
     SELL(false),
     RENT(false),
-    MODIFY_RENT_PERIOD(false);
+    MODIFY_RENT_PERIOD(false),
+    MODIFY_PURCHASE_PRICE(false),
+    MODIFY_RENT_PRICE(false);
 
     private boolean isEstatePermission = false;
 
