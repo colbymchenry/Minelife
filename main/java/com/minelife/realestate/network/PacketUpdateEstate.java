@@ -83,17 +83,15 @@ public class PacketUpdateEstate implements IMessage {
                 estate.setOutro(estateData.getOutro());
             }
 
+            // TODO: Need to keep working on all of this.
             List<Permission> toSet = Lists.newArrayList();
             // check if player can modify global perms
             for (Permission p : Permission.values()) {
                 if(playerPermissions.contains(p) && estateData.getGlobalPermissions().contains(p))
                     toSet.add(p);
             }
-/** TODO: Figure out why updating it cleared out the global, renter, allowedtochange, and owner perms.... Has to be something to do with
-    getting the players permissions from the estate itself.
- */
 
-estate.setGlobalPermissions(toSet);
+            estate.setGlobalPermissions(toSet);
 
             toSet.clear();
             // check all global perms allowed to change and update the global perms
@@ -105,23 +103,24 @@ estate.setGlobalPermissions(toSet);
             estate.setPermissionsAllowedToChange(toSet);
 
 
-            // TODO: Test setting of the owner and renter permissions
+            if(estate.isAbsoluteOwner(player.getUniqueID())) {
+                // set owner permissions
+                toSet.clear();
+                for (Permission p : Permission.values()) {
+                    if (playerPermissions.contains(p) && estateData.getOwnerPermissions().contains(p))
+                        toSet.add(p);
+                }
+                estate.setOwnerPermissions(toSet);
 
-            // set owner permissions
-            toSet.clear();
-            for (Permission p : Permission.values()) {
-                if(playerPermissions.contains(p) && estateData.getOwnerPermissions().contains(p))
-                    toSet.add(p);
+                // set renter permissions
+                toSet.clear();
+                for (Permission p : Permission.values()) {
+                    if (playerPermissions.contains(p) && estateData.getRenterPermissions().contains(p))
+                        toSet.add(p);
+                }
+                estate.setRenterPermissions(toSet);
             }
-            estate.setOwnerPermissions(toSet);
 
-            // set renter permissions
-            toSet.clear();
-            for (Permission p : Permission.values()) {
-                if(playerPermissions.contains(p) && estateData.getRenterPermissions().contains(p))
-                    toSet.add(p);
-            }
-            estate.setRenterPermissions(toSet);
             return null;
         }
 

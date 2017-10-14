@@ -182,6 +182,16 @@ public class Estate implements Comparable<Estate> {
         config.getFile().delete();
     }
 
+    public boolean isAbsoluteOwner(UUID playerID) {
+        Estate parentEstate = getParentEstate();
+        if(parentEstate == null && getOwner().equals(playerID)) return true;
+        while(parentEstate != null) {
+            if(parentEstate.getOwner() != null && parentEstate.getOwner().equals(playerID)) return true;
+            parentEstate = parentEstate.getParentEstate();
+        }
+        return false;
+    }
+
     public List<Permission> getPlayerPermissions(EntityPlayer player) {
         Estate masterEstate = getMasterEstate();
 
@@ -191,11 +201,25 @@ public class Estate implements Comparable<Estate> {
         }
         // if player is renter
         else if (masterEstate.getRenter() != null && masterEstate.getRenter().equals(player.getUniqueID())) {
-            return masterEstate.getRenterPermissions();
+            List<Permission> renterPerms = masterEstate.getRenterPermissions();
+            renterPerms.addAll(masterEstate.getGlobalPermissionsAllowedToChange());
+            renterPerms.addAll(masterEstate.getGlobalPermissions());
+            Set<Permission> permissions = new TreeSet<>();
+            permissions.addAll(renterPerms);
+            renterPerms.clear();
+            renterPerms.addAll(permissions);
+            return renterPerms;
         }
         // if player is member
         else if (masterEstate.getMembers().containsKey(player.getUniqueID())) {
-            return masterEstate.getMembers().get(player.getUniqueID());
+            List<Permission> memberPerms = masterEstate.getMembers().get(player.getUniqueID());
+            memberPerms.addAll(masterEstate.getGlobalPermissionsAllowedToChange());
+            memberPerms.addAll(masterEstate.getGlobalPermissions());
+            Set<Permission> permissions = new TreeSet<>();
+            permissions.addAll(memberPerms);
+            memberPerms.clear();
+            memberPerms.addAll(permissions);
+            return memberPerms;
         }
         // if player is not owner, renter, or member of master estate we loop through the estates inside the
         // master estate
@@ -205,15 +229,36 @@ public class Estate implements Comparable<Estate> {
             for (Estate e : containingEstates) {
                 // if player is owner
                 if (e.getOwner() != null && e.getOwner().equals(player.getUniqueID()) && e.contains(this)) {
-                    return e.getOwnerPermissions();
+                    List<Permission> ownerPerms = e.getOwnerPermissions();
+                    ownerPerms.addAll(e.getGlobalPermissionsAllowedToChange());
+                    ownerPerms.addAll(e.getGlobalPermissions());
+                    Set<Permission> permissions = new TreeSet<>();
+                    permissions.addAll(ownerPerms);
+                    ownerPerms.clear();
+                    ownerPerms.addAll(permissions);
+                    return ownerPerms;
                 }
                 // if player is renter
                 else if (e.getRenter() != null && e.getRenter().equals(player.getUniqueID()) && e.contains(this)) {
-                    return e.getRenterPermissions();
+                    List<Permission> renterPerms = e.getRenterPermissions();
+                    renterPerms.addAll(e.getGlobalPermissionsAllowedToChange());
+                    renterPerms.addAll(e.getGlobalPermissions());
+                    Set<Permission> permissions = new TreeSet<>();
+                    permissions.addAll(renterPerms);
+                    renterPerms.clear();
+                    renterPerms.addAll(permissions);
+                    return renterPerms;
                 }
                 // if player is member
                 else if (e.getMembers().containsKey(player.getUniqueID()) && e.contains(this)) {
-                    return e.getMembers().get(player.getUniqueID());
+                    List<Permission> memberPerms = e.getMembers().get(player.getUniqueID());
+                    memberPerms.addAll(e.getGlobalPermissionsAllowedToChange());
+                    memberPerms.addAll(e.getGlobalPermissions());
+                    Set<Permission> permissions = new TreeSet<>();
+                    permissions.addAll(memberPerms);
+                    memberPerms.clear();
+                    memberPerms.addAll(permissions);
+                    return memberPerms;
                 }
             }
         }

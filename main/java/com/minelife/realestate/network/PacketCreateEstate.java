@@ -5,6 +5,7 @@ import com.minelife.Minelife;
 import com.minelife.realestate.*;
 import com.minelife.realestate.server.SelectionHandler;
 import com.minelife.util.PlayerHelper;
+import com.minelife.util.client.PacketPopupMessage;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -95,6 +96,22 @@ public class PacketCreateEstate implements IMessage {
         public IMessage onMessage(PacketCreateEstate message, MessageContext ctx) {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
             Estate estate = null;
+
+            if(message.rentPrice == 0) {
+                Minelife.NETWORK.sendTo(new PacketPopupMessage("Rent price cannot be 0.", 0xC6C6C6), player);
+                return null;
+            }
+
+            if(message.purchasePrice == 0) {
+                Minelife.NETWORK.sendTo(new PacketPopupMessage("Purchase price cannot be 0.", 0xC6C6C6), player);
+                return null;
+            }
+
+            if(message.rentPrice > 0 && message.rentPeriod < 1) {
+                Minelife.NETWORK.sendTo(new PacketPopupMessage("Rent period must be greater than 0.", 0xC6C6C6), player);
+                return null;
+            }
+
             try {
                 Selection selection = SelectionHandler.getSelection(player);
 
@@ -131,8 +148,6 @@ public class PacketCreateEstate implements IMessage {
                 estate.setRenterPermissions(message.renterPermissions);
                 estate.setPermissionsAllowedToChange(message.globalAllowedToChangePerms);
                 if (PlayerHelper.isOp(player))
-                    // TODO: have to make sure the estate permissions do not override the parent estate estate permissions
-                    // TODO: make sure the rentperiod is greater than 0 if the rent price is greater than 0
                     estate.setEstatePermissions(message.estatePermissions);
                 else if (estate.getParentEstate() == null)
                     estate.setEstatePermissions(Permission.getEstatePermissions());
