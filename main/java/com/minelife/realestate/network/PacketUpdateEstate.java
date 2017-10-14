@@ -83,27 +83,30 @@ public class PacketUpdateEstate implements IMessage {
                 estate.setOutro(estateData.getOutro());
             }
 
-            // TODO: Need to keep working on all of this.
+            // TODO: Just need to fix the global perms. It seems to be removing most and just setting it to the allowedToChange perms.
             List<Permission> toSet = Lists.newArrayList();
             // check if player can modify global perms
             for (Permission p : Permission.values()) {
-                if(playerPermissions.contains(p) && estateData.getGlobalPermissions().contains(p))
+                if(playerPermissions.contains(p) && estateData.getGlobalPermissions().contains(p)
+                        && estate.getGlobalPermissionsAllowedToChange().contains(p))
                     toSet.add(p);
             }
 
             estate.setGlobalPermissions(toSet);
 
-            toSet.clear();
-            // check all global perms allowed to change and update the global perms
-            for (Permission p : Permission.values()) {
-                if(playerPermissions.contains(p) && estateData.getGlobalPermissionsAllowedToChange().contains(p))
-                    toSet.add(p);
-            }
 
-            estate.setPermissionsAllowedToChange(toSet);
 
 
             if(estate.isAbsoluteOwner(player.getUniqueID())) {
+                System.out.println("CALLED");
+                // set global permissions
+                toSet.clear();
+                for (Permission p : Permission.values()) {
+                    if(playerPermissions.contains(p) && estateData.getGlobalPermissionsAllowedToChange().contains(p))
+                        toSet.add(p);
+                }
+                estate.setPermissionsAllowedToChange(toSet);
+
                 // set owner permissions
                 toSet.clear();
                 for (Permission p : Permission.values()) {

@@ -28,7 +28,7 @@ public class CommandEstate implements ICommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return null;
+        return "Command not found.";
     }
 
     @Override

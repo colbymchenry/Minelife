@@ -134,7 +134,7 @@ public class PacketCreateEstate implements IMessage {
                 player.closeScreen();
             } catch (Exception e) {
                 e.printStackTrace();
-                player.addChatComponentMessage(new ChatComponentText(e.getMessage().substring(120)));
+                player.addChatComponentMessage(new ChatComponentText(e.getMessage().length() > 100 ? e.getMessage().substring(100) : e.getMessage()));
             }
 
             if (estate != null) {
