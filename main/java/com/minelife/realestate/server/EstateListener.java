@@ -5,6 +5,7 @@ import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
 import com.minelife.realestate.Permission;
 import com.minelife.realestate.RentDueNotification;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -46,8 +47,8 @@ public class EstateListener {
                 player.addChatComponentMessage(new ChatComponentText(estate.getOutro()));
 
             // TODO: Teleportation back in. Also don't allow players to use this permission
-            if (!estate.getPlayerPermissions(player).contains(Permission.EXIT)) {
-            }
+//            if (!estate.getPlayerPermissions(player).contains(Permission.EXIT)) {
+//            }
             return;
         }
 
@@ -59,8 +60,8 @@ public class EstateListener {
                     player.addChatComponentMessage(new ChatComponentText(estate.getIntro()));
 
                 // TODO: Teleporation back out. Also don't allow players to use this permission
-                if (!estate.getPlayerPermissions(player).contains(Permission.ENTER)) {
-                }
+//                if (!estate.getPlayerPermissions(player).contains(Permission.ENTER)) {
+//                }
             } else {
                 if (!insideEstate.get(player).equals(estate)) {
                     insideEstate.put(player, estate);
@@ -72,28 +73,32 @@ public class EstateListener {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onBreak(BlockEvent.BreakEvent event) {
+        System.out.println("EH");
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
         Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(event.x, event.y, event.z));
         if (estate == null) return;
         event.setCanceled(!estate.getPlayerPermissions(player).contains(Permission.BREAK));
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPlace(BlockEvent.PlaceEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.player;
         Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(event.x, event.y, event.z));
+
+        System.out.println("CALLED1");
         if (estate == null) return;
+        System.out.println("CALLED");
         event.setCanceled(!estate.getPlayerPermissions(player).contains(Permission.PLACE));
     }
 
     @SubscribeEvent
     public void onInteract(PlayerInteractEvent event) {
         // TODO:
-        EntityPlayerMP player = (EntityPlayerMP) event.entityPlayer;
-        Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(event.x, event.y, event.z));
-        if (estate == null) return;
+//        EntityPlayerMP player = (EntityPlayerMP) event.entityPlayer;
+//        Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(event.x, event.y, event.z));
+//        if (estate == null) return;
     }
     @SubscribeEvent
     public void onSpawn(EntityJoinWorldEvent event) {

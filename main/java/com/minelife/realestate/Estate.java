@@ -2,6 +2,7 @@ package com.minelife.realestate;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.minelife.economy.Billing;
 import com.minelife.util.ArrayUtil;
 import com.minelife.util.MLConfig;
@@ -68,32 +69,32 @@ public class Estate implements Comparable<Estate> {
         return config.getString("intro");
     }
 
-    public List<Permission> getGlobalPermissions() {
-        List<Permission> permissions = Lists.newArrayList();
+    public Set<Permission> getGlobalPermissions() {
+        Set<Permission> permissions = Sets.newTreeSet();
         config.getStringList("permissions.global").forEach(p -> permissions.add(Permission.valueOf(p)));
         return permissions;
     }
 
-    public List<Permission> getOwnerPermissions() {
-        List<Permission> permissions = Lists.newArrayList();
+    public Set<Permission> getOwnerPermissions() {
+        Set<Permission> permissions = Sets.newTreeSet();
         config.getStringList("permissions.owner").forEach(p -> permissions.add(Permission.valueOf(p)));
         return permissions;
     }
 
-    public List<Permission> getRenterPermissions() {
-        List<Permission> permissions = Lists.newArrayList();
+    public Set<Permission> getRenterPermissions() {
+        Set<Permission> permissions =Sets.newTreeSet();
         config.getStringList("permissions.renter").forEach(p -> permissions.add(Permission.valueOf(p)));
         return permissions;
     }
 
-    public List<Permission> getGlobalPermissionsAllowedToChange() {
-        List<Permission> permissions = Lists.newArrayList();
+    public Set<Permission> getGlobalPermissionsAllowedToChange() {
+        Set<Permission> permissions = Sets.newTreeSet();
         config.getStringList("permissions.allowedToChange").forEach(p -> permissions.add(Permission.valueOf(p)));
         return permissions;
     }
 
-    public List<Permission> getEstatePermissions() {
-        List<Permission> permissions = Lists.newArrayList();
+    public Set<Permission> getEstatePermissions() {
+        Set<Permission> permissions = Sets.newTreeSet();
         config.getStringList("permissions.estate").forEach(p -> permissions.add(Permission.valueOf(p)));
         return permissions;
     }
@@ -106,10 +107,10 @@ public class Estate implements Comparable<Estate> {
         return config.getUUID("renter", null);
     }
 
-    public Map<UUID, List<Permission>> getMembers() {
-        Map<UUID, List<Permission>> members = Maps.newHashMap();
+    public Map<UUID, Set<Permission>> getMembers() {
+        Map<UUID, Set<Permission>> members = Maps.newHashMap();
         for (String member : config.getStringList("members")) {
-            List<Permission> permissions = Lists.newArrayList();
+            Set<Permission> permissions = Sets.newTreeSet();
             config.getStringList("members." + member).forEach(p -> permissions.add(Permission.valueOf(p)));
             members.put(UUID.fromString(member), permissions);
         }
@@ -192,103 +193,140 @@ public class Estate implements Comparable<Estate> {
         return false;
     }
 
-    public List<Permission> getPlayerPermissions(EntityPlayer player) {
-        Estate masterEstate = getMasterEstate();
+    public Set<Permission> getPlayerPermissions(EntityPlayer player) {
+        // TODO: Master Estate: Global not allowed to break, but renter is. Renter makes region inside saying global
+        // TODO: can break and can't. But if the renter has the permission and makes a region inside their region, then
+        // TODO: they should be able to allow  for globale.
 
-        // if player is owner
-        if (masterEstate.getOwner() != null && masterEstate.getOwner().equals(player.getUniqueID())) {
-            return Arrays.asList(Permission.values());
-        }
-        // if player is renter
-        else if (masterEstate.getRenter() != null && masterEstate.getRenter().equals(player.getUniqueID())) {
-            List<Permission> renterPerms = masterEstate.getRenterPermissions();
-            renterPerms.addAll(masterEstate.getGlobalPermissionsAllowedToChange());
-            renterPerms.addAll(masterEstate.getGlobalPermissions());
-            Set<Permission> permissions = new TreeSet<>();
-            permissions.addAll(renterPerms);
-            renterPerms.clear();
-            renterPerms.addAll(permissions);
-            return renterPerms;
-        }
-        // if player is member
-        else if (masterEstate.getMembers().containsKey(player.getUniqueID())) {
-            List<Permission> memberPerms = masterEstate.getMembers().get(player.getUniqueID());
-            memberPerms.addAll(masterEstate.getGlobalPermissionsAllowedToChange());
-            memberPerms.addAll(masterEstate.getGlobalPermissions());
-            Set<Permission> permissions = new TreeSet<>();
-            permissions.addAll(memberPerms);
-            memberPerms.clear();
-            memberPerms.addAll(permissions);
-            return memberPerms;
-        }
-        // if player is not owner, renter, or member of master estate we loop through the estates inside the
-        // master estate
-        else {
-            List<Estate> containingEstates = masterEstate.getContainingEstates();
+        Set<Permission> permissions = Sets.newTreeSet();
+        permissions.addAll(getActualGlobalPerms());
 
-            for (Estate e : containingEstates) {
-                // if player is owner
-                if (e.getOwner() != null && e.getOwner().equals(player.getUniqueID()) && e.contains(this)) {
-                    List<Permission> ownerPerms = e.getOwnerPermissions();
-                    ownerPerms.addAll(e.getGlobalPermissionsAllowedToChange());
-                    ownerPerms.addAll(e.getGlobalPermissions());
-                    Set<Permission> permissions = new TreeSet<>();
-                    permissions.addAll(ownerPerms);
-                    ownerPerms.clear();
-                    ownerPerms.addAll(permissions);
-                    return ownerPerms;
-                }
-                // if player is renter
-                else if (e.getRenter() != null && e.getRenter().equals(player.getUniqueID()) && e.contains(this)) {
-                    List<Permission> renterPerms = e.getRenterPermissions();
-                    renterPerms.addAll(e.getGlobalPermissionsAllowedToChange());
-                    renterPerms.addAll(e.getGlobalPermissions());
-                    Set<Permission> permissions = new TreeSet<>();
-                    permissions.addAll(renterPerms);
-                    renterPerms.clear();
-                    renterPerms.addAll(permissions);
-                    return renterPerms;
-                }
-                // if player is member
-                else if (e.getMembers().containsKey(player.getUniqueID()) && e.contains(this)) {
-                    List<Permission> memberPerms = e.getMembers().get(player.getUniqueID());
-                    memberPerms.addAll(e.getGlobalPermissionsAllowedToChange());
-                    memberPerms.addAll(e.getGlobalPermissions());
-                    Set<Permission> permissions = new TreeSet<>();
-                    permissions.addAll(memberPerms);
-                    memberPerms.clear();
-                    memberPerms.addAll(permissions);
-                    return memberPerms;
-                }
-            }
+        if(Objects.equals(player.getUniqueID(), getOwner())) {
+            permissions.addAll(getActualOwnerPerms());
+            permissions.addAll(getActualPermsAllowedToChange());
+        } else if(Objects.equals(player.getUniqueID(), getRenter())) {
+            permissions.addAll(getActualRenterPerms());
+            permissions.addAll(getActualPermsAllowedToChange());
+        } else if(getMembers().containsKey(player.getUniqueID())) {
+            permissions.addAll(getActualMemberPerms(player.getUniqueID()));
         }
 
-        return getGlobalPermissions();
+        return permissions;
     }
 
+    public Set<Permission> getActualGlobalPerms() {
+        Set<Permission> globalPermissions = getGlobalPermissions();
+        Set<Permission> toRemove = Sets.newTreeSet();
 
-    public void setGlobalPermissions(List<Permission> permissions) {
-        config.set("permissions.global", ArrayUtil.toStringList(permissions));
+        Estate parentEstate = getParentEstate();
+
+        while(parentEstate != null) {
+
+            for (Permission p : globalPermissions)
+                if(!parentEstate.getGlobalPermissions().contains(p)) toRemove.add(p);
+
+            parentEstate = parentEstate.getParentEstate();
+        }
+
+        globalPermissions.removeAll(toRemove);
+        return globalPermissions;
+    }
+
+    public Set<Permission> getActualRenterPerms() {
+        Set<Permission> renterPerms = getRenterPermissions();
+        Set<Permission> toRemove = Sets.newTreeSet();
+
+        Estate parentEstate = getParentEstate();
+
+        while(parentEstate != null) {
+
+            for (Permission p : renterPerms)
+                if(!parentEstate.getRenterPermissions().contains(p)) toRemove.add(p);
+
+            parentEstate = parentEstate.getParentEstate();
+        }
+
+        renterPerms.removeAll(toRemove);
+        return renterPerms;
+    }
+
+    public Set<Permission> getActualOwnerPerms() {
+        Set<Permission> ownerPerms = getOwnerPermissions();
+        Set<Permission> toRemove = Sets.newTreeSet();
+
+        Estate parentEstate = getParentEstate();
+
+        while(parentEstate != null) {
+
+            for (Permission p : ownerPerms)
+                if(!parentEstate.getOwnerPermissions().contains(p)) toRemove.add(p);
+
+            parentEstate = parentEstate.getParentEstate();
+        }
+
+        ownerPerms.removeAll(toRemove);
+        return ownerPerms;
+    }
+
+    public Set<Permission> getActualPermsAllowedToChange() {
+        Set<Permission> allowedToChange = getGlobalPermissionsAllowedToChange();
+        Set<Permission> toRemove = Sets.newTreeSet();
+
+        Estate parentEstate = getParentEstate();
+
+        while(parentEstate != null) {
+
+            for (Permission p : allowedToChange)
+                if(!parentEstate.getGlobalPermissionsAllowedToChange().contains(p)) toRemove.add(p);
+
+            parentEstate = parentEstate.getParentEstate();
+        }
+
+        allowedToChange.removeAll(toRemove);
+        return allowedToChange;
+    }
+
+    // TODO
+    public Set<Permission> getActualMemberPerms(UUID playerID) {
+        Set<Permission> memberPerms = getMembers().get(playerID);
+        Set<Permission> toRemove = Sets.newTreeSet();
+
+        Estate parentEstate = getParentEstate();
+
+        while(parentEstate != null) {
+
+            for (Permission p : memberPerms)
+                if(!parentEstate.getGlobalPermissionsAllowedToChange().contains(p)) toRemove.add(p);
+
+            parentEstate = parentEstate.getParentEstate();
+        }
+
+        memberPerms.removeAll(toRemove);
+        return memberPerms;
+    }
+
+    public void setGlobalPermissions(Set<Permission> permissions) {
+        config.set("permissions.global", ArrayUtil.toStringList(toList(permissions)));
         config.save();
     }
 
-    public void setOwnerPermissions(List<Permission> permissions) {
-        config.set("permissions.owner", ArrayUtil.toStringList(permissions));
+    public void setOwnerPermissions(Set<Permission> permissions) {
+        config.set("permissions.owner", ArrayUtil.toStringList(toList(permissions)));
         config.save();
     }
 
-    public void setRenterPermissions(List<Permission> permissions) {
-        config.set("permissions.renter", ArrayUtil.toStringList(permissions));
+    public void setRenterPermissions(Set<Permission> permissions) {
+        config.set("permissions.renter", ArrayUtil.toStringList(toList(permissions)));
         config.save();
     }
 
-    public void setPermissionsAllowedToChange(List<Permission> permissions) {
-        config.set("permissions.allowedToChange", ArrayUtil.toStringList(permissions));
+    public void setPermissionsAllowedToChange(Set<Permission> permissions) {
+        config.set("permissions.allowedToChange", ArrayUtil.toStringList(toList(permissions)));
         config.save();
     }
 
-    public void setEstatePermissions(List<Permission> permissions) {
-        config.set("permissions.estate", ArrayUtil.toStringList(permissions));
+    public void setEstatePermissions(Set<Permission> permissions) {
+        config.set("permissions.estate", ArrayUtil.toStringList(toList(permissions)));
         config.save();
     }
 
@@ -307,12 +345,12 @@ public class Estate implements Comparable<Estate> {
         config.save();
     }
 
-    public void setMembers(Map<UUID, List<Permission>> members) {
+    public void setMembers(Map<UUID, Set<Permission>> members) {
         List<UUID> uuids = Lists.newArrayList();
         uuids.addAll(members.keySet());
         config.set("members", ArrayUtil.toStringList(uuids));
         for (UUID uuid : uuids)
-            config.set("members." + uuid.toString(), ArrayUtil.toStringList(members.get(uuid)));
+            config.set("members." + uuid.toString(), ArrayUtil.toStringList(toList(members.get(uuid))));
         config.save();
     }
 
@@ -370,6 +408,18 @@ public class Estate implements Comparable<Estate> {
     @Override
     public boolean equals(Object obj) {
         return !(obj instanceof Estate) ? false : ((Estate) obj).getID() == getID();
+    }
+
+    private Set<Permission> toSet(Set<Permission> list) {
+        Set<Permission> set = Sets.newTreeSet();
+        set.addAll(list);
+        return set;
+    }
+
+    private List<Permission> toList(Set<Permission> treeSet) {
+        List<Permission> list = Lists.newArrayList();
+        list.addAll(treeSet);
+        return list;
     }
 
 }

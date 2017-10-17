@@ -2,6 +2,7 @@ package com.minelife.realestate.client.gui;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.realestate.Permission;
 import com.minelife.realestate.EstateData;
@@ -20,15 +21,16 @@ import org.lwjgl.input.Mouse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class GuiModifyEstate extends GuiScreen {
 
     private int xPosition, yPosition, bgWidth = 200, bgHeight = 200;
     private EstateData estateData;
-    private List<Permission> playerPermissions;
+    private Set<Permission> playerPermissions;
     private GuiContent content;
 
-    public GuiModifyEstate(EstateData estateData, List<Permission> playerPermissions) {
+    public GuiModifyEstate(EstateData estateData, Set<Permission> playerPermissions) {
         this.estateData = estateData;
         this.playerPermissions = playerPermissions;
     }
@@ -113,31 +115,31 @@ public class GuiModifyEstate extends GuiScreen {
 
             totalHeight += 40;
             globalLabelY = totalHeight;
-            for (Permission p : playerPermissions) {
+            for (Permission p : Permission.values()) {
                 if (!p.isEstatePermission())
                     globalPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getGlobalPermissions().contains(p)));
             }
             totalHeight += 40;
             renterLabelY = totalHeight;
-            for (Permission p : playerPermissions) {
+            for (Permission p : Permission.values()) {
                 if (!p.isEstatePermission())
                     renterPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getRenterPermissions().contains(p)));
             }
             totalHeight += 40;
             ownerLabelY = totalHeight;
-            for (Permission p : playerPermissions) {
+            for (Permission p : Permission.values()) {
                 if (!p.isEstatePermission())
                     ownerPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getOwnerPermissions().contains(p)));
             }
             totalHeight += 60;
             allowedToChangeLabelY = totalHeight;
-            for (Permission p : playerPermissions) {
+            for (Permission p : Permission.values()) {
                 if (!p.isEstatePermission())
                     allowedToChangePerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getGlobalPermissionsAllowedToChange().contains(p)));
             }
             totalHeight += 40;
             estateLabelY = totalHeight;
-            for (Permission p : playerPermissions) {
+            for (Permission p : Permission.values()) {
                 if (p.isEstatePermission())
                     estatePerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getEstatePermissions().contains(p)));
             }
@@ -243,8 +245,8 @@ public class GuiModifyEstate extends GuiScreen {
             estatePerms.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
 
             if (updateBtn.mousePressed(mc, mouseX, mouseY)) {
-                List<Permission> globalPerms = Lists.newArrayList(), renterPerms = Lists.newArrayList(),
-                        ownerPerms = Lists.newArrayList(), estatePerms = Lists.newArrayList(), globalAllowedToChangePerms = Lists.newArrayList();
+                Set<Permission> globalPerms = Sets.newTreeSet(), renterPerms = Sets.newTreeSet(),
+                        ownerPerms = Sets.newTreeSet(), estatePerms =Sets.newTreeSet(), globalAllowedToChangePerms = Sets.newTreeSet();
                 this.globalPerms.forEach((p, tB) -> {
                     if (tB.isChecked()) globalPerms.add(p);
                 });

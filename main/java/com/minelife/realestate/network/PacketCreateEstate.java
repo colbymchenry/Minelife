@@ -1,6 +1,7 @@
 package com.minelife.realestate.network;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.realestate.*;
 import com.minelife.realestate.server.SelectionHandler;
@@ -18,15 +19,16 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.Vec3;
 
 import java.util.List;
+import java.util.Set;
 
 public class PacketCreateEstate implements IMessage {
 
-    private List<Permission> globalPermissions, ownerPermissions, renterPermissions, estatePermissions, globalAllowedToChangePerms;
+    private Set<Permission> globalPermissions, ownerPermissions, renterPermissions, estatePermissions, globalAllowedToChangePerms;
     private double purchasePrice, rentPrice;
     private int rentPeriod;
     private String intro, outro;
 
-    public PacketCreateEstate(List<Permission> globalPermissions, List<Permission> ownerPermissions, List<Permission> renterPermissions, List<Permission> estatePermissions, List<Permission> globalAllowedToChangePerms, double purchasePrice, double rentPrice, int rentPeriod, String intro, String outro) {
+    public PacketCreateEstate(Set<Permission> globalPermissions, Set<Permission> ownerPermissions, Set<Permission> renterPermissions, Set<Permission> estatePermissions, Set<Permission> globalAllowedToChangePerms, double purchasePrice, double rentPrice, int rentPeriod, String intro, String outro) {
         this.globalPermissions = globalPermissions;
         this.ownerPermissions = ownerPermissions;
         this.renterPermissions = renterPermissions;
@@ -44,11 +46,11 @@ public class PacketCreateEstate implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        globalPermissions = Lists.newArrayList();
-        ownerPermissions = Lists.newArrayList();
-        renterPermissions = Lists.newArrayList();
-        estatePermissions = Lists.newArrayList();
-        globalAllowedToChangePerms = Lists.newArrayList();
+        globalPermissions = Sets.newTreeSet();
+        ownerPermissions = Sets.newTreeSet();
+        renterPermissions = Sets.newTreeSet();
+        estatePermissions = Sets.newTreeSet();
+        globalAllowedToChangePerms = Sets.newTreeSet();
         purchasePrice = buf.readDouble();
         rentPrice = buf.readDouble();
         rentPeriod = buf.readInt();

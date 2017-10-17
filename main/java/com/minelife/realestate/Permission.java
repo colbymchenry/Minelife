@@ -1,8 +1,10 @@
 package com.minelife.realestate;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import java.util.List;
+import java.util.Set;
 
 public enum Permission {
 
@@ -41,8 +43,8 @@ public enum Permission {
         return isEstatePermission;
     }
 
-    public static List<Permission> getEstatePermissions() {
-        List<Permission> permissions = Lists.newArrayList();
+    public static Set<Permission> getEstatePermissions() {
+        Set<Permission> permissions = Sets.newTreeSet();
         for (Permission permission : values())
             if(permission.isEstatePermission()) permissions.add(permission);
         return permissions;

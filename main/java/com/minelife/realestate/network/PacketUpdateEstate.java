@@ -16,6 +16,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class PacketUpdateEstate implements IMessage {
 
@@ -56,7 +59,7 @@ public class PacketUpdateEstate implements IMessage {
             Estate estate = EstateHandler.getEstate(message.estateData.getID());
             EstateData estateData = message.estateData;
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-            List<Permission> playerPermissions = estate.getPlayerPermissions(player);
+            Set<Permission> playerPermissions = estate.getPlayerPermissions(player);
 
             // if player has permission to sell, then set the purchase price
             if(playerPermissions.contains(Permission.SELL)) {
@@ -83,22 +86,25 @@ public class PacketUpdateEstate implements IMessage {
                 estate.setOutro(estateData.getOutro());
             }
 
-            // TODO: Just need to fix the global perms. It seems to be removing most and just setting it to the allowedToChange perms.
-            List<Permission> toSet = Lists.newArrayList();
+            // TODO: Need to fix this again.. lolz
+            // **DONE** modifying global permissions
+            Set<Permission> toSet = new TreeSet<>();
+            toSet.addAll(estate.getGlobalPermissions());
             // check if player can modify global perms
             for (Permission p : Permission.values()) {
-                if(playerPermissions.contains(p) && estateData.getGlobalPermissions().contains(p)
-                        && estate.getGlobalPermissionsAllowedToChange().contains(p))
-                    toSet.add(p);
+                if(Objects.equals(estate.getRenter(), player.getUniqueID()) ||
+                        Objects.equals(estate.getOwner(), player.getUniqueID()) ||
+                        estate.isAbsoluteOwner(player.getUniqueID())) {
+                    if(playerPermissions.contains(p)) {
+                        if (!estateData.getGlobalPermissions().contains(p)) toSet.remove(p);
+                        else toSet.add(p);
+                    }
+                }
             }
 
             estate.setGlobalPermissions(toSet);
 
-
-
-
             if(estate.isAbsoluteOwner(player.getUniqueID())) {
-                System.out.println("CALLED");
                 // set global permissions
                 toSet.clear();
                 for (Permission p : Permission.values()) {

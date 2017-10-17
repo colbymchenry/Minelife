@@ -68,7 +68,6 @@ public class Minelife {
         MODS.add(new ModEconomy());
         MODS.add(new ModPolice());
         MODS.add(new ModGun());
-        MODS.add(new ModRegion());
         MODS.add(new ModDrugs());
         MODS.add(new ModRealEstate());
         MODS.add(new ModMinebay());

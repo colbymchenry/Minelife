@@ -16,6 +16,7 @@ import org.lwjgl.input.Mouse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class GuiPurchaseEstate extends GuiScreen {
 
@@ -23,12 +24,12 @@ public class GuiPurchaseEstate extends GuiScreen {
 
     private double purchasePrice, rentPrice;
     private int estateID, rentPeriod;
-    private List<Permission> globalPerms, renterPerms, ownerPerms, allowedToChangePerms, estatePerms;
+    private Set<Permission> globalPerms, renterPerms, ownerPerms, allowedToChangePerms, estatePerms;
     private int bgWidth = 200, bgHeight = 200, xPosition, yPosition;
 
-    public GuiPurchaseEstate(int estateID, double purchasePrice, double rentPrice, int rentPeriod, List<Permission> globalPerms,
-                             List<Permission> renterPerms, List<Permission> ownerPerms, List<Permission> allowedToChangePerms,
-                             List<Permission> estatePerms) {
+    public GuiPurchaseEstate(int estateID, double purchasePrice, double rentPrice, int rentPeriod, Set<Permission> globalPerms,
+                             Set<Permission> renterPerms, Set<Permission> ownerPerms, Set<Permission> allowedToChangePerms,
+                             Set<Permission> estatePerms) {
         this.estateID = estateID;
         this.purchasePrice = purchasePrice;
         this.rentPrice = rentPrice;

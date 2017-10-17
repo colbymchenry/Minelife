@@ -2,6 +2,7 @@ package com.minelife.realestate.client.gui;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.realestate.Permission;
 import com.minelife.realestate.network.PacketCreateEstate;
@@ -19,6 +20,7 @@ import org.lwjgl.input.Mouse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 // TODO: Check if they can create an estate with the current seleciton before opening this GUI
 public class GuiCreateEstate extends GuiScreen {
@@ -209,8 +211,8 @@ public class GuiCreateEstate extends GuiScreen {
             estatePermissions.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
 
             if (createBtn.mousePressed(mc, mouseX, mouseY)) {
-                List<Permission> globalPerms = Lists.newArrayList(), renterPerms = Lists.newArrayList(),
-                        ownerPerms = Lists.newArrayList(), estatePerms = Lists.newArrayList(), allowedToChangePerms = Lists.newArrayList();
+                Set<Permission> globalPerms = Sets.newTreeSet(), renterPerms = Sets.newTreeSet(),
+                        ownerPerms = Sets.newTreeSet(), estatePerms =Sets.newTreeSet(), allowedToChangePerms = Sets.newTreeSet();
                 globalPermissions.forEach((p, tB) -> {
                     if (tB.isChecked()) globalPerms.add(p);
                 });

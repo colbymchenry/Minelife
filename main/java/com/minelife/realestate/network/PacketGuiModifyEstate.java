@@ -1,6 +1,7 @@
 package com.minelife.realestate.network;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.Permission;
 import com.minelife.realestate.EstateData;
@@ -17,13 +18,14 @@ import net.minecraft.client.Minecraft;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 public class PacketGuiModifyEstate implements IMessage {
 
     private EstateData estateData;
-    private List<Permission> playerPermissions;
+    private Set<Permission> playerPermissions;
 
-    public PacketGuiModifyEstate(Estate estate, List<Permission> playerPermissions) {
+    public PacketGuiModifyEstate(Estate estate, Set<Permission> playerPermissions) {
         this.playerPermissions = playerPermissions;
         estateData = new EstateData(estate);
     }
@@ -34,7 +36,7 @@ public class PacketGuiModifyEstate implements IMessage {
     @Override
     public void fromBytes(ByteBuf buf) {
         try {
-            playerPermissions = Lists.newArrayList();
+            playerPermissions = Sets.newTreeSet();
             estateData = EstateData.fromBytes(buf);
             int permsSize = buf.readInt();
             for (int i = 0; i < permsSize; i++) playerPermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
@@ -43,6 +45,8 @@ public class PacketGuiModifyEstate implements IMessage {
         } catch (InvalidConfigurationException e) {
             e.printStackTrace();
         }
+
+        System.out.println("BOOM");
     }
 
     @Override
@@ -50,12 +54,15 @@ public class PacketGuiModifyEstate implements IMessage {
         estateData.toBytes(buf);
         buf.writeInt(playerPermissions.size());
         playerPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
+        System.out.println("HA");
     }
 
     public static class Handler implements IMessageHandler<PacketGuiModifyEstate, IMessage> {
 
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketGuiModifyEstate message, MessageContext ctx) {
+
+            System.out.println("NPP<0");
             Minecraft.getMinecraft().displayGuiScreen(new GuiModifyEstate(message.estateData, message.playerPermissions));
             return null;
         }

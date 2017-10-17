@@ -2,6 +2,7 @@ package com.minelife.realestate;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.economy.Billing;
 import com.minelife.util.MLConfig;
@@ -22,6 +23,7 @@ import net.minecraft.world.World;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class EstateData extends Estate implements INameReceiver, Callback {
@@ -30,12 +32,12 @@ public class EstateData extends Estate implements INameReceiver, Callback {
     private int id, rentPeriod;
     private double purchasePrice, rentPrice;
     private String ownerName, renterName, intro, outro;
-    private List<Permission> globalPermissionList, ownerPermissionList, renterPermissionList,
+    private Set<Permission> globalPermissionList, ownerPermissionList, renterPermissionList,
             allowedToChangePermissionList, estatePermissionList;
     private AxisAlignedBB bounds;
-    private Map<UUID, List<Permission>> members;
+    private Map<UUID, Set<Permission>> members;
 
-    public EstateData(int id, UUID owner, UUID renter, int rentPeriod, double purchasePrice, double rentPrice, String intro, String outro, List<Permission> globalPermissionList, List<Permission> ownerPermissionList, List<Permission> renterPermissionList, List<Permission> allowedToChangePermissionList, List<Permission> estatePermissionList, AxisAlignedBB bounds, Map<UUID, List<Permission>> members) throws IOException, InvalidConfigurationException {
+    public EstateData(int id, UUID owner, UUID renter, int rentPeriod, double purchasePrice, double rentPrice, String intro, String outro, Set<Permission> globalPermissionList, Set<Permission> ownerPermissionList, Set<Permission> renterPermissionList, Set<Permission> allowedToChangePermissionList, Set<Permission> estatePermissionList, AxisAlignedBB bounds, Map<UUID, Set<Permission>> members) throws IOException, InvalidConfigurationException {
         this.id = id;
         this.owner = owner;
         this.renter = renter;
@@ -128,27 +130,27 @@ public class EstateData extends Estate implements INameReceiver, Callback {
     }
 
     @Override
-    public List<Permission> getGlobalPermissions() {
+    public Set<Permission> getGlobalPermissions() {
         return globalPermissionList;
     }
 
     @Override
-    public List<Permission> getOwnerPermissions() {
+    public Set<Permission> getOwnerPermissions() {
         return ownerPermissionList;
     }
 
     @Override
-    public List<Permission> getRenterPermissions() {
+    public Set<Permission> getRenterPermissions() {
         return renterPermissionList;
     }
 
     @Override
-    public List<Permission> getGlobalPermissionsAllowedToChange() {
+    public Set<Permission> getGlobalPermissionsAllowedToChange() {
         return allowedToChangePermissionList;
     }
 
     @Override
-    public List<Permission> getEstatePermissions() {
+    public Set<Permission> getEstatePermissions() {
         return estatePermissionList;
     }
 
@@ -171,7 +173,7 @@ public class EstateData extends Estate implements INameReceiver, Callback {
     }
 
     @Override
-    public Map<UUID, List<Permission>> getMembers() {
+    public Map<UUID, Set<Permission>> getMembers() {
         return members;
     }
 
@@ -231,32 +233,32 @@ public class EstateData extends Estate implements INameReceiver, Callback {
     }
 
     @Override
-    public List<Permission> getPlayerPermissions(EntityPlayer player) {
-        return Lists.newArrayList();
+    public Set<Permission> getPlayerPermissions(EntityPlayer player) {
+        return Sets.newTreeSet();
     }
 
     @Override
-    public void setGlobalPermissions(List<Permission> permissions) {
+    public void setGlobalPermissions(Set<Permission> permissions) {
         globalPermissionList = permissions;
     }
 
     @Override
-    public void setOwnerPermissions(List<Permission> permissions) {
+    public void setOwnerPermissions(Set<Permission> permissions) {
         ownerPermissionList = permissions;
     }
 
     @Override
-    public void setRenterPermissions(List<Permission> permissions) {
+    public void setRenterPermissions(Set<Permission> permissions) {
         renterPermissionList = permissions;
     }
 
     @Override
-    public void setPermissionsAllowedToChange(List<Permission> permissions) {
+    public void setPermissionsAllowedToChange(Set<Permission> permissions) {
         allowedToChangePermissionList = permissions;
     }
 
     @Override
-    public void setEstatePermissions(List<Permission> permissions) {
+    public void setEstatePermissions(Set<Permission> permissions) {
         estatePermissionList = permissions;
     }
 
@@ -276,7 +278,7 @@ public class EstateData extends Estate implements INameReceiver, Callback {
     }
 
     @Override
-    public void setMembers(Map<UUID, List<Permission>> members) {
+    public void setMembers(Map<UUID, Set<Permission>> members) {
         this.members = members;
     }
 
@@ -375,11 +377,11 @@ public class EstateData extends Estate implements INameReceiver, Callback {
         int renterPermsSize = buf.readInt();
         int permsAllowedToChangeSize = buf.readInt();
         int estatePermsSize = buf.readInt();
-        List<Permission> globalPerms = Lists.newArrayList();
-        List<Permission> ownerPerms = Lists.newArrayList();
-        List<Permission> renterPerms = Lists.newArrayList();
-        List<Permission> allowedToChangePerms = Lists.newArrayList();
-        List<Permission> estatePerms = Lists.newArrayList();
+        Set<Permission> globalPerms = Sets.newTreeSet();
+        Set<Permission> ownerPerms = Sets.newTreeSet();
+        Set<Permission> renterPerms = Sets.newTreeSet();
+        Set<Permission> allowedToChangePerms = Sets.newTreeSet();
+        Set<Permission> estatePerms = Sets.newTreeSet();
         for (int i = 0; i < globalPermsSize; i++) globalPerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
         for (int i = 0; i < ownerPermsSize; i++) ownerPerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
         for (int i = 0; i < renterPermsSize; i++) renterPerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
@@ -387,11 +389,11 @@ public class EstateData extends Estate implements INameReceiver, Callback {
             allowedToChangePerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
         for (int i = 0; i < estatePermsSize; i++) estatePerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
         AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble());
-        Map<UUID, List<Permission>> members = Maps.newHashMap();
+        Map<UUID, Set<Permission>> members = Maps.newHashMap();
         int membersSize = buf.readInt();
         for (int i = 0; i < membersSize; i++) {
             UUID memberUUID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
-            List<Permission> permissions = Lists.newArrayList();
+            Set<Permission> permissions = Sets.newTreeSet();
             int permsSize = buf.readInt();
             for (int i1 = 0; i1 < permsSize; i1++) {
                 permissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));

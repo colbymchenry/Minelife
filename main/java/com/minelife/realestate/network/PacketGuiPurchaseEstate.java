@@ -1,6 +1,7 @@
 package com.minelife.realestate.network;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.Permission;
 import com.minelife.realestate.client.gui.GuiPurchaseEstate;
@@ -14,6 +15,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 
 import java.util.List;
+import java.util.Set;
 
 public class PacketGuiPurchaseEstate implements IMessage {
 
@@ -21,7 +23,7 @@ public class PacketGuiPurchaseEstate implements IMessage {
 
     private double purchasePrice, rentPrice;
     private int rentPeriod, estateID;
-    private List<Permission> globalPerms, renterPerms, ownerPerms, allowedToChangePerms, estatePerms;
+    private Set<Permission> globalPerms, renterPerms, ownerPerms, allowedToChangePerms, estatePerms;
 
     public PacketGuiPurchaseEstate(Estate estate) {
         this.purchasePrice = estate.getPurchasePrice();
@@ -37,11 +39,11 @@ public class PacketGuiPurchaseEstate implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        globalPerms = Lists.newArrayList();
-        renterPerms = Lists.newArrayList();
-        ownerPerms = Lists.newArrayList();
-        allowedToChangePerms = Lists.newArrayList();
-        estatePerms = Lists.newArrayList();
+        globalPerms = Sets.newTreeSet();
+        renterPerms = Sets.newTreeSet();
+        ownerPerms = Sets.newTreeSet();
+        allowedToChangePerms = Sets.newTreeSet();
+        estatePerms = Sets.newTreeSet();
 
         estateID = buf.readInt();
         purchasePrice = buf.readDouble();
