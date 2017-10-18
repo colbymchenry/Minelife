@@ -185,21 +185,22 @@ public class Estate implements Comparable<Estate> {
 
     public boolean isAbsoluteOwner(UUID playerID) {
         Estate parentEstate = getParentEstate();
-        if(parentEstate == null && getOwner().equals(playerID)) return true;
+        if(parentEstate == null && Objects.equals(playerID, getOwner())) return true;
         while(parentEstate != null) {
-            if(parentEstate.getOwner() != null && parentEstate.getOwner().equals(playerID)) return true;
+            if(Objects.equals(playerID, getOwner())) return true;
             parentEstate = parentEstate.getParentEstate();
         }
         return false;
     }
 
     public Set<Permission> getPlayerPermissions(EntityPlayer player) {
-        // TODO: Master Estate: Global not allowed to break, but renter is. Renter makes region inside saying global
-        // TODO: can break and can't. But if the renter has the permission and makes a region inside their region, then
-        // TODO: they should be able to allow  for globale.
-
         Set<Permission> permissions = Sets.newTreeSet();
         permissions.addAll(getActualGlobalPerms());
+
+        if(getParentEstate() == null && Objects.equals(player.getUniqueID(), getOwner())) {
+            permissions.addAll(toSet(Arrays.asList(Permission.values())));
+            return permissions;
+        }
 
         if(Objects.equals(player.getUniqueID(), getOwner())) {
             permissions.addAll(getActualOwnerPerms());
@@ -286,7 +287,7 @@ public class Estate implements Comparable<Estate> {
         return allowedToChange;
     }
 
-    // TODO
+    // TODO: Need to do this one
     public Set<Permission> getActualMemberPerms(UUID playerID) {
         Set<Permission> memberPerms = getMembers().get(playerID);
         Set<Permission> toRemove = Sets.newTreeSet();
@@ -410,7 +411,7 @@ public class Estate implements Comparable<Estate> {
         return !(obj instanceof Estate) ? false : ((Estate) obj).getID() == getID();
     }
 
-    private Set<Permission> toSet(Set<Permission> list) {
+    private Set<Permission> toSet(List<Permission> list) {
         Set<Permission> set = Sets.newTreeSet();
         set.addAll(list);
         return set;
