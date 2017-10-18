@@ -46,6 +46,7 @@ public class CommandEstate implements ICommand {
 
             switch(args[0].toLowerCase()) {
                 case "create": {
+                    // TODO: Check to see if player has permission to create estate
                     if(EstateHandler.canCreateEstate(player, SelectionHandler.getSelection(player))) {
                         List<Permission> permissions = Lists.newArrayList();
                         if(estateAtLoc == null)
