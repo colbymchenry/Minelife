@@ -144,7 +144,6 @@ public class PacketUpdateEstate implements IMessage {
             }
             permissions.clear();
 
-            // TODO: This is a bit tricky I bet.
             /**
              * Set permissions allowed to change
              */
@@ -157,6 +156,8 @@ public class PacketUpdateEstate implements IMessage {
                 permissions.removeAll(toRemove);
                 estate.setPermissionsAllowedToChange(permissions);
             }
+
+            //TODO: Setting estate permissions
 
             return null;
         }

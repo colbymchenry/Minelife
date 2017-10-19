@@ -81,7 +81,9 @@ public class CommandRegion implements ICommand {
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender)
     {
-        return sender instanceof EntityPlayerMP && ModPermission.get(((EntityPlayerMP) sender).getUniqueID()).hasPermission("region");
+        // TODO
+//        return sender instanceof EntityPlayerMP && ModPermission.get(((EntityPlayerMP) sender).getUniqueID()).hasPermission("region");
+            return true;
     }
 
     @Override

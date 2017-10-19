@@ -52,6 +52,10 @@ public class CommandEstate implements ICommand {
                         if(estateAtLoc == null)
                             permissions.addAll(Arrays.asList(Permission.values()));
                         else {
+                            if(!estateAtLoc.getPlayerPermissions(player).contains(Permission.ESTATE_CREATION)) {
+                                player.addChatComponentMessage(new ChatComponentText("You do not have permission to create an estate here."));
+                                return;
+                            }
                             List<Permission> perms = Lists.newArrayList();
                             perms.addAll(estateAtLoc.getPlayerPermissions(player));
                             if(!PlayerHelper.isOp(player)) perms.removeAll(Permission.getEstatePermissions());

@@ -1,25 +1,16 @@
 package com.minelife.economy.server;
 
 import com.google.common.collect.Lists;
-import com.minelife.CustomMessageException;
-import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
-import com.minelife.permission.ModPermission;
-import com.minelife.permission.Player;
 import com.minelife.util.NumberConversions;
-import com.minelife.util.server.Callback;
 import com.minelife.util.server.MLCommand;
-import com.minelife.util.server.NameFetcher;
 import com.minelife.util.server.UUIDFetcher;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class CommandEconomy extends MLCommand {
 
@@ -52,9 +43,10 @@ public class CommandEconomy extends MLCommand {
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
         if (!(sender instanceof EntityPlayer)) return true;
 
-        Player player = ModPermission.get(((EntityPlayer) sender).getUniqueID());
+        // TODO:
+//        Player player = ModPermission.get(((EntityPlayer) sender).getUniqueID());
 
-        return player.hasPermission("economy");
+        return true;
     }
 
     @Override

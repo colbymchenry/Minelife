@@ -43,7 +43,7 @@ public class MLConfig extends YamlConfiguration {
     }
 
     public void set(String path, UUID uuid) {
-        this.set(path, uuid.toString());
+        this.set(path, uuid == null ? "" : uuid.toString());
     }
 
     public void set(String path, Vector vector) {

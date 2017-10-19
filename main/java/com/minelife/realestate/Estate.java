@@ -25,7 +25,8 @@ public class Estate implements Comparable<Estate> {
     private int id;
     private MLConfig config;
 
-    protected Estate() {}
+    protected Estate() {
+    }
 
     public Estate(int id) throws IOException, InvalidConfigurationException {
         this.id = id;
@@ -82,7 +83,7 @@ public class Estate implements Comparable<Estate> {
     }
 
     public Set<Permission> getRenterPermissions() {
-        Set<Permission> permissions =Sets.newTreeSet();
+        Set<Permission> permissions = Sets.newTreeSet();
         config.getStringList("permissions.renter").forEach(p -> permissions.add(Permission.valueOf(p)));
         return permissions;
     }
@@ -185,9 +186,9 @@ public class Estate implements Comparable<Estate> {
 
     public boolean isAbsoluteOwner(UUID playerID) {
         Estate parentEstate = getParentEstate();
-        if(parentEstate == null && Objects.equals(playerID, getOwner())) return true;
-        while(parentEstate != null) {
-            if(Objects.equals(playerID, getOwner())) return true;
+        if (parentEstate == null && Objects.equals(playerID, getOwner())) return true;
+        while (parentEstate != null) {
+            if (Objects.equals(playerID, getOwner())) return true;
             parentEstate = parentEstate.getParentEstate();
         }
         return false;
@@ -197,18 +198,18 @@ public class Estate implements Comparable<Estate> {
         Set<Permission> permissions = Sets.newTreeSet();
         permissions.addAll(getActualGlobalPerms());
 
-        if(getParentEstate() == null && Objects.equals(player.getUniqueID(), getOwner())) {
+        if (getParentEstate() == null && Objects.equals(player.getUniqueID(), getOwner())) {
             permissions.addAll(toSet(Arrays.asList(Permission.values())));
             return permissions;
         }
 
-        if(Objects.equals(player.getUniqueID(), getOwner())) {
+        if (Objects.equals(player.getUniqueID(), getOwner())) {
             permissions.addAll(getActualOwnerPerms());
             permissions.addAll(getActualPermsAllowedToChange());
-        } else if(Objects.equals(player.getUniqueID(), getRenter())) {
+        } else if (Objects.equals(player.getUniqueID(), getRenter())) {
             permissions.addAll(getActualRenterPerms());
             permissions.addAll(getActualPermsAllowedToChange());
-        } else if(getMembers().containsKey(player.getUniqueID())) {
+        } else if (getMembers().containsKey(player.getUniqueID())) {
             permissions.addAll(getActualMemberPerms(player.getUniqueID()));
         }
 
@@ -221,10 +222,10 @@ public class Estate implements Comparable<Estate> {
 
         Estate parentEstate = getParentEstate();
 
-        while(parentEstate != null) {
+        while (parentEstate != null) {
 
             for (Permission p : globalPermissions)
-                if(!parentEstate.getGlobalPermissions().contains(p)) toRemove.add(p);
+                if (!parentEstate.getGlobalPermissions().contains(p)) toRemove.add(p);
 
             parentEstate = parentEstate.getParentEstate();
         }
@@ -239,10 +240,10 @@ public class Estate implements Comparable<Estate> {
 
         Estate parentEstate = getParentEstate();
 
-        while(parentEstate != null) {
+        while (parentEstate != null) {
 
             for (Permission p : renterPerms)
-                if(!parentEstate.getRenterPermissions().contains(p)) toRemove.add(p);
+                if (!parentEstate.getRenterPermissions().contains(p)) toRemove.add(p);
 
             parentEstate = parentEstate.getParentEstate();
         }
@@ -257,10 +258,10 @@ public class Estate implements Comparable<Estate> {
 
         Estate parentEstate = getParentEstate();
 
-        while(parentEstate != null) {
+        while (parentEstate != null) {
 
             for (Permission p : ownerPerms)
-                if(!parentEstate.getOwnerPermissions().contains(p)) toRemove.add(p);
+                if (!parentEstate.getOwnerPermissions().contains(p)) toRemove.add(p);
 
             parentEstate = parentEstate.getParentEstate();
         }
@@ -275,10 +276,10 @@ public class Estate implements Comparable<Estate> {
 
         Estate parentEstate = getParentEstate();
 
-        while(parentEstate != null) {
+        while (parentEstate != null) {
 
             for (Permission p : allowedToChange)
-                if(!parentEstate.getGlobalPermissionsAllowedToChange().contains(p)) toRemove.add(p);
+                if (!parentEstate.getGlobalPermissionsAllowedToChange().contains(p)) toRemove.add(p);
 
             parentEstate = parentEstate.getParentEstate();
         }
@@ -294,10 +295,12 @@ public class Estate implements Comparable<Estate> {
 
         Estate parentEstate = getParentEstate();
 
-        while(parentEstate != null) {
+        while (parentEstate != null) {
 
             for (Permission p : memberPerms)
-                if(!parentEstate.getGlobalPermissionsAllowedToChange().contains(p)) toRemove.add(p);
+                if (parentEstate.getMembers().containsKey(playerID) &&
+                        !parentEstate.getMembers().get(playerID).contains(p))
+                    toRemove.add(p);
 
             parentEstate = parentEstate.getParentEstate();
         }

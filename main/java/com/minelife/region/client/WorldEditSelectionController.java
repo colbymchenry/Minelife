@@ -66,7 +66,8 @@ public class WorldEditSelectionController {
             if (event.entityPlayer.getHeldItem() == null || event.entityPlayer.getHeldItem().getItem() != Items.wooden_axe)
                 return;
 
-            if (!ModPermission.get(event.entityPlayer.getUniqueID()).hasPermission("worldedit")) return;
+            // TODO
+//            if (!ModPermission.get(event.entityPlayer.getUniqueID()).hasPermission("worldedit")) return;
 
             if (event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
                 pos1Map.put(event.entityPlayer.getUniqueID(), Vec3.createVectorHelper(event.x, event.y, event.z));
