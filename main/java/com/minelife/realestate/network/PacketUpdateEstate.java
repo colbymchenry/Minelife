@@ -157,7 +157,7 @@ public class PacketUpdateEstate implements IMessage {
                 estate.setPermissionsAllowedToChange(permissions);
             }
 
-            //TODO: Setting estate permissions
+            //TODO: Setting estate permissions, and giving players permission to modify some estate permissions if they have the permission through the ModPermissions
 
             return null;
         }
