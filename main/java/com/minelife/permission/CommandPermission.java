@@ -39,43 +39,58 @@ public class CommandPermission implements ICommand, Callback {
     public void processCommand(ICommandSender sender, String[] args) {
         switch (args[0].toLowerCase()) {
             case "user": {
-                UUIDFetcher.asyncFetchServer(args[1], this, true, args, sender);
+                if (args.length < 3) {
+                    sender.addChatMessage(new ChatComponentText("Not enough arguments."));
+                    return;
+                }
+
+                UUIDFetcher.asyncFetchServer(args[1], this, args, sender);
                 break;
             }
             /**
              *
              */
             case "group": {
-                String group = args[1];
+                if (args.length < 3) {
+                    sender.addChatMessage(new ChatComponentText("Not enough arguments."));
+                    return;
+                }
+
+                String group = ModPermission.getGroups().stream().filter(g -> g.equalsIgnoreCase(args[1])).findFirst().orElse(null);
+
+                if (group == null) {
+                    sender.addChatMessage(new ChatComponentText("Group not found."));
+                    return;
+                }
                 /**
                  * Handle all group commands
                  */
                 switch (args[2].toLowerCase()) {
                     case "prefix": {
-
+                        ModPermission.getConfig().set("groups." + group + ".prefix", args[3]);
                         break;
                     }
                     case "suffix": {
-
-                        break;
-                    }
-                    case "create": {
-
-                        break;
-                    }
-                    case "delete": {
-
-                        break;
-                    }
-                    case "parents": {
+                        ModPermission.getConfig().set("groups." + group + ".suffix", args[3]);
                         break;
                     }
                     case "add": {
-
+                        List<String> permissions = ModPermission.getGroupPermissions(group);
+                        permissions.add(args[3]);
+                        ModPermission.getConfig().set("groups." + group + ".permissions", permissions);
                         break;
                     }
                     case "remove": {
-
+                        List<String> permissions = ModPermission.getGroupPermissions(group);
+                        permissions.remove(args[3]);
+                        ModPermission.getConfig().set("groups." + group + ".permissions", permissions);
+                        break;
+                    }
+                    default: {
+                        sender.addChatMessage(new ChatComponentText("/p group <group> prefix <prefix>"));
+                        sender.addChatMessage(new ChatComponentText("/p group <group> suffix <suffix>"));
+                        sender.addChatMessage(new ChatComponentText("/p group <group> add <node>"));
+                        sender.addChatMessage(new ChatComponentText("/p group <group> remove <node>"));
                         break;
                     }
                 }
@@ -88,7 +103,8 @@ public class CommandPermission implements ICommand, Callback {
                 break;
             }
             default: {
-
+                sender.addChatMessage(new ChatComponentText("/p user"));
+                sender.addChatMessage(new ChatComponentText("/p group"));
                 break;
             }
         }
@@ -119,112 +135,95 @@ public class CommandPermission implements ICommand, Callback {
     public void callback(Object... objects) {
         UUID playerID = (UUID) objects[0];
         String playerName = (String) objects[1];
-        boolean isUserCommand = (boolean) objects[2];
-        String[] args = (String[]) objects[3];
-        ICommandSender sender = (ICommandSender) objects[4];
+        String[] args = (String[]) objects[2];
+        ICommandSender sender = (ICommandSender) objects[3];
 
-        if (isUserCommand) {
-            switch (args[2].toLowerCase()) {
-                case "prefix": {
-                    ModPermission.getConfig().set("users." + playerID.toString() + ".prefix", args[3]);
-                    sender.addChatMessage(new ChatComponentText(String.format("'%1$s' will now display as %2$s", playerName, args[3] + playerName)));
-                    break;
-                }
-                case "suffix": {
-                    ModPermission.getConfig().set("users." + playerID.toString() + ".suffix", args[3]);
-                    sender.addChatMessage(new ChatComponentText(String.format("'%1$s' will now display as %2$s", playerName, playerName + args[3])));
-                    break;
-                }
-                case "delete": {
-                    // TODO
-                    break;
-                }
-                case "add": {
-                    List<String> permissions = ModPermission.getPlayerPermissions(playerID);
-                    permissions.add(args[3]);
-                    ModPermission.getConfig().set("users." + playerID.toString() + ".permissions", permissions);
-                    sender.addChatMessage(new ChatComponentText(String.format("Added node '%1$s' to %2$s", args[3], playerName)));
-                    break;
-                }
-                case "remove": {
-                    List<String> permissions = ModPermission.getPlayerPermissions(playerID);
-                    permissions.remove(args[3]);
-                    ModPermission.getConfig().set("users." + playerID.toString() + ".permissions", permissions);
-                    sender.addChatMessage(new ChatComponentText(String.format("Removed node '%1$s' from %2$s", args[3], playerName)));
-                    break;
-                }
-                case "group": {
-                    switch (args[3].toLowerCase()) {
-                        case "list": {
-                            ModPermission.getGroups(playerID).forEach(g -> sender.addChatMessage(new ChatComponentText(g)));
-                            break;
-                        }
-                        case "add": {
-                            List<String> groups = ModPermission.getGroups(playerID);
-                            String groupName = ModPermission.getGroups().stream().filter(g -> g.equalsIgnoreCase(args[4])).findFirst().orElse(null);
-                            if(groupName != null) {
-                                groups.add(groupName);
-                                sender.addChatMessage(new ChatComponentText(String.format("%1$s added to group %2$s", playerName, groupName)));
-                                ModPermission.getConfig().set("users." + playerID.toString() + ".groups", groups);
-                            } else {
-                                sender.addChatMessage(new ChatComponentText("Group not found."));
-                            }
-                            break;
-                        }
-                        case "set": {
-                            List<String> groups = ModPermission.getGroups(playerID);
-                            String groupName = ModPermission.getGroups().stream().filter(g -> g.equalsIgnoreCase(args[4])).findFirst().orElse(null);
-                            if(groupName != null) {
-                                groups.clear();
-                                groups.add(groupName);
-                                sender.addChatMessage(new ChatComponentText(String.format("%1$s is now ONLY in group %2$s", playerName, groupName)));
-                                ModPermission.getConfig().set("users." + playerID.toString() + ".groups", groups);
-                            } else {
-                                sender.addChatMessage(new ChatComponentText("Group not found."));
-                            }
-                            break;
-                        }
-                        case "remove": {
-                            List<String> groups = ModPermission.getGroups(playerID);
-                            String groupName = ModPermission.getGroups().stream().filter(g -> g.equalsIgnoreCase(args[4])).findFirst().orElse(null);
-                            if(groupName != null) {
-                                groups.remove(groupName);
-                                sender.addChatMessage(new ChatComponentText(String.format("%1$s removed from group %2$s", playerName, groupName)));
-                                ModPermission.getConfig().set("users." + playerID.toString() + ".groups", groups);
-                            } else {
-                                sender.addChatMessage(new ChatComponentText("Group not found."));
-                            }
-                            break;
-                        }
-                        default: {
-                            sender.addChatMessage(new ChatComponentText("/p user group list"));
-                            sender.addChatMessage(new ChatComponentText("/p user group add <group>"));
-                            sender.addChatMessage(new ChatComponentText("/p user group set <group>"));
-                            sender.addChatMessage(new ChatComponentText("/p user group remove <group>"));
-                            break;
-                        }
+        switch (args[2].toLowerCase()) {
+            case "prefix": {
+                ModPermission.getConfig().set("users." + playerID.toString() + ".prefix", args[3]);
+                sender.addChatMessage(new ChatComponentText(String.format("'%1$s' will now display as %2$s", playerName, args[3] + playerName)));
+                break;
+            }
+            case "suffix": {
+                ModPermission.getConfig().set("users." + playerID.toString() + ".suffix", args[3]);
+                sender.addChatMessage(new ChatComponentText(String.format("'%1$s' will now display as %2$s", playerName, playerName + args[3])));
+                break;
+            }
+            case "add": {
+                List<String> permissions = ModPermission.getPlayerPermissions(playerID);
+                permissions.add(args[3]);
+                ModPermission.getConfig().set("users." + playerID.toString() + ".permissions", permissions);
+                sender.addChatMessage(new ChatComponentText(String.format("Added node '%1$s' to %2$s", args[3], playerName)));
+                break;
+            }
+            case "remove": {
+                List<String> permissions = ModPermission.getPlayerPermissions(playerID);
+                permissions.remove(args[3]);
+                ModPermission.getConfig().set("users." + playerID.toString() + ".permissions", permissions);
+                sender.addChatMessage(new ChatComponentText(String.format("Removed node '%1$s' from %2$s", args[3], playerName)));
+                break;
+            }
+            case "group": {
+                switch (args[3].toLowerCase()) {
+                    case "list": {
+                        ModPermission.getGroups(playerID).forEach(g -> sender.addChatMessage(new ChatComponentText(g)));
+                        break;
                     }
-                    break;
+                    case "add": {
+                        List<String> groups = ModPermission.getGroups(playerID);
+                        String groupName = ModPermission.getGroups().stream().filter(g -> g.equalsIgnoreCase(args[4])).findFirst().orElse(null);
+                        if (groupName != null) {
+                            groups.add(groupName);
+                            sender.addChatMessage(new ChatComponentText(String.format("%1$s added to group %2$s", playerName, groupName)));
+                            ModPermission.getConfig().set("users." + playerID.toString() + ".groups", groups);
+                        } else {
+                            sender.addChatMessage(new ChatComponentText("Group not found."));
+                        }
+                        break;
+                    }
+                    case "set": {
+                        List<String> groups = ModPermission.getGroups(playerID);
+                        String groupName = ModPermission.getGroups().stream().filter(g -> g.equalsIgnoreCase(args[4])).findFirst().orElse(null);
+                        if (groupName != null) {
+                            groups.clear();
+                            groups.add(groupName);
+                            sender.addChatMessage(new ChatComponentText(String.format("%1$s is now ONLY in group %2$s", playerName, groupName)));
+                            ModPermission.getConfig().set("users." + playerID.toString() + ".groups", groups);
+                        } else {
+                            sender.addChatMessage(new ChatComponentText("Group not found."));
+                        }
+                        break;
+                    }
+                    case "remove": {
+                        List<String> groups = ModPermission.getGroups(playerID);
+                        String groupName = ModPermission.getGroups().stream().filter(g -> g.equalsIgnoreCase(args[4])).findFirst().orElse(null);
+                        if (groupName != null) {
+                            groups.remove(groupName);
+                            sender.addChatMessage(new ChatComponentText(String.format("%1$s removed from group %2$s", playerName, groupName)));
+                            ModPermission.getConfig().set("users." + playerID.toString() + ".groups", groups);
+                        } else {
+                            sender.addChatMessage(new ChatComponentText("Group not found."));
+                        }
+                        break;
+                    }
+                    default: {
+                        sender.addChatMessage(new ChatComponentText("/p user group list"));
+                        sender.addChatMessage(new ChatComponentText("/p user group add <group>"));
+                        sender.addChatMessage(new ChatComponentText("/p user group set <group>"));
+                        sender.addChatMessage(new ChatComponentText("/p user group remove <group>"));
+                        break;
+                    }
                 }
-                default: {
-                    sender.addChatMessage(new ChatComponentText("/p user prefix <prefix>"));
-                    sender.addChatMessage(new ChatComponentText("/p user suffix <suffix>"));
-                    sender.addChatMessage(new ChatComponentText("/p user add <permission>"));
-                    sender.addChatMessage(new ChatComponentText("/p user remove <permission>"));
-                    break;
-                }
+                break;
             }
-        } else {
-
+            default: {
+                sender.addChatMessage(new ChatComponentText("/p user prefix <prefix>"));
+                sender.addChatMessage(new ChatComponentText("/p user suffix <suffix>"));
+                sender.addChatMessage(new ChatComponentText("/p user add <permission>"));
+                sender.addChatMessage(new ChatComponentText("/p user remove <permission>"));
+                break;
+            }
         }
     }
 
-    private boolean doesGroupExist(String group) {
-        for (String g : ModPermission.getGroups()) {
-            if (g.equalsIgnoreCase(group)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

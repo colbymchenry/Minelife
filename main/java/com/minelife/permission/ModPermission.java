@@ -6,8 +6,10 @@ import com.minelife.AbstractMod;
 import com.minelife.util.MLConfig;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,9 +28,15 @@ public class ModPermission extends AbstractMod {
         try {
             config = new MLConfig("permissions");
             setupConfig();
+            MinecraftForge.EVENT_BUS.register(new EventHandler());
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void serverStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CommandPermission());
     }
 
     public static List<String> getPermissions(UUID playerID) {
@@ -56,7 +64,22 @@ public class ModPermission extends AbstractMod {
         List<String> playerPerms = Lists.newArrayList();
         if(config.contains("users." + playerID.toString() + ".permissions"))
             playerPerms.addAll(config.getStringList("users." + playerID.toString() + ".permissions"));
+        Set<String> perms = Sets.newTreeSet();
+        perms.addAll(playerPerms);
+        playerPerms.clear();
+        playerPerms.addAll(perms);
         return playerPerms;
+    }
+
+    public static List<String> getGroupPermissions(String group) {
+        List<String> groupPerms = Lists.newArrayList();
+        if(config.contains("groups." + group + ".permissions"))
+            groupPerms.addAll(config.getStringList("groups." + group + ".permissions"));
+        Set<String> perms = Sets.newTreeSet();
+        perms.addAll(groupPerms);
+        groupPerms.clear();
+        groupPerms.addAll(perms);
+        return groupPerms;
     }
 
     public static List<String> getPermissions(String group) {
