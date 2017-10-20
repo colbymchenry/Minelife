@@ -45,7 +45,18 @@ public class ModPermission extends AbstractMod {
         });
 
         groupPerms.addAll(playerPerms);
+        Set<String> perms = Sets.newTreeSet();
+        perms.addAll(groupPerms);
+        groupPerms.clear();
+        groupPerms.addAll(perms);
         return groupPerms;
+    }
+
+    public static List<String> getPlayerPermissions(UUID playerID) {
+        List<String> playerPerms = Lists.newArrayList();
+        if(config.contains("users." + playerID.toString() + ".permissions"))
+            playerPerms.addAll(config.getStringList("users." + playerID.toString() + ".permissions"));
+        return playerPerms;
     }
 
     public static List<String> getPermissions(String group) {
@@ -77,6 +88,10 @@ public class ModPermission extends AbstractMod {
         });
 
         permissions.removeAll(toRemove);
+        Set<String> perms = Sets.newTreeSet();
+        perms.addAll(permissions);
+        permissions.clear();
+        permissions.addAll(perms);
 
         return permissions;
     }
@@ -101,6 +116,16 @@ public class ModPermission extends AbstractMod {
             }
         }
         return null;
+    }
+
+    public static List<String> getGroups() {
+        Set<String> groups = Sets.newTreeSet();
+        for (String group : config.getConfigurationSection("groups").getKeys(false)) {
+            groups.add(group);
+        }
+        List<String> groupsArray = Lists.newArrayList();
+        groupsArray.addAll(groups);
+        return groupsArray;
     }
 
     public static boolean hasPermission(UUID playerID, String permission) {
@@ -138,5 +163,7 @@ public class ModPermission extends AbstractMod {
         config.addDefault("users", Lists.newArrayList());
         config.save();
     }
+
+    public static MLConfig getConfig() { return config; }
 
 }
