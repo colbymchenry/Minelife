@@ -53,7 +53,7 @@ public class CommandEconomy extends MLCommand {
         return null;
     }
 
-    // TODO: Is username does not work
+    // TODO: Is username does not works
     @Override
     public boolean isUsernameIndex(String[] args, int index) {
         return index == 2;
