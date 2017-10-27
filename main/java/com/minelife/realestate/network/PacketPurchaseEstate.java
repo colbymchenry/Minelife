@@ -43,7 +43,6 @@ public class PacketPurchaseEstate implements IMessage {
         buf.writeBoolean(renting);
     }
 
-    // TODO: When purchased for ownership change the price to -1
     public static class Handler implements IMessageHandler<PacketPurchaseEstate, IMessage> {
 
         @SideOnly(Side.SERVER)
@@ -94,7 +93,10 @@ public class PacketPurchaseEstate implements IMessage {
                     notification.writeToDB();
 
 
-                if (!message.renting) estate.setOwner(player.getUniqueID());
+                if (!message.renting) {
+                    estate.setOwner(player.getUniqueID());
+                    estate.setPurchasePrice(-1.0D);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();

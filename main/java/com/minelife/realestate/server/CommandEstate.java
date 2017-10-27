@@ -2,6 +2,7 @@ package com.minelife.realestate.server;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
+import com.minelife.permission.ModPermission;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
 import com.minelife.realestate.Permission;
@@ -18,6 +19,7 @@ import net.minecraft.util.Vec3;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class CommandEstate implements ICommand {
 
@@ -46,7 +48,11 @@ public class CommandEstate implements ICommand {
 
             switch(args[0].toLowerCase()) {
                 case "create": {
-                    // TODO: Check to see if player has permission to create estate
+                    if(!ModPermission.hasPermission(player.getUniqueID(), "estate.create")) {
+                        player.addChatComponentMessage(new ChatComponentText("You do not have permission to create estates."));
+                        return;
+                    }
+
                     if(EstateHandler.canCreateEstate(player, SelectionHandler.getSelection(player))) {
                         List<Permission> permissions = Lists.newArrayList();
                         if(estateAtLoc == null)
@@ -85,8 +91,12 @@ public class CommandEstate implements ICommand {
                         return;
                     }
 
-                    Minelife.NETWORK.sendTo(new PacketGuiModifyEstate(estateAtLoc, estateAtLoc.getPlayerPermissions(player)), player);
-                    // TODO: Don't allow to open unless they are either A the owner B the renter or C the owner or renter of the land above
+                    if(Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
+                            estateAtLoc.isAbsoluteOwner(player.getUniqueID())) {
+                        Minelife.NETWORK.sendTo(new PacketGuiModifyEstate(estateAtLoc, estateAtLoc.getPlayerPermissions(player)), player);
+                    } else {
+                        player.addChatComponentMessage(new ChatComponentText("You do not have permission to modify this estate."));
+                    }
                     break;
                 }
                 default: throw new Exception(getCommandUsage(sender));

@@ -278,7 +278,6 @@ public class GuiModifyEstate extends GuiScreen {
                 estateData.setPermissionsAllowedToChange(globalAllowedToChangePerms);
                 estateData.setEstatePermissions(estatePerms);
 
-                // TODO: Update
                 Minelife.NETWORK.sendToServer(new PacketUpdateEstate(estateData));
             }
         }

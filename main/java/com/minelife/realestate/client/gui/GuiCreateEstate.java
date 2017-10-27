@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-// TODO: Check if they can create an estate with the current seleciton before opening this GUI
 public class GuiCreateEstate extends GuiScreen {
 
     private GuiContent content;

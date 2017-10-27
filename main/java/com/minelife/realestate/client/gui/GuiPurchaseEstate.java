@@ -62,7 +62,6 @@ public class GuiPurchaseEstate extends GuiScreen {
         content = new GuiContent(mc, xPosition, yPosition, bgWidth, bgHeight);
     }
 
-    // TODO
     private class GuiContent extends GuiScrollableContent {
 
         private int section = (width / 2);

@@ -2,6 +2,7 @@ package com.minelife.economy.server;
 
 import com.google.common.collect.Lists;
 import com.minelife.economy.ModEconomy;
+import com.minelife.permission.ModPermission;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.server.MLCommand;
 import com.minelife.util.server.UUIDFetcher;
@@ -42,11 +43,9 @@ public class CommandEconomy extends MLCommand {
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
         if (!(sender instanceof EntityPlayer)) return true;
-
-        // TODO:
-//        Player player = ModPermission.get(((EntityPlayer) sender).getUniqueID());
-
         return true;
+        // TODO: Permissions not working
+//        return ModPermission.hasPermission(((EntityPlayer) sender).getUniqueID(), "economy");
     }
 
     @Override
@@ -54,14 +53,10 @@ public class CommandEconomy extends MLCommand {
         return null;
     }
 
+    // TODO: Is username does not work
     @Override
     public boolean isUsernameIndex(String[] args, int index) {
         return index == 2;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
     }
 
     @Override

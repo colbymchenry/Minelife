@@ -36,7 +36,7 @@ public class ModPermission extends AbstractMod {
 
     @Override
     public void serverStarting(FMLServerStartingEvent event) {
-        event.registerServerCommand(new CommandPermission());
+        event.registerServerCommand(new CommandPermissionOld());
     }
 
     public static List<String> getPermissions(UUID playerID) {

@@ -25,4 +25,9 @@ public abstract class MLCommand implements ICommand {
 
     public synchronized void execute(ICommandSender sender, String[] args) throws Exception {
     }
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
+    }
 }

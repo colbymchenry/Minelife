@@ -288,7 +288,7 @@ public class Estate implements Comparable<Estate> {
         return allowedToChange;
     }
 
-    // TODO: Need to do this one
+    // TODO: Need to test this one
     public Set<Permission> getActualMemberPerms(UUID playerID) {
         Set<Permission> memberPerms = getMembers().get(playerID);
         Set<Permission> toRemove = Sets.newTreeSet();

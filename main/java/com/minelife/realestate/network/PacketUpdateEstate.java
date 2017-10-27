@@ -2,6 +2,7 @@ package com.minelife.realestate.network;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.minelife.permission.ModPermission;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateData;
 import com.minelife.realestate.EstateHandler;
@@ -157,8 +158,20 @@ public class PacketUpdateEstate implements IMessage {
                 estate.setPermissionsAllowedToChange(permissions);
             }
 
-            //TODO: Setting estate permissions, and giving players permission to modify some estate permissions if they have the permission through the ModPermissions
+            permissions.clear();
 
+            /**
+             * Set estate permissions
+             */
+            if(isAbsoluteOwner || isOwner) {
+                permissions.addAll(estateData.getEstatePermissions());
+                Set<Permission> toRemove = Sets.newTreeSet();
+                permissions.forEach(p -> {
+                    if(!estate.getPlayerPermissions(player).contains(p) || !ModPermission.hasPermission(player.getUniqueID(), "estate." + p.name())) toRemove.add(p);
+                });
+                permissions.removeAll(toRemove);
+                estate.setEstatePermissions(permissions);
+            }
             return null;
         }
 
