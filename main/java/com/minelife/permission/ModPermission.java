@@ -189,4 +189,76 @@ public class ModPermission extends AbstractMod {
 
     public static MLConfig getConfig() { return config; }
 
+    public static void setPlayerPrefix(UUID player, String prefix) {
+        getConfig().set("users." + player.toString() + ".prefix", prefix);
+        getConfig().save();
+    }
+
+    public static void setPlayerSuffix(UUID player, String suffix) {
+        getConfig().set("users." + player.toString() + ".suffix", suffix);
+        getConfig().save();
+    }
+
+    public static void setGroupPrefix(String group, String prefix) throws  Exception {
+        String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
+        if(groupName == null) throw new Exception("Group not found.");
+        getConfig().set("groups." + groupName + ".prefix", prefix);
+        getConfig().save();
+    }
+
+    public static void setGroupSuffix(String group, String suffix) throws  Exception {
+        String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
+        if(groupName == null) throw new Exception("Group not found.");
+        getConfig().set("groups." + groupName + ".suffix", suffix);
+        getConfig().save();
+    }
+
+    public static void addPlayerPermission(UUID player, String permission) {
+        List<String> permissions = getPlayerPermissions(player);
+        Set<String> permsSet = Sets.newTreeSet();
+        permsSet.addAll(permissions);
+        permsSet.add(permission);
+        permissions.clear();
+        permissions.addAll(permsSet);
+        getConfig().set("users." + player.toString() + ".permissions", permissions);
+        getConfig().save();
+    }
+
+    public static void removePlayerPermission(UUID player, String permission) {
+        List<String> permissions = getPlayerPermissions(player);
+        Set<String> permsSet = Sets.newTreeSet();
+        permsSet.addAll(permissions);
+        permsSet.remove(permission);
+        permissions.clear();
+        permissions.addAll(permsSet);
+        getConfig().set("users." + player.toString() + ".permissions", permissions);
+        getConfig().save();
+    }
+
+    public static void addGroupPermission(String group, String permission) throws Exception {
+        String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
+        if(groupName == null) throw new Exception("Group not found.");
+        List<String> permissions = getGroupPermissions(groupName);
+        Set<String> permsSet = Sets.newTreeSet();
+        permsSet.addAll(permissions);
+        permsSet.add(permission);
+        permissions.clear();
+        permissions.addAll(permsSet);
+        getConfig().set("groups." + groupName + ".permissions", permissions);
+        getConfig().save();
+    }
+
+    public static void removeGroupPermission(String group, String permission) throws Exception{
+        String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
+        if(groupName == null) throw new Exception("Group not found.");
+        List<String> permissions = getGroupPermissions(groupName);
+        Set<String> permsSet = Sets.newTreeSet();
+        permsSet.addAll(permissions);
+        permsSet.remove(permission);
+        permissions.clear();
+        permissions.addAll(permsSet);
+        getConfig().set("groups." + groupName + ".permissions", permissions);
+        getConfig().save();
+    }
+
 }
