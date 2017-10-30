@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.minelife.AbstractMod;
 import com.minelife.util.MLConfig;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -43,7 +44,7 @@ public class ModPermission extends AbstractMod {
         List<String> groupPerms = Lists.newArrayList();
         getGroups(playerID).forEach(g -> groupPerms.addAll(getPermissions(g)));
         List<String> playerPerms = Lists.newArrayList();
-        if(config.contains("users." + playerID.toString() + ".permissions"))
+        if (config.contains("users." + playerID.toString() + ".permissions"))
             playerPerms.addAll(config.getStringList("users." + playerID.toString() + ".permissions"));
 
         playerPerms.forEach(p -> {
@@ -62,7 +63,7 @@ public class ModPermission extends AbstractMod {
 
     public static List<String> getPlayerPermissions(UUID playerID) {
         List<String> playerPerms = Lists.newArrayList();
-        if(config.contains("users." + playerID.toString() + ".permissions"))
+        if (config.contains("users." + playerID.toString() + ".permissions"))
             playerPerms.addAll(config.getStringList("users." + playerID.toString() + ".permissions"));
         Set<String> perms = Sets.newTreeSet();
         perms.addAll(playerPerms);
@@ -73,7 +74,7 @@ public class ModPermission extends AbstractMod {
 
     public static List<String> getGroupPermissions(String group) {
         List<String> groupPerms = Lists.newArrayList();
-        if(config.contains("groups." + group + ".permissions"))
+        if (config.contains("groups." + group + ".permissions"))
             groupPerms.addAll(config.getStringList("groups." + group + ".permissions"));
         Set<String> perms = Sets.newTreeSet();
         perms.addAll(groupPerms);
@@ -85,26 +86,26 @@ public class ModPermission extends AbstractMod {
     public static List<String> getPermissions(String group) {
         List<String> permissions = Lists.newArrayList();
         if (!config.contains("groups." + group)) return permissions;
-
         List<String> inheritedGroups = Lists.newArrayList();
         getInheritedGroups(group, inheritedGroups);
         List<String> toRemove = Lists.newArrayList();
         inheritedGroups.forEach(g -> {
-            if(g.startsWith("-")) toRemove.add(g);
+            if (g.startsWith("-")) toRemove.add(g);
         });
         inheritedGroups.removeAll(toRemove);
 
         Set<String> groups = Sets.newTreeSet();
+        groups.add(group);
         groups.addAll(inheritedGroups);
 
         for (String g : groups) {
-            if(config.contains("groups." + g + ".permissions"))
+            if (config.contains("groups." + g + ".permissions"))
                 permissions.addAll(config.getStringList("groups." + g + ".permissions"));
         }
 
         toRemove.clear();
         permissions.forEach(p -> {
-            if(p.startsWith("-")) {
+            if (p.startsWith("-")) {
                 toRemove.add(p.substring(1));
                 toRemove.add(p);
             }
@@ -128,7 +129,7 @@ public class ModPermission extends AbstractMod {
     }
 
     public static List<String> getGroups(UUID playerID) {
-        if(!config.contains("users." + playerID.toString() + ".groups")) return Arrays.asList(getDefaultGroup());
+        if (!config.contains("users." + playerID.toString() + ".groups")) return Arrays.asList(getDefaultGroup());
         return config.getStringList("users." + playerID.toString() + ".groups");
     }
 
@@ -152,7 +153,8 @@ public class ModPermission extends AbstractMod {
     }
 
     public static boolean hasPermission(UUID playerID, String permission) {
-        return getPermissions(playerID).contains(permission);
+        return PlayerHelper.getPlayer(playerID) != null && PlayerHelper.isOp(PlayerHelper.getPlayer(playerID)) ||
+                getPermissions(playerID).contains(permission);
     }
 
     public static String getPrefix(String group) {
@@ -179,6 +181,7 @@ public class ModPermission extends AbstractMod {
      */
     private void setupConfig() {
         config.addDefault("groups.default.default", true);
+        config.addDefault("groups.default.permissions", Arrays.asList("estate.pvp"));
         config.addDefault("groups.moderator.inheritance", Arrays.asList("default"));
         config.addDefault("groups.moderator.prefix", EnumChatFormatting.DARK_BLUE.toString() + "[Moderator]" + EnumChatFormatting.RESET.toString());
         config.addDefault("groups.admin.inheritance", Arrays.asList("moderator"));
@@ -187,7 +190,9 @@ public class ModPermission extends AbstractMod {
         config.save();
     }
 
-    public static MLConfig getConfig() { return config; }
+    public static MLConfig getConfig() {
+        return config;
+    }
 
     public static void setPlayerPrefix(UUID player, String prefix) {
         getConfig().set("users." + player.toString() + ".prefix", prefix);
@@ -199,16 +204,16 @@ public class ModPermission extends AbstractMod {
         getConfig().save();
     }
 
-    public static void setGroupPrefix(String group, String prefix) throws  Exception {
+    public static void setGroupPrefix(String group, String prefix) throws Exception {
         String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
-        if(groupName == null) throw new Exception("Group not found.");
+        if (groupName == null) throw new Exception("Group not found.");
         getConfig().set("groups." + groupName + ".prefix", prefix);
         getConfig().save();
     }
 
-    public static void setGroupSuffix(String group, String suffix) throws  Exception {
+    public static void setGroupSuffix(String group, String suffix) throws Exception {
         String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
-        if(groupName == null) throw new Exception("Group not found.");
+        if (groupName == null) throw new Exception("Group not found.");
         getConfig().set("groups." + groupName + ".suffix", suffix);
         getConfig().save();
     }
@@ -237,7 +242,7 @@ public class ModPermission extends AbstractMod {
 
     public static void addGroupPermission(String group, String permission) throws Exception {
         String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
-        if(groupName == null) throw new Exception("Group not found.");
+        if (groupName == null) throw new Exception("Group not found.");
         List<String> permissions = getGroupPermissions(groupName);
         Set<String> permsSet = Sets.newTreeSet();
         permsSet.addAll(permissions);
@@ -248,9 +253,9 @@ public class ModPermission extends AbstractMod {
         getConfig().save();
     }
 
-    public static void removeGroupPermission(String group, String permission) throws Exception{
+    public static void removeGroupPermission(String group, String permission) throws Exception {
         String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
-        if(groupName == null) throw new Exception("Group not found.");
+        if (groupName == null) throw new Exception("Group not found.");
         List<String> permissions = getGroupPermissions(groupName);
         Set<String> permsSet = Sets.newTreeSet();
         permsSet.addAll(permissions);
@@ -260,5 +265,41 @@ public class ModPermission extends AbstractMod {
         getConfig().set("groups." + groupName + ".permissions", permissions);
         getConfig().save();
     }
+
+    public static void addGroupToPlayer(UUID playerID, String group) throws Exception {
+        String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
+        if (groupName == null) throw new Exception("Group not found.");
+        List<String> groups = getGroups(playerID);
+        groups.add(group);
+        Set<String> groupsSet = Sets.newTreeSet();
+        groupsSet.addAll(groups);
+        groups.clear();
+        groups.addAll(groupsSet);
+        getConfig().set("users." + playerID.toString() + ".groups", groups);
+        getConfig().save();
+    }
+
+    public static void removeGroupFromPlayer(UUID playerID, String group) throws Exception {
+        String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
+        if (groupName == null) throw new Exception("Group not found.");
+        List<String> groups = getGroups(playerID);
+        groups.remove(group);
+        Set<String> groupsSet = Sets.newTreeSet();
+        groupsSet.addAll(groups);
+        groups.clear();
+        groups.addAll(groupsSet);
+        getConfig().set("users." + playerID.toString() + ".groups", groups);
+        getConfig().save();
+    }
+
+    public static void setPlayerGroup(UUID playerID, String group) throws Exception {
+        String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
+        if (groupName == null) throw new Exception("Group not found.");
+        List<String> groups = Lists.newArrayList();
+        groups.add(group);
+        getConfig().set("users." + playerID.toString() + ".groups", groups);
+        getConfig().save();
+    }
+
 
 }

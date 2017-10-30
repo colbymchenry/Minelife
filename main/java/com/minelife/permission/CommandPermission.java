@@ -41,8 +41,7 @@ public class CommandPermission extends MLCommand {
 
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        if (!(sender instanceof EntityPlayerMP)) return true;
-        return ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "permissions");
+        return !(sender instanceof EntityPlayerMP) || ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "permissions");
     }
 
     @Override
@@ -55,14 +54,13 @@ public class CommandPermission extends MLCommand {
         return false;
     }
 
+    // TODO: Test these commands
     @Override
     public synchronized void execute(ICommandSender sender, String[] args) throws Exception {
-
-        if(args.length !=3) {
+        if(args.length < 4) {
             getCommandUsage(sender);
             return;
         }
-
         switch (args[0].toLowerCase()) {
             case "user": {
                 UUID playerUUID = UUIDFetcher.get(args[1]);
@@ -84,7 +82,28 @@ public class CommandPermission extends MLCommand {
                         break;
                     }
                     case "group": {
-
+                        if(args.length < 5) {
+                            getCommandUsage(sender);
+                            return;
+                        }
+                        switch(args[3].toLowerCase()) {
+                            case "add": {
+                                ModPermission.addGroupToPlayer(playerUUID, args[4]);
+                                break;
+                            }
+                            case "remove": {
+                                ModPermission.removeGroupFromPlayer(playerUUID, args[4]);
+                                break;
+                            }
+                            case "set": {
+                                ModPermission.setPlayerGroup(playerUUID, args[4]);
+                                break;
+                            }
+                            default: {
+                                getCommandUsage(sender);
+                                break;
+                            }
+                        }
                         break;
                     }
                     default: {

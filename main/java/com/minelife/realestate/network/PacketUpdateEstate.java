@@ -109,7 +109,7 @@ public class PacketUpdateEstate implements IMessage {
                 permissions.addAll(estateData.getGlobalPermissions());
                 Set<Permission> toRemove = Sets.newTreeSet();
                 permissions.forEach(p -> {
-                    if(!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
+                    if (!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
                 });
                 permissions.removeAll(toRemove);
                 estate.setGlobalPermissions(permissions);
@@ -124,7 +124,7 @@ public class PacketUpdateEstate implements IMessage {
                 permissions.addAll(estateData.getOwnerPermissions());
                 Set<Permission> toRemove = Sets.newTreeSet();
                 permissions.forEach(p -> {
-                    if(!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
+                    if (!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
                 });
                 permissions.removeAll(toRemove);
                 estate.setOwnerPermissions(permissions);
@@ -138,7 +138,7 @@ public class PacketUpdateEstate implements IMessage {
                 permissions.addAll(estateData.getRenterPermissions());
                 Set<Permission> toRemove = Sets.newTreeSet();
                 permissions.forEach(p -> {
-                    if(!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
+                    if (!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
                 });
                 permissions.removeAll(toRemove);
                 estate.setRenterPermissions(permissions);
@@ -152,7 +152,7 @@ public class PacketUpdateEstate implements IMessage {
                 permissions.addAll(estateData.getGlobalPermissionsAllowedToChange());
                 Set<Permission> toRemove = Sets.newTreeSet();
                 permissions.forEach(p -> {
-                    if(!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
+                    if (!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
                 });
                 permissions.removeAll(toRemove);
                 estate.setPermissionsAllowedToChange(permissions);
@@ -163,11 +163,18 @@ public class PacketUpdateEstate implements IMessage {
             /**
              * Set estate permissions
              */
-            if(isAbsoluteOwner || isOwner) {
+            if (isAbsoluteOwner || isOwner) {
+                // TODO: They are all defaulty activated, but can turn them on or off if they have permission
                 permissions.addAll(estateData.getEstatePermissions());
                 Set<Permission> toRemove = Sets.newTreeSet();
                 permissions.forEach(p -> {
-                    if(!estate.getPlayerPermissions(player).contains(p) || !ModPermission.hasPermission(player.getUniqueID(), "estate." + p.name())) toRemove.add(p);
+                    if (!estate.getPlayerPermissions(player).contains(p)) {
+                        toRemove.add(p);
+                    }
+                    if (!ModPermission.hasPermission(player.getUniqueID(), "estate." + p.name().toLowerCase())) {
+                        toRemove.add(p);
+                    }
+//                    toRemove.add(p);
                 });
                 permissions.removeAll(toRemove);
                 estate.setEstatePermissions(permissions);
