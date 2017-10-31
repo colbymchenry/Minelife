@@ -19,6 +19,7 @@ public class CommandPermission extends MLCommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
+        sender.addChatMessage(new ChatComponentText("/p reload"));
         sender.addChatMessage(new ChatComponentText("/p user <user> prefix <prefix>"));
         sender.addChatMessage(new ChatComponentText("/p user <user> suffix <suffix>"));
         sender.addChatMessage(new ChatComponentText("/p user <user> add <permission> [world]"));
@@ -57,7 +58,15 @@ public class CommandPermission extends MLCommand {
     // TODO: Test these commands
     @Override
     public synchronized void execute(ICommandSender sender, String[] args) throws Exception {
-        if(args.length < 4) {
+        if(args.length == 1) {
+            if(args[0].equalsIgnoreCase("reload")) {
+                ModPermission.getConfig().reload();
+                return;
+            }
+            getCommandUsage(sender);
+        }
+
+        if (args.length < 3) {
             getCommandUsage(sender);
             return;
         }
@@ -66,11 +75,11 @@ public class CommandPermission extends MLCommand {
                 UUID playerUUID = UUIDFetcher.get(args[1]);
                 switch (args[2].toLowerCase()) {
                     case "prefix": {
-                        ModPermission.setPlayerPrefix(playerUUID, args[3]);
+                        ModPermission.setPlayerPrefix(playerUUID, args.length < 4 ? null : args[3]);
                         break;
                     }
                     case "suffix": {
-                        ModPermission.setPlayerSuffix(playerUUID, args[3]);
+                        ModPermission.setPlayerSuffix(playerUUID, args.length < 4 ? null : args[3]);
                         break;
                     }
                     case "add": {
@@ -82,11 +91,11 @@ public class CommandPermission extends MLCommand {
                         break;
                     }
                     case "group": {
-                        if(args.length < 5) {
+                        if (args.length < 5) {
                             getCommandUsage(sender);
                             return;
                         }
-                        switch(args[3].toLowerCase()) {
+                        switch (args[3].toLowerCase()) {
                             case "add": {
                                 ModPermission.addGroupToPlayer(playerUUID, args[4]);
                                 break;
@@ -117,11 +126,11 @@ public class CommandPermission extends MLCommand {
                 String group = ModPermission.getGroups().stream().filter(g -> g.equalsIgnoreCase(args[1])).findFirst().orElse(null);
                 switch (args[2].toLowerCase()) {
                     case "prefix": {
-                        ModPermission.setGroupPrefix(group, args[3]);
+                        ModPermission.setGroupPrefix(group, args.length < 4 ? null : args[3]);
                         break;
                     }
                     case "suffix": {
-                        ModPermission.setGroupSuffix(group, args[3]);
+                        ModPermission.setGroupSuffix(group, args.length < 4 ? null : args[3]);
                         break;
                     }
                     case "add": {

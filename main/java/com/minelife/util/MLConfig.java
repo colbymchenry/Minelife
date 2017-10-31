@@ -52,4 +52,7 @@ public class MLConfig extends YamlConfiguration {
 
     public File getFile() { return file; }
 
+    public void reload() throws IOException, InvalidConfigurationException {
+        this.load(this.file);
+    }
 }

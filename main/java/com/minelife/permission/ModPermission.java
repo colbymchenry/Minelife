@@ -6,6 +6,8 @@ import com.minelife.AbstractMod;
 import com.minelife.util.MLConfig;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.configuration.InvalidConfigurationException;
+import com.minelife.util.configuration.file.YamlConfiguration;
+import com.sk89q.worldedit.util.YAMLConfiguration;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -13,10 +15,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class ModPermission extends AbstractMod {
 
@@ -24,12 +23,13 @@ public class ModPermission extends AbstractMod {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
+
         if (event.getSide() == Side.CLIENT) return;
 
         try {
             config = new MLConfig("permissions");
             setupConfig();
-            MinecraftForge.EVENT_BUS.register(new EventHandler());
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
@@ -129,7 +129,11 @@ public class ModPermission extends AbstractMod {
     }
 
     public static List<String> getGroups(UUID playerID) {
-        if (!config.contains("users." + playerID.toString() + ".groups")) return Arrays.asList(getDefaultGroup());
+        if (!config.contains("users." + playerID.toString() + ".groups")) {
+            List<String> defaultGroup = Lists.newArrayList();
+            if(getDefaultGroup() != null) defaultGroup.add(getDefaultGroup());
+            return defaultGroup;
+        }
         return config.getStringList("users." + playerID.toString() + ".groups");
     }
 
@@ -158,19 +162,19 @@ public class ModPermission extends AbstractMod {
     }
 
     public static String getPrefix(String group) {
-        return config.getString("groups." + group + ".prefix", null);
+        return config.getString("groups." + group + ".prefix", "");
     }
 
     public static String getSuffix(String group) {
-        return config.getString("groups." + group + ".suffix", null);
+        return config.getString("groups." + group + ".suffix", "");
     }
 
     public static String getPrefix(UUID playerID) {
-        return config.getString("users." + playerID.toString() + ".prefix", null);
+        return config.getString("users." + playerID.toString() + ".prefix", "");
     }
 
     public static String getSuffix(UUID playerID) {
-        return config.getString("users." + playerID.toString() + ".suffix", null);
+        return config.getString("users." + playerID.toString() + ".suffix", "");
     }
 
     /**
@@ -187,6 +191,7 @@ public class ModPermission extends AbstractMod {
         config.addDefault("groups.admin.inheritance", Arrays.asList("moderator"));
         config.addDefault("groups.admin.prefix", EnumChatFormatting.DARK_RED.toString() + "[Admin]" + EnumChatFormatting.RESET.toString());
         config.addDefault("users", Lists.newArrayList());
+        config.addDefault("chat-format", "&7{DISPLAYNAME}&7: &7{MESSAGE}");
         config.save();
     }
 
@@ -300,6 +305,5 @@ public class ModPermission extends AbstractMod {
         getConfig().set("users." + playerID.toString() + ".groups", groups);
         getConfig().save();
     }
-
 
 }
