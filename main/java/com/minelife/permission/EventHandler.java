@@ -44,7 +44,6 @@ public class EventHandler {
         lines.forEach(line -> Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(line)));
     }
 
-
     @SideOnly(Side.CLIENT)
     public static int func_146233_a()
     {
@@ -52,6 +51,5 @@ public class EventHandler {
         byte b0 = 40;
         return MathHelper.floor_float(Minecraft.getMinecraft().gameSettings.chatWidth * (float)(short1 - b0) + (float)b0);
     }
-
 
 }

@@ -61,6 +61,7 @@ public class CommandPermission extends MLCommand {
         if(args.length == 1) {
             if(args[0].equalsIgnoreCase("reload")) {
                 ModPermission.getConfig().reload();
+                sender.addChatMessage(new ChatComponentText("permissions.yml reloaded!"));
                 return;
             }
             getCommandUsage(sender);

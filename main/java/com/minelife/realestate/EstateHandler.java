@@ -31,9 +31,9 @@ public class EstateHandler {
         estate_config.addDefault("permissions.allowedToChange", new String[]{});
         estate_config.addDefault("permissions.estate", new String[]{});
         estate_config.addDefault("world", selection.getWorld().getWorldInfo().getWorldName());
-        estate_config.addDefault("pos1.x", selection.getMin().xCoord);
+        estate_config.addDefault("pos1.x", selection.getMin().xCoord + 1);
         estate_config.addDefault("pos1.y", selection.getMin().yCoord);
-        estate_config.addDefault("pos1.z", selection.getMin().zCoord);
+        estate_config.addDefault("pos1.z", selection.getMin().zCoord + 1);
         estate_config.addDefault("pos2.x", selection.getMax().xCoord);
         estate_config.addDefault("pos2.y", selection.getMax().yCoord);
         estate_config.addDefault("pos2.z", selection.getMax().zCoord);

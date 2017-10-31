@@ -9,6 +9,7 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySlime;
@@ -44,9 +45,9 @@ public class EstateListener {
             estate = insideEstate.get(player);
             insideEstate.remove(player);
             if (!estate.getOutro().trim().isEmpty())
-                player.addChatComponentMessage(new ChatComponentText(estate.getOutro()));
+                player.addChatComponentMessage(new ChatComponentText(estate.getOutro().replaceAll("&", String.valueOf('\u00a7'))));
 
-            // TODO: Teleportation back in. Also don't allow players to use this permission
+            // teleport back in, maybe want to add it maybe don't
 //            if (!estate.getPlayerPermissions(player).contains(Permission.EXIT)) {
 //            }
             return;
@@ -57,11 +58,20 @@ public class EstateListener {
             if (!insideEstate.containsKey(player)) {
                 insideEstate.put(player, estate);
                 if (!estate.getIntro().trim().isEmpty())
-                    player.addChatComponentMessage(new ChatComponentText(estate.getIntro()));
+                    player.addChatComponentMessage(new ChatComponentText(estate.getIntro().replaceAll("&", String.valueOf('\u00a7'))));
 
-                // TODO: Teleporation back out. Also don't allow players to use this permission
-//                if (!estate.getPlayerPermissions(player).contains(Permission.ENTER)) {
-//                }
+                if (!estate.getPlayerPermissions(player).contains(Permission.ENTER)) {
+                    // TODO: Do the Z and Y
+                    double distanceMinX = player.posX - estate.getBounds().minX;
+                    double distanceMaxX = estate.getBounds().maxX - player.posX;
+                    double distanceMinZ = player.posZ - estate.getBounds().minZ;
+                    double distanceMaxZ = estate.getBounds().maxZ - player.posZ;
+                    if(distanceMinX < distanceMaxX) {
+                        player.playerNetServerHandler.setPlayerLocation(estate.getBounds().minX - 0.5, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
+                    } else {
+                        player.playerNetServerHandler.setPlayerLocation(estate.getBounds().maxX + 0.5, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
+                    }
+                }
             } else {
                 if (!insideEstate.get(player).equals(estate)) {
                     insideEstate.put(player, estate);
@@ -75,7 +85,6 @@ public class EstateListener {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onBreak(BlockEvent.BreakEvent event) {
-        System.out.println("EH");
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
         Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(event.x, event.y, event.z));
         if (estate == null) return;

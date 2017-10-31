@@ -53,7 +53,7 @@ public class PacketUpdateEstate implements IMessage {
 
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketUpdateEstate message, MessageContext ctx) {
-            /**
+            /*
              * Check every value from the estatedata with the estate in the server and update according to the
              * player's permissions on whether or not they can do so.
              */
@@ -88,7 +88,7 @@ public class PacketUpdateEstate implements IMessage {
                 estate.setOutro(estateData.getOutro());
             }
 
-            /**
+            /*
              *
              *
              *
@@ -102,7 +102,7 @@ public class PacketUpdateEstate implements IMessage {
             boolean isRenter = Objects.equals(estate.getRenter(), player.getUniqueID());
             Set<Permission> permissions = Sets.newTreeSet();
 
-            /**
+            /*
              * Set global permissions
              */
             if (isOwner || isRenter || isAbsoluteOwner) {
@@ -117,7 +117,7 @@ public class PacketUpdateEstate implements IMessage {
 
             permissions.clear();
 
-            /**
+            /*
              * Set owner permissions
              */
             if (isAbsoluteOwner) {
@@ -131,7 +131,7 @@ public class PacketUpdateEstate implements IMessage {
             }
             permissions.clear();
 
-            /**
+            /*
              * Set renter permissions
              */
             if (isAbsoluteOwner || isOwner) {
@@ -145,7 +145,7 @@ public class PacketUpdateEstate implements IMessage {
             }
             permissions.clear();
 
-            /**
+            /*
              * Set permissions allowed to change
              */
             if (isAbsoluteOwner) {
@@ -160,12 +160,12 @@ public class PacketUpdateEstate implements IMessage {
 
             permissions.clear();
 
-            /**
+            /*
              * Set estate permissions
              */
             if (isAbsoluteOwner || isOwner) {
-                // TODO: They are all defaulty activated, but can turn them on or off if they have permission
-                permissions.addAll(estateData.getEstatePermissions());
+                permissions.addAll(estate.getEstatePermissions());
+
                 Set<Permission> toRemove = Sets.newTreeSet();
                 permissions.forEach(p -> {
                     if (!estate.getPlayerPermissions(player).contains(p)) {
@@ -174,9 +174,20 @@ public class PacketUpdateEstate implements IMessage {
                     if (!ModPermission.hasPermission(player.getUniqueID(), "estate." + p.name().toLowerCase())) {
                         toRemove.add(p);
                     }
-//                    toRemove.add(p);
                 });
-                permissions.removeAll(toRemove);
+
+                Permission.getEstatePermissions().forEach(p -> {
+                    if(!toRemove.contains(p)) {
+                        if(!permissions.contains(p) && estateData.getEstatePermissions().contains(p)) {
+                            // turn on
+                            permissions.add(p);
+                        } else if (permissions.contains(p) && !estateData.getEstatePermissions().contains(p)) {
+                            // turn off
+                            permissions.remove(p);
+                        }
+                    }
+                });
+
                 estate.setEstatePermissions(permissions);
             }
             return null;
