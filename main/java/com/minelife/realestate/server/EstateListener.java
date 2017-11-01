@@ -40,12 +40,13 @@ public class EstateListener {
         EntityPlayerMP player = (EntityPlayerMP) event.player;
         Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(player.posX, player.posY, player.posZ));
 
+        // TODO: Leaving estate inside an estate outro
+
         // leaving estate
         if (estate == null && insideEstate.containsKey(player)) {
             estate = insideEstate.get(player);
             insideEstate.remove(player);
-            if (!estate.getOutro().trim().isEmpty())
-                player.addChatComponentMessage(new ChatComponentText(estate.getOutro().replaceAll("&", String.valueOf('\u00a7'))));
+            if (!estate.getOutro().trim().isEmpty()) player.addChatComponentMessage(new ChatComponentText(estate.getOutro().replaceAll("&", String.valueOf('\u00a7'))));
 
             // teleport back in, maybe want to add it maybe don't
 //            if (!estate.getPlayerPermissions(player).contains(Permission.EXIT)) {
@@ -61,25 +62,31 @@ public class EstateListener {
                     player.addChatComponentMessage(new ChatComponentText(estate.getIntro().replaceAll("&", String.valueOf('\u00a7'))));
 
                 if (!estate.getPlayerPermissions(player).contains(Permission.ENTER)) {
-                    // TODO: Do the Z and Y
                     double distanceMinX = player.posX - estate.getBounds().minX;
                     double distanceMaxX = estate.getBounds().maxX - player.posX;
                     double distanceMinZ = player.posZ - estate.getBounds().minZ;
                     double distanceMaxZ = estate.getBounds().maxZ - player.posZ;
-                    if(distanceMinX < distanceMaxX) {
-                        player.playerNetServerHandler.setPlayerLocation(estate.getBounds().minX - 0.5, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
-                    } else {
-                        player.playerNetServerHandler.setPlayerLocation(estate.getBounds().maxX + 0.5, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
+
+                    if(player.posX - 1 > estate.getBounds().minX && player.posX + 1 < estate.getBounds().maxX) {
+                        if (distanceMinZ < distanceMaxZ) {
+                            player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY,estate.getBounds().minZ - 0.5, player.rotationYaw, player.rotationPitch);
+                        } else if (distanceMinZ > distanceMaxZ) {
+                            player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY, estate.getBounds().maxZ+ 0.5, player.rotationYaw, player.rotationPitch);
+                        }
+                    }else if(player.posZ > estate.getBounds().minZ && player.posZ < estate.getBounds().maxZ) {
+                        if (distanceMinX < distanceMaxX) {
+                            player.playerNetServerHandler.setPlayerLocation(estate.getBounds().minX - 0.5, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
+                        } else if (distanceMinX > distanceMaxX) {
+                            player.playerNetServerHandler.setPlayerLocation(estate.getBounds().maxX + 0.5, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
+                        }
                     }
                 }
             } else {
                 if (!insideEstate.get(player).equals(estate)) {
                     insideEstate.put(player, estate);
-                    if (!estate.getIntro().trim().isEmpty())
-                        player.addChatComponentMessage(new ChatComponentText(estate.getIntro()));
+                    if (!estate.getIntro().trim().isEmpty()) player.addChatComponentMessage(new ChatComponentText(estate.getIntro().replaceAll("&", String.valueOf('\u00a7'))));
                 }
             }
-            return;
         }
     }
 

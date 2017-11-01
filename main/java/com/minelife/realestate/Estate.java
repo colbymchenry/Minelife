@@ -203,7 +203,13 @@ public class Estate implements Comparable<Estate> {
             return permissions;
         }
 
+        if(Objects.equals(player.getUniqueID(), getMasterEstate().getOwner())) {
+            permissions.addAll(toSet(Arrays.asList(Permission.values())));
+            return permissions;
+        }
+
         if (Objects.equals(player.getUniqueID(), getOwner())) {
+            System.out.println("IS OWNER");
             permissions.addAll(getActualOwnerPerms());
             permissions.addAll(getActualPermsAllowedToChange());
         } else if (Objects.equals(player.getUniqueID(), getRenter())) {
