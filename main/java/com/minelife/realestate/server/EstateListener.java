@@ -40,13 +40,20 @@ public class EstateListener {
         EntityPlayerMP player = (EntityPlayerMP) event.player;
         Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(player.posX, player.posY, player.posZ));
 
-        // TODO: Leaving estate inside an estate outro
+        if (estate != null && insideEstate.containsKey(player) && !insideEstate.get(player).equals(estate)) {
+            if (!insideEstate.get(player).getOutro().trim().isEmpty())
+                player.addChatComponentMessage(new ChatComponentText(insideEstate.get(player).getOutro().replaceAll("&", String.valueOf('\u00a7'))));
+            if (!estate.getIntro().trim().isEmpty())
+                player.addChatComponentMessage(new ChatComponentText(estate.getIntro().replaceAll("&", String.valueOf('\u00a7'))));
+        }
 
         // leaving estate
         if (estate == null && insideEstate.containsKey(player)) {
+            System.out.println("BOOM");
             estate = insideEstate.get(player);
             insideEstate.remove(player);
-            if (!estate.getOutro().trim().isEmpty()) player.addChatComponentMessage(new ChatComponentText(estate.getOutro().replaceAll("&", String.valueOf('\u00a7'))));
+            if (!estate.getOutro().trim().isEmpty())
+                player.addChatComponentMessage(new ChatComponentText(estate.getOutro().replaceAll("&", String.valueOf('\u00a7'))));
 
             // teleport back in, maybe want to add it maybe don't
 //            if (!estate.getPlayerPermissions(player).contains(Permission.EXIT)) {
@@ -67,13 +74,13 @@ public class EstateListener {
                     double distanceMinZ = player.posZ - estate.getBounds().minZ;
                     double distanceMaxZ = estate.getBounds().maxZ - player.posZ;
 
-                    if(player.posX - 1 > estate.getBounds().minX && player.posX + 1 < estate.getBounds().maxX) {
+                    if (player.posX - 1 > estate.getBounds().minX && player.posX + 1 < estate.getBounds().maxX) {
                         if (distanceMinZ < distanceMaxZ) {
-                            player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY,estate.getBounds().minZ - 0.5, player.rotationYaw, player.rotationPitch);
+                            player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY, estate.getBounds().minZ - 0.5, player.rotationYaw, player.rotationPitch);
                         } else if (distanceMinZ > distanceMaxZ) {
-                            player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY, estate.getBounds().maxZ+ 0.5, player.rotationYaw, player.rotationPitch);
+                            player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY, estate.getBounds().maxZ + 0.5, player.rotationYaw, player.rotationPitch);
                         }
-                    }else if(player.posZ > estate.getBounds().minZ && player.posZ < estate.getBounds().maxZ) {
+                    } else if (player.posZ > estate.getBounds().minZ && player.posZ < estate.getBounds().maxZ) {
                         if (distanceMinX < distanceMaxX) {
                             player.playerNetServerHandler.setPlayerLocation(estate.getBounds().minX - 0.5, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
                         } else if (distanceMinX > distanceMaxX) {
@@ -84,7 +91,6 @@ public class EstateListener {
             } else {
                 if (!insideEstate.get(player).equals(estate)) {
                     insideEstate.put(player, estate);
-                    if (!estate.getIntro().trim().isEmpty()) player.addChatComponentMessage(new ChatComponentText(estate.getIntro().replaceAll("&", String.valueOf('\u00a7'))));
                 }
             }
         }
@@ -116,6 +122,7 @@ public class EstateListener {
 //        Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(event.x, event.y, event.z));
 //        if (estate == null) return;
     }
+
     @SubscribeEvent
     public void onSpawn(EntityJoinWorldEvent event) {
         Estate estate = EstateHandler.getEstateAt(event.world, Vec3.createVectorHelper(event.entity.posX, event.entity.posY, event.entity.posZ));
@@ -167,7 +174,7 @@ public class EstateListener {
     public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         EstateHandler.loadedEstates.forEach(e -> {
             if (e.getRenter() != null && e.getRenter().equals(event.player.getUniqueID())) {
-                if(e.getBill() != null) {
+                if (e.getBill() != null) {
                     long diff = e.getBill().getDueDate().getTime() - Calendar.getInstance().getTime().getTime();
                     if (e.getBill().getAmountDue() > 0) {
                         RentDueNotification notification = new RentDueNotification(event.player.getUniqueID(), (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS), e.getID(), e.getBill().getAmountDue());

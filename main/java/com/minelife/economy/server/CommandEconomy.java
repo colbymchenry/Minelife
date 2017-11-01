@@ -43,9 +43,7 @@ public class CommandEconomy extends MLCommand {
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
         if (!(sender instanceof EntityPlayer)) return true;
-        return true;
-        // TODO: Permissions not working
-//        return ModPermission.hasPermission(((EntityPlayer) sender).getUniqueID(), "economy");
+        return ModPermission.hasPermission(((EntityPlayer) sender).getUniqueID(), "economy");
     }
 
     @Override
@@ -53,10 +51,9 @@ public class CommandEconomy extends MLCommand {
         return null;
     }
 
-    // TODO: Is username does not works
     @Override
     public boolean isUsernameIndex(String[] args, int index) {
-        return index == 2;
+        return false;
     }
 
     @Override

@@ -75,8 +75,8 @@ public class ModelBipedCustom extends ModelBiped {
         this.bipedLeftArm.rotateAngleX = MathHelper.cos(p_78087_1_ * 0.6662F) * 2.0F * p_78087_2_ * 0.5F;
 
         if (gun != null) {
-            this.bipedRightArm.rotateAngleX = MathHelper.cos(p_78087_1_ * 0.6662F + (float) Math.PI) * 2.0F * 0 * 0.5F;
-            this.bipedLeftArm.rotateAngleX = MathHelper.cos(p_78087_1_ * 0.6662F) * 2.0F * 0 * 0.5F;
+//            this.bipedRightArm.rotateAngleX = MathHelper.cos(p_78087_1_ * 0.6662F + (float) Math.PI) * 2.0F * 0 * 0.5F;
+//            this.bipedLeftArm.rotateAngleX = MathHelper.cos(p_78087_1_ * 0.6662F) * 2.0F * 0 * 0.5F;
         }
 
         this.bipedRightArm.rotateAngleZ = 0.0F;

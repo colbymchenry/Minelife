@@ -61,17 +61,17 @@ public class GunClientDesertEagle extends ItemGunClient {
         float f6 = 0.0F;
         float f7 = 0.0F;
         model.bipedRightArm.rotateAngleZ = 0.0F;
-        model.bipedLeftArm.rotateAngleZ = 0.0F;
+//        model.bipedLeftArm.rotateAngleZ = 0.0F;
         model.bipedRightArm.rotateAngleY = -(0.1F - f6 * 0.6F) + model.bipedHead.rotateAngleY;
-        model.bipedLeftArm.rotateAngleY = 0.1F - f6 * 0.6F + model.bipedHead.rotateAngleY + 0.4F;
+//        model.bipedLeftArm.rotateAngleY = 0.1F - f6 * 0.6F + model.bipedHead.rotateAngleY + 0.4F;
         model.bipedRightArm.rotateAngleX = -((float) Math.PI / 2F) + model.bipedHead.rotateAngleX;
-        model.bipedLeftArm.rotateAngleX = -((float) Math.PI / 2F) + model.bipedHead.rotateAngleX;
+//        model.bipedLeftArm.rotateAngleX = -((float) Math.PI / 2F) + model.bipedHead.rotateAngleX;
         model.bipedRightArm.rotateAngleX -= f6 * 1.2F - f7 * 0.4F;
-        model.bipedLeftArm.rotateAngleX -= f6 * 1.2F - f7 * 0.4F;
+//        model.bipedLeftArm.rotateAngleX -= f6 * 1.2F - f7 * 0.4F;
         model.bipedRightArm.rotateAngleZ += MathHelper.cos(f1 * 0.09F) * 0.05F + 0.05F;
-        model.bipedLeftArm.rotateAngleZ -= MathHelper.cos(f1 * 0.09F) * 0.05F + 0.05F;
+//        model.bipedLeftArm.rotateAngleZ -= MathHelper.cos(f1 * 0.09F) * 0.05F + 0.05F;
         model.bipedRightArm.rotateAngleX += MathHelper.sin(f1 * 0.067F) * 0.05F;
-        model.bipedLeftArm.rotateAngleX -= MathHelper.sin(f1 * 0.067F) * 0.05F;
+//        model.bipedLeftArm.rotateAngleX -= MathHelper.sin(f1 * 0.067F) * 0.05F;
     }
 
     @Override

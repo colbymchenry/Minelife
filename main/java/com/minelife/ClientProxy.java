@@ -1,8 +1,11 @@
 package com.minelife;
 
+import com.minelife.util.client.render.RenderPlayerCustom;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import lib.PatPeter.SQLibrary.SQLite;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class ClientProxy extends CommonProxy {
 
@@ -11,6 +14,7 @@ public class ClientProxy extends CommonProxy {
     {
         initSQLite();
         MLKeys.registerKeys();
+        RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, new RenderPlayerCustom());
 
         Minelife.MODS.forEach(mod -> {
             try {

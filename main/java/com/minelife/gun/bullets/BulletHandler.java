@@ -41,7 +41,6 @@ public class BulletHandler {
     public void onTick(TickEvent event) {
         tickCount++;
 
-        // TODO: Add bullet speed
         if (tickCount < 2) return;
 
         ListIterator<Bullet> iterator = bulletList.listIterator();
