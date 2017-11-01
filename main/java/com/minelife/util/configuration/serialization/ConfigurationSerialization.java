@@ -20,10 +20,6 @@ public class ConfigurationSerialization {
     private final Class<? extends ConfigurationSerializable> clazz;
     private static Map<String, Class<? extends ConfigurationSerializable>> aliases = new HashMap<String, Class<? extends ConfigurationSerializable>>();
 
-    static {
-        // TODO: This is where you register serializable shit
-    }
-
     protected ConfigurationSerialization(Class<? extends ConfigurationSerializable> clazz) {
         this.clazz = clazz;
     }

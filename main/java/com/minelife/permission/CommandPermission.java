@@ -55,7 +55,6 @@ public class CommandPermission extends MLCommand {
         return false;
     }
 
-    // TODO: Test these commands
     @Override
     public synchronized void execute(ICommandSender sender, String[] args) throws Exception {
         if(args.length == 1) {

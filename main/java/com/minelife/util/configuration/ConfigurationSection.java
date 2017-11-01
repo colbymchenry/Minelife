@@ -10,7 +10,6 @@ import java.util.UUID;
 /**
  * Represents a section of a {@link Configuration}
  */
-// TODO: This is where you add methods for the config to serialize shit
 public interface ConfigurationSection {
     /**
      * Gets a set containing all keys in this section.

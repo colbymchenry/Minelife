@@ -21,8 +21,7 @@ public class GuiDropDown extends Gui {
     public Color color_highlight = color_bg;
 
 
-    public GuiDropDown(int xPosition, int yPosition, int width, int height, String... options)
-    {
+    public GuiDropDown(int xPosition, int yPosition, int width, int height, String... options) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.width = width;
@@ -31,8 +30,7 @@ public class GuiDropDown extends Gui {
         this.color_highlight = this.color_highlight.darker();
     }
 
-    public void draw(Minecraft mc, int mouse_x, int mouse_y)
-    {
+    public void draw(Minecraft mc, int mouse_x, int mouse_y) {
         boolean hover = mouse_x >= xPosition && mouse_x <= xPosition + width && mouse_y >= yPosition && mouse_y <= yPosition + height;
         GL11.glColor4f(1, 1, 1, 1);
         drawRect(xPosition, yPosition, xPosition + width, yPosition + height, color_bg.hashCode());
@@ -67,16 +65,12 @@ public class GuiDropDown extends Gui {
         }
     }
 
-    public boolean mouseClicked(Minecraft mc, int mouse_x, int mouse_y)
-    {
-        // TODO: Fix dropdown pulling up even tho you don't click it
+    public boolean mouseClicked(Minecraft mc, int mouse_x, int mouse_y) {
         if (mouse_x >= xPosition && mouse_x <= xPosition + width) {
             if (mouse_y >= yPosition && mouse_y <= yPosition + height) {
-                if(drop_down_active) {
-                    drop_down_active = !drop_down_active;
-                    return true;
-                }
-            } else if (mouse_y >= yPosition) {
+                drop_down_active = !drop_down_active;
+                return true;
+            } else if (mouse_y >= yPosition && drop_down_active) {
                 int y = yPosition + 3;
                 for (int i = 0; i < options.length; i++) {
                     if (i != selected) {

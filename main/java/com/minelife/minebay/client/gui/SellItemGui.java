@@ -93,7 +93,6 @@ public class SellItemGui extends MasterGui {
         sell_btn.drawButton(mc, mouse_x, mouse_y);
 
         if (item_to_sale != null) {
-            // TODO: FOr some reason item_to_sale keeps getting set to null. GOtta figure out whats up.
             if (mouse_x >= item_render_x && mouse_x <= item_render_x + item_render_width && mouse_y >= top + 10 && mouse_y <= top + 10 + 60) {
                 fakeInventory.item_renderer.renderToolTip(item_to_sale, mouse_x, mouse_y);
             }

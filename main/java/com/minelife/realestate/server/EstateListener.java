@@ -49,7 +49,6 @@ public class EstateListener {
 
         // leaving estate
         if (estate == null && insideEstate.containsKey(player)) {
-            System.out.println("BOOM");
             estate = insideEstate.get(player);
             insideEstate.remove(player);
             if (!estate.getOutro().trim().isEmpty())
