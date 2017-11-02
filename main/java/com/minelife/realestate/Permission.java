@@ -19,7 +19,6 @@ public enum Permission {
     MONSTER_SPAWN(true),
     CREATURE_SPAWN(true),
     ENTER(false),
-    EXIT(false),
     MODIFY_INTRO(false),
     MODIFY_OUTRO(false),
     HEAL(true),

@@ -40,13 +40,9 @@ public class PacketGuiModifyEstate implements IMessage {
             estateData = EstateData.fromBytes(buf);
             int permsSize = buf.readInt();
             for (int i = 0; i < permsSize; i++) playerPermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
+        } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
-
-        System.out.println("BOOM");
     }
 
     @Override
@@ -54,15 +50,12 @@ public class PacketGuiModifyEstate implements IMessage {
         estateData.toBytes(buf);
         buf.writeInt(playerPermissions.size());
         playerPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
-        System.out.println("HA");
     }
 
     public static class Handler implements IMessageHandler<PacketGuiModifyEstate, IMessage> {
 
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketGuiModifyEstate message, MessageContext ctx) {
-
-            System.out.println("NPP<0");
             Minecraft.getMinecraft().displayGuiScreen(new GuiModifyEstate(message.estateData, message.playerPermissions));
             return null;
         }

@@ -2,7 +2,9 @@ package com.minelife.realestate.client.gui;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.minelife.Minelife;
 import com.minelife.realestate.Permission;
+import com.minelife.realestate.network.PacketGetMembers;
 import com.minelife.util.client.*;
 import com.minelife.util.server.NameFetcher;
 import net.minecraft.client.Minecraft;
@@ -20,7 +22,8 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
     private Map<UUID, String> names;
     private int xPosition, yPosition, bgWidth = 200, bgHeight = 200;
 
-    public GuiMembers() {
+    public GuiMembers(int estateID) {
+        Minelife.NETWORK.sendToServer(new PacketGetMembers(estateID));
     }
 
     public GuiMembers(Map<UUID, List<Permission>> members, List<Permission> playerPermissions) {

@@ -11,10 +11,11 @@ import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class ServerProxy extends CommonProxy {
 
-    public MLConfig config;
+    public static MLConfig config;
     public File estatesDir = new File(Minelife.getConfigDirectory(), "estates");
 
     @Override
@@ -22,6 +23,7 @@ public class ServerProxy extends CommonProxy {
         config = new MLConfig("realestate");
         config.addDefault("selection_tool", Item.getIdFromItem(Items.golden_hoe));
         config.addDefault("messages.estate_create", "Estate created!");
+        config.addDefault("black-listed-blocks", Arrays.asList(64, 69, 96, 77, 143));
         config.save();
 
         estatesDir.mkdir();

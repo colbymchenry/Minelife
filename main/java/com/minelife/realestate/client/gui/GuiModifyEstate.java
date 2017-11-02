@@ -29,6 +29,7 @@ public class GuiModifyEstate extends GuiScreen {
     private EstateData estateData;
     private Set<Permission> playerPermissions;
     private GuiContent content;
+    private GuiButton membersBtn;
 
     public GuiModifyEstate(EstateData estateData, Set<Permission> playerPermissions) {
         this.estateData = estateData;
@@ -40,6 +41,7 @@ public class GuiModifyEstate extends GuiScreen {
         drawDefaultBackground();
         GuiUtil.drawDefaultBackground(xPosition, yPosition, bgWidth, bgHeight);
         content.draw(x, y, Mouse.getDWheel());
+        membersBtn.drawButton(mc, x, y);
     }
 
     @Override
@@ -49,11 +51,19 @@ public class GuiModifyEstate extends GuiScreen {
     }
 
     @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseBtn) {
+        if(membersBtn.mousePressed(mc, mouseX, mouseY)) {
+            Minecraft.getMinecraft().displayGuiScreen(new GuiMembers(estateData.getID()));
+        }
+    }
+
+    @Override
     public void initGui() {
         super.initGui();
         xPosition = (this.width - this.bgWidth) / 2;
         yPosition = (this.height - this.bgHeight) / 2;
         content = new GuiContent(mc, xPosition, yPosition, bgWidth, bgHeight);
+        membersBtn = new GuiButton(0, xPosition + bgWidth + 5, yPosition, 50, 20, "Members");
     }
 
     @Override
