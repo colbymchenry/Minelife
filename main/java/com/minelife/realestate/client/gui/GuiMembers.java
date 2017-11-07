@@ -8,6 +8,7 @@ import com.minelife.realestate.network.PacketGetMembers;
 import com.minelife.util.client.*;
 import com.minelife.util.server.NameFetcher;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Mouse;
 
@@ -17,16 +18,17 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
 
     private GuiContent content;
     private GuiLoadingAnimation loadingAnimation;
-    private List<Permission> playerPermissions;
-    private Map<UUID, List<Permission>> members;
+    private Set<Permission> playerPermissions;
+    private Map<UUID, Set<Permission>> members;
     private Map<UUID, String> names;
+    private GuiButton addBtn, removeBtn;
     private int xPosition, yPosition, bgWidth = 200, bgHeight = 200;
 
     public GuiMembers(int estateID) {
         Minelife.NETWORK.sendToServer(new PacketGetMembers(estateID));
     }
 
-    public GuiMembers(Map<UUID, List<Permission>> members, List<Permission> playerPermissions) {
+    public GuiMembers(Map<UUID, Set<Permission>> members, Set<Permission> playerPermissions) {
         this.members = members;
         this.playerPermissions = playerPermissions;
         this.names = Maps.newHashMap();
@@ -38,7 +40,10 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
         super.drawScreen(x, y, f);
         drawDefaultBackground();
         GuiUtil.drawDefaultBackground(xPosition, yPosition, bgWidth, bgHeight);
-        if(members == null) {
+        addBtn.drawButton(mc, x, y);
+        removeBtn.drawButton(mc, x, y);
+
+        if (members == null) {
             loadingAnimation.drawLoadingAnimation();
             return;
         }
@@ -50,18 +55,37 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
     protected void keyTyped(char keyChar, int keyCode) {
         super.keyTyped(keyChar, keyCode);
 
-        if(members != null) content.keyTyped(keyChar, keyCode);
+        if (members != null) content.keyTyped(keyChar, keyCode);
+    }
+
+    @Override
+    protected void mouseClicked(int x, int y, int btn) {
+        if(addBtn.mousePressed(mc, x, y)) {
+            Minecraft.getMinecraft().displayGuiScreen(new GuiAddMember(this));
+        } else if(removeBtn.mousePressed(mc, x, y)) {
+
+        }
     }
 
     @Override
     public void initGui() {
         super.initGui();
-        if(this.members == null) {
-            loadingAnimation = new GuiLoadingAnimation(this.width / 2, this.height / 2, 64, 64);
-        } else {
-            xPosition = (this.width - bgWidth) / 2;
-            yPosition = (this.height - bgHeight) / 2;
+        xPosition = (this.width - bgWidth) / 2;
+        yPosition = (this.height - bgHeight) / 2;
+        if (this.members == null)
+            loadingAnimation = new GuiLoadingAnimation(xPosition + ((bgWidth - 64) / 2), yPosition + ((bgHeight - 64) / 2), 64, 64);
+        else
             content = new GuiContent(mc, xPosition, yPosition, bgWidth, bgHeight);
+
+        addBtn = new GuiButton(0, xPosition + bgWidth + 2, yPosition, 50, 20, "Add");
+        removeBtn = new GuiButton(1, xPosition + bgWidth + 2, yPosition + 25, 50, 20, "Remove");
+        removeBtn.enabled = false;
+    }
+
+    @Override
+    public void updateScreen() {
+        if(content != null) {
+            removeBtn.enabled = content.selected != -1;
         }
     }
 
@@ -82,6 +106,7 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
                 totalHeight = fontRendererObj.FONT_HEIGHT;
                 List<GuiTickBox> tickBoxList = Lists.newArrayList();
                 playerPermissions.forEach(p -> tickBoxList.add(new GuiTickBox(mc, 20, totalHeight += GuiTickBox.HEIGHT, permissions.contains(p), p.name())));
+                tickBoxMap.put(uuid, tickBoxList);
             });
         }
 
@@ -93,7 +118,7 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
         @Override
         public void drawObject(int index, int mouseX, int mouseY, boolean isHovering) {
             fontRendererObj.drawString(names.get(members.keySet().toArray()[index]), 5, 5, 0xFFFFFF);
-
+            tickBoxMap.get(index).forEach(GuiTickBox::drawTickBox);
         }
 
         @Override
@@ -103,7 +128,7 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
 
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
-
+            tickBoxMap.get(index).forEach(tB -> tB.mouseClicked(mouseX, mouseY));
         }
 
         @Override

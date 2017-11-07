@@ -25,6 +25,8 @@ public class ModRealEstate extends AbstractMod {
         registerPacket(PacketPurchaseEstate.Handler.class, PacketPurchaseEstate.class, Side.SERVER);
         registerPacket(PacketGuiModifyEstate.Handler.class, PacketGuiModifyEstate.class, Side.CLIENT);
         registerPacket(PacketUpdateEstate.Handler.class, PacketUpdateEstate.class, Side.SERVER);
+        registerPacket(PacketGetMembers.Handler.class, PacketGetMembers.class, Side.SERVER);
+        registerPacket(PacketSendMembers.Handler.class, PacketSendMembers.class, Side.CLIENT);
         MinecraftForge.EVENT_BUS.register(new SelectionHandler());
         FMLCommonHandler.instance().bus().register(new SelectionHandler());
     }

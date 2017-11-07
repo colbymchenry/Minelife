@@ -1,5 +1,8 @@
 package com.minelife.realestate.network;
 
+import com.minelife.Minelife;
+import com.minelife.realestate.Estate;
+import com.minelife.realestate.EstateHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -33,7 +36,11 @@ public class PacketGetMembers implements IMessage {
 
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketGetMembers message, MessageContext ctx) {
+            Estate estate = EstateHandler.getEstate(message.estateID);
 
+            if(estate == null) return null;
+
+            Minelife.NETWORK.sendTo(new PacketSendMembers(estate.getMembers(), estate.getPlayerPermissions(ctx.getServerHandler().playerEntity)), ctx.getServerHandler().playerEntity);
             return null;
         }
     }
