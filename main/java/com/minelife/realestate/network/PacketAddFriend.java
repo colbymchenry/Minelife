@@ -37,7 +37,7 @@ public class PacketAddFriend implements IMessage {
 
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketAddFriend message, MessageContext ctx) {
-            
+            //
             return null;
         }
     }
