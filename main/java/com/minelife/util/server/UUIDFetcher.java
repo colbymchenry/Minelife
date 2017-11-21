@@ -34,7 +34,7 @@ public final class UUIDFetcher {
         // search through the cached players first
         for (UUID id : CACHE.keySet()) if (CACHE.get(id) != null && CACHE.get(id).equalsIgnoreCase(player)) return id;
 
-        if(NULL_NAMES.contains(player.toLowerCase())) return null;
+        if (NULL_NAMES.contains(player.toLowerCase())) return null;
 
         String profileURL = "https://api.mojang.com/users/profiles/minecraft/" + player.toLowerCase();
 
@@ -46,7 +46,7 @@ public final class UUIDFetcher {
             String name = (String) response.get("name");
             String uuid = (String) response.get("id");
 
-            if(name == null) {
+            if (name == null) {
                 NULL_NAMES.add(player.toLowerCase());
                 return null;
             }
@@ -56,7 +56,8 @@ public final class UUIDFetcher {
 
             CACHE.put(UUID.fromString(uuid), name);
             return UUID.fromString(uuid);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         NULL_NAMES.add(player.toLowerCase());
         return null;
@@ -68,7 +69,7 @@ public final class UUIDFetcher {
     }
 
     public static void asyncFetchServer(String name, Callback callback, Object... objects) {
-            FetchUUIDThread.instance.fetchUUID(name, callback, objects);
+        FetchUUIDThread.instance.fetchUUID(name, callback, objects);
     }
 
     public static UUID asyncFetchClient(String name, IUUIDReceiver receiver) {

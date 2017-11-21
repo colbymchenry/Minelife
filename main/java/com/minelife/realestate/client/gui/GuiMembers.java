@@ -22,17 +22,20 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
     private Map<UUID, Set<Permission>> members;
     private Map<UUID, String> names;
     private GuiButton addBtn, removeBtn;
+    private int estateID;
     private int xPosition, yPosition, bgWidth = 200, bgHeight = 200;
 
     public GuiMembers(int estateID) {
         Minelife.NETWORK.sendToServer(new PacketGetMembers(estateID));
+        this.estateID = estateID;
     }
 
-    public GuiMembers(Map<UUID, Set<Permission>> members, Set<Permission> playerPermissions) {
+    public GuiMembers(Map<UUID, Set<Permission>> members, Set<Permission> playerPermissions, int estateID) {
         this.members = members;
         this.playerPermissions = playerPermissions;
         this.names = Maps.newHashMap();
         members.keySet().forEach(uuid -> this.names.put(uuid, NameFetcher.asyncFetchClient(uuid, this)));
+        this.estateID = estateID;
     }
 
     @Override
@@ -61,7 +64,7 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
     @Override
     protected void mouseClicked(int x, int y, int btn) {
         if(addBtn.mousePressed(mc, x, y)) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiAddMember(this));
+            Minecraft.getMinecraft().displayGuiScreen(new GuiAddMember(this, estateID));
         } else if(removeBtn.mousePressed(mc, x, y)) {
 
         }

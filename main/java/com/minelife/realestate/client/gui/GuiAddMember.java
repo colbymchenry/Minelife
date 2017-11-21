@@ -1,5 +1,7 @@
 package com.minelife.realestate.client.gui;
 
+import com.minelife.Minelife;
+import com.minelife.realestate.network.PacketAddMember;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -13,9 +15,11 @@ public class GuiAddMember extends GuiScreen {
     private GuiButton addBtn, cancelBtn;
     private int bgWidth = 100, bgHeight = 70;
     private int xPos, yPos;
+    private int estateID;
 
-    public GuiAddMember(GuiScreen prevScreen) {
+    public GuiAddMember(GuiScreen prevScreen, int estateID) {
         this.prevScreen = prevScreen;
+        this.estateID = estateID;
     }
 
     @Override
@@ -39,7 +43,7 @@ public class GuiAddMember extends GuiScreen {
         super.mouseClicked(x, y, btn);
         nameField.mouseClicked(x, y, btn);
         if(addBtn.mousePressed(mc, x, y)) {
-
+            Minelife.NETWORK.sendToServer(new PacketAddMember(nameField.getText(), estateID));
         } else if (cancelBtn.mousePressed(mc, x, y)) {
             Minecraft.getMinecraft().displayGuiScreen(prevScreen);
         }

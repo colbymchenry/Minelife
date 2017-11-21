@@ -30,7 +30,9 @@ public enum Permission {
     RENT(false),
     MODIFY_RENT_PERIOD(false),
     MODIFY_PURCHASE_PRICE(false),
-    MODIFY_RENT_PRICE(false);
+    MODIFY_RENT_PRICE(false),
+    ADD_MEMBER(false),
+    REMOVE_MEMBER(false);
 
     private boolean isEstatePermission = false;
 

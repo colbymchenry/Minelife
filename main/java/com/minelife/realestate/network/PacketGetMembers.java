@@ -40,7 +40,7 @@ public class PacketGetMembers implements IMessage {
 
             if(estate == null) return null;
 
-            Minelife.NETWORK.sendTo(new PacketSendMembers(estate.getMembers(), estate.getPlayerPermissions(ctx.getServerHandler().playerEntity)), ctx.getServerHandler().playerEntity);
+            Minelife.NETWORK.sendTo(new PacketSendMembers(estate.getMembers(), estate.getPlayerPermissions(ctx.getServerHandler().playerEntity), estate.getID()), ctx.getServerHandler().playerEntity);
             return null;
         }
     }

@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public class FetchUUIDThread implements Runnable {
 
-    private static final List<UUIDThreadObject> queList = Lists.newArrayList();
-    private static final List<SimpleUUIDThreadObject> simpleQueList = Lists.newArrayList();
+    private static volatile List<UUIDThreadObject> queList = Lists.newArrayList();
+    private static volatile List<SimpleUUIDThreadObject> simpleQueList = Lists.newArrayList();
     public static FetchUUIDThread instance;
 
     @Override
@@ -42,11 +42,13 @@ public class FetchUUIDThread implements Runnable {
                     SimpleUUIDThreadObject object = simpleIterator.next();
                     UUID uuid = UUIDFetcher.get(object.name);
                     String name = NameFetcher.get(uuid);
+                    System.out.println("CALLLEEEDDDD " + object.includes.length);
                     object.callback.callback(uuid, name, object.includes);
                 }
 
                 simpleQueList.removeAll(simpleQue);
-            }catch(Exception e) {}
+            }catch(Exception e) {
+            }
         }
 
     }

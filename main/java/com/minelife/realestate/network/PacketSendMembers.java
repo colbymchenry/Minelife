@@ -21,13 +21,15 @@ public class PacketSendMembers implements IMessage {
 
     private Map<UUID, Set<Permission>> members;
     private Set<Permission> playerPermissions;
+    private int estateID;
 
     public PacketSendMembers() {
     }
 
-    public PacketSendMembers(Map<UUID, Set<Permission>> members, Set<Permission> playerPermissions) {
+    public PacketSendMembers(Map<UUID, Set<Permission>> members, Set<Permission> playerPermissions, int estateID) {
         this.members = members;
         this.playerPermissions = playerPermissions;
+        this.estateID = estateID;
     }
 
     @Override
@@ -44,6 +46,8 @@ public class PacketSendMembers implements IMessage {
             for (int i1 = 0; i1 < permsSize; i1++) perms.add(Permission.values()[buf.readInt()]);
             members.put(uuid, perms);
         }
+
+        estateID = buf.readInt();
     }
 
     @Override
@@ -56,13 +60,15 @@ public class PacketSendMembers implements IMessage {
             buf.writeInt(perms.size());
             perms.forEach(p -> buf.writeInt(p.ordinal()));
         });
+
+        buf.writeInt(estateID);
     }
 
     public static class Handler implements IMessageHandler<PacketSendMembers, IMessage> {
 
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketSendMembers message, MessageContext ctx) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiMembers(message.members, message.playerPermissions));
+            Minecraft.getMinecraft().displayGuiScreen(new GuiMembers(message.members, message.playerPermissions, message.estateID));
             return null;
         }
     }
