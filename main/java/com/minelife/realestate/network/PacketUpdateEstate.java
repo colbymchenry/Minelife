@@ -1,6 +1,5 @@
 package com.minelife.realestate.network;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.minelife.permission.ModPermission;
 import com.minelife.realestate.Estate;
@@ -17,10 +16,8 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class PacketUpdateEstate implements IMessage {
 
@@ -37,9 +34,7 @@ public class PacketUpdateEstate implements IMessage {
     public void fromBytes(ByteBuf buf) {
         try {
             estateData = EstateData.fromBytes(buf);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
+        } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
     }
