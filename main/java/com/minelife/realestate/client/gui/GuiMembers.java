@@ -10,6 +10,7 @@ import com.minelife.util.server.NameFetcher;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -25,6 +26,7 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
     private GuiButton addBtn;
     private int estateID;
     private int xPosition, yPosition, bgWidth = 200, bgHeight = 200;
+    private static ResourceLocation deleteTex = new ResourceLocation(Minelife.MOD_ID, "textures/gui/x.png");
 
     public GuiMembers(int estateID) {
         Minelife.NETWORK.sendToServer(new PacketGetMembers(estateID));
@@ -88,11 +90,13 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
 
     private class GuiContent extends GuiScrollableContent {
 
+        private List messageBox = Lists.newArrayList();
         private Map<UUID, List<GuiTickBox>> tickBoxMap;
         private int totalHeight = 0;
 
         public GuiContent(Minecraft mc, int xPosition, int yPosition, int width, int height) {
             super(mc, xPosition, yPosition, width, height);
+            messageBox.add("Remove?");
             tickBoxMap = Maps.newHashMap();
             members.forEach((uuid, permissions) -> {
                 totalHeight = fontRendererObj.FONT_HEIGHT;
@@ -110,8 +114,25 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
         @Override
         public void drawObject(int index, int mouseX, int mouseY, boolean isHovering) {
             fontRendererObj.drawString(names.get(members.keySet().toArray()[index]), 5, 5, 0xFFFFFF);
+            mc.getTextureManager().bindTexture(deleteTex);
+
+            if(mouseX >= this.width - 25 && mouseX <= (this.width - 25) + 16 && mouseY >= 2 && mouseY <= 2 + 16) {
+                GL11.glPushMatrix();
+                GL11.glTranslatef(this.width - 25, 2, zLevel);
+                GL11.glTranslatef(8, 8, zLevel);
+                GL11.glScalef(1.2f, 1.2f, 1.2f);
+                GL11.glTranslatef(-8, -8, zLevel);
+                GuiUtil.drawImage(0, 0, 16, 16);
+                GL11.glPopMatrix();
+                GL11.glDisable(GL11.GL_SCISSOR_TEST);
+                // TODO: The scroll bar draws over the hovering text, and the images goes dark.
+                drawHoveringText(messageBox, mouseX, mouseY, fontRendererObj);
+                GL11.glEnable(GL11.GL_SCISSOR_TEST);
+            } else {
+                GuiUtil.drawImage(this.width - 25, 2, 16, 16);
+            }
+
             ((List<GuiTickBox>) tickBoxMap.values().toArray()[index]).forEach(GuiTickBox::drawTickBox);
-            // TODO: Add an 'X' to each player name to click and remove them. Make sure to add a confirmation window.
             ((List<GuiTickBox>) tickBoxMap.values().toArray()[index]).forEach(tickBox -> fontRendererObj.drawString(tickBox.key, 70, tickBox.yPosition + 5, 0x232323));
         }
 
@@ -122,7 +143,7 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
 
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
-                ((List<GuiTickBox>) tickBoxMap.values().toArray()[index]).forEach(tB -> tB.mouseClicked(mouseX, mouseY));
+            ((List<GuiTickBox>) tickBoxMap.values().toArray()[index]).forEach(tB -> tB.mouseClicked(mouseX, mouseY));
         }
 
         @Override
