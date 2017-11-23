@@ -73,7 +73,6 @@ public class PacketAddMember implements IMessage {
 
             sender.addChatComponentMessage(new ChatComponentText("Fetching player..."));
 
-            // TODO: Works like a charm, just have no idea whether or not it will actually continue to work.
             UUID uuid = UUIDFetcher.get(packet.playerName);
 
             if(uuid == null) {
@@ -81,8 +80,17 @@ public class PacketAddMember implements IMessage {
                 return;
             }
 
-            String name = NameFetcher.get(uuid);
             Map<UUID, Set<Permission>> members = estate.getMembers();
+
+            members.forEach((id, perms) -> System.out.println(id.toString()));
+            System.out.println(uuid.toString());
+
+            if(members.containsKey(uuid)) {
+                Minelife.NETWORK.sendTo(new PacketPopupMessage("Player is already a member.", 0xC6C6C6), sender);
+                return;
+            }
+
+            String name = NameFetcher.get(uuid);
             members.put(uuid, Sets.newTreeSet());
             estate.setMembers(members);
             sender.closeScreen();

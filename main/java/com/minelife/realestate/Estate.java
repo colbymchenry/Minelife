@@ -110,7 +110,8 @@ public class Estate implements Comparable<Estate> {
 
     public Map<UUID, Set<Permission>> getMembers() {
         Map<UUID, Set<Permission>> members = Maps.newHashMap();
-        for (String member : config.getStringList("members")) {
+        for (String member : config.getConfigurationSection("members").getKeys(true)) {
+            System.out.println("MEMBER:" + member);
             Set<Permission> permissions = Sets.newTreeSet();
             config.getStringList("members." + member).forEach(p -> permissions.add(Permission.valueOf(p)));
             members.put(UUID.fromString(member), permissions);

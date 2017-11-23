@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 
@@ -21,7 +22,7 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
     private Set<Permission> playerPermissions;
     private Map<UUID, Set<Permission>> members;
     private Map<UUID, String> names;
-    private GuiButton addBtn, removeBtn;
+    private GuiButton addBtn;
     private int estateID;
     private int xPosition, yPosition, bgWidth = 200, bgHeight = 200;
 
@@ -44,7 +45,6 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
         drawDefaultBackground();
         GuiUtil.drawDefaultBackground(xPosition, yPosition, bgWidth, bgHeight);
         addBtn.drawButton(mc, x, y);
-        removeBtn.drawButton(mc, x, y);
 
         if (members == null) {
             loadingAnimation.drawLoadingAnimation();
@@ -63,10 +63,8 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
 
     @Override
     protected void mouseClicked(int x, int y, int btn) {
-        if(addBtn.mousePressed(mc, x, y)) {
+        if (addBtn.mousePressed(mc, x, y)) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiAddMember(this, estateID));
-        } else if(removeBtn.mousePressed(mc, x, y)) {
-
         }
     }
 
@@ -78,18 +76,9 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
         if (this.members == null)
             loadingAnimation = new GuiLoadingAnimation(xPosition + ((bgWidth - 64) / 2), yPosition + ((bgHeight - 64) / 2), 64, 64);
         else
-            content = new GuiContent(mc, xPosition, yPosition, bgWidth, bgHeight);
+            content = new GuiContent(mc, xPosition, yPosition + 2, bgWidth, bgHeight - 4);
 
         addBtn = new GuiButton(0, xPosition + bgWidth + 2, yPosition, 50, 20, "Add");
-        removeBtn = new GuiButton(1, xPosition + bgWidth + 2, yPosition + 25, 50, 20, "Remove");
-        removeBtn.enabled = false;
-    }
-
-    @Override
-    public void updateScreen() {
-        if(content != null) {
-            removeBtn.enabled = content.selected != -1;
-        }
     }
 
     @Override
@@ -115,13 +104,15 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
 
         @Override
         public int getObjectHeight(int index) {
-            return fontRendererObj.FONT_HEIGHT + members.get(members.keySet().toArray()[index]).size() * GuiTickBox.HEIGHT;
+            return fontRendererObj.FONT_HEIGHT + ((List<GuiTickBox>) tickBoxMap.values().toArray()[index]).size() * GuiTickBox.HEIGHT;
         }
 
         @Override
         public void drawObject(int index, int mouseX, int mouseY, boolean isHovering) {
             fontRendererObj.drawString(names.get(members.keySet().toArray()[index]), 5, 5, 0xFFFFFF);
-            tickBoxMap.get(index).forEach(GuiTickBox::drawTickBox);
+            ((List<GuiTickBox>) tickBoxMap.values().toArray()[index]).forEach(GuiTickBox::drawTickBox);
+            // TODO: Add an 'X' to each player name to click and remove them. Make sure to add a confirmation window.
+            ((List<GuiTickBox>) tickBoxMap.values().toArray()[index]).forEach(tickBox -> fontRendererObj.drawString(tickBox.key, 70, tickBox.yPosition + 5, 0x232323));
         }
 
         @Override
@@ -131,7 +122,7 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
 
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
-            tickBoxMap.get(index).forEach(tB -> tB.mouseClicked(mouseX, mouseY));
+                ((List<GuiTickBox>) tickBoxMap.values().toArray()[index]).forEach(tB -> tB.mouseClicked(mouseX, mouseY));
         }
 
         @Override
@@ -139,5 +130,9 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
 
         }
 
+        @Override
+        public void drawSelectionBox(int index, int width, int height) {
+
+        }
     }
 }
