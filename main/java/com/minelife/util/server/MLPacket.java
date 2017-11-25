@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 
 public class MLPacket implements IMessageHandler {
 
-    private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    private static final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
     public synchronized void execute(IMessage message, MessageContext ctx) {}
 

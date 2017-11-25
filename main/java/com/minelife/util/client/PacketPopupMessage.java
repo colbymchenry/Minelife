@@ -22,6 +22,10 @@ public class PacketPopupMessage implements IMessage {
         this.color = color;
     }
 
+    public PacketPopupMessage(String message) {
+        this(message, 0xC6C6C6);
+    }
+
     @Override
     public void fromBytes(ByteBuf buf) {
         message = ByteBufUtils.readUTF8String(buf);

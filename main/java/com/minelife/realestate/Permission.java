@@ -26,11 +26,6 @@ public enum Permission {
     CREATURE_DEATH(true),
     MONSTER_DEATH(true),
     FALL_DAMAGE(true),
-    SELL(false),
-    RENT(false),
-    MODIFY_RENT_PERIOD(false),
-    MODIFY_PURCHASE_PRICE(false),
-    MODIFY_RENT_PRICE(false),
     ADD_MEMBER(false),
     REMOVE_MEMBER(false);
 

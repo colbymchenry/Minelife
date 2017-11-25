@@ -1,6 +1,5 @@
 package com.minelife.realestate.client.gui;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
@@ -19,7 +18,6 @@ import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,7 +50,7 @@ public class GuiModifyEstate extends GuiScreen {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseBtn) {
-        if(membersBtn.mousePressed(mc, mouseX, mouseY)) {
+        if (membersBtn.mousePressed(mc, mouseX, mouseY)) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiMembers(estateData.getID()));
         }
     }
@@ -62,7 +60,7 @@ public class GuiModifyEstate extends GuiScreen {
         super.initGui();
         xPosition = (this.width - this.bgWidth) / 2;
         yPosition = (this.height - this.bgHeight) / 2;
-        content = new GuiContent(mc, xPosition, yPosition, bgWidth, bgHeight);
+        content = new GuiContent(mc, xPosition, yPosition + 4, bgWidth, bgHeight - 6);
         membersBtn = new GuiButton(0, xPosition + bgWidth + 5, yPosition, 50, 20, "Members");
     }
 
@@ -86,11 +84,11 @@ public class GuiModifyEstate extends GuiScreen {
      */
     private class GuiContent extends GuiScrollableContent {
 
-        private final int globalLabelY;
-        private final int renterLabelY;
-        private final int ownerLabelY;
-        private final int allowedToChangeLabelY;
-        private final int estateLabelY;
+        private int globalLabelY;
+        private int renterLabelY;
+        private int ownerLabelY;
+        private int allowedToChangeLabelY;
+        private int estateLabelY;
         private int totalHeight = 5;
         private GuiTextField purchaseField, rentField, periodField, introField, outroField;
         private Map<Permission, GuiTickBox> globalPerms, ownerPerms, renterPerms, allowedToChangePerms, estatePerms;
@@ -111,47 +109,49 @@ public class GuiModifyEstate extends GuiScreen {
             introField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, totalHeight += 60, 100, 20);
             outroField = new GuiTextField(fontRendererObj, (bgWidth - 100) / 2, totalHeight += 60, 100, 20);
 
-            purchaseField.setEnabled(playerPermissions.contains(Permission.MODIFY_PURCHASE_PRICE));
-            rentField.setEnabled(playerPermissions.contains(Permission.MODIFY_RENT_PRICE));
-            periodField.setEnabled(playerPermissions.contains(Permission.MODIFY_RENT_PERIOD));
+            purchaseField.setEnabled(estateData.getOwner().equals(Minecraft.getMinecraft().thePlayer.getUniqueID()));
+            rentField.setEnabled(estateData.getOwner().equals(Minecraft.getMinecraft().thePlayer.getUniqueID()));
+            periodField.setEnabled(estateData.getOwner().equals(Minecraft.getMinecraft().thePlayer.getUniqueID()));
             introField.setEnabled(playerPermissions.contains(Permission.MODIFY_INTRO));
             outroField.setEnabled(playerPermissions.contains(Permission.MODIFY_OUTRO));
 
             purchaseField.setText(estateData.getPurchasePrice() != -1 ? "" + estateData.getPurchasePrice() : "");
             rentField.setText(estateData.getRentPrice() != -1 ? "" + estateData.getRentPrice() : "");
             periodField.setText(estateData.getRentPeriod() != -1 ? "" + estateData.getRentPeriod() : "");
-            introField.setText(estateData.getIntro() !=  null ? estateData.getIntro() : "");
+            introField.setText(estateData.getIntro() != null ? estateData.getIntro() : "");
             outroField.setText(estateData.getOutro() != null ? "" + estateData.getOutro() : "");
 
             totalHeight += 40;
             globalLabelY = totalHeight;
+
             for (Permission p : Permission.values()) {
-                if (!p.isEstatePermission())
-                    globalPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getGlobalPermissions().contains(p)));
+                if (!p.isEstatePermission() && playerPermissions.contains(p))
+                    globalPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2) + 20, totalHeight += 20, estateData.getGlobalPermissions().contains(p)));
             }
+
             totalHeight += 40;
             renterLabelY = totalHeight;
             for (Permission p : Permission.values()) {
-                if (!p.isEstatePermission())
-                    renterPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getRenterPermissions().contains(p)));
+                if (!p.isEstatePermission() && playerPermissions.contains(p))
+                    renterPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2) + 20, totalHeight += 20, estateData.getRenterPermissions().contains(p)));
             }
             totalHeight += 40;
             ownerLabelY = totalHeight;
             for (Permission p : Permission.values()) {
-                if (!p.isEstatePermission())
-                    ownerPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getOwnerPermissions().contains(p)));
+                if (!p.isEstatePermission() && playerPermissions.contains(p))
+                    ownerPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2) + 20, totalHeight += 20, estateData.getOwnerPermissions().contains(p)));
             }
             totalHeight += 60;
             allowedToChangeLabelY = totalHeight;
             for (Permission p : Permission.values()) {
-                if (!p.isEstatePermission())
-                    allowedToChangePerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getGlobalPermissionsAllowedToChange().contains(p)));
+                if (!p.isEstatePermission() && playerPermissions.contains(p))
+                    allowedToChangePerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2) + 20, totalHeight += 20, estateData.getGlobalPermissionsAllowedToChange().contains(p)));
             }
             totalHeight += 40;
             estateLabelY = totalHeight;
             for (Permission p : Permission.values()) {
                 if (p.isEstatePermission())
-                    estatePerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getEstatePermissions().contains(p)));
+                    estatePerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2) + 20, totalHeight += 20, estateData.getEstatePermissions().contains(p)));
             }
 
             totalHeight += 40;
@@ -168,6 +168,9 @@ public class GuiModifyEstate extends GuiScreen {
         public void drawObject(int index, int mouseX, int mouseY, boolean isHovering) {
             String bold = EnumChatFormatting.BOLD.toString();
             String underline = EnumChatFormatting.UNDERLINE.toString();
+
+            fontRendererObj.drawString(bold + "Estate ID: #" + estateData.getID(), (bgWidth - fontRendererObj.getStringWidth(bold + "Estate ID: #" + estateData.getID())) / 2, 15, 0xFFFFFF);
+
             fontRendererObj.drawString(bold + "Purchase Price", (bgWidth - fontRendererObj.getStringWidth(bold + "Purchase Price")) / 2, purchaseField.yPosition - 15, 0xFFFFFF);
             purchaseField.drawTextBox();
             fontRendererObj.drawString(bold + "Rent Price", (bgWidth - fontRendererObj.getStringWidth(bold + "Rent Price")) / 2, rentField.yPosition - 15, 0xFFFFFF);
@@ -184,7 +187,7 @@ public class GuiModifyEstate extends GuiScreen {
                     globalLabelY, 0xFFFFFF);
 
             globalPerms.forEach((p, tB) -> {
-                fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
+                fontRendererObj.drawString(bold + p.name(), 18 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
                 tB.drawTickBox();
             });
 
@@ -193,7 +196,7 @@ public class GuiModifyEstate extends GuiScreen {
                     renterLabelY, 0xFFFFFF);
 
             renterPerms.forEach((p, tB) -> {
-                fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
+                fontRendererObj.drawString(bold + p.name(), 18 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
                 tB.drawTickBox();
             });
 
@@ -202,7 +205,7 @@ public class GuiModifyEstate extends GuiScreen {
                     ownerLabelY, 0xFFFFFF);
 
             ownerPerms.forEach((p, tB) -> {
-                fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
+                fontRendererObj.drawString(bold + p.name(), 18 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
                 tB.drawTickBox();
             });
 
@@ -214,7 +217,7 @@ public class GuiModifyEstate extends GuiScreen {
                     allowedToChangeLabelY - 10, 0xFFFFFF);
 
             allowedToChangePerms.forEach((p, tB) -> {
-                fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
+                fontRendererObj.drawString(bold + p.name(), 18 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);
                 tB.drawTickBox();
             });
 
@@ -256,7 +259,7 @@ public class GuiModifyEstate extends GuiScreen {
 
             if (updateBtn.mousePressed(mc, mouseX, mouseY)) {
                 Set<Permission> globalPerms = Sets.newTreeSet(), renterPerms = Sets.newTreeSet(),
-                        ownerPerms = Sets.newTreeSet(), estatePerms =Sets.newTreeSet(), globalAllowedToChangePerms = Sets.newTreeSet();
+                        ownerPerms = Sets.newTreeSet(), estatePerms = Sets.newTreeSet(), globalAllowedToChangePerms = Sets.newTreeSet();
                 this.globalPerms.forEach((p, tB) -> {
                     if (tB.isChecked()) globalPerms.add(p);
                 });

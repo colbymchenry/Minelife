@@ -30,7 +30,7 @@ public class CommandEstate implements ICommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "Command not found.";
+        return "/e create\n/e modify\n/e buy|rent|purchase";
     }
 
     @Override
@@ -72,17 +72,15 @@ public class CommandEstate implements ICommand {
                     break;
                 }
                 case "purchase": {
-                    if(estateAtLoc == null) {
-                        player.addChatComponentMessage(new ChatComponentText("There is no estate at your location."));
-                        return;
-                    }
-
-                    if(!estateAtLoc.isPurchasable() && !estateAtLoc.isForRent()) {
-                        player.addChatComponentMessage(new ChatComponentText("This estate is not for sale."));
-                        return;
-                    }
-
-                    Minelife.NETWORK.sendTo(new PacketGuiPurchaseEstate(estateAtLoc), player);
+                    doPurchase(estateAtLoc, player);
+                    break;
+                }
+                case "buy": {
+                    doPurchase(estateAtLoc, player);
+                    break;
+                }
+                case "rent": {
+                    doPurchase(estateAtLoc, player);
                     break;
                 }
                 case "modify": {
@@ -92,7 +90,7 @@ public class CommandEstate implements ICommand {
                     }
 
                     if(Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
-                            estateAtLoc.isAbsoluteOwner(player.getUniqueID())) {
+                            estateAtLoc.isAbsoluteOwner(player.getUniqueID()) || estateAtLoc.getMembers().containsKey(player.getUniqueID())) {
                         Minelife.NETWORK.sendTo(new PacketGuiModifyEstate(estateAtLoc, estateAtLoc.getPlayerPermissions(player)), player);
                     } else {
                         player.addChatComponentMessage(new ChatComponentText("You do not have permission to modify this estate."));
@@ -105,6 +103,20 @@ public class CommandEstate implements ICommand {
             e.printStackTrace();
             player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
         }
+    }
+
+    private void doPurchase(Estate estateAtLoc, EntityPlayerMP player) {
+        if(estateAtLoc == null) {
+            player.addChatComponentMessage(new ChatComponentText("There is no estate at your location."));
+            return;
+        }
+
+        if(!estateAtLoc.isPurchasable() && !estateAtLoc.isForRent()) {
+            player.addChatComponentMessage(new ChatComponentText("This estate is not for sale."));
+            return;
+        }
+
+        Minelife.NETWORK.sendTo(new PacketGuiPurchaseEstate(estateAtLoc), player);
     }
 
     @Override

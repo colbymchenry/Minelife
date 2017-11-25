@@ -10,6 +10,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ public class CommandEconomy extends MLCommand {
 
     @Override
     public List getCommandAliases() {
-        return Lists.newArrayList();
+        return Arrays.asList("eco", "money");
     }
 
     @Override

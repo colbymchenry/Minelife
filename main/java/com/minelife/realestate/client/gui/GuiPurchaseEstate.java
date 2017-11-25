@@ -59,7 +59,7 @@ public class GuiPurchaseEstate extends GuiScreen {
         super.initGui();
         xPosition = (width - bgWidth) / 2;
         yPosition = (height - bgHeight) / 2;
-        content = new GuiContent(mc, xPosition, yPosition, bgWidth, bgHeight);
+        content = new GuiContent(mc, xPosition, yPosition + 4, bgWidth, bgHeight - 6);
     }
 
     private class GuiContent extends GuiScrollableContent {
@@ -79,8 +79,8 @@ public class GuiPurchaseEstate extends GuiScreen {
             super(mc, xPosition, yPosition, width, height);
             bold = EnumChatFormatting.BOLD.toString();
             red = EnumChatFormatting.RED.toString();
-            purchasePriceStr = "Purchase Price: " + (purchasePrice == -1 ? "Not for Purchase" : "$" + NumberConversions.formatter.format(purchasePrice));
-            rentPriceStr = "Rent Price: " + (rentPrice == -1 ? "Not for Rent" : "$" + NumberConversions.formatter.format(rentPrice));
+            purchasePriceStr = "Purchase: " + (purchasePrice == -1 ? "Not for Sale" : "$" + NumberConversions.formatter.format(purchasePrice));
+            rentPriceStr = "Rent: " + (rentPrice == -1 ? "Not for Rent" : "$" + NumberConversions.formatter.format(rentPrice));
             rentPeriodStr = "Rent Period: " + rentPeriod;
             purchasePriceW = fontRendererObj.getStringWidth(purchasePriceStr);
             rentPriceW = fontRendererObj.getStringWidth(rentPriceStr);

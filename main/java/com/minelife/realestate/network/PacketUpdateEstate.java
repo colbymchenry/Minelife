@@ -1,11 +1,13 @@
 package com.minelife.realestate.network;
 
 import com.google.common.collect.Sets;
+import com.minelife.Minelife;
 import com.minelife.permission.ModPermission;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateData;
 import com.minelife.realestate.EstateHandler;
 import com.minelife.realestate.Permission;
+import com.minelife.util.client.PacketPopupMessage;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -53,23 +55,26 @@ public class PacketUpdateEstate implements IMessage {
              * player's permissions on whether or not they can do so.
              */
 
+            // TODO: If has permission through Global Permissions but not through Renter Permissions and then turns it
+            // TODO: off in Global Permissions they essentially removed a permission from themselves
+
             Estate estate = EstateHandler.getEstate(message.estateData.getID());
             EstateData estateData = message.estateData;
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
             Set<Permission> playerPermissions = estate.getPlayerPermissions(player);
 
             // if player has permission to sell, then set the purchase price
-            if (playerPermissions.contains(Permission.SELL)) {
+            if (Objects.equals(estate.getOwner(), player.getUniqueID())) {
                 estate.setPurchasePrice(estateData.getPurchasePrice());
             }
 
             // if player has permission to rent the estate, set the rent price
-            if (playerPermissions.contains(Permission.RENT)) {
+            if (Objects.equals(estate.getOwner(), player.getUniqueID())) {
                 estate.setRentPrice(estateData.getRentPrice());
             }
 
             // if player has permission to modify the rent period, set the rent period
-            if (playerPermissions.contains(Permission.MODIFY_RENT_PERIOD)) {
+            if (Objects.equals(estate.getOwner(), player.getUniqueID())) {
                 estate.setRentPeriod(estateData.getRentPeriod());
             }
 
@@ -184,6 +189,7 @@ public class PacketUpdateEstate implements IMessage {
                 });
 
                 estate.setEstatePermissions(permissions);
+                Minelife.NETWORK.sendTo(new PacketPopupMessage("Estate updated!"), player);
             }
             return null;
         }
