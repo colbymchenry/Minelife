@@ -211,12 +211,9 @@ public class Estate implements Comparable<Estate> {
         }
 
         if (Objects.equals(player.getUniqueID(), getOwner())) {
-            System.out.println("IS OWNER");
             permissions.addAll(getActualOwnerPerms());
-            permissions.addAll(getActualPermsAllowedToChange());
         } else if (Objects.equals(player.getUniqueID(), getRenter())) {
             permissions.addAll(getActualRenterPerms());
-            permissions.addAll(getActualPermsAllowedToChange());
         } else if (getMembers().containsKey(player.getUniqueID())) {
             permissions.addAll(getActualMemberPerms(player.getUniqueID()));
         }

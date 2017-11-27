@@ -106,12 +106,29 @@ public class PacketUpdateEstate implements IMessage {
              * Set global permissions
              */
             if (isOwner || isRenter || isAbsoluteOwner) {
-                permissions.addAll(estateData.getGlobalPermissions());
                 Set<Permission> toRemove = Sets.newTreeSet();
-                permissions.forEach(p -> {
-                    if (!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
-                });
+
+                if(!isAbsoluteOwner) {
+                    permissions.addAll(estate.getGlobalPermissions());
+                    estateData.getGlobalPermissions().forEach(p -> {
+                        if (!estate.getGlobalPermissions().contains(p) && estate.getActualPermsAllowedToChange().contains(p)) {
+                            permissions.add(p);
+                        }
+                    });
+
+                    estate.getGlobalPermissions().forEach(p -> {
+                        if (!estateData.getGlobalPermissions().contains(p) && estate.getActualPermsAllowedToChange().contains(p)) {
+                            toRemove.add(p);
+                        }
+                    });
+                } else {
+                    permissions.addAll(estateData.getGlobalPermissions());
+                }
+
                 permissions.removeAll(toRemove);
+                permissions.forEach(p -> {
+                    System.out.println(p.name());
+                });
                 estate.setGlobalPermissions(permissions);
             }
 
