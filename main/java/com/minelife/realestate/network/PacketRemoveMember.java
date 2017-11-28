@@ -55,7 +55,7 @@ public class PacketRemoveMember implements IMessage {
                 return null;
             }
 
-            if(!estate.getPlayerPermissions(player).contains(Permission.REMOVE_MEMBER)) {
+            if(!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.REMOVE_MEMBER)) {
                 Minelife.NETWORK.sendTo(new PacketPopupMessage("You do not have permission to remove members from this estate.", 0xC6C6C6), player);
                 return null;
             }

@@ -58,14 +58,14 @@ public class CommandEstate implements ICommand {
                         if(estateAtLoc == null)
                             permissions.addAll(Arrays.asList(Permission.values()));
                         else {
-                            if(!estateAtLoc.getPlayerPermissions(player).contains(Permission.ESTATE_CREATION)) {
+                            if(!estateAtLoc.getPlayerPermissions(player.getUniqueID()).contains(Permission.ESTATE_CREATION)) {
                                 player.addChatComponentMessage(new ChatComponentText("You do not have permission to create an estate here."));
                                 return;
                             }
                             List<Permission> perms = Lists.newArrayList();
-                            perms.addAll(estateAtLoc.getPlayerPermissions(player));
+                            perms.addAll(estateAtLoc.getPlayerPermissions(player.getUniqueID()));
                             if(!PlayerHelper.isOp(player)) perms.removeAll(Permission.getEstatePermissions());
-                            permissions.addAll(estateAtLoc.getPlayerPermissions(player));
+                            permissions.addAll(estateAtLoc.getPlayerPermissions(player.getUniqueID()));
                         }
                         Minelife.NETWORK.sendTo(new PacketGuiCreateEstate(permissions), player);
                     }
@@ -91,7 +91,7 @@ public class CommandEstate implements ICommand {
 
                     if(Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
                             estateAtLoc.isAbsoluteOwner(player.getUniqueID()) || estateAtLoc.getMembers().containsKey(player.getUniqueID())) {
-                        Minelife.NETWORK.sendTo(new PacketGuiModifyEstate(estateAtLoc, estateAtLoc.getPlayerPermissions(player)), player);
+                        Minelife.NETWORK.sendTo(new PacketGuiModifyEstate(estateAtLoc, estateAtLoc.getPlayerPermissions(player.getUniqueID())), player);
                     } else {
                         player.addChatComponentMessage(new ChatComponentText("You do not have permission to modify this estate."));
                     }

@@ -55,13 +55,10 @@ public class PacketUpdateEstate implements IMessage {
              * player's permissions on whether or not they can do so.
              */
 
-            // TODO: If has permission through Global Permissions but not through Renter Permissions and then turns it
-            // TODO: off in Global Permissions they essentially removed a permission from themselves
-
             Estate estate = EstateHandler.getEstate(message.estateData.getID());
             EstateData estateData = message.estateData;
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-            Set<Permission> playerPermissions = estate.getPlayerPermissions(player);
+            Set<Permission> playerPermissions = estate.getPlayerPermissions(player.getUniqueID());
 
             // if player has permission to sell, then set the purchase price
             if (Objects.equals(estate.getOwner(), player.getUniqueID())) {
@@ -116,6 +113,10 @@ public class PacketUpdateEstate implements IMessage {
                         }
                     });
 
+                    estate.getActualPermsAllowedToChange().forEach(p -> {
+                        System.out.println(p.name());
+                    });
+
                     estate.getGlobalPermissions().forEach(p -> {
                         if (!estateData.getGlobalPermissions().contains(p) && estate.getActualPermsAllowedToChange().contains(p)) {
                             toRemove.add(p);
@@ -126,9 +127,6 @@ public class PacketUpdateEstate implements IMessage {
                 }
 
                 permissions.removeAll(toRemove);
-                permissions.forEach(p -> {
-                    System.out.println(p.name());
-                });
                 estate.setGlobalPermissions(permissions);
             }
 
@@ -141,7 +139,7 @@ public class PacketUpdateEstate implements IMessage {
                 permissions.addAll(estateData.getOwnerPermissions());
                 Set<Permission> toRemove = Sets.newTreeSet();
                 permissions.forEach(p -> {
-                    if (!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
+                    if (!playerPermissions.contains(p)) toRemove.add(p);
                 });
                 permissions.removeAll(toRemove);
                 estate.setOwnerPermissions(permissions);
@@ -155,7 +153,7 @@ public class PacketUpdateEstate implements IMessage {
                 permissions.addAll(estateData.getRenterPermissions());
                 Set<Permission> toRemove = Sets.newTreeSet();
                 permissions.forEach(p -> {
-                    if (!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
+                    if (!playerPermissions.contains(p)) toRemove.add(p);
                 });
                 permissions.removeAll(toRemove);
                 estate.setRenterPermissions(permissions);
@@ -169,7 +167,7 @@ public class PacketUpdateEstate implements IMessage {
                 permissions.addAll(estateData.getGlobalPermissionsAllowedToChange());
                 Set<Permission> toRemove = Sets.newTreeSet();
                 permissions.forEach(p -> {
-                    if (!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
+                    if (!playerPermissions.contains(p)) toRemove.add(p);
                 });
                 permissions.removeAll(toRemove);
                 estate.setPermissionsAllowedToChange(permissions);
@@ -185,7 +183,7 @@ public class PacketUpdateEstate implements IMessage {
 
                 Set<Permission> toRemove = Sets.newTreeSet();
                 permissions.forEach(p -> {
-                    if (!estate.getPlayerPermissions(player).contains(p)) {
+                    if (!playerPermissions.contains(p)) {
                         toRemove.add(p);
                     }
                     if (!ModPermission.hasPermission(player.getUniqueID(), "estate." + p.name().toLowerCase())) {
@@ -206,8 +204,9 @@ public class PacketUpdateEstate implements IMessage {
                 });
 
                 estate.setEstatePermissions(permissions);
-                Minelife.NETWORK.sendTo(new PacketPopupMessage("Estate updated!"), player);
             }
+
+            Minelife.NETWORK.sendTo(new PacketPopupMessage("Estate updated!"), player);
             return null;
         }
 

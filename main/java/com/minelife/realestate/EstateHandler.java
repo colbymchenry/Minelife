@@ -74,7 +74,7 @@ public class EstateHandler {
         if (!parentEstates.isEmpty()) childEstates.add(parentEstates.firstEntry().getValue());
         // use estates inside selection
         for (Estate estate : childEstates.toArray(new Estate[childEstates.size()]))
-            if (!estate.getPlayerPermissions(player).contains(Permission.ESTATE_CREATION))
+            if (!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.ESTATE_CREATION))
                 throw new Exception("You cannot create an estate around that estate.");
 
         return true;

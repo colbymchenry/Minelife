@@ -62,8 +62,8 @@ public class PacketModifyMember implements IMessage {
                 return null;
             }
 
-            if(!estate.getPlayerPermissions(player).contains(Permission.ADD_MEMBER) ||
-                    !estate.getPlayerPermissions(player).contains(Permission.REMOVE_MEMBER)) {
+            if(!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.ADD_MEMBER) ||
+                    !estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.REMOVE_MEMBER)) {
                 Minelife.NETWORK.sendTo(new PacketPopupMessage("You are not authorized to modify members of this estate."), player);
                 return null;
             }
@@ -78,7 +78,7 @@ public class PacketModifyMember implements IMessage {
 
             // remove the permissions the player does not have.
             message.permissionSet.forEach(p -> {
-                if(!estate.getPlayerPermissions(player).contains(p)) toRemove.add(p);
+                if(!estate.getPlayerPermissions(player.getUniqueID()).contains(p)) toRemove.add(p);
             });
 
             message.permissionSet.removeAll(toRemove);

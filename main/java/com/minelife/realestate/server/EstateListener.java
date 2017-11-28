@@ -56,7 +56,7 @@ public class EstateListener {
         }
 
         if (estate != null && insideEstate.containsKey(player) && !insideEstate.get(player).equals(estate)) {
-            if (!estate.getPlayerPermissions(player).contains(Permission.ENTER)) {
+            if (!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.ENTER)) {
                 handleEntrance(estate, player);
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You do not have permission to enter this estate."));
                 return;
@@ -71,7 +71,7 @@ public class EstateListener {
         // entering estate
         if (estate != null) {
             if (!insideEstate.containsKey(player)) {
-                if (!estate.getPlayerPermissions(player).contains(Permission.ENTER)) {
+                if (!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.ENTER)) {
                     handleEntrance(estate, player);
                     player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You do not have permission to enter this estate."));
                     return;
@@ -117,7 +117,8 @@ public class EstateListener {
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
         Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(event.x, event.y, event.z));
         if (estate == null) return;
-        event.setCanceled(!estate.getPlayerPermissions(player).contains(Permission.BREAK));
+
+        event.setCanceled(!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.BREAK));
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -126,7 +127,8 @@ public class EstateListener {
         Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(event.x, event.y, event.z));
 
         if (estate == null) return;
-        event.setCanceled(!estate.getPlayerPermissions(player).contains(Permission.PLACE));
+
+        event.setCanceled(!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.PLACE));
     }
 
     @SubscribeEvent
@@ -138,7 +140,7 @@ public class EstateListener {
         Block block = event.world.getBlock(event.x, event.y, event.z);
 
         if(((block instanceof BlockContainer) || ServerProxy.config.getIntegerList("black-listed-blocks").contains(Block.getIdFromBlock(block))) &&
-                !estate.getPlayerPermissions(player).contains(Permission.INTERACT)) {
+                !estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.INTERACT)) {
             player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You are not allowed to interact within this region."));
             event.setCanceled(true);
         }
@@ -200,7 +202,7 @@ public class EstateListener {
                     toRemove.add(cP);
                 } else {
                     if(event.explosion.getExplosivePlacedBy() instanceof EntityPlayerMP) {
-                        if(!estate.getPlayerPermissions((EntityPlayer) event.explosion.getExplosivePlacedBy()).contains(Permission.BREAK)) {
+                        if(!estate.getPlayerPermissions(((EntityPlayer) event.explosion.getExplosivePlacedBy()).getUniqueID()).contains(Permission.BREAK)) {
                             toRemove.add(cP);
                         }
                     }

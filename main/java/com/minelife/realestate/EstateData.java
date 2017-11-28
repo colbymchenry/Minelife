@@ -233,7 +233,7 @@ public class EstateData extends Estate implements INameReceiver, Callback {
     }
 
     @Override
-    public Set<Permission> getPlayerPermissions(EntityPlayer player) {
+    public Set<Permission> getPlayerPermissions(UUID player) {
         return Sets.newTreeSet();
     }
 

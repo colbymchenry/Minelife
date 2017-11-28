@@ -65,7 +65,7 @@ public class PacketAddMember implements IMessage {
                 return;
             }
 
-            if (!estate.getPlayerPermissions(sender).contains(Permission.ADD_MEMBER)) {
+            if (!estate.getPlayerPermissions(sender.getUniqueID()).contains(Permission.ADD_MEMBER)) {
                 sender.closeScreen();
                 sender.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You do not have permission to add members."));
                 return;

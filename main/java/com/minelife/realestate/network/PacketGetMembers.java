@@ -16,7 +16,6 @@ import java.util.Set;
 
 public class PacketGetMembers implements IMessage {
 
-    // TODO
     private int estateID;
 
     public PacketGetMembers() {
@@ -44,7 +43,7 @@ public class PacketGetMembers implements IMessage {
 
             if(estate == null) return null;
 
-            Set<Permission> perms = estate.getPlayerPermissions(ctx.getServerHandler().playerEntity);
+            Set<Permission> perms = estate.getPlayerPermissions(ctx.getServerHandler().playerEntity.getUniqueID());
             perms.removeAll(Permission.getEstatePermissions());
 
             Minelife.NETWORK.sendTo(new PacketSendMembers(estate.getMembers(), perms, estate.getID()), ctx.getServerHandler().playerEntity);
