@@ -22,7 +22,6 @@ import net.minecraftforge.common.MinecraftForge;
 
 public class ModPolice extends AbstractMod {
 
-    // TODO: Make the model for the computer to submit tickets to the DB
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         registerPacket(PacketCreateTicket.Handler.class, PacketCreateTicket.class, Side.SERVER);

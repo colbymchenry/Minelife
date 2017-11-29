@@ -24,7 +24,6 @@ public class GuiHandler extends AbstractGuiHandler {
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         switch(ID) {
             case ticketInventoryID: {
-                // TODO: This may affect the client in sync issue.
                 ItemStack ticketStack = player.inventory.getStackInSlot(x);
                 if( y == 1) {
                     player.inventory.setInventorySlotContents(x, null);
