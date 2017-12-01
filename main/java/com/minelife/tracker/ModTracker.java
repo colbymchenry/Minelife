@@ -1,7 +1,7 @@
 package com.minelife.tracker;
 
-import com.minelife.AbstractMod;
-import com.minelife.CommonProxy;
+import com.minelife.MLMod;
+import com.minelife.MLProxy;
 import com.minelife.Minelife;
 
 import java.sql.ResultSet;
@@ -13,10 +13,10 @@ import java.util.GregorianCalendar;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class ModTracker extends AbstractMod {
+public class ModTracker extends MLMod {
 
     @Override
-    public Class<? extends CommonProxy> getServerProxyClass() {
+    public Class<? extends MLProxy> getServerProxyClass() {
         return ServerProxy.class;
     }
 

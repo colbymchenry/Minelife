@@ -1,6 +1,6 @@
 package com.minelife.notification;
 
-import com.minelife.CommonProxy;
+import com.minelife.MLProxy;
 import com.minelife.MLKeys;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -9,7 +9,7 @@ import cpw.mods.fml.common.gameevent.InputEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
-public class ClientProxy extends CommonProxy {
+public class ClientProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event)

@@ -23,7 +23,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import static ic2.core.Ic2Items.ForgeHammer;
 
-public class ModGun extends AbstractMod {
+public class ModGun extends MLMod {
 
     public static final CreativeTabs tabGuns = new CreativeTabs("guns") {
         @Override
@@ -71,12 +71,12 @@ public class ModGun extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxyClass() {
+    public Class<? extends MLProxy> getClientProxyClass() {
         return com.minelife.gun.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxyClass() {
+    public Class<? extends MLProxy> getServerProxyClass() {
         return com.minelife.gun.server.ServerProxy.class;
     }
 

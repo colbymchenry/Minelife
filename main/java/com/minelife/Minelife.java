@@ -9,7 +9,6 @@ import com.minelife.notification.ModNotifications;
 import com.minelife.permission.ModPermission;
 import com.minelife.police.ModPolice;
 import com.minelife.realestate.ModRealEstate;
-import com.minelife.region.ModRegion;
 import com.minelife.tracker.ModTracker;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.PacketPopupMessage;
@@ -29,7 +28,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import lib.PatPeter.SQLibrary.Database;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -48,7 +46,7 @@ public class Minelife {
     public static final String MOD_ID = "minelife", VERSION = "2017.1", NAME = "Minelife";
 
     @SidedProxy(clientSide = "com.minelife.ClientProxy", serverSide = "com.minelife.ServerProxy")
-    public static CommonProxy PROXY;
+    public static MLProxy PROXY;
 
     @Mod.Instance
     public static Minelife instance;
@@ -57,7 +55,7 @@ public class Minelife {
 
     public static Database SQLITE;
 
-    public static final List<AbstractMod> MODS = Lists.newArrayList();
+    public static final List<MLMod> MODS = Lists.newArrayList();
 
     public static String default_error_message = EnumChatFormatting.RED + "Sorry, something went wrong. Notify a staff member.";
 
@@ -80,13 +78,13 @@ public class Minelife {
         MLBlocks.init();
         MLItems.init();
         MinecraftForge.EVENT_BUS.register(this);
-        AbstractMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
-        AbstractMod.registerPacket(PacketUpdatePlayerInventory.Handler.class, PacketUpdatePlayerInventory.class, Side.CLIENT);
-        AbstractMod.registerPacket(PacketPopupMessage.Handler.class, PacketPopupMessage.class, Side.CLIENT);
-        AbstractMod.registerPacket(PacketRequestName.Handler.class, PacketRequestName.class, Side.SERVER);
-        AbstractMod.registerPacket(PacketResponseName.Handler.class, PacketResponseName.class, Side.CLIENT);
-        AbstractMod.registerPacket(PacketRequestUUID.Handler.class, PacketRequestUUID.class, Side.SERVER);
-        AbstractMod.registerPacket(PacketResponseUUID.Handler.class, PacketResponseUUID.class, Side.CLIENT);
+        MLMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
+        MLMod.registerPacket(PacketUpdatePlayerInventory.Handler.class, PacketUpdatePlayerInventory.class, Side.CLIENT);
+        MLMod.registerPacket(PacketPopupMessage.Handler.class, PacketPopupMessage.class, Side.CLIENT);
+        MLMod.registerPacket(PacketRequestName.Handler.class, PacketRequestName.class, Side.SERVER);
+        MLMod.registerPacket(PacketResponseName.Handler.class, PacketResponseName.class, Side.CLIENT);
+        MLMod.registerPacket(PacketRequestUUID.Handler.class, PacketRequestUUID.class, Side.SERVER);
+        MLMod.registerPacket(PacketResponseUUID.Handler.class, PacketResponseUUID.class, Side.CLIENT);
         MODS.forEach(mod -> mod.preInit(event));
         try {
             PROXY.preInit(event);
@@ -152,7 +150,7 @@ public class Minelife {
         }
     }
 
-    public static AbstractMod getModInstance(Class<? extends AbstractMod> modClass) {
+    public static MLMod getModInstance(Class<? extends MLMod> modClass) {
         return MODS.stream().filter(m -> m.getClass().equals(modClass)).findFirst().orElse(null);
     }
 

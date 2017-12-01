@@ -1,11 +1,9 @@
 package com.minelife.realestate.client;
 
-import com.minelife.CommonProxy;
-import com.minelife.realestate.server.SelectionHandler;
+import com.minelife.MLProxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.common.MinecraftForge;
 
-public class ClientProxy extends CommonProxy {
+public class ClientProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {

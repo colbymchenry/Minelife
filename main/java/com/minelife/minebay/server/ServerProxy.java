@@ -1,20 +1,14 @@
 package com.minelife.minebay.server;
 
-import com.minelife.CommonProxy;
+import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.minebay.ItemListing;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
 
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Random;
-import java.util.UUID;
 
-public class ServerProxy extends CommonProxy {
+public class ServerProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) throws SQLException

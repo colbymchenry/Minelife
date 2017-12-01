@@ -1,7 +1,7 @@
 package com.minelife.realestate;
 
-import com.minelife.AbstractMod;
-import com.minelife.CommonProxy;
+import com.minelife.MLMod;
+import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.realestate.client.ClientProxy;
 import com.minelife.realestate.network.*;
@@ -14,7 +14,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.common.MinecraftForge;
 
-public class ModRealEstate extends AbstractMod {
+public class ModRealEstate extends MLMod {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
@@ -40,12 +40,12 @@ public class ModRealEstate extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxyClass() {
+    public Class<? extends MLProxy> getClientProxyClass() {
         return com.minelife.realestate.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxyClass() {
+    public Class<? extends MLProxy> getServerProxyClass() {
         return com.minelife.realestate.server.ServerProxy.class;
     }
 

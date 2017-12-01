@@ -1,13 +1,13 @@
 package com.minelife.economy;
 
-import com.minelife.CommonProxy;
+import com.minelife.MLProxy;
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.economy.client.gui.GuiBillPay;
 import com.minelife.economy.server.CommandEconomy;
 import com.minelife.util.MLConfig;
 import com.minelife.util.PlayerHelper;
-import com.minelife.AbstractMod;
+import com.minelife.MLMod;
 import com.minelife.economy.packet.*;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -19,7 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class ModEconomy extends AbstractMod {
+public class ModEconomy extends MLMod {
 
     @SideOnly(Side.SERVER)
     public static MLConfig config;
@@ -55,13 +55,13 @@ public class ModEconomy extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxyClass()
+    public Class<? extends MLProxy> getClientProxyClass()
     {
         return com.minelife.economy.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxyClass()
+    public Class<? extends MLProxy> getServerProxyClass()
     {
         return com.minelife.economy.server.ServerProxy.class;
     }

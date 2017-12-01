@@ -2,29 +2,19 @@ package com.minelife;
 
 import com.google.common.collect.Maps;
 import cpw.mods.fml.common.event.*;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.Block;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.Item;
 import net.minecraftforge.client.event.TextureStitchEvent;
 
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.logging.Level;
 
-public abstract class AbstractMod {
+public abstract class MLMod {
 
     @SideOnly(Side.SERVER)
-    public CommonProxy serverProxy;
+    public MLProxy serverProxy;
 
     @SideOnly(Side.CLIENT)
-    public CommonProxy clientProxy;
+    public MLProxy clientProxy;
 
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -46,12 +36,12 @@ public abstract class AbstractMod {
     {
     }
 
-    public Class<? extends CommonProxy> getClientProxyClass()
+    public Class<? extends MLProxy> getClientProxyClass()
     {
         return null;
     }
 
-    public Class<? extends CommonProxy> getServerProxyClass()
+    public Class<? extends MLProxy> getServerProxyClass()
     {
         return null;
     }

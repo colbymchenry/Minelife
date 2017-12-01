@@ -12,7 +12,7 @@ public class MinelifeGuiHandler implements IGuiHandler {
     @Override
     public Container getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-        for (AbstractMod mod : Minelife.MODS) {
+        for (MLMod mod : Minelife.MODS) {
             if(mod.gui_handler() != null) {
                 Container container = (Container) mod.gui_handler().getServerGuiElement(ID, player, world, x, y, z);
                 if(container != null) return container;
@@ -24,7 +24,7 @@ public class MinelifeGuiHandler implements IGuiHandler {
     @Override
     public GuiScreen getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-        for (AbstractMod mod : Minelife.MODS) {
+        for (MLMod mod : Minelife.MODS) {
             if(mod.gui_handler() != null) {
                 GuiScreen screen = (GuiScreen) mod.gui_handler().getClientGuiElement(ID, player, world, x, y, z);
                 if(screen != null) return screen;

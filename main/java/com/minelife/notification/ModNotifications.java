@@ -1,14 +1,11 @@
 package com.minelife.notification;
 
-import com.minelife.AbstractMod;
-import com.minelife.CommonProxy;
-import com.minelife.Minelife;
+import com.minelife.MLMod;
+import com.minelife.MLProxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 
-import java.sql.SQLException;
-
-public class ModNotifications extends AbstractMod {
+public class ModNotifications extends MLMod {
 
     @Override
     public void preInit(FMLPreInitializationEvent event)
@@ -17,13 +14,13 @@ public class ModNotifications extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxyClass()
+    public Class<? extends MLProxy> getClientProxyClass()
     {
         return com.minelife.notification.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxyClass()
+    public Class<? extends MLProxy> getServerProxyClass()
     {
         return com.minelife.notification.ServerProxy.class;
     }

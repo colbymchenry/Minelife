@@ -1,4 +1,4 @@
-package com.minelife.police.computer;
+package com.minelife.shop.client;
 
 import com.minelife.Minelife;
 import net.minecraft.client.Minecraft;
@@ -9,15 +9,15 @@ import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
 
-public class ItemPoliceComputerRenderer implements IItemRenderer {
+public class RenderItemShopBlock implements IItemRenderer {
 
-    private ResourceLocation texture;
-    private ResourceLocation objModelLocation;
-    private IModelCustom model;
+    ResourceLocation texture;
+    ResourceLocation objModelLocation;
+    IModelCustom model;
 
-    public ItemPoliceComputerRenderer() {
-        texture = new ResourceLocation(Minelife.MOD_ID, "textures/blocks/police_computer.png");
-        objModelLocation = new ResourceLocation(Minelife.MOD_ID, "models/police_computer.obj");
+    public RenderItemShopBlock() {
+        texture = new ResourceLocation(Minelife.MOD_ID, "textures/blocks/shop_block.png");
+        objModelLocation = new ResourceLocation(Minelife.MOD_ID, "models/shop_block.obj");
         model = AdvancedModelLoader.loadModel(objModelLocation);
     }
 
@@ -39,8 +39,13 @@ public class ItemPoliceComputerRenderer implements IItemRenderer {
         GL11.glPushMatrix();
         {
             if (type == ItemRenderType.EQUIPPED_FIRST_PERSON) {
-                GL11.glRotatef(180f, 0, 1, 0);
-                GL11.glTranslatef(0.6f, 0.8f, -1f);
+                GL11.glRotatef(270f, 0, 1, 0);
+                GL11.glTranslatef(0.3f, 0f, -0.5f);
+            }
+
+            if(type == ItemRenderType.INVENTORY) {
+                GL11.glScalef(0.6f, 0.6f, 0.6f);
+                GL11.glTranslatef(0.5f, -1.25f, 0f);
             }
 
             if(type == ItemRenderType.EQUIPPED) {
@@ -56,4 +61,3 @@ public class ItemPoliceComputerRenderer implements IItemRenderer {
     }
 
 }
-

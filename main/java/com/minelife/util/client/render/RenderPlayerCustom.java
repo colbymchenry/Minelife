@@ -25,18 +25,18 @@ public class RenderPlayerCustom extends RenderPlayer {
     @Override
     public void doRender(AbstractClientPlayer client, double x, double y, double z, float f, float f1) {
 
-        boolean arrested = client.getEntityData().hasKey("arrested") ? client.getEntityData().getBoolean("arrested") : false;
-        if (arrested) {
-            GL11.glPushMatrix();
-            {
-                float yaw = Minecraft.getMinecraft().thePlayer.rotationYaw;
-                GL11.glRotatef(-yaw, 0, 1, 0);
-                super.doRender(client, x + 0.5f, y - 2.5f, z + 0.5f, f, f1);
-            }
-            GL11.glPopMatrix();
-
-            return;
-        }
+//        boolean arrested = client.getEntityData().hasKey("arrested") ? client.getEntityData().getBoolean("arrested") : false;
+//        if (arrested) {
+//            GL11.glPushMatrix();
+//            {
+//                float yaw = Minecraft.getMinecraft().thePlayer.rotationYaw;
+//                GL11.glRotatef(-yaw, 0, 1, 0);
+//                super.doRender(client, x + 0.5f, y - 2.5f, z + 0.5f, f, f1);
+//            }
+//            GL11.glPopMatrix();
+//
+//            return;
+//        }
 
         super.doRender(client, x, y, z, f, f1);
     }

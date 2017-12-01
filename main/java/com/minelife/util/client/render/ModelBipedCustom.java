@@ -148,7 +148,8 @@ public class ModelBipedCustom extends ModelBiped {
             this.bipedHead.rotationPointY = 0.0F;
             this.bipedHeadwear.rotationPointY = 0.0F;
         }
-//
+
+        // TODO
 //        if (ModPolice.isPlayerArrested(player)) {
 //            ModPolice.applyPlayerArmRotations(this, p_78087_3_);
 //        }

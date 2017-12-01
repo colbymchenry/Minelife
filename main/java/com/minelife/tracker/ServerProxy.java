@@ -1,6 +1,6 @@
 package com.minelife.tracker;
 
-import com.minelife.CommonProxy;
+import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -13,7 +13,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class ServerProxy extends CommonProxy {
+public class ServerProxy extends MLProxy {
 
     public static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

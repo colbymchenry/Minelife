@@ -1,6 +1,6 @@
 package com.minelife.shop.server;
 
-import com.minelife.CommonProxy;
+import com.minelife.MLProxy;
 
-public class ServerProxy extends CommonProxy {
+public class ServerProxy extends MLProxy {
 }

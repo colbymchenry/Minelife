@@ -1,12 +1,12 @@
 package com.minelife.minebay;
 
-import com.minelife.AbstractMod;
-import com.minelife.CommonProxy;
+import com.minelife.MLMod;
+import com.minelife.MLProxy;
 import com.minelife.minebay.packet.*;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 
-public class ModMinebay extends AbstractMod {
+public class ModMinebay extends MLMod {
 
     @Override
     public void preInit(FMLPreInitializationEvent event)
@@ -19,13 +19,13 @@ public class ModMinebay extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxyClass()
+    public Class<? extends MLProxy> getClientProxyClass()
     {
         return com.minelife.minebay.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxyClass()
+    public Class<? extends MLProxy> getServerProxyClass()
     {
         return com.minelife.minebay.server.ServerProxy.class;
     }

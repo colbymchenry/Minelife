@@ -10,7 +10,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import lib.PatPeter.SQLibrary.SQLite;
 import net.minecraftforge.common.MinecraftForge;
 
-public class ServerProxy extends CommonProxy {
+public class ServerProxy extends MLProxy {
 
 
     @Override

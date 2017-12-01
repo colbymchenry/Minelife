@@ -6,14 +6,15 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class BlockTrader extends BlockBuildCraft {
+public class BlockShopBlock extends BlockBuildCraft {
 
-    public BlockTrader() {
+    public BlockShopBlock() {
         super(Material.iron, CreativeTabs.tabRedstone);
+        setBlockName("shopBlock");
     }
 
     @Override
     public TileEntity createNewTileEntity(World world, int meta) {
-        return null;
+        return new TileEntityShopBlock();
     }
 }

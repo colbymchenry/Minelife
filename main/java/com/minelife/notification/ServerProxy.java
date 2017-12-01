@@ -1,14 +1,13 @@
 package com.minelife.notification;
 
-import com.minelife.CommonProxy;
+import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.sql.SQLException;
 
-public class ServerProxy extends CommonProxy {
+public class ServerProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event)

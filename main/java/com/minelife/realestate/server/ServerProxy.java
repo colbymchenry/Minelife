@@ -1,6 +1,6 @@
 package com.minelife.realestate.server;
 
-import com.minelife.CommonProxy;
+import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.realestate.EstateHandler;
 import com.minelife.util.MLConfig;
@@ -13,7 +13,7 @@ import net.minecraftforge.common.MinecraftForge;
 import java.io.File;
 import java.util.Arrays;
 
-public class ServerProxy extends CommonProxy {
+public class ServerProxy extends MLProxy {
 
     public static MLConfig config;
     public File estatesDir = new File(Minelife.getConfigDirectory(), "estates");

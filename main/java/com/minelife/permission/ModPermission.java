@@ -2,12 +2,10 @@ package com.minelife.permission;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.minelife.AbstractMod;
+import com.minelife.MLMod;
 import com.minelife.util.MLConfig;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.configuration.InvalidConfigurationException;
-import com.minelife.util.configuration.file.YamlConfiguration;
-import com.sk89q.worldedit.util.YAMLConfiguration;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -17,7 +15,7 @@ import net.minecraftforge.common.MinecraftForge;
 import java.io.IOException;
 import java.util.*;
 
-public class ModPermission extends AbstractMod {
+public class ModPermission extends MLMod {
 
     private static MLConfig config;
 

@@ -1,9 +1,7 @@
 package com.minelife.economy.client;
 
-import com.minelife.CommonProxy;
+import com.minelife.MLProxy;
 import com.minelife.MLBlocks;
-import com.minelife.Minelife;
-import com.minelife.economy.BlockATM;
 import com.minelife.economy.TileEntityATM;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -11,7 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 
-public class ClientProxy extends CommonProxy {
+public class ClientProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {

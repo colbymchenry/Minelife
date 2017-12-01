@@ -3,15 +3,12 @@ package com.minelife.drug;
 import buildcraft.BuildCraftEnergy;
 import com.minelife.*;
 import com.minelife.drug.block.*;
-import com.minelife.drug.item.ItemDrugTest;
 import com.minelife.drug.tileentity.TileEntityCementMixer;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -26,11 +23,9 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
 
-public class ModDrugs extends AbstractMod {
+public class ModDrugs extends MLMod {
 
     // TODO: Possible add syringe for shooting up cocaine for longer duration of effects, same for marjuana but maybe do oil
 
@@ -92,12 +87,12 @@ public class ModDrugs extends AbstractMod {
     }
 
     @Override
-    public Class<? extends CommonProxy> getClientProxyClass() {
+    public Class<? extends MLProxy> getClientProxyClass() {
         return com.minelife.drug.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends CommonProxy> getServerProxyClass() {
+    public Class<? extends MLProxy> getServerProxyClass() {
         return com.minelife.drug.server.ServerProxy.class;
     }
 

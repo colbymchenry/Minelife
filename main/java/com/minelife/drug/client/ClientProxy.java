@@ -1,6 +1,6 @@
 package com.minelife.drug.client;
 
-import com.minelife.CommonProxy;
+import com.minelife.MLProxy;
 import com.minelife.MLBlocks;
 import com.minelife.MLItems;
 import com.minelife.drug.client.render.*;
@@ -11,9 +11,8 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.MinecraftForge;
 
-public class ClientProxy extends CommonProxy {
+public class ClientProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event)

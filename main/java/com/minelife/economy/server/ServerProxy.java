@@ -1,6 +1,6 @@
 package com.minelife.economy.server;
 
-import com.minelife.CommonProxy;
+import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.economy.Billing;
 import com.minelife.economy.ModEconomy;
@@ -13,13 +13,12 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-public class ServerProxy extends CommonProxy {
+public class ServerProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) throws SQLException, IOException, InvalidConfigurationException

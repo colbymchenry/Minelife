@@ -1,6 +1,6 @@
 package com.minelife.gun.client;
 
-import com.minelife.CommonProxy;
+import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.gun.bullets.BulletRenderer;
 import com.minelife.gun.item.guns.ItemGun;
@@ -15,7 +15,7 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Mouse;
 
-public class ClientProxy extends CommonProxy {
+public class ClientProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
