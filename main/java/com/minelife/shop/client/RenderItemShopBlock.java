@@ -38,21 +38,9 @@ public class RenderItemShopBlock implements IItemRenderer {
 
         GL11.glPushMatrix();
         {
-            if (type == ItemRenderType.EQUIPPED_FIRST_PERSON) {
-                GL11.glRotatef(270f, 0, 1, 0);
-                GL11.glTranslatef(0.3f, 0f, -0.5f);
-            }
-
             if(type == ItemRenderType.INVENTORY) {
-                GL11.glScalef(0.6f, 0.6f, 0.6f);
-                GL11.glTranslatef(0.5f, -1.25f, 0f);
+                GL11.glTranslatef(-0.1f, -0.2f, 0f);
             }
-
-            if(type == ItemRenderType.EQUIPPED) {
-                GL11.glScalef(1.5f, 1.5f, 1.5f);
-                GL11.glTranslatef(0.5f, 0f, 0.1f);
-            }
-
             model.renderAll();
         }
         GL11.glPopMatrix();

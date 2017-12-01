@@ -33,19 +33,35 @@ public class RenderBlockShopBlock extends TileEntitySpecialRenderer {
 
         GL11.glPushMatrix();
         {
-            float xOffset = tileEntityATM.getFacing() == EnumFacing.NORTH ? 0.2F :
-                    tileEntityATM.getFacing() == EnumFacing.EAST ? 0.3F :
-                            tileEntityATM.getFacing() == EnumFacing.WEST ? 0.7F : 0.8F;
 
-            float zOffset = tileEntityATM.getFacing() == EnumFacing.NORTH ? 0.7F :
-                    tileEntityATM.getFacing() == EnumFacing.EAST ? 0.2F :
-                            tileEntityATM.getFacing() == EnumFacing.WEST ? 0.8F : 0.3F;
+            GL11.glTranslated(x, y, z);
 
-            GL11.glTranslated(x + xOffset, y + 0.05, z + zOffset);
-
-            GL11.glScalef(0.6f, 0.8f, 0.6f);
-
-            GL11.glRotatef(tileEntityATM.getRotationDegree(), 0, 1, 0);
+            if (tileEntityATM != null && tileEntityATM.getFacing() != null) {
+                GL11.glTranslated(0.5, 0.5, 0.5);
+                switch (tileEntityATM.getFacing()) {
+                    case NORTH:
+                        GL11.glTranslated(0.11, 0, 0);
+                        GL11.glRotatef(90, 0, 1, 0);
+                        break;
+                    case SOUTH:
+                        GL11.glTranslated(-0.11, 0, 0);
+                        GL11.glRotatef(270, 0, 1, 0);
+                        break;
+                    case WEST:
+                        GL11.glTranslated(0, 0, -0.11);
+                        GL11.glRotatef(180, 0, 1, 0);
+                        break;
+                    case EAST:
+                        GL11.glTranslated(0, 0, 0.11);
+                        break;
+                    default:
+                        GL11.glTranslated(0, 0, 0.11);
+                        break;
+                }
+                GL11.glTranslatef(-0.5f, -0.5f, -0.5f);
+            } else {
+                GL11.glTranslatef(0, 0, 0.11f);
+            }
 
             model.renderAll();
         }

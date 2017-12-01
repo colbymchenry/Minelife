@@ -9,6 +9,7 @@ import com.minelife.notification.ModNotifications;
 import com.minelife.permission.ModPermission;
 import com.minelife.police.ModPolice;
 import com.minelife.realestate.ModRealEstate;
+import com.minelife.shop.ModShop;
 import com.minelife.tracker.ModTracker;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.PacketPopupMessage;
@@ -69,6 +70,7 @@ public class Minelife {
         MODS.add(new ModDrugs());
         MODS.add(new ModRealEstate());
         MODS.add(new ModMinebay());
+        MODS.add(new ModShop());
     }
 
     @Mod.EventHandler

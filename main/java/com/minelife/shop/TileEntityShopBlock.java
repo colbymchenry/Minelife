@@ -13,6 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class TileEntityShopBlock extends TileBuildCraft {
+public class TileEntityShopBlock extends TileEntity {
 
     private UUID owner;
     private ItemStack stackToSale;
@@ -30,18 +31,22 @@ public class TileEntityShopBlock extends TileBuildCraft {
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
-        nbt.setTag("stackToSale", stackToSale.stackTagCompound);
+        if (stackToSale != null)
+            nbt.setTag("stackToSale", stackToSale.stackTagCompound);
         nbt.setDouble("price", price);
-        nbt.setString("owner", owner.toString());
+        if (owner != null)
+            nbt.setString("owner", owner.toString());
         nbt.setInteger("facing", facing.ordinal());
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-        stackToSale = ItemStack.loadItemStackFromNBT(nbt.getCompoundTag("stackToSale"));
+        if (nbt.hasKey("stackToSale"))
+            stackToSale = ItemStack.loadItemStackFromNBT(nbt.getCompoundTag("stackToSale"));
         price = nbt.getDouble("price");
-        owner = UUID.fromString(nbt.getString("owner"));
+        if (nbt.hasKey("owner"))
+            owner = UUID.fromString(nbt.getString("owner"));
         facing = EnumFacing.values()[nbt.getInteger("facing")];
     }
 
@@ -76,7 +81,7 @@ public class TileEntityShopBlock extends TileBuildCraft {
         sync();
     }
 
-    public UUID getPlayerOwner() {
+    public UUID getOwner() {
         return owner;
     }
 
@@ -158,8 +163,8 @@ public class TileEntityShopBlock extends TileBuildCraft {
 
 
     public float getRotationDegree() {
-        return this.facing == EnumFacing.NORTH ? 180 : this.facing ==  EnumFacing.EAST ? 90 :
-                this.facing == EnumFacing.SOUTH ? 0 : 270;
+        return this.facing == EnumFacing.NORTH ? 180 : this.facing == EnumFacing.EAST ? 0 :
+                this.facing == EnumFacing.SOUTH ? 180 : 0;
     }
 
 
