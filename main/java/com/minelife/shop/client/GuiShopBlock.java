@@ -15,9 +15,9 @@ public class GuiShopBlock extends GuiScreen {
 
     private static final Color slot_color = new Color(0x919191);
     private TileEntityShopBlock tile_entity;
-    private int bg_width = 100, bg_height = 200, xPosition, yPosition;
+    private int bg_width = 200, bg_height = 150, xPosition, yPosition;
     private GuiTextField price_field;
-    private int slot_to_sale;
+    private int slot_to_sale = -1;
 
     public GuiShopBlock(TileEntityShopBlock tile_entity) {
         this.tile_entity = tile_entity;
@@ -29,6 +29,10 @@ public class GuiShopBlock extends GuiScreen {
         GuiUtil.drawDefaultBackground(xPosition, yPosition, bg_width, bg_height);
         price_field.drawTextBox();
        fake_inventory.draw(mouse_x, mouse_y);
+
+       if(this.slot_to_sale != -1 && mc.thePlayer.inventory.getStackInSlot(slot_to_sale) != null) {
+           fake_inventory.item_renderer.drawItemStack(mc.thePlayer.inventory.getStackInSlot(slot_to_sale), xPosition + 20, yPosition + 20);
+       }
     }
 
     @Override
@@ -42,6 +46,7 @@ public class GuiShopBlock extends GuiScreen {
         super.mouseClicked(mouse_x, mouse_y, mouse_btn);
         price_field.mouseClicked(mouse_x, mouse_y, mouse_btn);
         if(fake_inventory.getClickedSlot(mouse_x, mouse_y)  != -1) this.slot_to_sale = fake_inventory.getClickedSlot(mouse_x, mouse_y);
+        // TODO: We have selecting the item and rendering it, now we need to be able to send a packet to the server and we also need to make sure they can only enter integers and decimals into the dollar amount.
     }
 
     @Override
@@ -56,8 +61,8 @@ public class GuiShopBlock extends GuiScreen {
         yPosition = (this.height - bg_height) / 2;
         price_field = new GuiTextField(fontRendererObj, xPosition + ((bg_width - 75) / 2), yPosition + 10, 75, 20);
 
-        int xOffset = xPosition;
-        int yOffset = yPosition;
+        int xOffset = xPosition + 20;
+        int yOffset = yPosition + 70;
 
         fake_inventory = new GuiFakeInventory(mc) {
             @Override
@@ -77,7 +82,7 @@ public class GuiShopBlock extends GuiScreen {
             }
         };
 
-        fake_inventory.slotColor = new Color(0x919191);
+        fake_inventory.slotColor = new Color(0x8B8B8B);
     }
 
     @Override
