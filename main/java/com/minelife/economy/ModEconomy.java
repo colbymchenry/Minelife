@@ -90,8 +90,6 @@ public class ModEconomy extends MLMod {
         double balance = getBalance(player, wallet);
         balance -= amount;
 
-        System.out.println(amount);
-
         /**
          * Make sure the player balance cannot go below zero (cannot go into debt)
          */

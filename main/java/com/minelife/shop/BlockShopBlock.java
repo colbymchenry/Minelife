@@ -2,6 +2,7 @@ package com.minelife.shop;
 
 import buildcraft.core.lib.block.BlockBuildCraft;
 import com.minelife.Minelife;
+import com.minelife.economy.ModEconomy;
 import com.minelife.shop.client.GuiShopBlock;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -10,7 +11,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -54,7 +57,7 @@ public class BlockShopBlock extends BlockBuildCraft {
                 clientBlockActivated(tileEntityShopBlock, player);
             } else {
                 if(tileEntityShopBlock.getOwner() != null && !tileEntityShopBlock.getOwner().equals(player.getUniqueID())) {
-                    // TODO: Do purchase
+                    tileEntityShopBlock.doTransaction((EntityPlayerMP) player);
                 }
             }
         }

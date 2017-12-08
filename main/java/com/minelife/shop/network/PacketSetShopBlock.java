@@ -93,6 +93,11 @@ public class PacketSetShopBlock implements IMessage {
                 return null;
             }
 
+            if(message.amount > 64) {
+                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Amount cannot be greater than 64."));
+                return null;
+            }
+
             ItemStack toSale = message.stack.copy();
             toSale.stackSize = message.amount;
             shopBlock.setStackToSale(toSale);
