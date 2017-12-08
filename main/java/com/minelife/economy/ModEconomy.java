@@ -6,6 +6,7 @@ import com.minelife.Minelife;
 import com.minelife.economy.client.gui.GuiBillPay;
 import com.minelife.economy.server.CommandEconomy;
 import com.minelife.util.MLConfig;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.PlayerHelper;
 import com.minelife.MLMod;
 import com.minelife.economy.packet.*;
@@ -14,6 +15,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -162,6 +164,25 @@ public class ModEconomy extends MLMod {
     public static final String getMessage(String key)
     {
         return config.getString(key);
+    }
+
+    public static boolean isValidAmount(String str) {
+        if(!NumberConversions.isDouble(str)) return false;
+        String[] data = String.valueOf(str + ".").split("\\.");
+        if(data[0].startsWith("0") && data[0].length() > 1) return false;
+        if(data.length > 1 && data[1].length() > 2) return false;
+        return true;
+    }
+
+    public static boolean handleInput(String text, boolean isFocused, char key_char, int key_id) {
+        if (NumberConversions.isInt(String.valueOf(key_char)) || key_id == Keyboard.KEY_PERIOD || key_id == Keyboard.KEY_BACK) {
+            if (isFocused && NumberConversions.isDouble(text + key_char)) {
+                if (key_id == Keyboard.KEY_BACK || ModEconomy.isValidAmount(text + key_char))
+                    return true;
+            }
+        }
+
+        return false;
     }
 
 }

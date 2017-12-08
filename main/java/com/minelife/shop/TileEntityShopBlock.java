@@ -1,6 +1,7 @@
 package com.minelife.shop;
 
 import buildcraft.core.lib.block.TileBuildCraft;
+import buildcraft.core.lib.inventory.SimpleInventory;
 import codechicken.lib.inventory.InventoryUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -23,31 +24,34 @@ import java.util.UUID;
 
 public class TileEntityShopBlock extends TileEntity {
 
+    private SimpleInventory simpleInventory;
     private UUID owner;
-    private ItemStack stackToSale;
     private double price;
+    private int amount;
     private EnumFacing facing;
+
+    public TileEntityShopBlock() {
+        simpleInventory = new SimpleInventory(1, "shop_block_inventory", 64);
+    }
 
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
-        if (stackToSale != null)
-            nbt.setTag("stackToSale", stackToSale.stackTagCompound);
+        simpleInventory.writeToNBT(nbt);
         nbt.setDouble("price", price);
-        if (owner != null)
-            nbt.setString("owner", owner.toString());
-        nbt.setInteger("facing", facing.ordinal());
+        nbt.setInteger("amount", amount);
+        if (owner != null) nbt.setString("owner", owner.toString());
+        if (facing != null) nbt.setInteger("facing", facing.ordinal());
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-        if (nbt.hasKey("stackToSale"))
-            stackToSale = ItemStack.loadItemStackFromNBT(nbt.getCompoundTag("stackToSale"));
-        price = nbt.getDouble("price");
-        if (nbt.hasKey("owner"))
-            owner = UUID.fromString(nbt.getString("owner"));
-        facing = EnumFacing.values()[nbt.getInteger("facing")];
+        simpleInventory.readFromNBT(nbt);
+        if (nbt.hasKey("price")) price = nbt.getDouble("price");
+        if (nbt.hasKey("amount")) amount = nbt.getInteger("amount");
+        if (nbt.hasKey("owner")) owner = UUID.fromString(nbt.getString("owner"));
+        if (nbt.hasKey("facing")) facing = EnumFacing.values()[nbt.getInteger("facing")];
     }
 
     @Override
@@ -86,12 +90,15 @@ public class TileEntityShopBlock extends TileEntity {
     }
 
     public void setStackToSale(ItemStack stack) {
-        stackToSale = stack;
+        simpleInventory.setInventorySlotContents(0, stack);
+        amount = stack.stackSize;
         sync();
     }
 
     public ItemStack getStackToSale() {
-        return stackToSale;
+        ItemStack toSale = simpleInventory.getStackInSlot(0);
+        if(toSale != null) toSale.stackSize = amount;
+        return toSale;
     }
 
     public void setPrice(double price) {
@@ -152,7 +159,7 @@ public class TileEntityShopBlock extends TileEntity {
         // add the items from all the chests that are identical to stackToSale
         chests.forEach(tileEntityChest -> {
             for (int slot = 0; slot < tileEntityChest.getSizeInventory(); slot++) {
-                if (tileEntityChest.getStackInSlot(slot) != null && InventoryUtils.areStacksIdentical(tileEntityChest.getStackInSlot(slot), stackToSale)) {
+                if (tileEntityChest.getStackInSlot(slot) != null && InventoryUtils.areStacksIdentical(tileEntityChest.getStackInSlot(slot), getStackToSale())) {
                     items.put(tileEntityChest, tileEntityChest.getStackInSlot(slot));
                 }
             }

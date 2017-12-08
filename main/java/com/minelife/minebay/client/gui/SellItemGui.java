@@ -1,6 +1,7 @@
 package com.minelife.minebay.client.gui;
 
 import com.minelife.Minelife;
+import com.minelife.economy.ModEconomy;
 import com.minelife.minebay.packet.PacketSellItem;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiFakeInventory;
@@ -130,27 +131,16 @@ public class SellItemGui extends MasterGui {
     }
 
     @Override
-    protected void keyTyped(char c, int i)
+    protected void keyTyped(char key_char, int key_id)
     {
-        if (i == Keyboard.KEY_ESCAPE) {
+        if (key_id == Keyboard.KEY_ESCAPE) {
             Minecraft.getMinecraft().displayGuiScreen(new ListingsGui());
             return;
         }
 
-        super.keyTyped(c, i);
+        super.keyTyped(key_char, key_id);
 
-        if (!NumberConversions.isDouble("" + c) && i != Keyboard.KEY_BACK) return;
-        price_field.textboxKeyTyped(c, i);
-
-        if (amount_field.isFocused()) {
-
-            amount_field.textboxKeyTyped(c, i);
-            if (!amount_field.getText().isEmpty()) {
-                if (NumberConversions.toDouble(amount_field.getText()) > item_to_sale.stackSize) {
-                    amount_field.setText(amount_field.getText().substring(0, amount_field.getText().length() - 1));
-                }
-            }
-        }
-
+        if(ModEconomy.handleInput(price_field.getText(), price_field.isFocused(), key_char, key_id)) price_field.textboxKeyTyped(key_char, key_id);
+        if (NumberConversions.isInt(String.valueOf(key_char)) || key_id == Keyboard.KEY_BACK) amount_field.textboxKeyTyped(key_char, key_id);
     }
 }
