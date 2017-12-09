@@ -18,7 +18,7 @@ import java.awt.Color;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
-public class GuiShopBlock extends GuiScreen {
+public class GuiShopBlockSell extends GuiScreen {
 
     private GuiFakeInventory fake_inventory;
 
@@ -29,7 +29,7 @@ public class GuiShopBlock extends GuiScreen {
     private ItemStack stackToDisplay;
     private GuiButton set_btn;
 
-    public GuiShopBlock(TileEntityShopBlock tile_entity) {
+    public GuiShopBlockSell(TileEntityShopBlock tile_entity) {
         this.tile_entity = tile_entity;
     }
 

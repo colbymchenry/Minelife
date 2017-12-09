@@ -2,8 +2,7 @@ package com.minelife.shop;
 
 import buildcraft.core.lib.block.BlockBuildCraft;
 import com.minelife.Minelife;
-import com.minelife.economy.ModEconomy;
-import com.minelife.shop.client.GuiShopBlock;
+import com.minelife.shop.client.GuiShopBlockSell;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
@@ -11,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -57,6 +55,8 @@ public class BlockShopBlock extends BlockBuildCraft {
                 clientBlockActivated(tileEntityShopBlock, player);
             } else {
                 if(tileEntityShopBlock.getOwner() != null && !tileEntityShopBlock.getOwner().equals(player.getUniqueID())) {
+
+                    // crouch click specify purchase amount, just click is buy at amount on board
                     tileEntityShopBlock.doTransaction((EntityPlayerMP) player);
                 }
             }
@@ -69,7 +69,7 @@ public class BlockShopBlock extends BlockBuildCraft {
     @SideOnly(Side.CLIENT)
     public void clientBlockActivated(TileEntityShopBlock tileEntityShopBlock, EntityPlayer player) {
         if (Objects.equals(tileEntityShopBlock.getOwner(), player.getUniqueID())) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiShopBlock(tileEntityShopBlock));
+            Minecraft.getMinecraft().displayGuiScreen(new GuiShopBlockSell(tileEntityShopBlock));
         }
     }
 
