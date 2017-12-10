@@ -28,7 +28,7 @@ public class ModGun extends MLMod {
     public static final CreativeTabs tabGuns = new CreativeTabs("guns") {
         @Override
         public Item getTabIconItem() {
-            return Items.diamond;
+            return MLItems.magnum;
         }
     };
 
@@ -36,7 +36,7 @@ public class ModGun extends MLMod {
     public static final CreativeTabs tabAmmo = new CreativeTabs("ammo") {
         @Override
         public Item getTabIconItem() {
-            return Items.emerald;
+            return MLItems.ammo_556;
         }
     };
 
