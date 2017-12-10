@@ -234,9 +234,9 @@ public class TileEntityShopBlock extends TileEntity {
         }
     }
 
-    class Stock {
-        TileEntityChest chest;
-        int slot;
+    public class Stock {
+        public TileEntityChest chest;
+        public int slot;
 
         public Stock(TileEntityChest chest, int slot) {
             this.chest = chest;

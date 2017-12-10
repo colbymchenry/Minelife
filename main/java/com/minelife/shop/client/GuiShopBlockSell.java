@@ -73,7 +73,7 @@ public class GuiShopBlockSell extends GuiScreen {
         super.keyTyped(key_char, key_id);
 
         if(ModEconomy.handleInput(price_field.getText(), price_field.isFocused(), key_char, key_id)) price_field.textboxKeyTyped(key_char, key_id);
-        if ((NumberConversions.isInt(String.valueOf(key_char)) || key_id == Keyboard.KEY_BACK) && NumberConversions.toInt(amount_field.getText() + key_char) < 65) amount_field.textboxKeyTyped(key_char, key_id);
+        if (stackToDisplay != null && (NumberConversions.isInt(String.valueOf(key_char)) || key_id == Keyboard.KEY_BACK) && NumberConversions.toInt(amount_field.getText() + key_char) <= stackToDisplay.getMaxStackSize()) amount_field.textboxKeyTyped(key_char, key_id);
     }
 
     @Override
@@ -138,5 +138,15 @@ public class GuiShopBlockSell extends GuiScreen {
         price_field.updateCursorCounter();
         amount_field.updateCursorCounter();
         set_btn.enabled = !price_field.getText().isEmpty() && !amount_field.getText().isEmpty();
+        amount_field.setEnabled(stackToDisplay != null);
+        if(stackToDisplay == null) {
+            amount_field.setText("");
+        } else {
+            if(NumberConversions.isInt(amount_field.getText())) {
+                if(NumberConversions.toInt(amount_field.getText()) > stackToDisplay.getMaxStackSize()) {
+                    amount_field.setText("" + stackToDisplay.getMaxStackSize());
+                }
+            }
+        }
     }
 }

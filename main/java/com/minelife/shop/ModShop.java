@@ -2,6 +2,7 @@ package com.minelife.shop;
 
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
+import com.minelife.shop.network.PacketBuyFromShop;
 import com.minelife.shop.network.PacketSetShopBlock;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -14,6 +15,7 @@ public class ModShop extends MLMod {
     public void preInit(FMLPreInitializationEvent event) {
         GameRegistry.registerTileEntity(TileEntityShopBlock.class, "tileShopBlock");
         registerPacket(PacketSetShopBlock.Handler.class, PacketSetShopBlock.class, Side.SERVER);
+        registerPacket(PacketBuyFromShop.Handler.class, PacketBuyFromShop.class, Side.SERVER);
     }
 
     @Override

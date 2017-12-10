@@ -2,6 +2,7 @@ package com.minelife.shop;
 
 import buildcraft.core.lib.block.BlockBuildCraft;
 import com.minelife.Minelife;
+import com.minelife.shop.client.GuiShopBlockBuy;
 import com.minelife.shop.client.GuiShopBlockSell;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -55,9 +56,7 @@ public class BlockShopBlock extends BlockBuildCraft {
                 clientBlockActivated(tileEntityShopBlock, player);
             } else {
                 if(tileEntityShopBlock.getOwner() != null && !tileEntityShopBlock.getOwner().equals(player.getUniqueID())) {
-
-                    // crouch click specify purchase amount, just click is buy at amount on board
-                    tileEntityShopBlock.doTransaction((EntityPlayerMP) player);
+                    if(!player.isSneaking()) tileEntityShopBlock.doTransaction((EntityPlayerMP) player);
                 }
             }
         }
@@ -70,6 +69,10 @@ public class BlockShopBlock extends BlockBuildCraft {
     public void clientBlockActivated(TileEntityShopBlock tileEntityShopBlock, EntityPlayer player) {
         if (Objects.equals(tileEntityShopBlock.getOwner(), player.getUniqueID())) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiShopBlockSell(tileEntityShopBlock));
+        } else {
+            if(player.isSneaking()) {
+                Minecraft.getMinecraft().displayGuiScreen(new GuiShopBlockBuy(tileEntityShopBlock));
+            }
         }
     }
 
