@@ -9,6 +9,7 @@ import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.ModGun;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.packet.PacketBullet;
+import com.minelife.util.PacketPlaySound;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -19,8 +20,10 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
@@ -104,9 +107,7 @@ public abstract class ItemGun extends Item {
 
         stack.stackTagCompound = stackData;
 
-        player.worldObj.playSoundAtEntity(player, Minelife.MOD_ID + ":guns." + getName() + ".shot", 0.5F, 1.0F);
-
-        Minelife.NETWORK.sendToAllAround(new PacketBullet(BulletHandler.addBullet(player, ammoType)), new NetworkRegistry.TargetPoint(player.worldObj.provider.dimensionId, player.posX, player.posY, player.posZ, 50));
+        Minelife.NETWORK.sendToAllAround(new PacketBullet(BulletHandler.addBullet(player, ammoType)), new NetworkRegistry.TargetPoint(player.worldObj.provider.dimensionId, player.posX, player.posY, player.posZ, MinecraftServer.getServer().getConfigurationManager().getEntityViewDistance()));
     }
 
     public abstract String getName();

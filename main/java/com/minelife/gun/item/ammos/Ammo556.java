@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 public class Ammo556 extends ItemAmmo {
     @Override
     public void registerRecipe() {
-        GameRegistry.addRecipe(new ItemStack(this),
+        GameRegistry.addRecipe(new ItemStack(this, 8),
                 " L ",
                 "CGC",
                 "CCC",

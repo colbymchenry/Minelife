@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 public class AmmoPistolIncendiary extends ItemAmmo {
     @Override
     public void registerRecipe() {
-        GameRegistry.addRecipe(new ItemStack(this),
+        GameRegistry.addRecipe(new ItemStack(this, 4),
                 "FLF",
                 "CGC",
                 'C', Ic2Items.copperIngot,

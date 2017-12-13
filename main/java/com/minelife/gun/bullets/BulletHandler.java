@@ -28,7 +28,6 @@ public class BulletHandler {
 
     public static volatile List<Bullet> bulletList = Lists.newArrayList();
 
-    // TODO: Test if bullet explosion will affect an estate
     public static Bullet addBullet(EntityPlayer player, ItemAmmo.AmmoType ammoType) {
         Vec3 lookVec = player.getLookVec();
         Vec3 origin = Vec3.createVectorHelper(player.posX, player.posY + player.eyeHeight, player.posZ);

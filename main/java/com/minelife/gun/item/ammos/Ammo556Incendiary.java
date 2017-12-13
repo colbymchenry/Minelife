@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 public class Ammo556Incendiary extends ItemAmmo {
     @Override
     public void registerRecipe() {
-        GameRegistry.addRecipe(new ItemStack(this),
+        GameRegistry.addRecipe(new ItemStack(this, 2),
                 "FLF",
                 "CGC",
                 "CCC",

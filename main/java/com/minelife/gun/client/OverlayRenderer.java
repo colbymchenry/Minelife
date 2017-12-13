@@ -7,6 +7,7 @@ import com.minelife.gun.item.guns.GunAWP;
 import com.minelife.gun.item.guns.GunBarrett;
 import com.minelife.gun.client.guns.GunClientAWP;
 import com.minelife.gun.client.guns.GunClientBarrett;
+import com.minelife.util.client.GuiUtil;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -15,6 +16,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
 
 public class OverlayRenderer {
+
+    public static long startReloadTime = 0L;
 
     @SubscribeEvent
     public void onGameOverlay(RenderGameOverlayEvent.Pre event) {
@@ -69,6 +72,19 @@ public class OverlayRenderer {
             if (gun == MLItems.awp) {
                 if (((GunClientAWP) gun.getClientHandler()).isZoom()) {
                     event.setCanceled(true);
+                }
+            }
+
+            if(player.getHeldItem() != null && player.getHeldItem().stackTagCompound != null && gun != null && player.getHeldItem().stackTagCompound.hasKey("reloadTime")) {
+                long max = gun.getReloadTime();
+                long fill =  (player.getHeldItem().stackTagCompound.getLong("reloadTime")) - System.currentTimeMillis();
+                if(fill > -1) {
+                    // 20D is the width of the progress bar
+                    double toFill = ((double) fill / (double) max) * 30D;
+                    GL11.glDisable(GL11.GL_TEXTURE_2D);
+                    GL11.glColor4f(1, 1, 1, 1);
+                    GuiUtil.drawImage(x + 40, y + 50, (float) toFill, 5);
+                    GL11.glEnable(GL11.GL_TEXTURE_2D);
                 }
             }
         }
