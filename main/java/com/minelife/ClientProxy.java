@@ -9,12 +9,14 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public class ClientProxy extends MLProxy {
 
+
+
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
         initSQLite();
         MLKeys.registerKeys();
-        RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, new RenderPlayerCustom());
+        RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, RenderPlayerCustom.instance);
 
         Minelife.MODS.forEach(mod -> {
             try {

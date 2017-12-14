@@ -4,6 +4,8 @@ import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.Animation;
 import com.minelife.util.client.render.ModelBipedCustom;
+import com.minelife.util.client.render.RenderPlayerCustom;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -39,7 +41,7 @@ public class GunClientAWP extends ItemGunClient {
                 GL11.glRotatef(310f, 0, 1, 0);
 
                 getAnimation().animate();
-                GL11.glTranslatef(0.1f + getAnimation().posX(), getAnimation().posY(), -1f + getAnimation().posZ());
+                GL11.glTranslatef(0.1f + getAnimation().posX(), -0.7f + getAnimation().posY(), -1.5f + getAnimation().posZ());
             }
 
             if (type == IItemRenderer.ItemRenderType.INVENTORY) {
@@ -61,6 +63,23 @@ public class GunClientAWP extends ItemGunClient {
                 PlayerHelper.zoom(1.0D);
             }
         }
+        GL11.glPopMatrix();
+    }
+
+    @Override
+    public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
+        mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
+
+        GL11.glPushMatrix();
+        GL11.glTranslatef(0.3F + (getAnimation().posX() / 5), getAnimation().posY() / 5, -0.1f + (getAnimation().posZ() / 5));
+        GL11.glScalef(3f, 3f, 3f);
+
+        float f = 1.0F;
+        GL11.glColor3f(f, f, f);
+        RenderPlayerCustom.instance.modelBipedMain.onGround = 0.0F;
+        RenderPlayerCustom.instance.modelBipedMain.setRotationAngles(0.0F, 0.0F, 2.0F, 285.0F, 28.0F, 0.0625F, player);
+        RenderPlayerCustom.instance.modelBipedMain.bipedRightArm.offsetY = -0.1F;
+        RenderPlayerCustom.instance.modelBipedMain.bipedRightArm.render(0.0225F);
         GL11.glPopMatrix();
     }
 
@@ -118,5 +137,20 @@ public class GunClientAWP extends ItemGunClient {
 
     public boolean isZoom() {
         return zoom;
+    }
+
+    @Override
+    public int getReboundSpeed() {
+        return 8;
+    }
+
+    @Override
+    public int[] yawSpread() {
+        return new int[]{1, 10};
+    }
+
+    @Override
+    public int[] pitchSpread() {
+        return new int[]{1, 20};
     }
 }

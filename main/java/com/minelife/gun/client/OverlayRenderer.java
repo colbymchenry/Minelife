@@ -66,12 +66,14 @@ public class OverlayRenderer {
             if (gun == MLItems.barrett) {
                 if (((GunClientBarrett) gun.getClientHandler()).isZoom()) {
                     event.setCanceled(true);
+                    RenderGun.handleRecoil(gun.getClientHandler());
                 }
             }
 
             if (gun == MLItems.awp) {
                 if (((GunClientAWP) gun.getClientHandler()).isZoom()) {
                     event.setCanceled(true);
+                    RenderGun.handleRecoil(gun.getClientHandler());
                 }
             }
 

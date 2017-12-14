@@ -19,8 +19,14 @@ import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.input.Mouse;
 
+import java.util.Random;
+
 @SideOnly(Side.CLIENT)
 public abstract class ItemGunClient {
+
+    public static Random random = new Random();
+    public boolean shot;
+    public float ogYaw, ogPitch;
 
     public static GunClientAK47 ak47 = new GunClientAK47(MLItems.ak47);
     public static GunClientAWP awp = new GunClientAWP(MLItems.awp);
@@ -33,9 +39,6 @@ public abstract class ItemGunClient {
     private final IModelCustom model;
     private final ItemGun gun;
     private Animation animation;
-//    private boolean mouseDown = false;
-
-//    private long nextFire;
 
     public ItemGunClient(ItemGun gun) {
         this.gun = gun;
@@ -49,6 +52,8 @@ public abstract class ItemGunClient {
     public abstract boolean shouldUseRenderHelper(IItemRenderer.ItemRenderType type, ItemStack item, IItemRenderer.ItemRendererHelper helper);
 
     public abstract void renderItem(IItemRenderer.ItemRenderType type, ItemStack item, Object... data);
+
+    public abstract void renderFirstPerson(Minecraft mc, EntityPlayer player);
 
     public abstract void setArmRotations(ModelBipedCustom model, float f1);
 
@@ -112,4 +117,11 @@ public abstract class ItemGunClient {
     public ItemGun getGun() {
         return gun;
     }
+
+    public abstract int getReboundSpeed();
+
+    public abstract int[] yawSpread();
+
+    public abstract int[] pitchSpread();
+
 }

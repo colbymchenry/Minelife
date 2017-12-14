@@ -5,6 +5,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,7 +15,13 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class RenderPlayerCustom extends RenderPlayer {
 
-    public RenderPlayerCustom() {
+    public static RenderPlayerCustom instance;
+
+    static {
+        instance = new RenderPlayerCustom();
+    }
+
+    private RenderPlayerCustom() {
         super();
         this.mainModel = new ModelBipedCustom(0.0F);
         this.modelBipedMain = (ModelBiped) this.mainModel;
@@ -37,6 +44,8 @@ public class RenderPlayerCustom extends RenderPlayer {
 //
 //            return;
 //        }
+
+
 
         super.doRender(client, x, y, z, f, f1);
     }

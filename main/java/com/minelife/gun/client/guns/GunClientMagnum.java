@@ -3,6 +3,8 @@ package com.minelife.gun.client.guns;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.util.client.Animation;
 import com.minelife.util.client.render.ModelBipedCustom;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.IItemRenderer;
@@ -29,11 +31,11 @@ public class GunClientMagnum extends ItemGunClient {
         GL11.glPushMatrix();
         {
             if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
-                GL11.glScalef(0.5f, 0.5f, 0.5f);
+                GL11.glScalef(0.3f, 0.3f, 0.3f);
                 GL11.glRotatef(310f, 0, 1, 0);
 
                 getAnimation().animate();
-                GL11.glTranslatef(0.1f + getAnimation().posX(), -1f + getAnimation().posY(), getAnimation().posZ());
+                GL11.glTranslatef(-0.4f + getAnimation().posX(), 0.4f + getAnimation().posY(), getAnimation().posZ());
                 GL11.glRotatef(getAnimation().rotX(), 1, 0, 0);
                 GL11.glRotatef(getAnimation().rotY(), 0, 1, 0);
                 GL11.glRotatef(getAnimation().rotZ(), 0, 0, 1);
@@ -57,6 +59,11 @@ public class GunClientMagnum extends ItemGunClient {
     }
 
     @Override
+    public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
+
+    }
+
+    @Override
     public void setArmRotations(ModelBipedCustom model, float f1) {
         float f6 = 0.0F;
         float f7 = 0.0F;
@@ -77,6 +84,21 @@ public class GunClientMagnum extends ItemGunClient {
     @Override
     public void shootBullet() {
         setAnimation(new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.x, 35, 6.5f).rotateTo(Animation.EnumRotation.x, 0, 4.5f));
+    }
+
+    @Override
+    public int getReboundSpeed() {
+        return 2;
+    }
+
+    @Override
+    public int[] yawSpread() {
+        return new int[]{1, 10};
+    }
+
+    @Override
+    public int[] pitchSpread() {
+        return new int[]{20, 60};
     }
 
 }

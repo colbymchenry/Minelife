@@ -3,9 +3,13 @@ package com.minelife.gun.client.guns;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.util.client.Animation;
 import com.minelife.util.client.render.ModelBipedCustom;
+import com.minelife.util.client.render.RenderPlayerCustom;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.IItemRenderer;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 public class GunClientAK47 extends ItemGunClient {
@@ -29,11 +33,11 @@ public class GunClientAK47 extends ItemGunClient {
         GL11.glPushMatrix();
         {
             if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
-                GL11.glScalef(0.5f, 0.5f, 0.5f);
+                GL11.glScalef(0.3f, 0.3f, 0.3f);
                 GL11.glRotatef(310f, 0, 1, 0);
 
                 getAnimation().animate();
-                GL11.glTranslatef(0.1f + getAnimation().posX(), -2f + getAnimation().posY(), 2f + getAnimation().posZ());
+                GL11.glTranslatef(0.2f + getAnimation().posX(), -0.5f + getAnimation().posY(), 2f + getAnimation().posZ());
             }
 
             if (type == IItemRenderer.ItemRenderType.INVENTORY) {
@@ -50,6 +54,24 @@ public class GunClientAK47 extends ItemGunClient {
 
             getModel().renderAll();
         }
+        GL11.glPopMatrix();
+
+    }
+
+    @Override
+    public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
+        mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
+
+        GL11.glPushMatrix();
+        GL11.glTranslatef(-0.4F + (getAnimation().posX() / 5), getAnimation().posY() / 5, 0.4F + (getAnimation().posZ() / 5));
+        GL11.glScalef(7f, 7f, 7f);
+
+        float f = 1.0F;
+        GL11.glColor3f(f, f, f);
+        RenderPlayerCustom.instance.modelBipedMain.onGround = 0.0F;
+        RenderPlayerCustom.instance.modelBipedMain.setRotationAngles(0.0F, 0.0F, 2.0F, 285.0F, 28.0F, 0.0625F, player);
+        RenderPlayerCustom.instance.modelBipedMain.bipedRightArm.offsetY = -0.07F;
+        RenderPlayerCustom.instance.modelBipedMain.bipedRightArm.render(0.0105F);
         GL11.glPopMatrix();
     }
 
@@ -74,6 +96,21 @@ public class GunClientAK47 extends ItemGunClient {
     @Override
     public void shootBullet() {
         setAnimation(new Animation(0, 0, 0).translateTo((float) (Math.random() / 3f), (float) (Math.random() / 3f), (float) (Math.random() / 3f), 0.18f).translateTo(0, 0, 0, 0.2f));
+    }
+
+    @Override
+    public int getReboundSpeed() {
+        return 8;
+    }
+
+    @Override
+    public int[] yawSpread() {
+        return new int[]{20, 30};
+    }
+
+    @Override
+    public int[] pitchSpread() {
+        return new int[]{1, 20};
     }
 
 }
