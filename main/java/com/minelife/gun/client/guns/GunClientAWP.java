@@ -151,6 +151,6 @@ public class GunClientAWP extends ItemGunClient {
 
     @Override
     public int[] pitchSpread() {
-        return new int[]{1, 20};
+        return new int[]{20, 60};
     }
 }

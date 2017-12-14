@@ -34,7 +34,7 @@ public class GunAWP extends ItemGun {
 
     @Override
     public int getReloadTime() {
-        return 0;
+        return 3100;
     }
 
     @Override

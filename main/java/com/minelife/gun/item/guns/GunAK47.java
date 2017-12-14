@@ -25,7 +25,7 @@ public class GunAK47 extends ItemGun {
 
     @Override
     public int getFireRate() {
-        return 100;
+        return 50;
     }
 
     @Override

@@ -105,7 +105,7 @@ public class GunClientAK47 extends ItemGunClient {
 
     @Override
     public int[] yawSpread() {
-        return new int[]{20, 30};
+        return new int[]{10, 20};
     }
 
     @Override

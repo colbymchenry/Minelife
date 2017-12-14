@@ -33,7 +33,7 @@ public class GunDesertEagle extends ItemGun {
 
     @Override
     public int getReloadTime() {
-        return 21;
+        return 2400;
     }
 
     @Override
