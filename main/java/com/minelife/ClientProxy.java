@@ -16,7 +16,7 @@ public class ClientProxy extends MLProxy {
     {
         initSQLite();
         MLKeys.registerKeys();
-        RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, RenderPlayerCustom.instance);
+        RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, new RenderPlayerCustom());
 
         Minelife.MODS.forEach(mod -> {
             try {

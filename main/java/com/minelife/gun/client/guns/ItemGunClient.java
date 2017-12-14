@@ -7,6 +7,7 @@ import com.minelife.gun.packet.PacketMouseClick;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.Animation;
 import com.minelife.util.client.render.ModelBipedCustom;
+import com.minelife.util.client.render.RenderPlayerCustom;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
@@ -24,6 +25,7 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public abstract class ItemGunClient {
 
+    public RenderPlayerCustom renderer;
     public static Random random = new Random();
     public boolean shot;
     public float ogYaw, ogPitch;
@@ -45,6 +47,7 @@ public abstract class ItemGunClient {
         texture = new ResourceLocation(Minelife.MOD_ID, "textures/guns/" + gun.getName() + ".png");
         objModel = new ResourceLocation(Minelife.MOD_ID, "models/guns/" + gun.getName() + ".obj");
         model = AdvancedModelLoader.loadModel(objModel);
+        renderer = new RenderPlayerCustom();
     }
 
     public abstract boolean handleRenderType(ItemStack item, IItemRenderer.ItemRenderType type);

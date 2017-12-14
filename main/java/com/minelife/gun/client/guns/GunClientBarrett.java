@@ -34,8 +34,6 @@ public class GunClientBarrett extends ItemGunClient {
 
     @Override
     public void renderItem(IItemRenderer.ItemRenderType type, ItemStack item, Object... data) {
-        GL11.glPushMatrix();
-        {
             if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
                 GL11.glScalef(0.5f, 0.5f, 0.5f);
                 GL11.glRotatef(310f, 0, 1, 0);
@@ -62,25 +60,22 @@ public class GunClientBarrett extends ItemGunClient {
                 getModel().renderAll();
                 PlayerHelper.zoom(1.0D);
             }
-        }
-        GL11.glPopMatrix();
     }
 
     @Override
     public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
         mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
 
-        GL11.glPushMatrix();
-        GL11.glTranslatef(0.3F + (getAnimation().posX() / 5), getAnimation().posY() / 5, -0.1f + (getAnimation().posZ() / 5));
-        GL11.glScalef(3f, 3f, 3f);
+        GL11.glTranslatef(0.5F + (getAnimation().posX() / 5), 0f + (getAnimation().posY() / 5), -0.1f + (getAnimation().posZ() / 5));
+        float scale = 20f;
+        GL11.glScalef(scale, scale, scale);
 
         float f = 1.0F;
         GL11.glColor3f(f, f, f);
-        RenderPlayerCustom.instance.modelBipedMain.onGround = 0.0F;
-        RenderPlayerCustom.instance.modelBipedMain.setRotationAngles(0.0F, 0.0F, 2.0F, 285.0F, 28.0F, 0.0625F, player);
-        RenderPlayerCustom.instance.modelBipedMain.bipedRightArm.offsetY = -0.1F;
-        RenderPlayerCustom.instance.modelBipedMain.bipedRightArm.render(0.0225F);
-        GL11.glPopMatrix();
+        renderer.modelBipedMain.onGround = 0.0F;
+        renderer.modelBipedMain.setRotationAngles(0.0F, 0.0F, 2.0F, 285.0F, 28.0F, 0.0625F, player);
+        renderer.modelBipedMain.bipedRightArm.offsetY = -0.01F;
+        renderer.modelBipedMain.bipedRightArm.render(0.0055F);
     }
 
     @Override

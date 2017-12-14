@@ -15,13 +15,7 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class RenderPlayerCustom extends RenderPlayer {
 
-    public static RenderPlayerCustom instance;
-
-    static {
-        instance = new RenderPlayerCustom();
-    }
-
-    private RenderPlayerCustom() {
+    public RenderPlayerCustom() {
         super();
         this.mainModel = new ModelBipedCustom(0.0F);
         this.modelBipedMain = (ModelBiped) this.mainModel;
