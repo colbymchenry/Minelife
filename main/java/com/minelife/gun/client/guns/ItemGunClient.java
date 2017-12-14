@@ -25,6 +25,8 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public abstract class ItemGunClient {
 
+    public static boolean aimingDownSight = false;
+
     public RenderPlayerCustom renderer;
     public static Random random = new Random();
     public boolean shot;
@@ -126,5 +128,10 @@ public abstract class ItemGunClient {
     public abstract int[] yawSpread();
 
     public abstract int[] pitchSpread();
+
+    public static boolean hasHolographic(ItemStack stack) {
+        return true;
+//        return stack.getItem() instanceof ItemGun && stack.stackTagCompound != null && stack.stackTagCompound.hasKey("holographic");
+    }
 
 }

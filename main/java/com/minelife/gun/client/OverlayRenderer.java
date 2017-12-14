@@ -2,6 +2,7 @@ package com.minelife.gun.client;
 
 import com.minelife.MLItems;
 import com.minelife.Minelife;
+import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.item.guns.GunAWP;
 import com.minelife.gun.item.guns.GunBarrett;
@@ -34,6 +35,9 @@ public class OverlayRenderer {
         if (event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
 
             if (gun != null) {
+
+                if(ItemGunClient.aimingDownSight) event.setCanceled(true);
+
                 mc.fontRenderer.drawString(ItemGun.getCurrentClipHoldings(player.getHeldItem()) + "/" +
                                 ((ItemGun) player.getHeldItem().getItem()).getClipSize(),
                         x + 40, y + 40, 0xFFFFFFFF);

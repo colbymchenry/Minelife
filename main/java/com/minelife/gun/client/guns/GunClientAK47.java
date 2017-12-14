@@ -1,6 +1,8 @@
 package com.minelife.gun.client.guns;
 
 import com.minelife.gun.item.guns.ItemGun;
+import com.minelife.gun.packet.PacketBullet;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.Animation;
 import com.minelife.util.client.render.ModelBipedCustom;
 import com.minelife.util.client.render.RenderPlayerCustom;
@@ -8,14 +10,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 public class GunClientAK47 extends ItemGunClient {
 
+    private Attachment holographic;
+
     public GunClientAK47(ItemGun gun) {
         super(gun);
+        holographic = new Attachment("holographic");
     }
 
     @Override
@@ -28,34 +34,58 @@ public class GunClientAK47 extends ItemGunClient {
         return true;
     }
 
+    // TODO: Figure out how to zoom in if aiming down sites.
+
     @Override
     public void renderItem(IItemRenderer.ItemRenderType type, ItemStack item, Object... data) {
-            if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
-                GL11.glScalef(0.3f, 0.3f, 0.3f);
+        if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
+            GL11.glScalef(0.3f, 0.3f, 0.3f);
+
+            getAnimation().animate();
+            if (!aimingDownSight) {
                 GL11.glRotatef(310f, 0, 1, 0);
-
-                getAnimation().animate();
                 GL11.glTranslatef(0.2f + getAnimation().posX(), -0.5f + getAnimation().posY(), 2f + getAnimation().posZ());
+            } else {
+                if(hasHolographic(item)) {
+                    GL11.glRotatef(315f, 0, 1, 0);
+                    GL11.glTranslatef(-2.8f + getAnimation().posX(), -0.2f + getAnimation().posY(), 2f + getAnimation().posZ());
+                } else {
+                    GL11.glRotatef(315f, 0, 1, 0);
+                    GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.6f + getAnimation().posY(), 2f + getAnimation().posZ());
+                }
             }
 
-            if (type == IItemRenderer.ItemRenderType.INVENTORY) {
-                GL11.glScalef(0.2f, 0.2f, 0.2f);
-                GL11.glTranslatef(0.5f, -1.25f, 0f);
-            }
+        }
 
-            if (type == IItemRenderer.ItemRenderType.EQUIPPED) {
-                GL11.glScalef(0.28f, 0.28f, 0.28f);
-                GL11.glRotatef(50F, 0f, 1f, 0f);
-                GL11.glRotatef(290F, 1f, 0f, 0f);
-                GL11.glTranslatef(-1.8f, -5F, 1f);
-            }
+        if (type == IItemRenderer.ItemRenderType.INVENTORY) {
+            GL11.glScalef(0.2f, 0.2f, 0.2f);
+            GL11.glTranslatef(0.5f, -1.25f, 0f);
+        }
 
-            getModel().renderAll();
+        if (type == IItemRenderer.ItemRenderType.EQUIPPED) {
+            GL11.glScalef(0.28f, 0.28f, 0.28f);
+            GL11.glRotatef(50F, 0f, 1f, 0f);
+            GL11.glRotatef(290F, 1f, 0f, 0f);
+            GL11.glTranslatef(-1.8f, -5F, 1f);
+        }
 
+        getModel().renderAll();
+
+
+        if(hasHolographic(item)) {
+            GL11.glPushMatrix();
+            GL11.glTranslatef(0.7f, 5f, 0f);
+            GL11.glScalef(0.5f, 0.5f, 0.5f);
+
+            Minecraft.getMinecraft().getTextureManager().bindTexture(holographic.getTexture());
+            holographic.getModel().renderAll();
+            GL11.glPopMatrix();
+        }
     }
 
     @Override
     public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
+        if(aimingDownSight) return;
         mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
 
         GL11.glTranslatef(0.2F + (getAnimation().posX() / 5), getAnimation().posY() / 5, 0.1f + (getAnimation().posZ() / 5));
@@ -90,7 +120,7 @@ public class GunClientAK47 extends ItemGunClient {
 
     @Override
     public void shootBullet() {
-        setAnimation(new Animation(0, 0, 0).translateTo((float) (Math.random() / 3f), (float) (Math.random() / 3f), (float) (Math.random() / 3f), 0.18f).translateTo(0, 0, 0, 0.2f));
+        setAnimation(new Animation(0, 0, 0).translateTo((float) (Math.random() / (aimingDownSight ? 6f : 3f)) * PacketBullet.Handler.getLeftOrRight(random), (float) (Math.random() / (aimingDownSight ? 6f : 3f)), (float) (Math.random() / (aimingDownSight ? 6f : 3f)) * PacketBullet.Handler.getLeftOrRight(random), 0.18f).translateTo(0, 0, 0, 0.2f));
     }
 
     @Override
@@ -100,12 +130,12 @@ public class GunClientAK47 extends ItemGunClient {
 
     @Override
     public int[] yawSpread() {
-        return new int[]{10, 20};
+        return !aimingDownSight ? new int[]{10, 20} : new int[]{1, 5};
     }
 
     @Override
     public int[] pitchSpread() {
-        return new int[]{1, 20};
+        return !aimingDownSight ? new int[]{5, 20} : new int[]{1, 10};
     }
 
 }

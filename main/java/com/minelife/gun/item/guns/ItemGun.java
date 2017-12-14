@@ -106,7 +106,6 @@ public abstract class ItemGun extends Item {
         stackData.setInteger("ammo." + ammoType.name(), getCurrentClipHoldings(stack) - 1);
 
         stack.stackTagCompound = stackData;
-
         Minelife.NETWORK.sendToAllAround(new PacketBullet(BulletHandler.addBullet(player, ammoType)), new NetworkRegistry.TargetPoint(player.worldObj.provider.dimensionId, player.posX, player.posY, player.posZ, MinecraftServer.getServer().getConfigurationManager().getEntityViewDistance()));
     }
 

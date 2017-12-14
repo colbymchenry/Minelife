@@ -35,7 +35,7 @@ public class GunClientMagnum extends ItemGunClient {
                 GL11.glRotatef(310f, 0, 1, 0);
 
                 getAnimation().animate();
-                GL11.glTranslatef(-0.4f + getAnimation().posX(), 0.4f + getAnimation().posY(), getAnimation().posZ());
+                GL11.glTranslatef(0.4f + getAnimation().posX(), -0.25f + getAnimation().posY(), -4.2f + getAnimation().posZ());
                 GL11.glRotatef(getAnimation().rotX(), 1, 0, 0);
                 GL11.glRotatef(getAnimation().rotY(), 0, 1, 0);
                 GL11.glRotatef(getAnimation().rotZ(), 0, 0, 1);
@@ -60,7 +60,39 @@ public class GunClientMagnum extends ItemGunClient {
 
     @Override
     public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
+        mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
 
+        GL11.glPushMatrix();
+        {
+            GL11.glTranslatef(0.65F + (getAnimation().posX() / 5), -0.4f + (getAnimation().posY() / 5), -0.2f + (getAnimation().posZ() / 5));
+            float scale = 10f;
+            GL11.glScalef(scale, scale, scale);
+
+            float f = 1.0F;
+            GL11.glColor3f(f, f, f);
+            renderer.modelBipedMain.onGround = 0.0F;
+            renderer.modelBipedMain.setRotationAngles(0.0F, 0.0F, 2.0F, 285.0F, 28.0F, 0.0625F, player);
+            renderer.modelBipedMain.bipedRightArm.offsetY = 0.01F;
+            renderer.modelBipedMain.bipedRightArm.render(0.0095F);
+        }
+        GL11.glPopMatrix();
+
+        GL11.glPushMatrix();
+        {
+            GL11.glTranslatef(0F + (getAnimation().posX() / 5), getAnimation().posY() / 5, 0.3f + (getAnimation().posZ() / 5));
+            GL11.glRotatef(-20, 0, 1 ,1);
+            float scale = 10f;
+            GL11.glScalef(scale, scale, scale);
+
+            float f = 1.0F;
+            GL11.glColor3f(f, f, f);
+
+            renderer.modelBipedMain.onGround = 0.0F;
+            renderer.modelBipedMain.setRotationAngles(0.0F, 5.0F, 0, 0, 0, 0.0625F, player);
+            renderer.modelBipedMain.bipedLeftArm.offsetY = 0.01F;
+            renderer.modelBipedMain.bipedLeftArm.render(0.0095F);
+        }
+        GL11.glPopMatrix();
     }
 
     @Override

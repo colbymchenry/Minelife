@@ -42,8 +42,6 @@ public class RenderGun implements IItemRenderer {
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-
-
         GL11.glDisable(GL11.GL_CULL_FACE);
 
         GL11.glPushMatrix();
@@ -60,7 +58,6 @@ public class RenderGun implements IItemRenderer {
         }
 
         handleRecoil(client);
-
 
         GL11.glEnable(GL11.GL_CULL_FACE);
     }

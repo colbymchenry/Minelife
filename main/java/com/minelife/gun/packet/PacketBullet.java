@@ -84,7 +84,7 @@ public class PacketBullet implements IMessage {
             return null;
         }
 
-        private int getLeftOrRight(Random random) {
+        public static int getLeftOrRight(Random random) {
             int[] i = new int[]{1, -1};
             return i[random.nextInt(2)];
         }

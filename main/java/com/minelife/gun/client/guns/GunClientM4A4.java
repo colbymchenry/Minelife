@@ -1,6 +1,7 @@
 package com.minelife.gun.client.guns;
 
 import com.minelife.gun.item.guns.ItemGun;
+import com.minelife.gun.packet.PacketBullet;
 import com.minelife.util.client.Animation;
 import com.minelife.util.client.render.ModelBipedCustom;
 import com.minelife.util.client.render.RenderPlayerCustom;
@@ -29,31 +30,37 @@ public class GunClientM4A4 extends ItemGunClient {
 
     @Override
     public void renderItem(IItemRenderer.ItemRenderType type, ItemStack item, Object... data) {
-            if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
-                GL11.glScalef(0.5f, 0.5f, 0.5f);
+        if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
+            GL11.glScalef(0.5f, 0.5f, 0.5f);
+
+            getAnimation().animate();
+            if (!aimingDownSight) {
                 GL11.glRotatef(310f, 0, 1, 0);
-
-                getAnimation().animate();
                 GL11.glTranslatef(0.2f + getAnimation().posX(), -1.85f + getAnimation().posY(), 2f + getAnimation().posZ());
+            } else {
+                GL11.glRotatef(315f, 0, 1, 0);
+                GL11.glTranslatef(-1.88f + getAnimation().posX(), -1.15f + getAnimation().posY(), 2f + getAnimation().posZ());
             }
+        }
 
-            if (type == IItemRenderer.ItemRenderType.INVENTORY) {
-                GL11.glScalef(0.2f, 0.2f, 0.2f);
-                GL11.glTranslatef(0.5f, -1.25f, 0f);
-            }
+        if (type == IItemRenderer.ItemRenderType.INVENTORY) {
+            GL11.glScalef(0.2f, 0.2f, 0.2f);
+            GL11.glTranslatef(0.5f, -1.25f, 0f);
+        }
 
-            if (type == IItemRenderer.ItemRenderType.EQUIPPED) {
-                GL11.glScalef(0.28f, 0.28f, 0.28f);
-                GL11.glRotatef(50F, 0f, 1f, 0f);
-                GL11.glRotatef(290F, 1f, 0f, 0f);
-                GL11.glTranslatef(-1.8f, -5F, 1f);
-            }
+        if (type == IItemRenderer.ItemRenderType.EQUIPPED) {
+            GL11.glScalef(0.28f, 0.28f, 0.28f);
+            GL11.glRotatef(50F, 0f, 1f, 0f);
+            GL11.glRotatef(290F, 1f, 0f, 0f);
+            GL11.glTranslatef(-1.8f, -5F, 1f);
+        }
 
-            getModel().renderAll();
+        getModel().renderAll();
     }
 
     @Override
     public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
+        if (aimingDownSight) return;
         mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
 
         GL11.glTranslatef(0.5F + (getAnimation().posX() / 5), getAnimation().posY() / 5, -0.1f + (getAnimation().posZ() / 5));
@@ -88,7 +95,7 @@ public class GunClientM4A4 extends ItemGunClient {
 
     @Override
     public void shootBullet() {
-        setAnimation(new Animation(0, 0, 0).translateTo((float) (Math.random() / 3f), (float) (Math.random() / 3f), (float) (Math.random() / 3f), 0.18f).translateTo(0, 0, 0, 0.2f));
+        setAnimation(new Animation(0, 0, 0).translateTo((float) (Math.random() / (aimingDownSight ? 10f : 3f)) * PacketBullet.Handler.getLeftOrRight(random), (float) (Math.random() / (aimingDownSight ? 10f : 3f)), (float) (Math.random() / (aimingDownSight ? 10f : 3f)) * PacketBullet.Handler.getLeftOrRight(random), 0.18f).translateTo(0, 0, 0, 0.2f));
     }
 
     @Override
@@ -98,12 +105,12 @@ public class GunClientM4A4 extends ItemGunClient {
 
     @Override
     public int[] yawSpread() {
-        return new int[]{10, 20};
+        return !aimingDownSight ? new int[]{10, 20} : new int[]{2, 8};
     }
 
     @Override
     public int[] pitchSpread() {
-        return new int[]{1, 20};
+        return !aimingDownSight ? new int[]{1, 20} : new int[]{1, 4};
     }
 
 }
