@@ -1,23 +1,36 @@
 package com.minelife.gun.client.guns;
 
+import com.minelife.Minelife;
+import com.minelife.gun.client.HoloRenderHelper;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketBullet;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.Animation;
+import com.minelife.util.client.GuiUtil;
 import com.minelife.util.client.render.ModelBipedCustom;
 import com.minelife.util.client.render.RenderPlayerCustom;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
+
 public class GunClientAK47 extends ItemGunClient {
 
     private Attachment holographic;
+    private ResourceLocation holographic_reticle = new ResourceLocation(Minelife.MOD_ID, "textures/guns/attachments/holographic_reticle.png");
 
     public GunClientAK47(ItemGun gun) {
         super(gun);
@@ -34,8 +47,6 @@ public class GunClientAK47 extends ItemGunClient {
         return true;
     }
 
-    // TODO: Figure out how to zoom in if aiming down sites.
-
     @Override
     public void renderItem(IItemRenderer.ItemRenderType type, ItemStack item, Object... data) {
         if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
@@ -46,9 +57,9 @@ public class GunClientAK47 extends ItemGunClient {
                 GL11.glRotatef(310f, 0, 1, 0);
                 GL11.glTranslatef(0.2f + getAnimation().posX(), -0.5f + getAnimation().posY(), 2f + getAnimation().posZ());
             } else {
-                if(hasHolographic(item)) {
+                if (hasHolographic(item)) {
                     GL11.glRotatef(315f, 0, 1, 0);
-                    GL11.glTranslatef(-2.8f + getAnimation().posX(), -0.2f + getAnimation().posY(), 2f + getAnimation().posZ());
+                    GL11.glTranslatef(-2.8f + getAnimation().posX(), -0.2f + getAnimation().posY(), 2.5f + getAnimation().posZ());
                 } else {
                     GL11.glRotatef(315f, 0, 1, 0);
                     GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.6f + getAnimation().posY(), 2f + getAnimation().posZ());
@@ -71,21 +82,30 @@ public class GunClientAK47 extends ItemGunClient {
 
         getModel().renderAll();
 
-
-        if(hasHolographic(item)) {
+        if (hasHolographic(item)) {
             GL11.glPushMatrix();
             GL11.glTranslatef(0.7f, 5f, 0f);
             GL11.glScalef(0.5f, 0.5f, 0.5f);
 
             Minecraft.getMinecraft().getTextureManager().bindTexture(holographic.getTexture());
             holographic.getModel().renderAll();
+
+            Minecraft.getMinecraft().getTextureManager().bindTexture(holographic_reticle);
+            RenderHelper.enableGUIStandardItemLighting();
+            int[] colorArray = getHolographicColor(item);
+            GL11.glColor4f(colorArray[0] / 255f, colorArray[1] / 255f, colorArray[2] / 255f, colorArray[3] / 255f);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glScalef(0.05f, 0.05f, 0.05f);
+            GL11.glTranslatef(-15.55f, 39f, -7f);
+            GuiUtil.drawImage(0, 0, 16, 16);
             GL11.glPopMatrix();
+            RenderHelper.enableStandardItemLighting();
         }
     }
 
     @Override
     public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
-        if(aimingDownSight) return;
+        if (aimingDownSight) return;
         mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
 
         GL11.glTranslatef(0.2F + (getAnimation().posX() / 5), getAnimation().posY() / 5, 0.1f + (getAnimation().posZ() / 5));

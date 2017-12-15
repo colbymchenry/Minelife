@@ -20,6 +20,7 @@ import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.input.Mouse;
 
+import java.awt.*;
 import java.util.Random;
 
 @SideOnly(Side.CLIENT)
@@ -130,8 +131,13 @@ public abstract class ItemGunClient {
     public abstract int[] pitchSpread();
 
     public static boolean hasHolographic(ItemStack stack) {
-        return true;
-//        return stack.getItem() instanceof ItemGun && stack.stackTagCompound != null && stack.stackTagCompound.hasKey("holographic");
+        return stack.getItem() instanceof ItemGun && stack.stackTagCompound != null && stack.stackTagCompound.hasKey("holographic");
     }
+
+    private static int[] red = new int[]{255, 0, 0, 255};
+    public static int[] getHolographicColor(ItemStack stack) {
+       return stack.getItem() instanceof ItemGun && stack.stackTagCompound != null && stack.stackTagCompound.hasKey("holographic_color") ? stack.stackTagCompound.getIntArray("holographic_color") : red;
+    }
+
 
 }

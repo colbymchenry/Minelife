@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Mouse;
@@ -44,6 +45,7 @@ public class ClientProxy extends MLProxy {
 
         if (event.button == 1) {
             ItemGunClient.aimingDownSight = !ItemGunClient.aimingDownSight;
+            event.setCanceled(true);
             return;
         }
 
@@ -65,10 +67,6 @@ public class ClientProxy extends MLProxy {
 
         ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
 
-        if(ItemGunClient.aimingDownSight && ItemGunClient.hasHolographic(heldItem)) {
-            Minecraft.getMinecraft().thePlayer.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 15 * 20, 0, false));
-        }
-
         if (ItemGun.getCurrentClipHoldings(heldItem) < 1) return;
 
         if (Minecraft.getMinecraft().currentScreen != null) {
@@ -80,6 +78,15 @@ public class ClientProxy extends MLProxy {
             Minelife.NETWORK.sendToServer(new PacketMouseClick());
         }
 
+    }
+
+    @SubscribeEvent
+    public void fovUpdate(FOVUpdateEvent event) {
+        if(event.entity.getHeldItem() != null && event.entity.getHeldItem().getItem() instanceof ItemGun) {
+            if(ItemGunClient.aimingDownSight && ItemGunClient.hasHolographic(event.entity.getHeldItem())) {
+                event.newfov = 0.5F;
+            }
+        }
     }
 
 
