@@ -15,11 +15,12 @@ public class KeyStrokeListener {
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (MLKeys.keyReload.isPressed()) {
+
+        if (MLKeys.keyReload.isPressed() && !ItemGunClient.modifying) {
             Minelife.NETWORK.sendToServer(new PacketReload());
         }
 
-        if (MLKeys.keyChangeAmmo.isPressed()) {
+        if (MLKeys.keyChangeAmmo.isPressed() && !ItemGunClient.modifying) {
             EntityPlayer player = Minecraft.getMinecraft().thePlayer;
             ItemGun gun = player.getHeldItem() != null && player.getHeldItem().getItem() instanceof com.minelife.gun.item.guns.ItemGun ? (ItemGun) player.getHeldItem().getItem() : null;
             if (gun == null) return;

@@ -13,6 +13,7 @@ public class MLKeys {
     public static KeyBinding key_minebay = new KeyBinding("key." + Minelife.MOD_ID + ".minebay", Keyboard.KEY_M, Minelife.NAME);
     public static KeyBinding keyClearSelection = new KeyBinding("key." + Minelife.MOD_ID + ".clear.selection", Keyboard.KEY_C, Minelife.NAME);
     public static KeyBinding keyPurchaseSelection = new KeyBinding("key." + Minelife.MOD_ID + ".purchase.selection", Keyboard.KEY_B, Minelife.NAME);
+    public static KeyBinding keyModifyGun = new KeyBinding("key." + Minelife.MOD_ID + ".guns.modify", Keyboard.KEY_Z, Minelife.NAME);
 
     public static void registerKeys() {
         ClientRegistry.registerKeyBinding(keyNotifications);
@@ -22,6 +23,7 @@ public class MLKeys {
         ClientRegistry.registerKeyBinding(key_minebay);
         ClientRegistry.registerKeyBinding(keyClearSelection);
         ClientRegistry.registerKeyBinding(keyPurchaseSelection);
+        ClientRegistry.registerKeyBinding(keyModifyGun);
     }
 
 }

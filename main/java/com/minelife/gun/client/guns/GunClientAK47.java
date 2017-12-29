@@ -2,6 +2,7 @@ package com.minelife.gun.client.guns;
 
 import com.minelife.Minelife;
 import com.minelife.gun.client.HoloRenderHelper;
+import com.minelife.gun.item.attachments.ItemHolographicSite;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketBullet;
 import com.minelife.util.PlayerHelper;
@@ -57,7 +58,7 @@ public class GunClientAK47 extends ItemGunClient {
                 GL11.glRotatef(310f, 0, 1, 0);
                 GL11.glTranslatef(0.2f + getAnimation().posX(), -0.5f + getAnimation().posY(), 2f + getAnimation().posZ());
             } else {
-                if (hasHolographic(item)) {
+                if (ItemHolographicSite.hasHolographic(item)) {
                     GL11.glRotatef(315f, 0, 1, 0);
                     GL11.glTranslatef(-2.8f + getAnimation().posX(), -0.2f + getAnimation().posY(), 2.5f + getAnimation().posZ());
                 } else {
@@ -82,7 +83,7 @@ public class GunClientAK47 extends ItemGunClient {
 
         getModel().renderAll();
 
-        if (hasHolographic(item)) {
+        if (ItemHolographicSite.hasHolographic(item)) {
             GL11.glPushMatrix();
             GL11.glTranslatef(0.7f, 5f, 0f);
             GL11.glScalef(0.5f, 0.5f, 0.5f);
@@ -92,7 +93,7 @@ public class GunClientAK47 extends ItemGunClient {
 
             Minecraft.getMinecraft().getTextureManager().bindTexture(holographic_reticle);
             RenderHelper.enableGUIStandardItemLighting();
-            int[] colorArray = getHolographicColor(item);
+            int[] colorArray = ItemHolographicSite.getHolographicColor(item);
             GL11.glColor4f(colorArray[0] / 255f, colorArray[1] / 255f, colorArray[2] / 255f, colorArray[3] / 255f);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glScalef(0.05f, 0.05f, 0.05f);

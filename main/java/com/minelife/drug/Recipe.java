@@ -87,8 +87,10 @@ public class Recipe {
         for (FluidStack fluidStack : this.fluids) {
             boolean foundFluid = false;
             for (FluidStack fluidStack1 : fluids) {
-                if (fluidStack1.containsFluid(fluidStack)) {
-                    foundFluid = true;
+                if(fluidStack1 != null) {
+                    if (fluidStack1.containsFluid(fluidStack)) {
+                        foundFluid = true;
+                    }
                 }
             }
 

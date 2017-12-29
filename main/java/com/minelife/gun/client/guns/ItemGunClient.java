@@ -13,6 +13,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer;
@@ -25,6 +27,8 @@ import java.util.Random;
 
 @SideOnly(Side.CLIENT)
 public abstract class ItemGunClient {
+
+    public static boolean modifying = false;
 
     public static boolean aimingDownSight = false;
 
@@ -129,15 +133,5 @@ public abstract class ItemGunClient {
     public abstract int[] yawSpread();
 
     public abstract int[] pitchSpread();
-
-    public static boolean hasHolographic(ItemStack stack) {
-        return stack.getItem() instanceof ItemGun && stack.stackTagCompound != null && stack.stackTagCompound.hasKey("holographic");
-    }
-
-    private static int[] red = new int[]{255, 0, 0, 255};
-    public static int[] getHolographicColor(ItemStack stack) {
-       return stack.getItem() instanceof ItemGun && stack.stackTagCompound != null && stack.stackTagCompound.hasKey("holographic_color") ? stack.stackTagCompound.getIntArray("holographic_color") : red;
-    }
-
 
 }

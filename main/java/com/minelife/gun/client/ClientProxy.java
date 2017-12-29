@@ -1,9 +1,11 @@
 package com.minelife.gun.client;
 
+import com.minelife.MLItems;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.gun.bullets.BulletRenderer;
 import com.minelife.gun.client.guns.ItemGunClient;
+import com.minelife.gun.item.attachments.ItemHolographicSite;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketMouseClick;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -14,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,6 +33,8 @@ public class ClientProxy extends MLProxy {
         FMLCommonHandler.instance().bus().register(this);
         ItemGun.registerRenderers();
         MinecraftForge.EVENT_BUS.register(new BulletRenderer());
+
+        MinecraftForgeClient.registerItemRenderer(MLItems.holographicSite, new RenderHolographic());
     }
 
     /**
@@ -42,6 +47,8 @@ public class ClientProxy extends MLProxy {
         ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
 
         if (heldItem == null || !(heldItem.getItem() instanceof ItemGun)) return;
+
+        if(ItemGunClient.modifying) return;
 
         if (event.button == 1) {
             ItemGunClient.aimingDownSight = !ItemGunClient.aimingDownSight;
@@ -69,6 +76,8 @@ public class ClientProxy extends MLProxy {
 
         if (ItemGun.getCurrentClipHoldings(heldItem) < 1) return;
 
+        if(ItemGunClient.modifying) return;
+
         if (Minecraft.getMinecraft().currentScreen != null) {
             ItemGunClient.aimingDownSight = false;
             return;
@@ -83,7 +92,7 @@ public class ClientProxy extends MLProxy {
     @SubscribeEvent
     public void fovUpdate(FOVUpdateEvent event) {
         if(event.entity.getHeldItem() != null && event.entity.getHeldItem().getItem() instanceof ItemGun) {
-            if(ItemGunClient.aimingDownSight && ItemGunClient.hasHolographic(event.entity.getHeldItem())) {
+            if(ItemGunClient.aimingDownSight && ItemHolographicSite.hasHolographic(event.entity.getHeldItem())) {
                 event.newfov = 0.5F;
             }
         }

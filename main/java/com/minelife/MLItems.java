@@ -5,6 +5,7 @@ import com.minelife.gun.item.ItemGunmetal;
 import com.minelife.gun.item.ItemZincIngot;
 import com.minelife.gun.item.ItemZincPlate;
 import com.minelife.gun.item.ammos.*;
+import com.minelife.gun.item.attachments.ItemHolographicSite;
 import com.minelife.gun.item.guns.*;
 import com.minelife.gun.item.parts.*;
 import com.minelife.police.ItemHandcuffs;
@@ -71,6 +72,7 @@ public class MLItems {
     public static ItemDrugTest drug_test;
     public static ItemTicket ticket;
     public static ItemHandcuffs handcuffs;
+    public static ItemHolographicSite holographicSite;
 
     protected static void init()
     {
@@ -129,13 +131,13 @@ public class MLItems {
         register_item(drug_test = new ItemDrugTest());
         register_item(ticket = new ItemTicket());
         register_item(handcuffs = new ItemHandcuffs());
+        register_item(holographicSite = new ItemHolographicSite());
     }
 
     private static void register_item(Item item)
     {
         try {
             GameRegistry.registerItem(item, item.getUnlocalizedName());
-            System.out.println(item.getUnlocalizedName() + " registered!");
         } catch (Exception e) {
             Minelife.getLogger().log(Level.SEVERE, "Failed to register item! " + item.getClass().getSimpleName() + "\nError Message: " + e.getMessage());
         }

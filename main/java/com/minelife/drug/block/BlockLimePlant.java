@@ -70,6 +70,6 @@ public class BlockLimePlant extends AbstractCrop {
         icon_array[5] = icon_register.registerIcon(Minelife.MOD_ID + ":lime_stage_2");
         icon_array[6] = icon_register.registerIcon(Minelife.MOD_ID + ":lime_stage_3");
         icon_array[7] = icon_register.registerIcon(Minelife.MOD_ID + ":lime_stage_3");
-        icon_array[8] = icon_register.registerIcon(Minelife.MOD_ID + ":lime_stage_4");
+        icon_array[8] = icon_register.registerIcon(Minelife.MOD_ID + ":lime_stage_3");
     }
 }
