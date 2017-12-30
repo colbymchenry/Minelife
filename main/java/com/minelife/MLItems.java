@@ -5,7 +5,7 @@ import com.minelife.gun.item.ItemGunmetal;
 import com.minelife.gun.item.ItemZincIngot;
 import com.minelife.gun.item.ItemZincPlate;
 import com.minelife.gun.item.ammos.*;
-import com.minelife.gun.item.attachments.ItemHolographicSite;
+import com.minelife.gun.item.attachments.ItemSite;
 import com.minelife.gun.item.guns.*;
 import com.minelife.gun.item.parts.*;
 import com.minelife.police.ItemHandcuffs;
@@ -72,7 +72,8 @@ public class MLItems {
     public static ItemDrugTest drug_test;
     public static ItemTicket ticket;
     public static ItemHandcuffs handcuffs;
-    public static ItemHolographicSite holographicSite;
+    public static ItemSite holographicSite;
+    public static ItemSite twoXSite;
 
     protected static void init()
     {
@@ -131,7 +132,8 @@ public class MLItems {
         register_item(drug_test = new ItemDrugTest());
         register_item(ticket = new ItemTicket());
         register_item(handcuffs = new ItemHandcuffs());
-        register_item(holographicSite = new ItemHolographicSite());
+        register_item(holographicSite = new ItemSite("holographic_site"));
+        register_item(twoXSite = new ItemSite("2x_site"));
     }
 
     private static void register_item(Item item)

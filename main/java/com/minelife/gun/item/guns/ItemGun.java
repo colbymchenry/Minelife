@@ -5,10 +5,13 @@ import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.gun.bullets.BulletHandler;
 import com.minelife.gun.client.RenderGun;
+import com.minelife.gun.client.attachments.Attachment;
 import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.ModGun;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.packet.PacketBullet;
+import com.minelife.util.ItemUtil;
+import com.minelife.util.NBTUtil;
 import com.minelife.util.PacketPlaySound;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -221,6 +224,20 @@ public abstract class ItemGun extends Item {
 
 
         return itemStacks.toArray(new ItemStack[itemStacks.size()]);
+    }
+
+    public static ItemStack getSite(ItemStack stack) {
+        if(stack == null) return null;
+        NBTTagCompound tag = stack.stackTagCompound;
+        if(tag == null) return null;
+        if(!tag.hasKey("site")) return null;
+        return ItemUtil.itemFromString(tag.getString("site"));
+    }
+
+    public static void setSite(ItemStack gun, ItemStack site) {
+        NBTTagCompound tag = gun.stackTagCompound != null ? gun.stackTagCompound : new NBTTagCompound();
+        tag.setString("site", ItemUtil.itemToString(site));
+        gun.stackTagCompound = tag;
     }
 
 }

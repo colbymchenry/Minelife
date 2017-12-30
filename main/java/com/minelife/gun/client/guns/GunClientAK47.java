@@ -1,41 +1,25 @@
 package com.minelife.gun.client.guns;
 
-import com.minelife.Minelife;
-import com.minelife.gun.client.HoloRenderHelper;
-import com.minelife.gun.item.attachments.ItemHolographicSite;
+import com.minelife.MLItems;
+import com.minelife.gun.client.attachments.Attachment;
+import com.minelife.gun.item.attachments.ItemSite;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketBullet;
-import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.Animation;
 import com.minelife.util.client.GuiUtil;
 import com.minelife.util.client.render.ModelBipedCustom;
-import com.minelife.util.client.render.RenderPlayerCustom;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.IItemRenderer;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
 
 public class GunClientAK47 extends ItemGunClient {
 
-    private Attachment holographic;
-    private ResourceLocation holographic_reticle = new ResourceLocation(Minelife.MOD_ID, "textures/guns/attachments/holographic_reticle.png");
-
     public GunClientAK47(ItemGun gun) {
         super(gun);
-        holographic = new Attachment("holographic");
     }
 
     @Override
@@ -63,7 +47,7 @@ public class GunClientAK47 extends ItemGunClient {
                     GL11.glTranslatef(0.2f + getAnimation().posX(), -0.5f + getAnimation().posY(), 2f + getAnimation().posZ());
                 }
             } else {
-                if (ItemHolographicSite.hasHolographic(item)) {
+                if (ItemGun.getSite(item) != null && ItemGun.getSite(item).getItem() == MLItems.holographicSite) {
                     GL11.glRotatef(315f, 0, 1, 0);
                     GL11.glTranslatef(-2.8f + getAnimation().posX(), -0.2f + getAnimation().posY(), 2.5f + getAnimation().posZ());
                 } else {
@@ -87,19 +71,19 @@ public class GunClientAK47 extends ItemGunClient {
         }
 
         getModel().renderAll();
-
-        if (ItemHolographicSite.hasHolographic(item)) {
+        if (ItemGun.getSite(item) != null && ItemGun.getSite(item).getItem() == MLItems.holographicSite) {
             GL11.glPushMatrix();
             GL11.glTranslatef(0.7f, 5f, 0f);
             GL11.glScalef(0.5f, 0.5f, 0.5f);
 
-            Minecraft.getMinecraft().getTextureManager().bindTexture(holographic.getTexture());
-            holographic.getModel().renderAll();
+            Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getHolographic().getTexture());
+            Attachment.getHolographic().getModel().renderAll();
 
-            Minecraft.getMinecraft().getTextureManager().bindTexture(holographic_reticle);
+            Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getHolographic().getReticleTexture());
             RenderHelper.enableGUIStandardItemLighting();
-            int[] colorArray = ItemHolographicSite.getHolographicColor(item);
-            GL11.glColor4f(colorArray[0] / 255f, colorArray[1] / 255f, colorArray[2] / 255f, colorArray[3] / 255f);
+            int[] colorArray = ItemSite.getSiteColor(ItemGun.getSite(item));
+            // TODO: Color is not working.
+            GL11.glColor4f(colorArray[0] / 255f, colorArray[1] / 255f, colorArray[2] / 255f, 200f / 255f);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glScalef(0.05f, 0.05f, 0.05f);
             GL11.glTranslatef(-15.55f, 39f, -7f);
@@ -166,11 +150,11 @@ public class GunClientAK47 extends ItemGunClient {
 
     @Override
     public int getScopeXOffsetForGui() {
-        return 20;
+        return 100;
     }
 
     @Override
     public int getScopeYOffsetForGui() {
-        return 20;
+        return -50;
     }
 }

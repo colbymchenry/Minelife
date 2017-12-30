@@ -25,7 +25,7 @@ public class GuiModifyColor extends GuiScreen {
     @Override
     public void drawScreen(int mouse_x, int mouse_y, float f) {
         super.drawScreen(mouse_x, mouse_y, f);
-        setColorBtn.drawButton(mc, mouse_x, mouse_y);
+
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 
         // Draw background
@@ -80,6 +80,9 @@ public class GuiModifyColor extends GuiScreen {
         } else {
             grippedColor = -1;
         }
+
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        setColorBtn.drawButton(mc, mouse_x, mouse_y);
     }
 
     @Override

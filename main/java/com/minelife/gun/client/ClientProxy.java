@@ -4,8 +4,8 @@ import com.minelife.MLItems;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.gun.bullets.BulletRenderer;
+import com.minelife.gun.client.attachments.Attachment;
 import com.minelife.gun.client.guns.ItemGunClient;
-import com.minelife.gun.item.attachments.ItemHolographicSite;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketMouseClick;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -14,9 +14,6 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,8 +30,7 @@ public class ClientProxy extends MLProxy {
         FMLCommonHandler.instance().bus().register(this);
         ItemGun.registerRenderers();
         MinecraftForge.EVENT_BUS.register(new BulletRenderer());
-
-        MinecraftForgeClient.registerItemRenderer(MLItems.holographicSite, new RenderHolographic());
+        Attachment.registerRenderers();
     }
 
     /**
@@ -92,7 +88,8 @@ public class ClientProxy extends MLProxy {
     @SubscribeEvent
     public void fovUpdate(FOVUpdateEvent event) {
         if(event.entity.getHeldItem() != null && event.entity.getHeldItem().getItem() instanceof ItemGun) {
-            if(ItemGunClient.aimingDownSight && ItemHolographicSite.hasHolographic(event.entity.getHeldItem())) {
+            if(ItemGunClient.aimingDownSight && ItemGun.getSite(event.entity.getHeldItem()) != null &&
+                    ItemGun.getSite(event.entity.getHeldItem()).getItem() == MLItems.holographicSite) {
                 event.newfov = 0.5F;
             }
         }
