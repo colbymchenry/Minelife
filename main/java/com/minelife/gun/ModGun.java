@@ -5,10 +5,7 @@ import com.minelife.gun.bullets.BulletHandler;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.item.parts.ItemGunPart;
-import com.minelife.gun.packet.PacketBullet;
-import com.minelife.gun.packet.PacketMouseClick;
-import com.minelife.gun.packet.PacketReload;
-import com.minelife.gun.packet.PacketSetAmmoType;
+import com.minelife.gun.packet.*;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -64,6 +61,7 @@ public class ModGun extends MLMod {
         registerPacket(PacketReload.Handler.class, PacketReload.class, Side.SERVER);
         registerPacket(PacketSetAmmoType.Handler.class, PacketSetAmmoType.class, Side.SERVER);
         registerPacket(PacketBullet.Handler.class, PacketBullet.class, Side.CLIENT);
+        registerPacket(PacketSetSiteColor.Handler.class, PacketSetSiteColor.class, Side.SERVER);
 
         ItemGunPart.registerRecipes();
         ItemAmmo.registerRecipes();

@@ -134,4 +134,7 @@ public abstract class ItemGunClient {
 
     public abstract int[] pitchSpread();
 
+    public int getScopeXOffsetForGui() { return -1; }
+    public int getScopeYOffsetForGui() { return -1; }
+
 }

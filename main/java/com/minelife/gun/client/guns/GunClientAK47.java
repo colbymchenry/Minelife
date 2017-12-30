@@ -55,8 +55,13 @@ public class GunClientAK47 extends ItemGunClient {
 
             getAnimation().animate();
             if (!aimingDownSight) {
-                GL11.glRotatef(310f, 0, 1, 0);
-                GL11.glTranslatef(0.2f + getAnimation().posX(), -0.5f + getAnimation().posY(), 2f + getAnimation().posZ());
+                if (modifying) {
+                    GL11.glRotatef(40f, 1, 1, 0);
+                    GL11.glTranslatef(0.9f + getAnimation().posX(), 0.5f + getAnimation().posY(), -3f + getAnimation().posZ());
+                } else {
+                    GL11.glRotatef(310f, 0, 1, 0);
+                    GL11.glTranslatef(0.2f + getAnimation().posX(), -0.5f + getAnimation().posY(), 2f + getAnimation().posZ());
+                }
             } else {
                 if (ItemHolographicSite.hasHolographic(item)) {
                     GL11.glRotatef(315f, 0, 1, 0);
@@ -106,7 +111,7 @@ public class GunClientAK47 extends ItemGunClient {
 
     @Override
     public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
-        if (aimingDownSight) return;
+        if (aimingDownSight || modifying) return;
         mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
 
         GL11.glTranslatef(0.2F + (getAnimation().posX() / 5), getAnimation().posY() / 5, 0.1f + (getAnimation().posZ() / 5));
@@ -159,4 +164,13 @@ public class GunClientAK47 extends ItemGunClient {
         return !aimingDownSight ? new int[]{5, 20} : new int[]{1, 10};
     }
 
+    @Override
+    public int getScopeXOffsetForGui() {
+        return 20;
+    }
+
+    @Override
+    public int getScopeYOffsetForGui() {
+        return 20;
+    }
 }

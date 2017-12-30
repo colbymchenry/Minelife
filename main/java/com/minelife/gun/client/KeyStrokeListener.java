@@ -2,6 +2,7 @@ package com.minelife.gun.client;
 
 import com.minelife.MLKeys;
 import com.minelife.Minelife;
+import com.minelife.gun.client.gui.GuiModifyGun;
 import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketReload;
@@ -15,6 +16,17 @@ public class KeyStrokeListener {
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
+
+        if(MLKeys.keyModifyGun.isPressed()) {
+            if(Minecraft.getMinecraft().thePlayer == null) return;
+            EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+
+            if(player.getHeldItem() == null) return;
+            if(!(player.getHeldItem().getItem() instanceof ItemGun)) return;
+
+            Minecraft.getMinecraft().displayGuiScreen(new GuiModifyGun(player.getHeldItem()));
+            return;
+        }
 
         if (MLKeys.keyReload.isPressed() && !ItemGunClient.modifying) {
             Minelife.NETWORK.sendToServer(new PacketReload());

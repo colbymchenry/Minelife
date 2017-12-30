@@ -32,15 +32,18 @@ public class OverlayRenderer {
 
         ItemGun gun = player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemGun ? (ItemGun) player.getHeldItem().getItem() : null;
 
+        if(event.type == RenderGameOverlayEvent.ElementType.HOTBAR && ItemGunClient.modifying) event.setCanceled(true);
+
         if (event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
 
             if (gun != null) {
 
-                if(ItemGunClient.aimingDownSight) event.setCanceled(true);
+                if (ItemGunClient.aimingDownSight || ItemGunClient.modifying) event.setCanceled(true);
 
-                mc.fontRenderer.drawString(ItemGun.getCurrentClipHoldings(player.getHeldItem()) + "/" +
-                                ((ItemGun) player.getHeldItem().getItem()).getClipSize(),
-                        x + 40, y + 40, 0xFFFFFFFF);
+                if (!ItemGunClient.modifying)
+                    mc.fontRenderer.drawString(ItemGun.getCurrentClipHoldings(player.getHeldItem()) + "/" +
+                                    ((ItemGun) player.getHeldItem().getItem()).getClipSize(),
+                            x + 40, y + 40, 0xFFFFFFFF);
 
                 /**
                  * START: Handle zooming for snipers
@@ -65,7 +68,7 @@ public class OverlayRenderer {
             }
         }
 
-        if(event.type == RenderGameOverlayEvent.ElementType.HOTBAR || event.type == RenderGameOverlayEvent.ElementType.FOOD ||
+        if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR || event.type == RenderGameOverlayEvent.ElementType.FOOD ||
                 event.type == RenderGameOverlayEvent.ElementType.HEALTH || event.type == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
             if (gun == MLItems.barrett) {
                 if (((GunClientBarrett) gun.getClientHandler()).isZoom()) {
@@ -81,10 +84,10 @@ public class OverlayRenderer {
                 }
             }
 
-            if(player.getHeldItem() != null && player.getHeldItem().stackTagCompound != null && gun != null && player.getHeldItem().stackTagCompound.hasKey("reloadTime")) {
+            if (player.getHeldItem() != null && player.getHeldItem().stackTagCompound != null && gun != null && player.getHeldItem().stackTagCompound.hasKey("reloadTime")) {
                 long max = gun.getReloadTime();
-                long fill =  (player.getHeldItem().stackTagCompound.getLong("reloadTime")) - System.currentTimeMillis();
-                if(fill > -1) {
+                long fill = (player.getHeldItem().stackTagCompound.getLong("reloadTime")) - System.currentTimeMillis();
+                if (fill > -1) {
                     // 20D is the width of the progress bar
                     double toFill = ((double) fill / (double) max) * 30D;
                     GL11.glDisable(GL11.GL_TEXTURE_2D);

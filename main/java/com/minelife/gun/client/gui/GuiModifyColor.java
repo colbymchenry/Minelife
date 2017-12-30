@@ -1,6 +1,9 @@
 package com.minelife.gun.client.gui;
 
+import com.minelife.Minelife;
+import com.minelife.gun.packet.PacketSetSiteColor;
 import com.minelife.util.client.GuiUtil;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -10,8 +13,8 @@ public class GuiModifyColor extends GuiScreen {
     private int red = 0, green = 0, blue = 0;
     private int xPosition, yPosition;
     private int bgWidth = 200, bgHeight = 200;
-
     private int grippedColor = -1;
+    private GuiButton setColorBtn;
 
     public GuiModifyColor(int red, int green, int blue) {
         this.red = red;
@@ -22,6 +25,7 @@ public class GuiModifyColor extends GuiScreen {
     @Override
     public void drawScreen(int mouse_x, int mouse_y, float f) {
         super.drawScreen(mouse_x, mouse_y, f);
+        setColorBtn.drawButton(mc, mouse_x, mouse_y);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 
         // Draw background
@@ -81,6 +85,7 @@ public class GuiModifyColor extends GuiScreen {
     @Override
     protected void mouseClicked(int mouse_x, int mouse_y, int mouse_btn) {
         super.mouseClicked(mouse_x, mouse_y, mouse_btn);
+        if(setColorBtn.mousePressed(mc, mouse_x, mouse_y)) Minelife.NETWORK.sendToServer(new PacketSetSiteColor(red, green, blue));
     }
 
     @Override
@@ -88,10 +93,7 @@ public class GuiModifyColor extends GuiScreen {
         super.initGui();
         xPosition = (this.width - bgWidth) / 2;
         yPosition = (this.height - bgHeight) / 2;
+        setColorBtn = new GuiButton(0, xPosition + bgWidth - 80, yPosition + bgHeight - 120, 30, 20, "Set");
     }
 
-    @Override
-    public void updateScreen() {
-        super.updateScreen();
-    }
 }
