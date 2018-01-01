@@ -59,6 +59,7 @@ public class PacketSetSiteColor implements IMessage {
             }
 
             ItemSite.setSiteColor(held_item, new int[]{message.red, message.green, message.blue});
+            player.inventory.setInventorySlotContents(player.inventory.currentItem, held_item);
             player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Site color updated!"));
             player.closeScreen();
             return null;

@@ -47,9 +47,18 @@ public class GunClientAK47 extends ItemGunClient {
                     GL11.glTranslatef(0.2f + getAnimation().posX(), -0.5f + getAnimation().posY(), 2f + getAnimation().posZ());
                 }
             } else {
-                if (ItemGun.getSite(item) != null && ItemGun.getSite(item).getItem() == MLItems.holographicSite) {
-                    GL11.glRotatef(315f, 0, 1, 0);
-                    GL11.glTranslatef(-2.8f + getAnimation().posX(), -0.2f + getAnimation().posY(), 2.5f + getAnimation().posZ());
+                if(ItemGun.getSite(item) != null) {
+                    ItemStack site = ItemGun.getSite(item);
+                    if (site.getItem() == MLItems.holographicSite) {
+                        GL11.glRotatef(315f, 0, 1, 0);
+                        GL11.glTranslatef(-2.8f + getAnimation().posX(), -0.2f + getAnimation().posY(), 2.5f + getAnimation().posZ());
+                    } else if (site.getItem() == MLItems.twoXSite) {
+                        GL11.glRotatef(315f, 0, 1, 0);
+                        GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.01f + getAnimation().posY(), 2.5f + getAnimation().posZ());
+                    } else if (site.getItem() == MLItems.acogSite) {
+                        GL11.glRotatef(315f, 0, 1, 0);
+                        GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.16f + getAnimation().posY(), 2.5f + getAnimation().posZ());
+                    }
                 } else {
                     GL11.glRotatef(315f, 0, 1, 0);
                     GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.6f + getAnimation().posY(), 2f + getAnimation().posZ());
@@ -71,25 +80,15 @@ public class GunClientAK47 extends ItemGunClient {
         }
 
         getModel().renderAll();
-        if (ItemGun.getSite(item) != null && ItemGun.getSite(item).getItem() == MLItems.holographicSite) {
-            GL11.glPushMatrix();
-            GL11.glTranslatef(0.7f, 5f, 0f);
-            GL11.glScalef(0.5f, 0.5f, 0.5f);
-
-            Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getHolographic().getTexture());
-            Attachment.getHolographic().getModel().renderAll();
-
-            Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getHolographic().getReticleTexture());
-            RenderHelper.enableGUIStandardItemLighting();
-            int[] colorArray = ItemSite.getSiteColor(ItemGun.getSite(item));
-            // TODO: Color is not working.
-            GL11.glColor4f(colorArray[0] / 255f, colorArray[1] / 255f, colorArray[2] / 255f, 200f / 255f);
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glScalef(0.05f, 0.05f, 0.05f);
-            GL11.glTranslatef(-15.55f, 39f, -7f);
-            GuiUtil.drawImage(0, 0, 16, 16);
-            GL11.glPopMatrix();
-            RenderHelper.enableStandardItemLighting();
+        if (ItemGun.getSite(item) != null) {
+            ItemSite site = (ItemSite) ItemGun.getSite(item).getItem();
+            if(site == MLItems.holographicSite) {
+                Attachment.getHolographic().applyTransformationsAttached(item);
+            } else if (site == MLItems.acogSite) {
+                Attachment.getAcogSite().applyTransformationsAttached(item);
+            } else if (site == MLItems.twoXSite) {
+                Attachment.getTwoXSite().applyTransformationsAttached(item);
+            }
         }
     }
 

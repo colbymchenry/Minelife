@@ -1,6 +1,7 @@
 package com.minelife.gun.packet;
 
 import com.minelife.MLItems;
+import com.minelife.gun.item.attachments.ItemSite;
 import com.minelife.gun.item.guns.ItemGun;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -8,6 +9,7 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -16,23 +18,23 @@ import net.minecraft.util.EnumChatFormatting;
 
 public class PacketSetSite implements IMessage {
 
-    private int id;
+    private int slot;
 
     public PacketSetSite() {
     }
 
-    public PacketSetSite(int id) {
-        this.id = id;
+    public PacketSetSite(int slot) {
+        this.slot = slot;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        id = buf.readInt();
+        slot = buf.readInt();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(id);
+        buf.writeInt(slot);
     }
 
     public static class Handler implements IMessageHandler<PacketSetSite, IMessage> {
@@ -42,44 +44,42 @@ public class PacketSetSite implements IMessage {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
             ItemStack heldItem = player.getHeldItem();
 
-            if(heldItem == null) {
+            if (heldItem == null) {
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Gun not found."));
                 player.closeScreen();
                 return null;
             }
 
-            if(!(heldItem.getItem() instanceof ItemGun)) {
+            if (!(heldItem.getItem() instanceof ItemGun)) {
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Gun not found."));
                 player.closeScreen();
                 return null;
             }
 
-            if(message.id == 0) {
-                int slot = findItem(MLItems.holographicSite, player);
-                if(slot > -1) {
-                    ItemGun.setSite(heldItem, player.inventory.getStackInSlot(slot));
-                    player.inventory.setInventorySlotContents(slot, null);
-                    player.inventory.setInventorySlotContents(player.inventory.currentItem, heldItem);
-                } else {
-                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Holographic Site not found."));
+            ItemGun gun = (ItemGun) heldItem.getItem();
+            if(gun == MLItems.magnum) {
+                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You cannot modify the sites on this gun."));
+                player.closeScreen();
+                return null;
+            }
+
+            ItemStack stackInSlot = player.inventory.getStackInSlot(message.slot);
+            if (stackInSlot != null && stackInSlot.getItem() instanceof ItemSite) {
+                if(ItemGun.getSite(heldItem) != null) {
+                    ItemStack to_give = ItemGun.getSite(heldItem).copy();
+                    EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
+                    entity_item.delayBeforeCanPickup = 0;
                 }
+
+                ItemGun.setSite(heldItem, stackInSlot);
+                player.inventory.setInventorySlotContents(message.slot, null);
+                player.inventory.setInventorySlotContents(player.inventory.currentItem, heldItem);
+            } else {
+                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Holographic Site not found."));
             }
             return null;
         }
-
-        public int findItem(Item item, EntityPlayerMP player) {
-            for (int i = 0; i < player.inventory.mainInventory.length; i++) {
-                if(player.inventory.getStackInSlot(i) != null) {
-                    if(player.inventory.getStackInSlot(i).getItem() == item) {
-                        return i;
-                    }
-                }
-            }
-
-            return -1;
-        }
     }
-
 
 
 }

@@ -10,7 +10,7 @@ import java.awt.*;
 
 public class GuiDropDown extends Gui {
 
-    private static final ResourceLocation arrow_texture = new ResourceLocation(Minelife.MOD_ID, "textures/gui/arrow.png");
+    protected static final ResourceLocation arrow_texture = new ResourceLocation(Minelife.MOD_ID, "textures/gui/arrow.png");
     public int xPosition, yPosition, width, height;
     public String[] options;
     public int selected = 0;

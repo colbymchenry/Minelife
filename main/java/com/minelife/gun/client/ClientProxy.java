@@ -6,6 +6,7 @@ import com.minelife.Minelife;
 import com.minelife.gun.bullets.BulletRenderer;
 import com.minelife.gun.client.attachments.Attachment;
 import com.minelife.gun.client.guns.ItemGunClient;
+import com.minelife.gun.item.attachments.ItemSite;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketMouseClick;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -44,7 +45,7 @@ public class ClientProxy extends MLProxy {
 
         if (heldItem == null || !(heldItem.getItem() instanceof ItemGun)) return;
 
-        if(ItemGunClient.modifying) return;
+        if (ItemGunClient.modifying) return;
 
         if (event.button == 1) {
             ItemGunClient.aimingDownSight = !ItemGunClient.aimingDownSight;
@@ -72,7 +73,7 @@ public class ClientProxy extends MLProxy {
 
         if (ItemGun.getCurrentClipHoldings(heldItem) < 1) return;
 
-        if(ItemGunClient.modifying) return;
+        if (ItemGunClient.modifying) return;
 
         if (Minecraft.getMinecraft().currentScreen != null) {
             ItemGunClient.aimingDownSight = false;
@@ -87,13 +88,22 @@ public class ClientProxy extends MLProxy {
 
     @SubscribeEvent
     public void fovUpdate(FOVUpdateEvent event) {
-        if(event.entity.getHeldItem() != null && event.entity.getHeldItem().getItem() instanceof ItemGun) {
-            if(ItemGunClient.aimingDownSight && ItemGun.getSite(event.entity.getHeldItem()) != null &&
-                    ItemGun.getSite(event.entity.getHeldItem()).getItem() == MLItems.holographicSite) {
-                event.newfov = 0.5F;
+        if (event.entity.getHeldItem() != null && event.entity.getHeldItem().getItem() instanceof ItemGun) {
+            if (ItemGunClient.aimingDownSight) {
+                if (ItemGun.getSite(event.entity.getHeldItem()) != null) {
+                    ItemSite site = (ItemSite) ItemGun.getSite(event.entity.getHeldItem()).getItem();
+                    if (site == MLItems.holographicSite) {
+                        event.newfov = 0.7F;
+                    } else if (site == MLItems.twoXSite) {
+                        event.newfov = 0.5F;
+                    } else if (site == MLItems.acogSite) {
+                        event.newfov = 0.33F;
+                    }
+                } else {
+                    event.newfov = 0.9f;
+                }
             }
         }
     }
-
 
 }

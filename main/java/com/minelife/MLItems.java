@@ -74,6 +74,7 @@ public class MLItems {
     public static ItemHandcuffs handcuffs;
     public static ItemSite holographicSite;
     public static ItemSite twoXSite;
+    public static ItemSite acogSite;
 
     protected static void init()
     {
@@ -134,6 +135,7 @@ public class MLItems {
         register_item(handcuffs = new ItemHandcuffs());
         register_item(holographicSite = new ItemSite("holographic_site"));
         register_item(twoXSite = new ItemSite("2x_site"));
+        register_item(acogSite = new ItemSite("acog_site"));
     }
 
     private static void register_item(Item item)

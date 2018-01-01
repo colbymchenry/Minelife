@@ -1,5 +1,6 @@
 package com.minelife.gun.client.guns;
 
+import com.minelife.MLItems;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.util.client.Animation;
 import com.minelife.util.client.render.ModelBipedCustom;
@@ -31,14 +32,49 @@ public class GunClientMagnum extends ItemGunClient {
         GL11.glPushMatrix();
         {
             if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
-                GL11.glScalef(0.3f, 0.3f, 0.3f);
+                GL11.glScalef(0.4f, 0.4f, 0.4f);
                 GL11.glRotatef(310f, 0, 1, 0);
 
                 getAnimation().animate();
-                GL11.glTranslatef(0.4f + getAnimation().posX(), -0.25f + getAnimation().posY(), -4.2f + getAnimation().posZ());
+
+                if (!aimingDownSight) {
+                    if (modifying) {
+                        GL11.glRotatef(40f, 1, 1, 0);
+                        GL11.glTranslatef(0.9f + getAnimation().posX(), 0.5f + getAnimation().posY(), -3f + getAnimation().posZ());
+                    } else {
+                        GL11.glTranslatef(0.4f + getAnimation().posX(), -1f + getAnimation().posY(), -4f + getAnimation().posZ());
+                        GL11.glRotatef(getAnimation().rotX(), 1, 0, 0);
+                        GL11.glRotatef(getAnimation().rotY(), 0, 1, 0);
+                        GL11.glRotatef(getAnimation().rotZ(), 0, 0, 1);
+                    }
+                } else {
+                    if(ItemGun.getSite(item) != null) {
+                        ItemStack site = ItemGun.getSite(item);
+                        if (site.getItem() == MLItems.holographicSite) {
+                            GL11.glRotatef(314.6f, 0, 1, 0);
+                            GL11.glTranslatef(-1.9f + getAnimation().posX(), 0.75f + getAnimation().posY(), 1.2f + getAnimation().posZ());
+                        } else if (site.getItem() == MLItems.twoXSite) {
+                            GL11.glRotatef(315f, 0, 1, 0);
+                            GL11.glTranslatef(-2f + getAnimation().posX(), 0.62f + getAnimation().posY(), 1f + getAnimation().posZ());
+                        } else if (site.getItem() == MLItems.acogSite) {
+                            GL11.glRotatef(315.3f, 0, 1, 0);
+                            GL11.glTranslatef(-1.9f + getAnimation().posX(), 0.32f + getAnimation().posY(), 0.5f + getAnimation().posZ());
+                        }
+                    } else {
+                        GL11.glRotatef(5f, 0f, 1f, 0f);
+                        GL11.glTranslatef(-2.22f + getAnimation().posX(), 0.8f + getAnimation().posY(), 0f + getAnimation().posZ());
+
+                    }
+                }
+
                 GL11.glRotatef(getAnimation().rotX(), 1, 0, 0);
                 GL11.glRotatef(getAnimation().rotY(), 0, 1, 0);
                 GL11.glRotatef(getAnimation().rotZ(), 0, 0, 1);
+
+//                GL11.glTranslatef(0.4f + getAnimation().posX(), -0.25f + getAnimation().posY(), -4.2f + getAnimation().posZ());
+//                GL11.glRotatef(getAnimation().rotX(), 1, 0, 0);
+//                GL11.glRotatef(getAnimation().rotY(), 0, 1, 0);
+//                GL11.glRotatef(getAnimation().rotZ(), 0, 0, 1);
             }
 
             if (type == IItemRenderer.ItemRenderType.INVENTORY) {
@@ -60,6 +96,8 @@ public class GunClientMagnum extends ItemGunClient {
 
     @Override
     public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
+        if(aimingDownSight || modifying) return;
+
         mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
 
         GL11.glPushMatrix();

@@ -30,11 +30,11 @@ public class ItemSite extends Item {
     }
 
     public static int[] getSiteColor(ItemStack stack) {
-        return stack.getItem() instanceof ItemGun && stack.stackTagCompound != null && stack.stackTagCompound.hasKey("color") ? stack.stackTagCompound.getIntArray("color") : red;
+        return stack != null && stack.getItem() instanceof ItemSite && stack.stackTagCompound != null && stack.stackTagCompound.hasKey("color") ? stack.stackTagCompound.getIntArray("color") : red;
     }
 
     public static void setSiteColor(ItemStack stack, int[] color) {
-        NBTTagCompound tagCompound = stack.hasTagCompound() ? stack.stackTagCompound : new NBTTagCompound();
+        NBTTagCompound tagCompound = stack.stackTagCompound != null ? stack.stackTagCompound : new NBTTagCompound();
         tagCompound.setIntArray("color", color);
         stack.stackTagCompound = tagCompound;
     }

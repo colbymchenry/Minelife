@@ -3,6 +3,7 @@ package com.minelife.gun.client.attachments;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.gun.client.RenderAttachment;
+import com.minelife.gun.item.guns.ItemGun;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
@@ -24,6 +25,8 @@ public abstract class Attachment {
 
     public abstract void applyTransformations(IItemRenderer.ItemRenderType type, ItemStack item);
 
+    public abstract void applyTransformationsAttached(ItemStack gun);
+
     public IModelCustom getModel() {
         return model;
     }
@@ -38,10 +41,12 @@ public abstract class Attachment {
 
     private static AttachmentHolographicSite holographic;
     private static Attachment2xSite twoXSite;
+    private static AttachmentAcogSite acogSite;
 
     public static void registerRenderers() {
         MinecraftForgeClient.registerItemRenderer(MLItems.holographicSite, new RenderAttachment(holographic = new AttachmentHolographicSite()));
         MinecraftForgeClient.registerItemRenderer(MLItems.twoXSite, new RenderAttachment(twoXSite = new Attachment2xSite()));
+        MinecraftForgeClient.registerItemRenderer(MLItems.acogSite, new RenderAttachment(acogSite = new AttachmentAcogSite()));
     }
 
     public static AttachmentHolographicSite getHolographic() {
@@ -50,5 +55,9 @@ public abstract class Attachment {
 
     public static Attachment2xSite getTwoXSite() {
         return twoXSite;
+    }
+
+    public static AttachmentAcogSite getAcogSite() {
+        return acogSite;
     }
 }

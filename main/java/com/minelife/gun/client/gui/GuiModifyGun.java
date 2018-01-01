@@ -19,18 +19,20 @@ public class GuiModifyGun extends GuiScreen {
 
     private int xPosition, yPosition;
 
-    private ItemStack stack;
     private ItemGunClient client;
-    private GuiDropDown siteDropDown;
+    private GuiSiteDropDown siteDropDown;
 
-    public GuiModifyGun(ItemStack stack) {
-        this.stack = stack;
+    public GuiModifyGun() {
         ItemGunClient.modifying = true;
     }
 
     @Override
     public void drawScreen(int mouse_x, int mouse_y, float f) {
         super.drawScreen(mouse_x, mouse_y, f);
+        if(mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemGun)) {
+            mc.thePlayer.closeScreen();
+            return;
+        }
         siteDropDown.draw(mc, mouse_x, mouse_y);
     }
 
@@ -40,20 +42,20 @@ public class GuiModifyGun extends GuiScreen {
         int selected = siteDropDown.selected;
         siteDropDown.mouseClicked(mc, mouse_x, mouse_y);
         if(selected != siteDropDown.selected) {
-            Minelife.NETWORK.sendToServer(new PacketSetSite(0));
+            Minelife.NETWORK.sendToServer(new PacketSetSite(siteDropDown.getSlot()));
         }
     }
 
     @Override
     public void initGui() {
         super.initGui();
-        if (stack == null) {
+        if (mc.thePlayer.getHeldItem() == null) {
             Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Could not find gun."));
             Minecraft.getMinecraft().thePlayer.closeScreen();
             return;
         }
 
-        if (!(stack.getItem() instanceof ItemGun)) {
+        if (!(mc.thePlayer.getHeldItem().getItem() instanceof ItemGun)) {
             Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Could not find gun."));
             Minecraft.getMinecraft().thePlayer.closeScreen();
             return;
@@ -61,9 +63,8 @@ public class GuiModifyGun extends GuiScreen {
 
         xPosition = this.width / 2;
         yPosition = this.height / 2;
-        client = ((ItemGun) stack.getItem()).getClientHandler();
-        siteDropDown = new GuiDropDown(xPosition + client.getScopeXOffsetForGui(), yPosition + client.getScopeYOffsetForGui(), 80, 12,
-                "Holographic", "Red Dot", "2X Scope", "4X Scope", "8X Scope");
+        client = ((ItemGun) mc.thePlayer.getHeldItem().getItem()).getClientHandler();
+        siteDropDown = new GuiSiteDropDown(xPosition + client.getScopeXOffsetForGui(), yPosition + client.getScopeYOffsetForGui(), 80, 12,mc);
     }
 
     @Override
@@ -72,6 +73,16 @@ public class GuiModifyGun extends GuiScreen {
         if (p_73869_2_ == MLKeys.keyModifyGun.getKeyCode()) {
             Minecraft.getMinecraft().thePlayer.closeScreen();
         }
+    }
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
+        if(mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemGun)) {
+            mc.thePlayer.closeScreen();
+            return;
+        }
+        siteDropDown.update();
     }
 
     @Override

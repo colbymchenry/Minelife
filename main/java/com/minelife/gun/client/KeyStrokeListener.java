@@ -24,7 +24,7 @@ public class KeyStrokeListener {
             if(player.getHeldItem() == null) return;
             if(!(player.getHeldItem().getItem() instanceof ItemGun)) return;
 
-            Minecraft.getMinecraft().displayGuiScreen(new GuiModifyGun(player.getHeldItem()));
+            Minecraft.getMinecraft().displayGuiScreen(new GuiModifyGun());
             return;
         }
 
