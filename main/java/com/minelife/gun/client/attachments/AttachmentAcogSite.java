@@ -33,6 +33,11 @@ public class AttachmentAcogSite extends Attachment {
             GL11.glScalef(0.15f, 0.15f, 0.15f);
             GL11.glTranslatef(1f, -0f, 0f);
         }
+
+        if(type == IItemRenderer.ItemRenderType.EQUIPPED) {
+            GL11.glScalef(0.15f, 0.15f, 0.15f);
+            GL11.glTranslatef(4f, 5f, 4f);
+        }
     }
 
     @Override

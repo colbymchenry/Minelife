@@ -33,6 +33,11 @@ public class AttachmentHolographicSite extends Attachment {
             GL11.glTranslatef(1f, -1f, 0f);
         }
 
+        if(type == IItemRenderer.ItemRenderType.EQUIPPED) {
+            GL11.glScalef(0.25f, 0.25f, 0.25f);
+            GL11.glTranslatef(3f, 1f, 3f);
+        }
+
     }
 
     @Override

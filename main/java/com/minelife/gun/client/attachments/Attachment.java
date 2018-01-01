@@ -42,11 +42,13 @@ public abstract class Attachment {
     private static AttachmentHolographicSite holographic;
     private static Attachment2xSite twoXSite;
     private static AttachmentAcogSite acogSite;
+    private static AttachmentReddotSite reddotSite;
 
     public static void registerRenderers() {
         MinecraftForgeClient.registerItemRenderer(MLItems.holographicSite, new RenderAttachment(holographic = new AttachmentHolographicSite()));
         MinecraftForgeClient.registerItemRenderer(MLItems.twoXSite, new RenderAttachment(twoXSite = new Attachment2xSite()));
         MinecraftForgeClient.registerItemRenderer(MLItems.acogSite, new RenderAttachment(acogSite = new AttachmentAcogSite()));
+        MinecraftForgeClient.registerItemRenderer(MLItems.reddotSite, new RenderAttachment(reddotSite = new AttachmentReddotSite()));
     }
 
     public static AttachmentHolographicSite getHolographic() {
@@ -59,5 +61,9 @@ public abstract class Attachment {
 
     public static AttachmentAcogSite getAcogSite() {
         return acogSite;
+    }
+
+    public static AttachmentReddotSite getReddotSite() {
+        return reddotSite;
     }
 }
