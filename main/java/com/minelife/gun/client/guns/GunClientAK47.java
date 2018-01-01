@@ -6,10 +6,8 @@ import com.minelife.gun.item.attachments.ItemSite;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketBullet;
 import com.minelife.util.client.Animation;
-import com.minelife.util.client.GuiUtil;
 import com.minelife.util.client.render.ModelBipedCustom;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -49,13 +47,13 @@ public class GunClientAK47 extends ItemGunClient {
             } else {
                 if(ItemGun.getSite(item) != null) {
                     ItemStack site = ItemGun.getSite(item);
-                    if (site.getItem() == MLItems.holographicSite) {
+                    if (site.getItem() == MLItems.holographicSight) {
                         GL11.glRotatef(315f, 0, 1, 0);
                         GL11.glTranslatef(-2.8f + getAnimation().posX(), -0.2f + getAnimation().posY(), 2.5f + getAnimation().posZ());
-                    } else if (site.getItem() == MLItems.twoXSite) {
+                    } else if (site.getItem() == MLItems.twoXSight) {
                         GL11.glRotatef(315f, 0, 1, 0);
                         GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.01f + getAnimation().posY(), 2.5f + getAnimation().posZ());
-                    } else if (site.getItem() == MLItems.acogSite) {
+                    } else if (site.getItem() == MLItems.acogSight) {
                         GL11.glRotatef(315f, 0, 1, 0);
                         GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.16f + getAnimation().posY(), 2.5f + getAnimation().posZ());
                     }
@@ -82,11 +80,11 @@ public class GunClientAK47 extends ItemGunClient {
         getModel().renderAll();
         if (ItemGun.getSite(item) != null) {
             ItemSite site = (ItemSite) ItemGun.getSite(item).getItem();
-            if(site == MLItems.holographicSite) {
+            if(site == MLItems.holographicSight) {
                 Attachment.getHolographic().applyTransformationsAttached(item);
-            } else if (site == MLItems.acogSite) {
+            } else if (site == MLItems.acogSight) {
                 Attachment.getAcogSite().applyTransformationsAttached(item);
-            } else if (site == MLItems.twoXSite) {
+            } else if (site == MLItems.twoXSight) {
                 Attachment.getTwoXSite().applyTransformationsAttached(item);
             }
         }

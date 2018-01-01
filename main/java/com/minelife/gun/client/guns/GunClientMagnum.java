@@ -50,13 +50,13 @@ public class GunClientMagnum extends ItemGunClient {
                 } else {
                     if(ItemGun.getSite(item) != null) {
                         ItemStack site = ItemGun.getSite(item);
-                        if (site.getItem() == MLItems.holographicSite) {
+                        if (site.getItem() == MLItems.holographicSight) {
                             GL11.glRotatef(314.6f, 0, 1, 0);
                             GL11.glTranslatef(-1.9f + getAnimation().posX(), 0.75f + getAnimation().posY(), 1.2f + getAnimation().posZ());
-                        } else if (site.getItem() == MLItems.twoXSite) {
+                        } else if (site.getItem() == MLItems.twoXSight) {
                             GL11.glRotatef(315f, 0, 1, 0);
                             GL11.glTranslatef(-2f + getAnimation().posX(), 0.62f + getAnimation().posY(), 1f + getAnimation().posZ());
-                        } else if (site.getItem() == MLItems.acogSite) {
+                        } else if (site.getItem() == MLItems.acogSight) {
                             GL11.glRotatef(315.3f, 0, 1, 0);
                             GL11.glTranslatef(-1.9f + getAnimation().posX(), 0.32f + getAnimation().posY(), 0.5f + getAnimation().posZ());
                         }

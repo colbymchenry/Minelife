@@ -72,10 +72,10 @@ public class MLItems {
     public static ItemDrugTest drug_test;
     public static ItemTicket ticket;
     public static ItemHandcuffs handcuffs;
-    public static ItemSite holographicSite;
-    public static ItemSite twoXSite;
-    public static ItemSite acogSite;
-    public static ItemSite reddotSite;
+    public static ItemSite holographicSight;
+    public static ItemSite twoXSight;
+    public static ItemSite acogSight;
+    public static ItemSite reddotSight;
 
     protected static void init()
     {
@@ -134,10 +134,10 @@ public class MLItems {
         register_item(drug_test = new ItemDrugTest());
         register_item(ticket = new ItemTicket());
         register_item(handcuffs = new ItemHandcuffs());
-        register_item(holographicSite = new ItemSite("holographic_site"));
-        register_item(twoXSite = new ItemSite("2x_site"));
-        register_item(acogSite = new ItemSite("acog_site"));
-        register_item(reddotSite = new ItemSite("reddot_site"));
+        register_item(holographicSight = new ItemSite("holographic_sight"));
+        register_item(twoXSight = new ItemSite("2x_sight"));
+        register_item(acogSight = new ItemSite("acog_sight"));
+        register_item(reddotSight = new ItemSite("reddot_sight"));
     }
 
     private static void register_item(Item item)

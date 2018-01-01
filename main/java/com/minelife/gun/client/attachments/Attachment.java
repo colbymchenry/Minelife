@@ -3,7 +3,6 @@ package com.minelife.gun.client.attachments;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.gun.client.RenderAttachment;
-import com.minelife.gun.item.guns.ItemGun;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
@@ -39,31 +38,31 @@ public abstract class Attachment {
         return reticle;
     }
 
-    private static AttachmentHolographicSite holographic;
-    private static Attachment2xSite twoXSite;
-    private static AttachmentAcogSite acogSite;
-    private static AttachmentReddotSite reddotSite;
+    private static AttachmentHolographicSight holographic;
+    private static Attachment2xSight twoXSite;
+    private static AttachmentAcogSight acogSite;
+    private static AttachmentReddotSight reddotSite;
 
     public static void registerRenderers() {
-        MinecraftForgeClient.registerItemRenderer(MLItems.holographicSite, new RenderAttachment(holographic = new AttachmentHolographicSite()));
-        MinecraftForgeClient.registerItemRenderer(MLItems.twoXSite, new RenderAttachment(twoXSite = new Attachment2xSite()));
-        MinecraftForgeClient.registerItemRenderer(MLItems.acogSite, new RenderAttachment(acogSite = new AttachmentAcogSite()));
-        MinecraftForgeClient.registerItemRenderer(MLItems.reddotSite, new RenderAttachment(reddotSite = new AttachmentReddotSite()));
+        MinecraftForgeClient.registerItemRenderer(MLItems.holographicSight, new RenderAttachment(holographic = new AttachmentHolographicSight()));
+        MinecraftForgeClient.registerItemRenderer(MLItems.twoXSight, new RenderAttachment(twoXSite = new Attachment2xSight()));
+        MinecraftForgeClient.registerItemRenderer(MLItems.acogSight, new RenderAttachment(acogSite = new AttachmentAcogSight()));
+        MinecraftForgeClient.registerItemRenderer(MLItems.reddotSight, new RenderAttachment(reddotSite = new AttachmentReddotSight()));
     }
 
-    public static AttachmentHolographicSite getHolographic() {
+    public static AttachmentHolographicSight getHolographic() {
         return holographic;
     }
 
-    public static Attachment2xSite getTwoXSite() {
+    public static Attachment2xSight getTwoXSite() {
         return twoXSite;
     }
 
-    public static AttachmentAcogSite getAcogSite() {
+    public static AttachmentAcogSight getAcogSite() {
         return acogSite;
     }
 
-    public static AttachmentReddotSite getReddotSite() {
+    public static AttachmentReddotSight getReddotSite() {
         return reddotSite;
     }
 }

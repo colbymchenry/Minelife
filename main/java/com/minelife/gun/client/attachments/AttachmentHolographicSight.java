@@ -10,9 +10,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
-public class AttachmentHolographicSite extends Attachment {
+public class AttachmentHolographicSight extends Attachment {
 
-    public AttachmentHolographicSite() {
+    public AttachmentHolographicSight() {
         super("holographic");
     }
 

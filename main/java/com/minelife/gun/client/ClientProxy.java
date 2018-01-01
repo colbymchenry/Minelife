@@ -92,11 +92,11 @@ public class ClientProxy extends MLProxy {
             if (ItemGunClient.aimingDownSight) {
                 if (ItemGun.getSite(event.entity.getHeldItem()) != null) {
                     ItemSite site = (ItemSite) ItemGun.getSite(event.entity.getHeldItem()).getItem();
-                    if (site == MLItems.holographicSite) {
+                    if (site == MLItems.holographicSight) {
                         event.newfov = 0.7F;
-                    } else if (site == MLItems.twoXSite) {
+                    } else if (site == MLItems.twoXSight) {
                         event.newfov = 0.5F;
-                    } else if (site == MLItems.acogSite) {
+                    } else if (site == MLItems.acogSight) {
                         event.newfov = 0.33F;
                     }
                 } else {
