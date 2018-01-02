@@ -226,17 +226,18 @@ public abstract class ItemGun extends Item {
         return itemStacks.toArray(new ItemStack[itemStacks.size()]);
     }
 
-    public static ItemStack getSite(ItemStack stack) {
+    public static ItemStack getSight(ItemStack stack) {
         if(stack == null) return null;
         NBTTagCompound tag = stack.stackTagCompound;
         if(tag == null) return null;
-        if(!tag.hasKey("site")) return null;
-        return ItemUtil.itemFromString(tag.getString("site"));
+        if(!tag.hasKey("sight")) return null;
+        return ItemUtil.itemFromString(tag.getString("sight"));
     }
 
-    public static void setSite(ItemStack gun, ItemStack site) {
+    public static void setSight(ItemStack gun, ItemStack site) {
         NBTTagCompound tag = gun.stackTagCompound != null ? gun.stackTagCompound : new NBTTagCompound();
-        tag.setString("site", ItemUtil.itemToString(site));
+        if(site == null) tag.removeTag("sight");
+        else tag.setString("sight", ItemUtil.itemToString(site));
         gun.stackTagCompound = tag;
     }
 

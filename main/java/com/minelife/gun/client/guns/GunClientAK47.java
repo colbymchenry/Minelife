@@ -45,8 +45,8 @@ public class GunClientAK47 extends ItemGunClient {
                     GL11.glTranslatef(0.2f + getAnimation().posX(), -0.5f + getAnimation().posY(), 2f + getAnimation().posZ());
                 }
             } else {
-                if(ItemGun.getSite(item) != null) {
-                    ItemStack site = ItemGun.getSite(item);
+                if(ItemGun.getSight(item) != null) {
+                    ItemStack site = ItemGun.getSight(item);
                     if (site.getItem() == MLItems.holographicSight) {
                         GL11.glRotatef(315f, 0, 1, 0);
                         GL11.glTranslatef(-2.8f + getAnimation().posX(), -0.2f + getAnimation().posY(), 2.5f + getAnimation().posZ());
@@ -54,6 +54,9 @@ public class GunClientAK47 extends ItemGunClient {
                         GL11.glRotatef(315f, 0, 1, 0);
                         GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.01f + getAnimation().posY(), 2.5f + getAnimation().posZ());
                     } else if (site.getItem() == MLItems.acogSight) {
+                        GL11.glRotatef(315f, 0, 1, 0);
+                        GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.16f + getAnimation().posY(), 2.5f + getAnimation().posZ());
+                    } else if (site.getItem() == MLItems.reddotSight) {
                         GL11.glRotatef(315f, 0, 1, 0);
                         GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.16f + getAnimation().posY(), 2.5f + getAnimation().posZ());
                     }
@@ -78,14 +81,16 @@ public class GunClientAK47 extends ItemGunClient {
         }
 
         getModel().renderAll();
-        if (ItemGun.getSite(item) != null) {
-            ItemSite site = (ItemSite) ItemGun.getSite(item).getItem();
+        if (ItemGun.getSight(item) != null) {
+            ItemSite site = (ItemSite) ItemGun.getSight(item).getItem();
             if(site == MLItems.holographicSight) {
                 Attachment.getHolographic().applyTransformationsAttached(item);
             } else if (site == MLItems.acogSight) {
                 Attachment.getAcogSite().applyTransformationsAttached(item);
             } else if (site == MLItems.twoXSight) {
                 Attachment.getTwoXSite().applyTransformationsAttached(item);
+            } else if (site == MLItems.reddotSight) {
+                Attachment.getReddotSite().applyTransformationsAttached(item);
             }
         }
     }

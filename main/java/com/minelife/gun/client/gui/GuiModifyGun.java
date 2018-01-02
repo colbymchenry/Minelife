@@ -1,8 +1,10 @@
 package com.minelife.gun.client.gui;
 
+import com.google.common.collect.Lists;
 import com.minelife.MLKeys;
 import com.minelife.Minelife;
 import com.minelife.gun.client.guns.ItemGunClient;
+import com.minelife.gun.item.attachments.ItemSite;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketSetSite;
 import com.minelife.util.client.GuiDropDown;
@@ -10,10 +12,13 @@ import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 public class GuiModifyGun extends GuiScreen {
 
@@ -64,7 +69,18 @@ public class GuiModifyGun extends GuiScreen {
         xPosition = this.width / 2;
         yPosition = this.height / 2;
         client = ((ItemGun) mc.thePlayer.getHeldItem().getItem()).getClientHandler();
-        siteDropDown = new GuiSiteDropDown(xPosition + client.getScopeXOffsetForGui(), yPosition + client.getScopeYOffsetForGui(), 80, 12,mc);
+
+        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+
+        List<String> options = Lists.newArrayList();
+        for (int i = 0; i < player.inventory.mainInventory.length; i++) {
+            if (player.inventory.getStackInSlot(i) != null &&
+                    player.inventory.getStackInSlot(i).getItem() instanceof ItemSite)
+                options.add(player.inventory.getStackInSlot(i).getDisplayName());
+        }
+
+
+        siteDropDown = new GuiSiteDropDown(xPosition + client.getScopeXOffsetForGui(), yPosition + client.getScopeYOffsetForGui(), 80, 12);
     }
 
     @Override
@@ -82,6 +98,7 @@ public class GuiModifyGun extends GuiScreen {
             mc.thePlayer.closeScreen();
             return;
         }
+
         siteDropDown.update();
     }
 

@@ -52,7 +52,7 @@ public class AttachmentAcogSight extends Attachment {
 
             Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getAcogSite().getReticleTexture());
             RenderHelper.enableGUIStandardItemLighting();
-            int[] colorArray = ItemSite.getSiteColor(ItemGun.getSite(gun));
+            int[] colorArray = ItemSite.getSiteColor(ItemGun.getSight(gun));
             GL11.glColor4f(colorArray[0] / 255f, colorArray[1] / 255f, colorArray[2] / 255f, 200f / 255f);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glScalef(0.05f, 0.05f, 0.05f);
@@ -75,7 +75,7 @@ public class AttachmentAcogSight extends Attachment {
 
             Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getAcogSite().getReticleTexture());
             RenderHelper.enableGUIStandardItemLighting();
-            int[] colorArray = ItemSite.getSiteColor(ItemGun.getSite(gun));
+            int[] colorArray = ItemSite.getSiteColor(ItemGun.getSight(gun));
             GL11.glColor4f(colorArray[0] / 255f, colorArray[1] / 255f, colorArray[2] / 255f, 200f / 255f);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glScalef(0.05f, 0.05f, 0.05f);

@@ -11,7 +11,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
@@ -57,21 +56,32 @@ public class PacketSetSite implements IMessage {
             }
 
             ItemGun gun = (ItemGun) heldItem.getItem();
-            if(gun == MLItems.magnum) {
+            if (gun == MLItems.magnum) {
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You cannot modify the sites on this gun."));
                 player.closeScreen();
                 return null;
             }
 
+            // Removing the sight
+            if (message.slot == -2) {
+                ItemStack to_give = ItemGun.getSight(heldItem).copy();
+                EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
+                entity_item.delayBeforeCanPickup = 0;
+                ItemGun.setSight(heldItem, null);
+                return null;
+            }
+
+            System.out.println(message.slot);
             ItemStack stackInSlot = player.inventory.getStackInSlot(message.slot);
             if (stackInSlot != null && stackInSlot.getItem() instanceof ItemSite) {
-                if(ItemGun.getSite(heldItem) != null) {
-                    ItemStack to_give = ItemGun.getSite(heldItem).copy();
+                if (ItemGun.getSight(heldItem) != null) {
+                    ItemStack to_give = ItemGun.getSight(heldItem).copy();
                     EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
                     entity_item.delayBeforeCanPickup = 0;
                 }
 
-                ItemGun.setSite(heldItem, stackInSlot);
+
+                ItemGun.setSight(heldItem, stackInSlot);
                 player.inventory.setInventorySlotContents(message.slot, null);
                 player.inventory.setInventorySlotContents(player.inventory.currentItem, heldItem);
             } else {

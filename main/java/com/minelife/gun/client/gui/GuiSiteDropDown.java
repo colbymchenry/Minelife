@@ -1,5 +1,6 @@
 package com.minelife.gun.client.gui;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.gun.item.attachments.ItemSite;
 import com.minelife.gun.item.guns.ItemGun;
@@ -10,43 +11,43 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Map;
 import java.util.Set;
 
 public class GuiSiteDropDown extends GuiDropDown {
 
-    private Set<Integer> slots = Sets.newTreeSet();
+    private Map<Integer, String> optionsMap = Maps.newHashMap();
 
-    private Minecraft mc;
-
-    public GuiSiteDropDown(int xPosition, int yPosition, int width, int height, Minecraft mc, String... options) {
+    public GuiSiteDropDown(int xPosition, int yPosition, int width, int height, String... options) {
         super(xPosition, yPosition, width, height, options);
-        this.mc = mc;
-        if (ItemGun.getSite(mc.thePlayer.getHeldItem()) != null) slots.add(-1);
-
-        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-        for (int i = 0; i < player.inventory.mainInventory.length; i++) {
-            if (player.inventory.getStackInSlot(i) != null &&
-                    player.inventory.getStackInSlot(i).getItem() instanceof ItemSite)
-                slots.add(i);
-        }
-
+        setupSlots();
     }
 
     public void update() {
-        slots.clear();
+        setupSlots();
+    }
+
+    private void setupSlots() {
+        optionsMap.clear();
         selected = 0;
-        if (ItemGun.getSite(mc.thePlayer.getHeldItem()) != null) slots.add(-1);
+
         EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+
+        optionsMap.put(-1, ItemGun.getSight(player.getHeldItem()) != null ? ItemGun.getSight(player.getHeldItem()).getDisplayName() : "");
+
         for (int i = 0; i < player.inventory.mainInventory.length; i++) {
             if (player.inventory.getStackInSlot(i) != null &&
                     player.inventory.getStackInSlot(i).getItem() instanceof ItemSite)
-                slots.add(i);
+                optionsMap.put(i, player.inventory.getStackInSlot(i).getDisplayName());
         }
+
+        optionsMap.put(-2, "Remove");
+
+        options = new String[optionsMap.size()];
     }
 
-
     public int getSlot() {
-        return (int) slots.toArray()[selected];
+        return (int) optionsMap.keySet().toArray()[selected];
     }
 
     @Override
@@ -67,64 +68,24 @@ public class GuiSiteDropDown extends GuiDropDown {
         }
         GL11.glPopMatrix();
 
-        if (slots.isEmpty()) return;
+        // TODO: Draw colors for options.
 
-        if (selected > slots.size()) return;
-
-        ItemStack selectedStack = ItemGun.getSite(mc.thePlayer.getHeldItem()) != null ? ItemGun.getSite(mc.thePlayer.getHeldItem()) : mc.thePlayer.inventory.getStackInSlot((Integer) slots.toArray()[selected]);
-
-        if (selectedStack == null) return;
-
-        int[] colors = ItemSite.getSiteColor(selectedStack);
-
-        mc.fontRenderer.drawString(selectedStack.getDisplayName().replaceAll("item.", "").replaceAll(".name", "").replaceAll("_", " ").replaceAll("site", ""), xPosition + 2, yPosition + ((height - mc.fontRenderer.FONT_HEIGHT) / 2) + 1, (colors[0] << 16 | colors[1] << 8 | colors[2]));
+        mc.fontRenderer.drawString((String) optionsMap.values().toArray()[selected], xPosition + 2, yPosition + ((height - mc.fontRenderer.FONT_HEIGHT) / 2) + 1, hover ? color_hover.hashCode() : color.hashCode());
 
         if (drop_down_active) {
             GL11.glColor4f(1, 1, 1, 1);
-            drawRect(xPosition, yPosition + height, xPosition + width, yPosition + height + ((slots.size() - 1) * (mc.fontRenderer.FONT_HEIGHT + 5) + 1), color_bg.hashCode());
+            drawRect(xPosition, yPosition + height, xPosition + width, yPosition + height + ((options.length - 1) * (mc.fontRenderer.FONT_HEIGHT + 5) + 1), color_bg.hashCode());
             int y = yPosition + 3;
-            for (int i = 0; i < slots.size(); i++) {
+            for (int i = 0; i < optionsMap.size(); i++) {
                 if (i != selected) {
                     y += mc.fontRenderer.FONT_HEIGHT + 5;
                     boolean hovering = mouse_x >= xPosition && mouse_x <= xPosition + width && mouse_y >= y && mouse_y <= y + mc.fontRenderer.FONT_HEIGHT;
                     if (hovering)
                         drawRect(xPosition, y - 3, xPosition + width, y + mc.fontRenderer.FONT_HEIGHT + 2, color_highlight.hashCode());
-
-                    if ((Integer) slots.toArray()[i] > -1) {
-                        ItemStack stack = mc.thePlayer.inventory.getStackInSlot((Integer) slots.toArray()[i]);
-                        colors = ItemSite.getSiteColor(stack);
-                        mc.fontRenderer.drawString(stack.getDisplayName().replaceAll("item.", "").replaceAll(".name", "").replaceAll("_", " ").replaceAll("site", ""), xPosition + 2, y, (colors[0] << 16 | colors[1] << 8 | colors[2]));
-                    }
+                    mc.fontRenderer.drawString((String) optionsMap.values().toArray()[i], xPosition + 2, y, hovering ? color_hover.hashCode() : color.hashCode());
                 }
             }
         }
-    }
-
-    @Override
-    public boolean mouseClicked(Minecraft mc, int mouse_x, int mouse_y) {
-        if (slots.isEmpty()) return true;
-
-        if (mouse_x >= xPosition && mouse_x <= xPosition + width) {
-            if (mouse_y >= yPosition && mouse_y <= yPosition + height) {
-                drop_down_active = !drop_down_active;
-                return true;
-            } else if (mouse_y >= yPosition && drop_down_active) {
-                int y = yPosition + 3;
-                for (int i = 0; i < slots.size(); i++) {
-                    if (i != selected) {
-                        y += mc.fontRenderer.FONT_HEIGHT + 5;
-                        boolean hovering = mouse_x >= xPosition && mouse_x <= xPosition + width && mouse_y >= y && mouse_y <= y + mc.fontRenderer.FONT_HEIGHT;
-                        if (hovering) {
-                            selected = i;
-                            drop_down_active = !drop_down_active;
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
     }
 
 }

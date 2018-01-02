@@ -47,8 +47,8 @@ public class GunClientDesertEagle extends ItemGunClient {
                         GL11.glRotatef(getAnimation().rotZ(), 0, 0, 1);
                     }
                 } else {
-                    if(ItemGun.getSite(item) != null) {
-                        ItemStack site = ItemGun.getSite(item);
+                    if(ItemGun.getSight(item) != null) {
+                        ItemStack site = ItemGun.getSight(item);
                         if (site.getItem() == MLItems.holographicSight) {
                             GL11.glRotatef(314.6f, 0, 1, 0);
                             GL11.glTranslatef(-1.9f + getAnimation().posX(), 0.75f + getAnimation().posY(), 1.2f + getAnimation().posZ());

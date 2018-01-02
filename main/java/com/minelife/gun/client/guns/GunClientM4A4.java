@@ -45,8 +45,8 @@ public class GunClientM4A4 extends ItemGunClient {
                     GL11.glTranslatef(0.2f + getAnimation().posX(), 0f + getAnimation().posY(), 2f + getAnimation().posZ());
                 }
             } else {
-                if(ItemGun.getSite(item) != null) {
-                    ItemStack site = ItemGun.getSite(item);
+                if(ItemGun.getSight(item) != null) {
+                    ItemStack site = ItemGun.getSight(item);
                     if (site.getItem() == MLItems.holographicSight) {
                         GL11.glRotatef(314.6f, 0, 1, 0);
                         GL11.glTranslatef(-1.9f + getAnimation().posX(), 0.75f + getAnimation().posY(), 1.2f + getAnimation().posZ());
@@ -77,8 +77,8 @@ public class GunClientM4A4 extends ItemGunClient {
         }
 
         getModel().renderAll();
-        if (ItemGun.getSite(item) != null) {
-            ItemSite site = (ItemSite) ItemGun.getSite(item).getItem();
+        if (ItemGun.getSight(item) != null) {
+            ItemSite site = (ItemSite) ItemGun.getSight(item).getItem();
             if(site == MLItems.holographicSight) {
                 Attachment.getHolographic().applyTransformationsAttached(item);
             } else if (site == MLItems.acogSight) {
