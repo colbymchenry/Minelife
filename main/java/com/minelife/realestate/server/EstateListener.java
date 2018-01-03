@@ -64,8 +64,13 @@ public class EstateListener {
 
             if (!insideEstate.get(player).getOutro().trim().isEmpty())
                 player.addChatComponentMessage(new ChatComponentText(insideEstate.get(player).getOutro().replaceAll("&", String.valueOf('\u00a7'))));
-            if (!estate.getIntro().trim().isEmpty())
+            if (!estate.getIntro().trim().isEmpty()) {
                 player.addChatComponentMessage(new ChatComponentText(estate.getIntro().replaceAll("&", String.valueOf('\u00a7'))));
+            }
+
+            if(estate.isForRent() || estate.isPurchasable()) {
+                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Estate is for " + (estate.isForRent() && estate.isPurchasable() ? "rent and sale!" : estate.isForRent() && !estate.isPurchasable() ? "rent!" : "sale!")));
+            }
         }
 
         // entering estate
@@ -78,8 +83,13 @@ public class EstateListener {
                 }
 
                 insideEstate.put(player, estate);
-                if (!estate.getIntro().trim().isEmpty())
+                if (!estate.getIntro().trim().isEmpty()) {
                     player.addChatComponentMessage(new ChatComponentText(estate.getIntro().replaceAll("&", String.valueOf('\u00a7'))));
+                }
+
+                if(estate.isForRent() || estate.isPurchasable()) {
+                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Estate is for " + (estate.isForRent() && estate.isPurchasable() ? "rent and sale!" : estate.isForRent() && !estate.isPurchasable() ? "rent!" : "sale!")));
+                }
 
 
             } else {
