@@ -13,6 +13,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import ic2.core.Ic2Items;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -52,6 +53,10 @@ public class ModGun extends MLMod {
         );
 
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.zinc_plate), new ItemStack(ForgeHammer.getItem(), 1, OreDictionary.WILDCARD_VALUE), MLItems.zinc_ingot);
+        GameRegistry.addShapedRecipe(new ItemStack(MLItems.holographicSight), "AAA", " G ", "ABA", 'A', MLItems.gunmetal, 'G', Blocks.glass_pane, 'B', Ic2Items.electronicCircuit);
+        GameRegistry.addShapedRecipe(new ItemStack(MLItems.reddotSight), " A ", " G ", "ABA", 'A', MLItems.gunmetal, 'G', Blocks.glass_pane, 'B', Ic2Items.electronicCircuit);
+        GameRegistry.addShapedRecipe(new ItemStack(MLItems.twoXSight), "AAA", "GGG", "ABA", 'A', MLItems.gunmetal, 'G', Blocks.glass_pane, 'B', Ic2Items.electronicCircuit);
+        GameRegistry.addShapedRecipe(new ItemStack(MLItems.acogSight), "AAA", "GGG", "ABA", 'A', MLItems.gunmetal, 'G', Blocks.glass_pane,'B', Ic2Items.advancedCircuit);
         FMLCommonHandler.instance().bus().register(new BulletHandler());
     }
 

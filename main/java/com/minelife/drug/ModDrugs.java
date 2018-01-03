@@ -1,6 +1,9 @@
 package com.minelife.drug;
 
+import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftEnergy;
+import buildcraft.BuildCraftFactory;
+import buildcraft.BuildCraftRobotics;
 import com.minelife.*;
 import com.minelife.drug.block.*;
 import com.minelife.drug.tileentity.TileEntityCementMixer;
@@ -9,6 +12,8 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import ic2.api.item.IC2Items;
+import ic2.core.Ic2Items;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -77,6 +82,12 @@ public class ModDrugs extends MLMod {
         TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.cocaine_sulfate), new ItemStack(MLItems.pressed_cocaine)).addLiquids(new FluidStack(MLBlocks.sulfuric_acid.getFluid(), 100)));
         TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.purple_cocaine), new ItemStack(MLItems.coca_paste)).addLiquids(new FluidStack(MLBlocks.potassium_permanganate.getFluid(), 100)));
         TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.processed_cocaine), new ItemStack(MLItems.coca_paste)).addLiquids(new FluidStack(MLBlocks.ammonia.getFluid(), 100)));
+
+        GameRegistry.addShapedRecipe(new ItemStack(MLBlocks.leaf_mulcher), "AAA", "ABA", "ACA", 'A', Ic2Items.advancedAlloy, 'B', Ic2Items.elemotor, 'C', Ic2Items.ironblockcuttingblade);
+        GameRegistry.addShapedRecipe(new ItemStack(MLBlocks.cement_mixer), "AAA", "ABA", "ACA", 'A', Ic2Items.advancedAlloy, 'B',  Ic2Items.elemotor, 'C', BuildCraftFactory.tankBlock);
+        GameRegistry.addShapedRecipe(new ItemStack(MLBlocks.vacuum), "AAA", "ABA", "ACA", 'A', Ic2Items.carbonPlate, 'B', Ic2Items.advancedCircuit, 'C', Ic2Items.elemotor);
+        GameRegistry.addShapedRecipe(new ItemStack(MLBlocks.presser), "ACA", "ABA", "AAA", 'A', Ic2Items.carbonPlate, 'B', Ic2Items.advancedCircuit, 'C', BuildCraftCore.engineBlock);
+        GameRegistry.addShapedRecipe(new ItemStack(MLBlocks.drying_rack), "ABA", "ABA", "ABA", 'A', Blocks.log, 'B', Items.stick);
     }
 
     @Override

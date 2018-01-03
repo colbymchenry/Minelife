@@ -1,7 +1,7 @@
 package com.minelife.gun.client.attachments;
 
 import com.minelife.MLItems;
-import com.minelife.gun.item.attachments.ItemSite;
+import com.minelife.gun.item.attachments.ItemSight;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.Minecraft;
@@ -54,7 +54,7 @@ public class AttachmentReddotSight extends Attachment {
 
             Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getReddotSite().getReticleTexture());
             RenderHelper.enableGUIStandardItemLighting();
-            int[] colorArray = ItemSite.getSiteColor(ItemGun.getSight(gun));
+            int[] colorArray = ItemSight.getSightColor(ItemGun.getSight(gun));
             GL11.glColor4f(colorArray[0] / 255f, colorArray[1] / 255f, colorArray[2] / 255f, 200f / 255f);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glScalef(0.05f, 0.05f, 0.05f);
@@ -72,7 +72,7 @@ public class AttachmentReddotSight extends Attachment {
 
             Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getReddotSite().getReticleTexture());
             RenderHelper.enableGUIStandardItemLighting();
-            int[] colorArray = ItemSite.getSiteColor(ItemGun.getSight(gun));
+            int[] colorArray = ItemSight.getSightColor(ItemGun.getSight(gun));
             GL11.glColor4f(colorArray[0] / 255f, colorArray[1] / 255f, colorArray[2] / 255f, 200f / 255f);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glScalef(0.05f, 0.05f, 0.05f);

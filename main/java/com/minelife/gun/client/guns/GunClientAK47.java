@@ -2,7 +2,7 @@ package com.minelife.gun.client.guns;
 
 import com.minelife.MLItems;
 import com.minelife.gun.client.attachments.Attachment;
-import com.minelife.gun.item.attachments.ItemSite;
+import com.minelife.gun.item.attachments.ItemSight;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketBullet;
 import com.minelife.util.client.Animation;
@@ -82,7 +82,7 @@ public class GunClientAK47 extends ItemGunClient {
 
         getModel().renderAll();
         if (ItemGun.getSight(item) != null) {
-            ItemSite site = (ItemSite) ItemGun.getSight(item).getItem();
+            ItemSight site = (ItemSight) ItemGun.getSight(item).getItem();
             if(site == MLItems.holographicSight) {
                 Attachment.getHolographic().applyTransformationsAttached(item);
             } else if (site == MLItems.acogSight) {

@@ -24,6 +24,10 @@ item.Ammo556Explosive.name=556 Explosive Ammo
 item.Ammo556Incendiary.name=556 Incendiary Ammo
 item.AmmoPistol.name=Pistol Ammo
 item.AmmoPistolIncendiary.name=Pistol Incendiary Ammo
+item.reddot_sight.name=Red Dot Sight
+item.holographic_sight.name=Holographic Sight
+item.2x_sight.name=2X Sight
+item.acog_sight.name=ACOG Sight
 # Drugs Mod
 tile.drying_rack.name=Drying Rack
 tile.leaf_mulcher.name=Leaf Mulcher

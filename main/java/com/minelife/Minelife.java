@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="after:BuildCraft|Transport;after:BuildCraft|Energy;after:IC2;after:WorldEdit")
+@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="required-after:BuildCraft|Transport;required-after:BuildCraft|Energy;required-after:BuildCraft|Core;required-after:BuildCraft|Factory;required-after:IC2;after:WorldEdit")
 public class Minelife {
 
     private static Side side;

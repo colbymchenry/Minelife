@@ -1,7 +1,7 @@
 package com.minelife.gun.packet;
 
 import com.minelife.MLItems;
-import com.minelife.gun.item.attachments.ItemSite;
+import com.minelife.gun.item.attachments.ItemSight;
 import com.minelife.gun.item.guns.ItemGun;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -73,7 +73,7 @@ public class PacketSetSite implements IMessage {
 
             System.out.println(message.slot);
             ItemStack stackInSlot = player.inventory.getStackInSlot(message.slot);
-            if (stackInSlot != null && stackInSlot.getItem() instanceof ItemSite) {
+            if (stackInSlot != null && stackInSlot.getItem() instanceof ItemSight) {
                 if (ItemGun.getSight(heldItem) != null) {
                     ItemStack to_give = ItemGun.getSight(heldItem).copy();
                     EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);

@@ -5,7 +5,7 @@ import com.minelife.gun.item.ItemGunmetal;
 import com.minelife.gun.item.ItemZincIngot;
 import com.minelife.gun.item.ItemZincPlate;
 import com.minelife.gun.item.ammos.*;
-import com.minelife.gun.item.attachments.ItemSite;
+import com.minelife.gun.item.attachments.ItemSight;
 import com.minelife.gun.item.guns.*;
 import com.minelife.gun.item.parts.*;
 import com.minelife.police.ItemHandcuffs;
@@ -72,10 +72,10 @@ public class MLItems {
     public static ItemDrugTest drug_test;
     public static ItemTicket ticket;
     public static ItemHandcuffs handcuffs;
-    public static ItemSite holographicSight;
-    public static ItemSite twoXSight;
-    public static ItemSite acogSight;
-    public static ItemSite reddotSight;
+    public static ItemSight holographicSight;
+    public static ItemSight twoXSight;
+    public static ItemSight acogSight;
+    public static ItemSight reddotSight;
 
     protected static void init()
     {
@@ -134,10 +134,10 @@ public class MLItems {
         register_item(drug_test = new ItemDrugTest());
         register_item(ticket = new ItemTicket());
         register_item(handcuffs = new ItemHandcuffs());
-        register_item(holographicSight = new ItemSite("holographic_sight"));
-        register_item(twoXSight = new ItemSite("2x_sight"));
-        register_item(acogSight = new ItemSite("acog_sight"));
-        register_item(reddotSight = new ItemSite("reddot_sight"));
+        register_item(holographicSight = new ItemSight("holographic_sight"));
+        register_item(twoXSight = new ItemSight("2x_sight"));
+        register_item(acogSight = new ItemSight("acog_sight"));
+        register_item(reddotSight = new ItemSight("reddot_sight"));
     }
 
     private static void register_item(Item item)

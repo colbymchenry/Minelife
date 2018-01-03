@@ -1,6 +1,6 @@
 package com.minelife.gun.packet;
 
-import com.minelife.gun.item.attachments.ItemSite;
+import com.minelife.gun.item.attachments.ItemSight;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -52,13 +52,13 @@ public class PacketSetSiteColor implements IMessage {
                 return null;
             }
 
-            if(!(held_item.getItem() instanceof ItemSite)) {
+            if(!(held_item.getItem() instanceof ItemSight)) {
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Site not found."));
                 player.closeScreen();
                 return null;
             }
 
-            ItemSite.setSiteColor(held_item, new int[]{message.red, message.green, message.blue});
+            ItemSight.setSightColor(held_item, new int[]{message.red, message.green, message.blue});
             player.inventory.setInventorySlotContents(player.inventory.currentItem, held_item);
             player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Site color updated!"));
             player.closeScreen();

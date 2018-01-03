@@ -1,24 +1,21 @@
 package com.minelife.gun.client.gui;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.minelife.gun.item.attachments.ItemSite;
+import com.minelife.gun.item.attachments.ItemSight;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.util.client.GuiDropDown;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Map;
-import java.util.Set;
 
-public class GuiSiteDropDown extends GuiDropDown {
+public class GuiSightDropDown extends GuiDropDown {
 
     private Map<Integer, String> optionsMap = Maps.newHashMap();
 
-    public GuiSiteDropDown(int xPosition, int yPosition, int width, int height, String... options) {
+    public GuiSightDropDown(int xPosition, int yPosition, int width, int height, String... options) {
         super(xPosition, yPosition, width, height, options);
         setupSlots();
     }
@@ -37,7 +34,7 @@ public class GuiSiteDropDown extends GuiDropDown {
 
         for (int i = 0; i < player.inventory.mainInventory.length; i++) {
             if (player.inventory.getStackInSlot(i) != null &&
-                    player.inventory.getStackInSlot(i).getItem() instanceof ItemSite)
+                    player.inventory.getStackInSlot(i).getItem() instanceof ItemSight)
                 optionsMap.put(i, player.inventory.getStackInSlot(i).getDisplayName());
         }
 
@@ -70,7 +67,13 @@ public class GuiSiteDropDown extends GuiDropDown {
 
         // TODO: Draw colors for options.
 
-        mc.fontRenderer.drawString((String) optionsMap.values().toArray()[selected], xPosition + 2, yPosition + ((height - mc.fontRenderer.FONT_HEIGHT) / 2) + 1, hover ? color_hover.hashCode() : color.hashCode());
+        int slot = (int) optionsMap.keySet().toArray()[selected];
+        if(slot == -1) {
+            int[] colors = ItemSight.getSightColor(ItemGun.getSight(Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(Minecraft.getMinecraft().thePlayer.inventory.currentItem)));
+            mc.fontRenderer.drawString((String) optionsMap.values().toArray()[selected], xPosition + 2, yPosition + ((height - mc.fontRenderer.FONT_HEIGHT) / 2) + 1, (colors[0] << 16 | colors[1] << 8 | colors[2]));
+        } else {
+            mc.fontRenderer.drawString((String) optionsMap.values().toArray()[selected], xPosition + 2, yPosition + ((height - mc.fontRenderer.FONT_HEIGHT) / 2) + 1, 0xFFFFFF);
+        }
 
         if (drop_down_active) {
             GL11.glColor4f(1, 1, 1, 1);
@@ -82,7 +85,14 @@ public class GuiSiteDropDown extends GuiDropDown {
                     boolean hovering = mouse_x >= xPosition && mouse_x <= xPosition + width && mouse_y >= y && mouse_y <= y + mc.fontRenderer.FONT_HEIGHT;
                     if (hovering)
                         drawRect(xPosition, y - 3, xPosition + width, y + mc.fontRenderer.FONT_HEIGHT + 2, color_highlight.hashCode());
-                    mc.fontRenderer.drawString((String) optionsMap.values().toArray()[i], xPosition + 2, y, hovering ? color_hover.hashCode() : color.hashCode());
+
+                    slot = (int) optionsMap.keySet().toArray()[i];
+                    if(slot > -1) {
+                        int[] colors = ItemSight.getSightColor(ItemGun.getSight(Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(slot)));
+                        mc.fontRenderer.drawString((String) optionsMap.values().toArray()[i], xPosition + 2, y, (colors[0] << 16 | colors[1] << 8 | colors[2]));
+                    } else {
+                        mc.fontRenderer.drawString((String) optionsMap.values().toArray()[i], xPosition + 2, y, 0xFFFFFF);
+                    }
                 }
             }
         }

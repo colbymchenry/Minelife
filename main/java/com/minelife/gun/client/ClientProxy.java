@@ -6,7 +6,7 @@ import com.minelife.Minelife;
 import com.minelife.gun.bullets.BulletRenderer;
 import com.minelife.gun.client.attachments.Attachment;
 import com.minelife.gun.client.guns.ItemGunClient;
-import com.minelife.gun.item.attachments.ItemSite;
+import com.minelife.gun.item.attachments.ItemSight;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketMouseClick;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -91,7 +91,7 @@ public class ClientProxy extends MLProxy {
         if (event.entity.getHeldItem() != null && event.entity.getHeldItem().getItem() instanceof ItemGun) {
             if (ItemGunClient.aimingDownSight) {
                 if (ItemGun.getSight(event.entity.getHeldItem()) != null) {
-                    ItemSite site = (ItemSite) ItemGun.getSight(event.entity.getHeldItem()).getItem();
+                    ItemSight site = (ItemSight) ItemGun.getSight(event.entity.getHeldItem()).getItem();
                     if (site == MLItems.holographicSight) {
                         event.newfov = 0.7F;
                     } else if (site == MLItems.twoXSight) {
