@@ -16,8 +16,6 @@ import org.lwjgl.opengl.GL11;
 
 public class GunClientBarrett extends ItemGunClient {
 
-    private boolean zoom = false, rightMouseDown = false;
-
     public GunClientBarrett(ItemGun gun) {
         super(gun);
     }
@@ -34,36 +32,35 @@ public class GunClientBarrett extends ItemGunClient {
 
     @Override
     public void renderItem(IItemRenderer.ItemRenderType type, ItemStack item, Object... data) {
-            if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
-                GL11.glScalef(0.5f, 0.5f, 0.5f);
-                GL11.glRotatef(310f, 0, 1, 0);
+        if (type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
+            GL11.glScalef(0.5f, 0.5f, 0.5f);
+            GL11.glRotatef(310f, 0, 1, 0);
 
-                getAnimation().animate();
-                GL11.glTranslatef(0.4f + getAnimation().posX(), -2f + getAnimation().posY(), -1f + getAnimation().posZ());
-            }
+            getAnimation().animate();
+            GL11.glTranslatef(0.4f + getAnimation().posX(), -2f + getAnimation().posY(), -1f + getAnimation().posZ());
+        }
 
-            if (type == IItemRenderer.ItemRenderType.INVENTORY) {
-                GL11.glScalef(0.2f, 0.2f, 0.2f);
-                GL11.glTranslatef(0.5f, -1.25f, 0f);
-            }
+        if (type == IItemRenderer.ItemRenderType.INVENTORY) {
+            GL11.glScalef(0.2f, 0.2f, 0.2f);
+            GL11.glTranslatef(0.5f, -1.25f, 0f);
+        }
 
-            if (type == IItemRenderer.ItemRenderType.EQUIPPED) {
-                GL11.glScalef(0.28f, 0.28f, 0.28f);
-                GL11.glRotatef(50F, 0f, 1f, 0f);
-                GL11.glRotatef(290F, 1f, 0f, 0f);
-                GL11.glTranslatef(-1.8f, -5F, 1f);
-            }
+        if (type == IItemRenderer.ItemRenderType.EQUIPPED) {
+            GL11.glScalef(0.28f, 0.28f, 0.28f);
+            GL11.glRotatef(50F, 0f, 1f, 0f);
+            GL11.glRotatef(290F, 1f, 0f, 0f);
+            GL11.glTranslatef(-1.8f, -5F, 1f);
+        }
 
-            if (zoom && getAnimation().getActions().isEmpty() && type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
-                PlayerHelper.zoom(6.0D);
-            } else {
-                getModel().renderAll();
-                PlayerHelper.zoom(1.0D);
-            }
+        if (!aimingDownSight) {
+            getModel().renderAll();
+        }
     }
 
     @Override
     public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
+        if(aimingDownSight || modifying) return;
+
         mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
 
         GL11.glTranslatef(0.5F + (getAnimation().posX() / 5), 0f + (getAnimation().posY() / 5), -0.1f + (getAnimation().posZ() / 5));
@@ -105,32 +102,28 @@ public class GunClientBarrett extends ItemGunClient {
     public void onUpdate(ItemStack stack, World world, EntityPlayer holder, int slot, boolean inHand) {
         super.onUpdate(stack, world, holder, slot, inHand);
 
-        if (inHand && Mouse.isButtonDown(1)) {
-            if(!rightMouseDown) {
-                if (!zoom) {
-                    setAnimation(new Animation(0, 0, 0f).translateTo(-2.5f, 0f, 0f, 0.2f));
-                    PlayerHelper.zoom(6.0D);
-                    zoom = true;
-                } else {
-                    setAnimation(new Animation(-2f, 0, 0f).translateTo(0f, 0f, 0f, 0.2f));
-                    PlayerHelper.zoom(1.0D);
-                    zoom = false;
-                }
-
-                rightMouseDown = true;
-            }
-        } else {
-            rightMouseDown = false;
-        }
-
-        if(!inHand) {
-            zoom = false;
-            setAnimation(new Animation(0f, 0f, 0f).translate(0f, 0f, 0f));
-        }
-    }
-
-    public boolean isZoom() {
-        return zoom;
+//        if (inHand && Mouse.isButtonDown(1)) {
+//            if(!rightMouseDown) {
+//                if (!zoom) {
+//                    setAnimation(new Animation(0, 0, 0f).translateTo(-2.5f, 0f, 0f, 0.2f));
+//                    PlayerHelper.zoom(6.0D);
+//                    zoom = true;
+//                } else {
+//                    setAnimation(new Animation(-2f, 0, 0f).translateTo(0f, 0f, 0f, 0.2f));
+//                    PlayerHelper.zoom(1.0D);
+//                    zoom = false;
+//                }
+//
+//                rightMouseDown = true;
+//            }
+//        } else {
+//            rightMouseDown = false;
+//        }
+//
+//        if(!inHand) {
+//            zoom = false;
+//            setAnimation(new Animation(0f, 0f, 0f).translate(0f, 0f, 0f));
+//        }
     }
 
     @Override

@@ -16,8 +16,6 @@ import org.lwjgl.opengl.GL11;
 
 public class GunClientAWP extends ItemGunClient {
 
-    private boolean zoom = false, rightMouseDown = false;
-
     public GunClientAWP(ItemGun gun) {
         super(gun);
     }
@@ -56,11 +54,8 @@ public class GunClientAWP extends ItemGunClient {
                 GL11.glTranslatef(-1.8f, -5F, 1f);
             }
 
-            if (zoom && getAnimation().getActions().isEmpty() && type == IItemRenderer.ItemRenderType.EQUIPPED_FIRST_PERSON) {
-                PlayerHelper.zoom(6.0D);
-            } else {
+            if (!aimingDownSight) {
                 getModel().renderAll();
-                PlayerHelper.zoom(1.0D);
             }
         }
         GL11.glPopMatrix();
@@ -68,6 +63,8 @@ public class GunClientAWP extends ItemGunClient {
 
     @Override
     public void renderFirstPerson(Minecraft mc, EntityPlayer player) {
+        if(aimingDownSight || modifying) return;
+
         mc.renderEngine.bindTexture(mc.thePlayer.getLocationSkin());
 
         GL11.glTranslatef(0.5F + (getAnimation().posX() / 5), 0f + (getAnimation().posY() / 5), -0.1f + (getAnimation().posZ() / 5));
@@ -105,38 +102,34 @@ public class GunClientAWP extends ItemGunClient {
         setAnimation(new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0f, 0.2f));
     }
 
-    @Override
-    public void onUpdate(ItemStack stack, World world, EntityPlayer holder, int slot, boolean inHand) {
-        super.onUpdate(stack, world, holder, slot, inHand);
-
-        if (inHand && Mouse.isButtonDown(1)) {
-            if(!rightMouseDown) {
-                if (!zoom) {
-                    setAnimation(new Animation(0, 0, 0f).translateTo(-2.5f, 0f, 0f, 0.2f));
-                    PlayerHelper.zoom(6.0D);
-                    zoom = true;
-                } else {
-                    setAnimation(new Animation(-2f, 0, 0f).translateTo(0f, 0f, 0f, 0.2f));
-                    PlayerHelper.zoom(1.0D);
-                    zoom = false;
-                }
-
-                rightMouseDown = true;
-            }
-        } else {
-            rightMouseDown = false;
-        }
-
-        if(!inHand) {
-            zoom = false;
-            setAnimation(new Animation(0f, 0f, 0f).translate(0f, 0f, 0f));
-        }
-
-    }
-
-    public boolean isZoom() {
-        return zoom;
-    }
+//    @Override
+//    public void onUpdate(ItemStack stack, World world, EntityPlayer holder, int slot, boolean inHand) {
+//        super.onUpdate(stack, world, holder, slot, inHand);
+//
+//        if (inHand && Mouse.isButtonDown(1)) {
+//            if(!rightMouseDown) {
+//                if (!zoom) {
+//                    setAnimation(new Animation(0, 0, 0f).translateTo(-2.5f, 0f, 0f, 0.2f));
+//                    PlayerHelper.zoom(6.0D);
+//                    zoom = true;
+//                } else {
+//                    setAnimation(new Animation(-2f, 0, 0f).translateTo(0f, 0f, 0f, 0.2f));
+//                    PlayerHelper.zoom(1.0D);
+//                    zoom = false;
+//                }
+//
+//                rightMouseDown = true;
+//            }
+//        } else {
+//            rightMouseDown = false;
+//        }
+//
+//        if(!inHand) {
+//            zoom = false;
+//            setAnimation(new Animation(0f, 0f, 0f).translate(0f, 0f, 0f));
+//        }
+//
+//    }
 
     @Override
     public int getReboundSpeed() {

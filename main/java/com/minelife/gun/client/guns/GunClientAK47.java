@@ -58,7 +58,7 @@ public class GunClientAK47 extends ItemGunClient {
                         GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.16f + getAnimation().posY(), 2.5f + getAnimation().posZ());
                     } else if (site.getItem() == MLItems.reddotSight) {
                         GL11.glRotatef(315f, 0, 1, 0);
-                        GL11.glTranslatef(-2.8f + getAnimation().posX(), 0.16f + getAnimation().posY(), 2.5f + getAnimation().posZ());
+                        GL11.glTranslatef(-2.8f + getAnimation().posX(), -0.23f + getAnimation().posY(), 2.5f + getAnimation().posZ());
                     }
                 } else {
                     GL11.glRotatef(315f, 0, 1, 0);

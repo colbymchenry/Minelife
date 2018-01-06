@@ -32,9 +32,10 @@ public class OverlayRenderer {
 
         ItemGun gun = player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemGun ? (ItemGun) player.getHeldItem().getItem() : null;
 
-        if(event.type == RenderGameOverlayEvent.ElementType.HOTBAR && ItemGunClient.modifying) event.setCanceled(true);
+        if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR && ItemGunClient.modifying) event.setCanceled(true);
 
-        if (event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
+        if (event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS ||
+                event.type == RenderGameOverlayEvent.ElementType.HOTBAR || event.type == RenderGameOverlayEvent.ElementType.CHAT) {
 
             if (gun != null) {
 
@@ -48,53 +49,27 @@ public class OverlayRenderer {
                 /**
                  * START: Handle zooming for snipers
                  */
-                if (gun == MLItems.barrett) {
-                    if (((GunClientBarrett) gun.getClientHandler()).isZoom()) {
+                if (ItemGunClient.aimingDownSight) {
+                    if (gun == MLItems.barrett || gun == MLItems.awp) {
                         drawHollowCircle(x, y, 100);
                         event.setCanceled(true);
+                        RenderGun.handleRecoil(gun.getClientHandler());
                     }
                 }
-
-                if (gun == MLItems.awp) {
-                    if (((GunClientAWP) gun.getClientHandler()).isZoom()) {
-                        drawHollowCircle(x, y, 100);
-                        event.setCanceled(true);
-                    }
-                }
-
-                /**
-                 * END: Handle zooming for snipers
-                 */
             }
         }
 
-        if (event.type == RenderGameOverlayEvent.ElementType.HOTBAR || event.type == RenderGameOverlayEvent.ElementType.FOOD ||
-                event.type == RenderGameOverlayEvent.ElementType.HEALTH || event.type == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
-            if (gun == MLItems.barrett) {
-                if (((GunClientBarrett) gun.getClientHandler()).isZoom()) {
-                    event.setCanceled(true);
-                    RenderGun.handleRecoil(gun.getClientHandler());
-                }
-            }
 
-            if (gun == MLItems.awp) {
-                if (((GunClientAWP) gun.getClientHandler()).isZoom()) {
-                    event.setCanceled(true);
-                    RenderGun.handleRecoil(gun.getClientHandler());
-                }
-            }
-
-            if (player.getHeldItem() != null && player.getHeldItem().stackTagCompound != null && gun != null && player.getHeldItem().stackTagCompound.hasKey("reloadTime")) {
-                long max = gun.getReloadTime();
-                long fill = (player.getHeldItem().stackTagCompound.getLong("reloadTime")) - System.currentTimeMillis();
-                if (fill > -1) {
-                    // 20D is the width of the progress bar
-                    double toFill = ((double) fill / (double) max) * 30D;
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    GL11.glColor4f(1, 1, 1, 1);
-                    GuiUtil.drawImage(x + 40, y + 50, (float) toFill, 5);
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
-                }
+        if (player.getHeldItem() != null && player.getHeldItem().stackTagCompound != null && gun != null && player.getHeldItem().stackTagCompound.hasKey("reloadTime")) {
+            long max = gun.getReloadTime();
+            long fill = (player.getHeldItem().stackTagCompound.getLong("reloadTime")) - System.currentTimeMillis();
+            if (fill > -1) {
+                // 20D is the width of the progress bar
+                double toFill = ((double) fill / (double) max) * 30D;
+                GL11.glDisable(GL11.GL_TEXTURE_2D);
+                GL11.glColor4f(1, 1, 1, 1);
+                GuiUtil.drawImage(x + 40, y + 50, (float) toFill, 5);
+                GL11.glEnable(GL11.GL_TEXTURE_2D);
             }
         }
     }

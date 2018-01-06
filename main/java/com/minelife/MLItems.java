@@ -1,5 +1,6 @@
 package com.minelife;
 
+import com.minelife.clothing.ItemDesigner;
 import com.minelife.drug.item.*;
 import com.minelife.gun.item.ItemGunmetal;
 import com.minelife.gun.item.ItemZincIngot;
@@ -76,6 +77,7 @@ public class MLItems {
     public static ItemSight twoXSight;
     public static ItemSight acogSight;
     public static ItemSight reddotSight;
+    public static ItemDesigner designer;
 
     protected static void init()
     {
@@ -138,6 +140,7 @@ public class MLItems {
         register_item(twoXSight = new ItemSight("2x_sight"));
         register_item(acogSight = new ItemSight("acog_sight"));
         register_item(reddotSight = new ItemSight("reddot_sight"));
+        register_item(designer = new ItemDesigner());
     }
 
     private static void register_item(Item item)

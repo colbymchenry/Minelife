@@ -15,6 +15,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 
 import java.util.Arrays;
@@ -92,6 +93,21 @@ public class CommandEstate implements ICommand {
                     if(Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
                             estateAtLoc.isAbsoluteOwner(player.getUniqueID()) || estateAtLoc.getMembers().containsKey(player.getUniqueID())) {
                         Minelife.NETWORK.sendTo(new PacketGuiModifyEstate(estateAtLoc, estateAtLoc.getPlayerPermissions(player.getUniqueID())), player);
+                    } else {
+                        player.addChatComponentMessage(new ChatComponentText("You do not have permission to modify this estate."));
+                    }
+                    break;
+                }
+                case "delete": {
+                    if(estateAtLoc == null) {
+                        player.addChatComponentMessage(new ChatComponentText("There is no estate at your location."));
+                        return;
+                    }
+
+                    if(Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
+                            estateAtLoc.isAbsoluteOwner(player.getUniqueID()) || estateAtLoc.getMembers().containsKey(player.getUniqueID())) {
+                        estateAtLoc.deleteEstate();
+                        player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Estate deleted!"));
                     } else {
                         player.addChatComponentMessage(new ChatComponentText("You do not have permission to modify this estate."));
                     }

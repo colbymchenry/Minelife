@@ -56,6 +56,9 @@ public class GunClientM4A4 extends ItemGunClient {
                     } else if (site.getItem() == MLItems.acogSight) {
                         GL11.glRotatef(315.3f, 0, 1, 0);
                         GL11.glTranslatef(-1.9f + getAnimation().posX(), 0.32f + getAnimation().posY(), 0.5f + getAnimation().posZ());
+                    } else if (site.getItem() == MLItems.reddotSight) {
+                        GL11.glRotatef(314.6f, 0, 1, 0);
+                        GL11.glTranslatef(-1.9f + getAnimation().posX(), 0.34f + getAnimation().posY(), 1.2f + getAnimation().posZ());
                     }
                 } else {
                     GL11.glRotatef(315f, 0, 1, 0);
@@ -85,6 +88,8 @@ public class GunClientM4A4 extends ItemGunClient {
                 Attachment.getAcogSite().applyTransformationsAttached(item);
             } else if (site == MLItems.twoXSight) {
                 Attachment.getTwoXSite().applyTransformationsAttached(item);
+            } else if (site == MLItems.reddotSight) {
+                Attachment.getReddotSite().applyTransformationsAttached(item);
             }
         }
     }

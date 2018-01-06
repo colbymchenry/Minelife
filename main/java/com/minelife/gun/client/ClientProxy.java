@@ -89,6 +89,7 @@ public class ClientProxy extends MLProxy {
     @SubscribeEvent
     public void fovUpdate(FOVUpdateEvent event) {
         if (event.entity.getHeldItem() != null && event.entity.getHeldItem().getItem() instanceof ItemGun) {
+            ItemGun gun = (ItemGun) event.entity.getHeldItem().getItem();
             if (ItemGunClient.aimingDownSight) {
                 if (ItemGun.getSight(event.entity.getHeldItem()) != null) {
                     ItemSight site = (ItemSight) ItemGun.getSight(event.entity.getHeldItem()).getItem();
@@ -99,8 +100,14 @@ public class ClientProxy extends MLProxy {
                     } else if (site == MLItems.acogSight) {
                         event.newfov = 0.33F;
                     }
+
+
                 } else {
-                    event.newfov = 0.9f;
+                    if(gun == MLItems.awp || gun == MLItems.barrett) {
+                        event.newfov = 0.2F;
+                    } else {
+                        event.newfov = 0.9f;
+                    }
                 }
             }
         }

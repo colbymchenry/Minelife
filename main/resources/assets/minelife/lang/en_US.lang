@@ -71,3 +71,4 @@ item.drug_test.name=Drug Test
 potion.x_ray_effect=X-Ray Vision
 potion.marijuana_effect=Detectable Marijuana
 potion.cocaine_effect=Detectable Cocaine
+tile.redstone_lamp_on=Redstone Lamp (ON)

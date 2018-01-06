@@ -7,6 +7,7 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.client.renderer.entity.RenderSkeleton;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.opengl.GL11;
@@ -22,6 +23,7 @@ public class RenderPlayerCustom extends RenderPlayer {
         this.modelArmorChestplate = new ModelBipedCustom(1.0F);
         this.modelArmor = new ModelBipedCustom(0.5F);
     }
+
 
     @Override
     public void doRender(AbstractClientPlayer client, double x, double y, double z, float f, float f1) {

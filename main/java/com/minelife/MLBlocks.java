@@ -5,6 +5,7 @@ import com.minelife.economy.BlockATM;
 import com.minelife.economy.BlockATMTop;
 import com.minelife.gun.block.BlockZincOre;
 import com.minelife.shop.BlockShopBlock;
+import com.minelife.util.blocks.BlockRedstoneLampOn;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 
@@ -32,6 +33,7 @@ public class MLBlocks {
     public static BlockDryingRack drying_rack;
     public static BlockCementMixer cement_mixer;
     public static BlockShopBlock shopBlock;
+    public static BlockRedstoneLampOn redstoneLampOn;
 
     protected static void init()
     {
@@ -60,6 +62,7 @@ public class MLBlocks {
         register_block(presser = new BlockPresser());
         register_block(cement_mixer = new BlockCementMixer());
         register_block(shopBlock = new BlockShopBlock());
+        register_block(redstoneLampOn = new BlockRedstoneLampOn());
     }
 
     private static void register_block(Block block)
