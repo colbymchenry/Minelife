@@ -5,6 +5,7 @@ import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.util.client.Animation;
 import com.minelife.util.client.render.ModelBipedCustom;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -74,6 +75,7 @@ public class GunClientDesertEagle extends ItemGunClient {
             if (type == IItemRenderer.ItemRenderType.INVENTORY) {
                 GL11.glScalef(0.3f, 0.3f, 0.3f);
                 GL11.glTranslatef(0.5f, -1.25f, 0f);
+                RenderHelper.enableStandardItemLighting();
             }
 
             if (type == IItemRenderer.ItemRenderType.EQUIPPED) {

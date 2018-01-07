@@ -1,5 +1,7 @@
 package com.minelife;
 
+import com.minelife.util.client.netty.NettyPlayerListener;
+import com.minelife.util.client.netty.PacketSendNettyServer;
 import com.minelife.util.server.EntityCleaner;
 import com.minelife.util.server.FetchNameThread;
 import com.minelife.util.server.FetchUUIDThread;
@@ -20,6 +22,7 @@ public class ServerProxy extends MLProxy {
         new Thread(FetchUUIDThread.instance = new FetchUUIDThread()).start();
 
         MinecraftForge.EVENT_BUS.register(new EntityCleaner());
+
 
         initSQLite();
         Minelife.MODS.forEach(mod -> {

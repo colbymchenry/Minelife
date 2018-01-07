@@ -59,7 +59,6 @@ public class AttachmentAcogSight extends Attachment {
             GL11.glTranslatef(-8.55f, -1f, -7f);
             GuiUtil.drawImage(0, 0, 16, 16);
             GL11.glPopMatrix();
-            RenderHelper.enableStandardItemLighting();
         } else if (gun.getItem() == MLItems.m4a4) {
             GL11.glPushMatrix();
 
@@ -82,7 +81,9 @@ public class AttachmentAcogSight extends Attachment {
             GL11.glTranslatef(-8.55f, -1f, -7f);
             GuiUtil.drawImage(0, 0, 16, 16);
             GL11.glPopMatrix();
-            RenderHelper.enableStandardItemLighting();
         }
+
+        GL11.glColor4f(1, 1, 1, 1);
+        GL11.glDisable(GL11.GL_BLEND);
     }
 }

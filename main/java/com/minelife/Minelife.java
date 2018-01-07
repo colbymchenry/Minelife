@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.minelife.clothing.ModClothes;
 import com.minelife.drug.ModDrugs;
 import com.minelife.economy.ModEconomy;
+import com.minelife.gangs.ModGangs;
 import com.minelife.gun.ModGun;
 import com.minelife.minebay.ModMinebay;
 import com.minelife.notification.ModNotifications;
@@ -12,13 +13,19 @@ import com.minelife.police.ModPolice;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.shop.ModShop;
 import com.minelife.tracker.ModTracker;
+import com.minelife.util.MLConfig;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.PacketPopupMessage;
 import com.minelife.util.client.PacketRequestName;
 import com.minelife.util.client.PacketRequestUUID;
+import com.minelife.util.client.netty.ChatClient;
+import com.minelife.util.client.netty.NettyPlayerListener;
+import com.minelife.util.client.netty.PacketSendNettyServer;
+import com.minelife.util.configuration.InvalidConfigurationException;
 import com.minelife.util.server.PacketResponseName;
 import com.minelife.util.server.PacketResponseUUID;
 import com.minelife.util.server.PacketUpdatePlayerInventory;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
@@ -36,12 +43,17 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="required-after:BuildCraft|Transport;required-after:BuildCraft|Energy;required-after:BuildCraft|Core;required-after:BuildCraft|Factory;required-after:IC2;after:WorldEdit")
 public class Minelife {
+
+    public static MLConfig config;
+
+    public static ChatClient NETTY_CONNECTION;
 
     private static Side side;
 
@@ -73,6 +85,15 @@ public class Minelife {
         MODS.add(new ModMinebay());
         MODS.add(new ModShop());
         MODS.add(new ModClothes());
+        MODS.add(new ModGangs());
+        try {
+            config = new MLConfig("configuration");
+            config.addDefault("netty_ip", 0);
+            config.addDefault("netty_port", 0);
+            config.save();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Mod.EventHandler
@@ -89,6 +110,10 @@ public class Minelife {
         MLMod.registerPacket(PacketResponseName.Handler.class, PacketResponseName.class, Side.CLIENT);
         MLMod.registerPacket(PacketRequestUUID.Handler.class, PacketRequestUUID.class, Side.SERVER);
         MLMod.registerPacket(PacketResponseUUID.Handler.class, PacketResponseUUID.class, Side.CLIENT);
+        MLMod.registerPacket(PacketSendNettyServer.Handler.class, PacketSendNettyServer.class, Side.CLIENT);
+
+        FMLCommonHandler.instance().bus().register(new NettyPlayerListener());
+
         MODS.forEach(mod -> mod.preInit(event));
         try {
             PROXY.preInit(event);

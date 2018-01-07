@@ -7,7 +7,6 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dan200.computercraft.shared.peripheral.modem.IReceiver;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 
