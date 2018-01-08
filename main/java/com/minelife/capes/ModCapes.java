@@ -2,10 +2,7 @@ package com.minelife.capes;
 
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
-import com.minelife.capes.network.PacketCreateCape;
-import com.minelife.capes.network.PacketCreateGui;
-import com.minelife.capes.network.PacketUpdateCape;
-import com.minelife.capes.network.PacketUpdateCapeStatus;
+import com.minelife.capes.network.*;
 import com.minelife.capes.server.CommandCape;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -19,6 +16,9 @@ public class ModCapes extends MLMod {
         registerPacket(PacketCreateCape.Handler.class, PacketCreateCape.class, Side.SERVER);
         registerPacket(PacketUpdateCape.Handler.class, PacketUpdateCape.class, Side.CLIENT);
         registerPacket(PacketUpdateCapeStatus.Handler.class, PacketUpdateCapeStatus.class, Side.CLIENT);
+        registerPacket(PacketEditCape.Handler.class, PacketEditCape.class, Side.SERVER);
+        registerPacket(PacketEditGui.Handler.class, PacketEditGui.class, Side.CLIENT);
+        registerPacket(PacketRemoveCapeItemTexture.Handler.class, PacketRemoveCapeItemTexture.class, Side.CLIENT);
     }
 
     @Override

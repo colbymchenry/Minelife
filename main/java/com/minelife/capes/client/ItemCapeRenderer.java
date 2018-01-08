@@ -29,7 +29,7 @@ import java.util.UUID;
 
 public class ItemCapeRenderer implements IItemRenderer {
 
-    private Map<String, ResourceLocation> textures = Maps.newHashMap();
+    public static final Map<String, ResourceLocation> textures = Maps.newHashMap();
     private static final ModelBiped modelBipedMain = new ModelBiped();
 
     @Override
@@ -73,6 +73,10 @@ public class ItemCapeRenderer implements IItemRenderer {
         if(type == ItemRenderType.EQUIPPED_FIRST_PERSON) {
             GL11.glTranslatef(0.3f, -1.3f, -0.3f);
             GL11.glRotatef(100f, 0f, 1f, 0f);
+        }
+        if(type == ItemRenderType.EQUIPPED) {
+            GL11.glTranslatef(0f, -1.2f, -0.7f);
+            GL11.glScalef(3, 3, 3);
         }
         this.modelBipedMain.renderCloak(0.0625F);
         GL11.glPopMatrix();

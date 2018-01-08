@@ -1,8 +1,9 @@
 package com.minelife.capes.network;
 
 import com.minelife.MLItems;
-import com.minelife.util.client.netty.NettyOutbound;
+import com.minelife.Minelife;
 import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -15,14 +16,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
-public class PacketCreateCape implements IMessage {
+public class PacketEditCape implements IMessage {
 
     private String pixelInfo;
 
-    public PacketCreateCape() {
+    public PacketEditCape() {
     }
 
-    public PacketCreateCape(String pixelInfo) {
+    public PacketEditCape(String pixelInfo) {
         this.pixelInfo = pixelInfo;
     }
 
@@ -36,24 +37,26 @@ public class PacketCreateCape implements IMessage {
         ByteBufUtils.writeUTF8String(buf, pixelInfo);
     }
 
-    public static class Handler implements IMessageHandler<PacketCreateCape, IMessage> {
+
+    public static class Handler implements IMessageHandler<PacketEditCape, IMessage> {
 
         @SideOnly(Side.SERVER)
-        public IMessage onMessage(PacketCreateCape message, MessageContext ctx) {
-//            NettyOutbound outboundund = new NettyOutbound(0);
-//            outbound.write(ctx.getServerHandler().playerEntity.getUniqueID().toString());
-//            outbound.write(message.pixelInfo);
-//            outbound.send();
+        public IMessage onMessage(PacketEditCape message, MessageContext ctx) {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-            ItemStack capeStack = new ItemStack(MLItems.cape);
+            ItemStack capeStack = player.getHeldItem();
+
+            String oldID = MLItems.cape.getUUID(capeStack);
             MLItems.cape.setPixels(capeStack, message.pixelInfo);
             MLItems.cape.setUUID(capeStack);
-
             player.inventory.setInventorySlotContents(player.inventory.currentItem, capeStack);
+            Minelife.NETWORK.sendToAllAround(new PacketRemoveCapeItemTexture(oldID), new NetworkRegistry.TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 150));
+
             player.closeScreen();
-            player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Cape created!"));
+            player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Cape edited!"));
+
+
             return null;
         }
-    }
 
+    }
 }

@@ -15,12 +15,16 @@ import java.util.Set;
 
 public class GuiCreateCape extends GuiScreen {
 
+    private static ResourceLocation eraser = new ResourceLocation(Minelife.MOD_ID, "textures/gui/eraser.png");
     private static ResourceLocation template = new ResourceLocation(Minelife.MOD_ID, "textures/capes/template.png");
 
-    private GuiColorPicker colorPicker;
+    private boolean erasing = false;
+    protected GuiColorPicker colorPicker;
     private Rectangle canvasBounds;
-    private Set<Pixel> pixelList = Sets.newTreeSet();
+    protected Set<Pixel> pixelList = Sets.newTreeSet();
     private int scale = 10;
+    private GuiButton eraseBtn;
+
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float f) {
@@ -46,24 +50,62 @@ public class GuiCreateCape extends GuiScreen {
         GL11.glPopMatrix();
 
         colorPicker.drawScreen(mouseX, mouseY, f);
+
+        GL11.glColor4f(1, 1, 1, 1);
+
+
+        if (erasing) {
+            eraseBtn.drawButton(mc, eraseBtn.xPosition + 2, eraseBtn.yPosition + 2);
+            mc.getTextureManager().bindTexture(eraser);
+            GL11.glColor4f(1, 1, 1, 1);
+            GuiUtil.drawImage(eraseBtn.xPosition + 2, eraseBtn.yPosition + 2, 16, 16);
+            GuiUtil.drawImage(mouseX, mouseY, 16, 16);
+        } else {
+            eraseBtn.drawButton(mc, mouseX, mouseY);
+            GL11.glColor4f(1, 1, 1, 1);
+            mc.getTextureManager().bindTexture(eraser);
+            GuiUtil.drawImage(eraseBtn.xPosition + 2, eraseBtn.yPosition + 2, 16, 16);
+        }
+
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        int r = (colorPicker.getColor()>>16)&0xFF;
+        int g = (colorPicker.getColor()>>8)&0xFF;
+        int b = (colorPicker.getColor()>>0)&0xFF;
+        GL11.glColor4f(r / 255f, g / 255f, b / 255f, 1f);
+        GuiUtil.drawImage(colorPicker.xPosition, colorPicker.yPosition, colorPicker.width, 10);
     }
-    // TODO: Add eraser and load up the current cape.
+
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseBtn) {
         super.mouseClicked(mouseX, mouseY, mouseBtn);
-        if(mouseX >= canvasBounds.getX() && mouseX <= canvasBounds.getX() + (canvasBounds.getWidth() * scale) - 1 &&
-                mouseY >= canvasBounds.getY() && mouseY <= canvasBounds.getY() + (canvasBounds.getHeight() *scale) - 1) {
+
+        if(eraseBtn.mousePressed(mc, mouseX, mouseY)) erasing = !erasing;
+
+        if (mouseX >= canvasBounds.getX() && mouseX <= canvasBounds.getX() + (canvasBounds.getWidth() * scale) - 1 &&
+                mouseY >= canvasBounds.getY() && mouseY <= canvasBounds.getY() + (canvasBounds.getHeight() * scale) - 1) {
             Pixel p = new Pixel((mouseX - canvasBounds.getX()) / scale, (mouseY - canvasBounds.getY()) / scale, colorPicker.getColor());
-            pixelList.add(p);
+            System.out.println(p.x + "," + p.y);
+            if (erasing) {
+                pixelList.remove(p);
+            } else {
+                pixelList.remove(p);
+                pixelList.add(p);
+            }
         }
     }
 
     @Override
     protected void mouseClickMove(int mouseX, int mouseY, int mouseBtn, long timeSinceMouseClick) {
-        if(mouseX >= canvasBounds.getX() && mouseX <= canvasBounds.getX() + (canvasBounds.getWidth() * scale) - 1 &&
-                mouseY >= canvasBounds.getY() && mouseY <= canvasBounds.getY() + (canvasBounds.getHeight() *scale) - 1) {
+        if (mouseX >= canvasBounds.getX() && mouseX <= canvasBounds.getX() + (canvasBounds.getWidth() * scale) - 1 &&
+                mouseY >= canvasBounds.getY() && mouseY <= canvasBounds.getY() + (canvasBounds.getHeight() * scale) - 1) {
             Pixel p = new Pixel((mouseX - canvasBounds.getX()) / scale, (mouseY - canvasBounds.getY()) / scale, colorPicker.getColor());
-            pixelList.add(p);
+
+            if (erasing) {
+                pixelList.remove(p);
+            } else {
+                pixelList.remove(p);
+                pixelList.add(p);
+            }
         }
     }
 
@@ -84,15 +126,17 @@ public class GuiCreateCape extends GuiScreen {
         ScaledResolution scaledResolution = new ScaledResolution(mc, width, height);
         scale = scaledResolution.getScaleFactor() + 5;
         int canvasHeight = 17 * scale;
-        canvasBounds = new Rectangle(((this.width - (22 * scale)) / 2), ((height - canvasHeight) / 2) - ((this.height / 2) /2), 22, 17);
+        canvasBounds = new Rectangle(((this.width - (22 * scale)) / 2), ((height - canvasHeight) / 2) - ((this.height / 2) / 2), 22, 17);
 
         colorPicker = new GuiColorPicker((width - 100) / 2, ((this.height - 80) / 2) + ((this.height / 2) / 2), 100, 80, 0, 0, 0);
 
         buttonList.clear();
         buttonList.add(new GuiButton(0, colorPicker.xPosition + colorPicker.width + 20, colorPicker.yPosition, 40, 20, "Create"));
+        eraseBtn = new GuiButton(1, colorPicker.xPosition + colorPicker.width + 20, colorPicker.yPosition + 30, 20, 20, "");
+
     }
 
-    private class Pixel implements Comparable<Pixel> {
+    public class Pixel implements Comparable<Pixel> {
         int x, y, color;
 
         public Pixel(int x, int y, int color) {
@@ -103,7 +147,17 @@ public class GuiCreateCape extends GuiScreen {
 
         @Override
         public int compareTo(Pixel o) {
-            return o.x == x && o.y == y ? 0 : 1;
+            int result = o.x - x;
+            // on the same x
+            if(result == 0) {
+                result = o.y - y;
+                // on the same y
+                if(result == 0) {
+                    return 0;
+                }
+            }
+
+            return result;
         }
     }
 

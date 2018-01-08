@@ -2,10 +2,7 @@ package com.minelife.capes.server;
 
 import com.minelife.MLItems;
 import com.minelife.Minelife;
-import com.minelife.capes.network.PacketCreateCape;
-import com.minelife.capes.network.PacketCreateGui;
-import com.minelife.capes.network.PacketUpdateCape;
-import com.minelife.capes.network.PacketUpdateCapeStatus;
+import com.minelife.capes.network.*;
 import com.minelife.util.client.netty.NettyOutbound;
 import com.minelife.util.server.MLCommand;
 import net.minecraft.command.ICommand;
@@ -51,6 +48,11 @@ public class CommandCape implements ICommand {
 
         switch (args[0].toLowerCase()) {
             case "on": {
+                if (held_item == null || held_item.getItem() != MLItems.cape) {
+                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You must have the cape in hand."));
+                    break;
+                }
+
                 player.getEntityData().setBoolean("cape", true);
                 player.writeEntityToNBT(player.getEntityData());
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Your cape magically appears."));
@@ -65,7 +67,17 @@ public class CommandCape implements ICommand {
                 break;
             }
             case "edit": {
+                if (held_item == null || held_item.getItem() != MLItems.cape) {
+                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You must have the cape in hand."));
+                    break;
+                }
 
+                if(MLItems.cape.getPixels(held_item) == null) {
+                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "This is a blank cape. Type '/cape create' to create a design."));
+                    break;
+                }
+
+                Minelife.NETWORK.sendTo(new PacketEditGui(), player);
                 break;
             }
             case "create": {
@@ -83,7 +95,6 @@ public class CommandCape implements ICommand {
                 break;
             }
             case "wear": {
-                // TODO: Need to update everyone with new cape
                 if (held_item == null || held_item.getItem() != MLItems.cape) {
                     player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You must have the cape in hand."));
                     break;
