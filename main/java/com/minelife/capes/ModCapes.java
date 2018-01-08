@@ -10,6 +10,7 @@ import cpw.mods.fml.relauncher.Side;
 
 public class ModCapes extends MLMod {
 
+    // TODO: Add a recipe for the cape.
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         registerPacket(PacketCreateGui.Handler.class, PacketCreateGui.class, Side.CLIENT);

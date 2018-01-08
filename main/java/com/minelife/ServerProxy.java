@@ -8,6 +8,7 @@ import com.minelife.util.server.EntityCleaner;
 import com.minelife.util.server.FetchNameThread;
 import com.minelife.util.server.FetchUUIDThread;
 import com.minelife.util.server.UUIDFetcher;
+import com.minelife.welfare.WelfareListener;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -35,6 +36,7 @@ public class ServerProxy extends MLProxy {
 
         MinecraftForge.EVENT_BUS.register(new EntityCleaner());
         FMLCommonHandler.instance().bus().register(new ConnectionRetryHandler());
+        FMLCommonHandler.instance().bus().register(new WelfareListener());
 
 
         initSQLite();
