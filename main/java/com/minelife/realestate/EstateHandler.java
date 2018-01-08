@@ -106,7 +106,6 @@ public class EstateHandler {
     }
 
     public static void reloadEstates() {
-        loadedEstates.clear();
         for (File file : ModRealEstate.getServerProxy().estatesDir.listFiles()) {
             try {
                 loadedEstates.add(new Estate(Integer.parseInt(file.getName().replaceAll(".yml", ""))));

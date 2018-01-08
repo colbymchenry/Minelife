@@ -23,6 +23,8 @@ import java.util.UUID;
  */
 public class CapeLoader {
 
+    public static final ResourceLocation defaultCape = new ResourceLocation(Minelife.MOD_ID, "textures/capes/default.png");
+
     private static Map < UUID, ResourceLocation > capes = new HashMap <UUID, ResourceLocation> ();
 
     /**
@@ -30,8 +32,9 @@ public class CapeLoader {
      * @param uuid
      */
     public static void loadCape(final UUID uuid) {
-//        String url = "http://capesapi.com/api/v1/" + uuid.toString() + "/getCape";
-        String url = "http://colbymchenry.com/Cape.png";
+        if(Minelife.NETTY_CONNECTION == null || !Minelife.NETTY_CONNECTION.getChannel().isActive()) return;
+
+        String url = "http:/" + Minelife.NETTY_CONNECTION.getChannel().localAddress().toString().split("\\:")[0] + "/capes/" + uuid.toString() + ".png";
         final ResourceLocation resourceLocation = new ResourceLocation(Minelife.MOD_ID,"textures/capes/" + uuid.toString() + ".png");
         TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 
@@ -67,7 +70,7 @@ public class CapeLoader {
      * @return
      */
     public static ResourceLocation getCape(UUID uuid) {
-        return capes.containsKey(uuid) ? capes.get(uuid) : null;
+        return capes.containsKey(uuid) ? capes.get(uuid) : defaultCape;
     }
 
     public static boolean hasCape(UUID uuid) {

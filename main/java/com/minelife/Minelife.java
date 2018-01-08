@@ -1,6 +1,7 @@
 package com.minelife;
 
 import com.google.common.collect.Lists;
+import com.minelife.capes.ModCapes;
 import com.minelife.clothing.ModClothes;
 import com.minelife.drug.ModDrugs;
 import com.minelife.economy.ModEconomy;
@@ -86,6 +87,7 @@ public class Minelife {
         MODS.add(new ModShop());
         MODS.add(new ModClothes());
         MODS.add(new ModGangs());
+        MODS.add(new ModCapes());
         try {
             config = new MLConfig("configuration");
             config.addDefault("netty_ip", 0);
@@ -100,6 +102,7 @@ public class Minelife {
     public void preInit(FMLPreInitializationEvent event) {
         side = event.getSide();
         NETWORK = new SimpleNetworkWrapper(MOD_ID);
+
         MLBlocks.init();
         MLItems.init();
         MinecraftForge.EVENT_BUS.register(this);

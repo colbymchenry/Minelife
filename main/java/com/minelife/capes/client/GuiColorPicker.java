@@ -1,4 +1,4 @@
-package com.minelife.gangs.client;
+package com.minelife.capes.client;
 
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.gui.Gui;

@@ -1,8 +1,8 @@
-package com.minelife.gangs.client;
+package com.minelife.capes.client;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
+import com.minelife.capes.network.PacketCreateCape;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -11,10 +11,9 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Rectangle;
 
-import java.util.List;
 import java.util.Set;
 
-public class GuiModifyCape extends GuiScreen {
+public class GuiCreateCape extends GuiScreen {
 
     private static ResourceLocation template = new ResourceLocation(Minelife.MOD_ID, "textures/capes/template.png");
 
@@ -71,11 +70,11 @@ public class GuiModifyCape extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton btn) {
         super.actionPerformed(btn);
+
         String text = "";
         for (Pixel pixel : pixelList) text += pixel.x + "," + pixel.y + "," + pixel.color + ";";
-        text += "\n";
-        Minelife.NETTY_CONNECTION.getChannel().write(text);
-        Minelife.NETTY_CONNECTION.getChannel().flush();
+
+        Minelife.NETWORK.sendToServer(new PacketCreateCape(text));
     }
 
     @Override
@@ -90,7 +89,7 @@ public class GuiModifyCape extends GuiScreen {
         colorPicker = new GuiColorPicker((width - 100) / 2, ((this.height - 80) / 2) + ((this.height / 2) / 2), 100, 80, 0, 0, 0);
 
         buttonList.clear();
-        buttonList.add(new GuiButton(0, colorPicker.xPosition + colorPicker.width + 20, colorPicker.yPosition, 40, 20, "Send"));
+        buttonList.add(new GuiButton(0, colorPicker.xPosition + colorPicker.width + 20, colorPicker.yPosition, 40, 20, "Create"));
     }
 
     private class Pixel implements Comparable<Pixel> {

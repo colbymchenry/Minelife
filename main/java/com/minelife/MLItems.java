@@ -1,5 +1,6 @@
 package com.minelife;
 
+import com.minelife.capes.ItemCape;
 import com.minelife.clothing.ItemDesigner;
 import com.minelife.drug.item.*;
 import com.minelife.gun.item.ItemGunmetal;
@@ -78,6 +79,7 @@ public class MLItems {
     public static ItemSight acogSight;
     public static ItemSight reddotSight;
     public static ItemDesigner designer;
+    public static ItemCape cape;
 
     protected static void init()
     {
@@ -141,6 +143,7 @@ public class MLItems {
         register_item(acogSight = new ItemSight("acog_sight"));
         register_item(reddotSight = new ItemSight("reddot_sight"));
         register_item(designer = new ItemDesigner());
+        register_item(cape = new ItemCape());
     }
 
     private static void register_item(Item item)

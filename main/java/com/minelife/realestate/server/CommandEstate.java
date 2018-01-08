@@ -116,7 +116,6 @@ public class CommandEstate implements ICommand {
                 default: throw new Exception(getCommandUsage(sender));
             }
         } catch (Exception e) {
-            e.printStackTrace();
             player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
         }
     }

@@ -118,7 +118,7 @@ public class Billing {
             this.memo = result.getString("memo");
             this.amountDue = result.getDouble("amountDue");
             this.autoPay = result.getBoolean("autoPay");
-            this.billHandler = (BillHandler) Class.forName(result.getString("handler")).newInstance();
+            this.billHandler = (BillHandler) Class.forName(result.getString("handlers")).newInstance();
             this.billHandler.bill = this;
             this.billHandler.readFromNBT(NBTUtil.fromString(result.getString("tagCompound")));
         }
@@ -129,7 +129,7 @@ public class Billing {
             if (amount <= 0) throw new Exception("Amount cannot be less than 1.");
             if (player == null) throw new Exception("Player cannot be null.");
             if (memo == null || memo.isEmpty()) throw new Exception("Must have a memo.");
-            if (billHandler == null) throw new Exception("Must have a handler.");
+            if (billHandler == null) throw new Exception("Must have a handlers.");
 
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DATE, days);
@@ -146,7 +146,7 @@ public class Billing {
             this.billHandler.writeToNBT(this.billHandler.tagCompound);
             this.uuid = UUID.randomUUID();
 
-            Minelife.SQLITE.query("INSERT INTO Economy_Bills (uuid, dueDate, days, amount, amountDue, player, memo, autoPay, handler, tagCompound) VALUES ('" + this.uuid.toString() + "', " +
+            Minelife.SQLITE.query("INSERT INTO Economy_Bills (uuid, dueDate, days, amount, amountDue, player, memo, autoPay, handlers, tagCompound) VALUES ('" + this.uuid.toString() + "', " +
                     "'" + df.format(this.dueDate) + "', '" + this.days + "', '" + this.amount + "', '" + this.amountDue + "', '" + this.player.toString() + "', '" + this.memo + "', '" + (this.autoPay ? 1 : 0) + "', '" + this.billHandler.getClass().getName() + "', '" + this.billHandler.tagCompound.toString() + "')");
         }
 
@@ -267,7 +267,7 @@ public class Billing {
                 Minelife.SQLITE.query("UPDATE Economy_Bills SET dueDate='" + df.format(this.dueDate) + "', " +
                         "days='" + days + "', amount='" + amount + "', amountDue='" + amountDue + "', " +
                         "player='" + player.toString() + "', memo='" + memo + "', autoPay='" + (autoPay ? 1 : 0) + "', " +
-                        "handler='" + billHandler.getClass().getName() + "', " +
+                        "handlers='" + billHandler.getClass().getName() + "', " +
                         "tagCompound='" + this.billHandler.tagCompound.toString() + "' WHERE uuid='" + uuid.toString() + "'");
             } catch (SQLException e) {
                 e.printStackTrace();

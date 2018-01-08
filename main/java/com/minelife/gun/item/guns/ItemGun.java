@@ -59,6 +59,7 @@ public abstract class ItemGun extends Item {
     public ItemGun() {
         setUnlocalizedName(getName());
         setCreativeTab(ModGun.tabGuns);
+        setMaxStackSize(1);
     }
 
     @Override

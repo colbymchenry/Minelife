@@ -1,5 +1,7 @@
 package com.minelife;
 
+import com.minelife.util.client.netty.ChatClient;
+import com.minelife.util.client.netty.ConnectionRetryHandler;
 import com.minelife.util.client.netty.NettyPlayerListener;
 import com.minelife.util.client.netty.PacketSendNettyServer;
 import com.minelife.util.server.EntityCleaner;
@@ -10,7 +12,10 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import lib.PatPeter.SQLibrary.SQLite;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
+
+import java.util.logging.Level;
 
 public class ServerProxy extends MLProxy {
 
@@ -21,7 +26,15 @@ public class ServerProxy extends MLProxy {
         new Thread(FetchNameThread.instance = new FetchNameThread()).start();
         new Thread(FetchUUIDThread.instance = new FetchUUIDThread()).start();
 
+        try {
+            Minelife.NETTY_CONNECTION = new ChatClient(Minelife.config.getString("netty_ip"), Minelife.config.getInt("netty_port"));
+            Minelife.NETTY_CONNECTION.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         MinecraftForge.EVENT_BUS.register(new EntityCleaner());
+        FMLCommonHandler.instance().bus().register(new ConnectionRetryHandler());
 
 
         initSQLite();

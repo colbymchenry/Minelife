@@ -28,7 +28,7 @@ public class ServerProxy extends MLProxy {
          * This creates the SQL table that will store all the player's balances
          */
         Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36) NOT NULL, balanceBank DOUBLE DEFAULT 0.0, balanceWallet DOUBLE DEFAULT 0.0, pin VARCHAR(4) NOT NULL DEFAULT '')");
-        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS Economy_Bills (uuid VARCHAR(36) NOT NULL, dueDate VARCHAR(36) NOT NULL, days INT, amount DOUBLE, amountDue DOUBLE, player VARCHAR(36) NOT NULL, memo TEXT, autoPay BOOLEAN, handler TEXT, tagCompound TEXT)");
+        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS Economy_Bills (uuid VARCHAR(36) NOT NULL, dueDate VARCHAR(36) NOT NULL, days INT, amount DOUBLE, amountDue DOUBLE, player VARCHAR(36) NOT NULL, memo TEXT, autoPay BOOLEAN, handlers TEXT, tagCompound TEXT)");
 
         ModEconomy.config = new MLConfig("economy");
         ModEconomy.config.addDefault("messages.balance", EnumChatFormatting.GOLD + "Balance: " + EnumChatFormatting.RED + "$%b");

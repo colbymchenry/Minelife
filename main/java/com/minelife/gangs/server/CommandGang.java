@@ -1,10 +1,7 @@
 package com.minelife.gangs.server;
 
-import com.minelife.Minelife;
-import com.minelife.gangs.network.PacketOpenModifySymbolGui;
 import com.minelife.util.server.MLCommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +40,5 @@ public class CommandGang extends MLCommand {
 
     @Override
     public synchronized void execute(ICommandSender sender, String[] args) throws Exception {
-        Minelife.NETWORK.sendTo(new PacketOpenModifySymbolGui(), (EntityPlayerMP) sender);
     }
 }

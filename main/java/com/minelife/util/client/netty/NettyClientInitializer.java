@@ -1,6 +1,5 @@
 package com.minelife.util.client.netty;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -9,7 +8,7 @@ import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
-public class ChatClientInitializer  extends ChannelInitializer<SocketChannel> {
+public class NettyClientInitializer extends ChannelInitializer<SocketChannel> {
 
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -19,7 +18,7 @@ public class ChatClientInitializer  extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("decoder", new StringDecoder());
         pipeline.addLast("encoder", new StringEncoder());
 
-        pipeline.addLast("handler", new ChatClientHandler());
+        pipeline.addLast("handlers", new NettyClientHandler());
     }
 
 }

@@ -80,14 +80,14 @@ public class RenderPlayerCustom extends RenderPlayer {
     }
 
     @Override
-    protected void renderEquippedItems(AbstractClientPlayer p_77029_1_, float p_77029_2_)
+    protected void renderEquippedItems(AbstractClientPlayer player, float p_77029_2_)
     {
-        net.minecraftforge.client.event.RenderPlayerEvent.Specials.Pre event = new net.minecraftforge.client.event.RenderPlayerEvent.Specials.Pre(p_77029_1_, this, p_77029_2_);
+        net.minecraftforge.client.event.RenderPlayerEvent.Specials.Pre event = new net.minecraftforge.client.event.RenderPlayerEvent.Specials.Pre(player, this, p_77029_2_);
         if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return;
         GL11.glColor3f(1.0F, 1.0F, 1.0F);
-        super.renderEquippedItems(p_77029_1_, p_77029_2_);
-        super.renderArrowsStuckInEntity(p_77029_1_, p_77029_2_);
-        ItemStack itemstack = p_77029_1_.inventory.armorItemInSlot(3);
+        super.renderEquippedItems(player, p_77029_2_);
+        super.renderArrowsStuckInEntity(player, p_77029_2_);
+        ItemStack itemstack = player.inventory.armorItemInSlot(3);
 
         if (itemstack != null && event.renderHelmet)
         {
@@ -108,7 +108,7 @@ public class RenderPlayerCustom extends RenderPlayer {
                     GL11.glScalef(f1, -f1, -f1);
                 }
 
-                this.renderManager.itemRenderer.renderItem(p_77029_1_, itemstack, 0);
+                this.renderManager.itemRenderer.renderItem(player, itemstack, 0);
             }
             else if (itemstack.getItem() == Items.skull)
             {
@@ -138,15 +138,15 @@ public class RenderPlayerCustom extends RenderPlayer {
 
         float f2;
 
-        if (p_77029_1_.getCommandSenderName().equals("deadmau5") && p_77029_1_.func_152123_o())
+        if (player.getCommandSenderName().equals("deadmau5") && player.func_152123_o())
         {
 
-            this.bindTexture(p_77029_1_.getLocationSkin());
+            this.bindTexture(player.getLocationSkin());
 
             for (int j = 0; j < 2; ++j)
             {
-                float f9 = p_77029_1_.prevRotationYaw + (p_77029_1_.rotationYaw - p_77029_1_.prevRotationYaw) * p_77029_2_ - (p_77029_1_.prevRenderYawOffset + (p_77029_1_.renderYawOffset - p_77029_1_.prevRenderYawOffset) * p_77029_2_);
-                float f10 = p_77029_1_.prevRotationPitch + (p_77029_1_.rotationPitch - p_77029_1_.prevRotationPitch) * p_77029_2_;
+                float f9 = player.prevRotationYaw + (player.rotationYaw - player.prevRotationYaw) * p_77029_2_ - (player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * p_77029_2_);
+                float f10 = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * p_77029_2_;
                 GL11.glPushMatrix();
                 GL11.glRotatef(f9, 0.0F, 1.0F, 0.0F);
                 GL11.glRotatef(f10, 1.0F, 0.0F, 0.0F);
@@ -161,24 +161,24 @@ public class RenderPlayerCustom extends RenderPlayer {
             }
         }
 
-        boolean flag = p_77029_1_.func_152122_n();
+        boolean flag = player.func_152122_n();
         flag = event.renderCape && flag;
         float f4;
 
-        if (true)
+        if (player.getEntityData().hasKey("cape") && player.getEntityData().getBoolean("cape"))
         {
-            if(CapeLoader.getCape(p_77029_1_.getUniqueID()) == null) {
-                CapeLoader.loadCape(p_77029_1_.getUniqueID());
+            if(!CapeLoader.hasCape(player.getUniqueID())) {
+                CapeLoader.loadCape(player.getUniqueID());
                 this.bindTexture(defaultCape);
             } else {
-                this.bindTexture(CapeLoader.getCape(p_77029_1_.getUniqueID()));
+                this.bindTexture(CapeLoader.getCape(player.getUniqueID()));
             }
             GL11.glPushMatrix();
             GL11.glTranslatef(0.0F, 0.0F, 0.125F);
-            double d3 = p_77029_1_.field_71091_bM + (p_77029_1_.field_71094_bP - p_77029_1_.field_71091_bM) * (double)p_77029_2_ - (p_77029_1_.prevPosX + (p_77029_1_.posX - p_77029_1_.prevPosX) * (double)p_77029_2_);
-            double d4 = p_77029_1_.field_71096_bN + (p_77029_1_.field_71095_bQ - p_77029_1_.field_71096_bN) * (double)p_77029_2_ - (p_77029_1_.prevPosY + (p_77029_1_.posY - p_77029_1_.prevPosY) * (double)p_77029_2_);
-            double d0 = p_77029_1_.field_71097_bO + (p_77029_1_.field_71085_bR - p_77029_1_.field_71097_bO) * (double)p_77029_2_ - (p_77029_1_.prevPosZ + (p_77029_1_.posZ - p_77029_1_.prevPosZ) * (double)p_77029_2_);
-            f4 = p_77029_1_.prevRenderYawOffset + (p_77029_1_.renderYawOffset - p_77029_1_.prevRenderYawOffset) * p_77029_2_;
+            double d3 = player.field_71091_bM + (player.field_71094_bP - player.field_71091_bM) * (double)p_77029_2_ - (player.prevPosX + (player.posX - player.prevPosX) * (double)p_77029_2_);
+            double d4 = player.field_71096_bN + (player.field_71095_bQ - player.field_71096_bN) * (double)p_77029_2_ - (player.prevPosY + (player.posY - player.prevPosY) * (double)p_77029_2_);
+            double d0 = player.field_71097_bO + (player.field_71085_bR - player.field_71097_bO) * (double)p_77029_2_ - (player.prevPosZ + (player.posZ - player.prevPosZ) * (double)p_77029_2_);
+            f4 = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * p_77029_2_;
             double d1 = (double) MathHelper.sin(f4 * (float)Math.PI / 180.0F);
             double d2 = (double)(-MathHelper.cos(f4 * (float)Math.PI / 180.0F));
             float f5 = (float)d4 * 10.0F;
@@ -201,10 +201,10 @@ public class RenderPlayerCustom extends RenderPlayer {
                 f6 = 0.0F;
             }
 
-            float f8 = p_77029_1_.prevCameraYaw + (p_77029_1_.cameraYaw - p_77029_1_.prevCameraYaw) * p_77029_2_;
-            f5 += MathHelper.sin((p_77029_1_.prevDistanceWalkedModified + (p_77029_1_.distanceWalkedModified - p_77029_1_.prevDistanceWalkedModified) * p_77029_2_) * 6.0F) * 32.0F * f8;
+            float f8 = player.prevCameraYaw + (player.cameraYaw - player.prevCameraYaw) * p_77029_2_;
+            f5 += MathHelper.sin((player.prevDistanceWalkedModified + (player.distanceWalkedModified - player.prevDistanceWalkedModified) * p_77029_2_) * 6.0F) * 32.0F * f8;
 
-            if (p_77029_1_.isSneaking())
+            if (player.isSneaking())
             {
                 f5 += 25.0F;
             }
@@ -217,7 +217,7 @@ public class RenderPlayerCustom extends RenderPlayer {
             GL11.glPopMatrix();
         }
 
-        ItemStack itemstack1 = p_77029_1_.inventory.getCurrentItem();
+        ItemStack itemstack1 = player.inventory.getCurrentItem();
 
         if (itemstack1 != null && event.renderItem)
         {
@@ -225,14 +225,14 @@ public class RenderPlayerCustom extends RenderPlayer {
             this.modelBipedMain.bipedRightArm.postRender(0.0625F);
             GL11.glTranslatef(-0.0625F, 0.4375F, 0.0625F);
 
-            if (p_77029_1_.fishEntity != null)
+            if (player.fishEntity != null)
             {
                 itemstack1 = new ItemStack(Items.stick);
             }
 
             EnumAction enumaction = null;
 
-            if (p_77029_1_.getItemInUseCount() > 0)
+            if (player.getItemInUseCount() > 0)
             {
                 enumaction = itemstack1.getItemUseAction();
             }
@@ -268,7 +268,7 @@ public class RenderPlayerCustom extends RenderPlayer {
                     GL11.glTranslatef(0.0F, -0.125F, 0.0F);
                 }
 
-                if (p_77029_1_.getItemInUseCount() > 0 && enumaction == EnumAction.block)
+                if (player.getItemInUseCount() > 0 && enumaction == EnumAction.block)
                 {
                     GL11.glTranslatef(0.05F, 0.0F, -0.1F);
                     GL11.glRotatef(-50.0F, 0.0F, 1.0F, 0.0F);
@@ -304,7 +304,7 @@ public class RenderPlayerCustom extends RenderPlayer {
                     f3 = (float)(i >> 8 & 255) / 255.0F;
                     f4 = (float)(i & 255) / 255.0F;
                     GL11.glColor4f(f12, f3, f4, 1.0F);
-                    this.renderManager.itemRenderer.renderItem(p_77029_1_, itemstack1, k);
+                    this.renderManager.itemRenderer.renderItem(player, itemstack1, k);
                 }
             }
             else
@@ -314,12 +314,12 @@ public class RenderPlayerCustom extends RenderPlayer {
                 f12 = (float)(k >> 8 & 255) / 255.0F;
                 f3 = (float)(k & 255) / 255.0F;
                 GL11.glColor4f(f11, f12, f3, 1.0F);
-                this.renderManager.itemRenderer.renderItem(p_77029_1_, itemstack1, 0);
+                this.renderManager.itemRenderer.renderItem(player, itemstack1, 0);
             }
 
             GL11.glPopMatrix();
         }
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderPlayerEvent.Specials.Post(p_77029_1_, this, p_77029_2_));
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderPlayerEvent.Specials.Post(player, this, p_77029_2_));
     }
 
     protected float renderSwingProgress(EntityLivingBase p_77040_1_, float p_77040_2_) {
