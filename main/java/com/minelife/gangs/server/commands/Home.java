@@ -1,4 +1,4 @@
-package com.minelife.gangs.server.commandhandlers;
+package com.minelife.gangs.server.commands;
 
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.ModGangs;

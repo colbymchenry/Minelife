@@ -1,4 +1,4 @@
-package com.minelife.gangs.server.commandhandlers;
+package com.minelife.gangs.server.commands;
 
 import com.minelife.util.Color;
 import com.minelife.util.FireworkBuilder;

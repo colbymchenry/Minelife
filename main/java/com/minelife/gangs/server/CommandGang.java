@@ -1,10 +1,10 @@
 package com.minelife.gangs.server;
 
 import com.google.common.collect.Maps;
-import com.minelife.gangs.server.commandhandlers.Create;
-import com.minelife.gangs.server.commandhandlers.Home;
-import com.minelife.gangs.server.commandhandlers.SetHome;
-import com.minelife.gangs.server.commandhandlers.UnsetHome;
+import com.minelife.gangs.server.commands.Create;
+import com.minelife.gangs.server.commands.Home;
+import com.minelife.gangs.server.commands.SetHome;
+import com.minelife.gangs.server.commands.UnsetHome;
 import com.minelife.util.server.MLCommand;
 import net.minecraft.command.ICommandSender;
 

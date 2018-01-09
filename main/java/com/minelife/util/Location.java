@@ -10,6 +10,7 @@ public class Location {
 
     private String world;
     private double x, y, z;
+    private float yaw, pitch;
 
     public Location(String world, double x, double y, double z) {
         this.world = world;
@@ -48,6 +49,22 @@ public class Location {
 
     public void setZ(double z) {
         this.z = z;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
+
+    public float getYaw() {
+        return yaw;
+    }
+
+    public float getPitch() {
+        return pitch;
     }
 
     @SideOnly(Side.SERVER)

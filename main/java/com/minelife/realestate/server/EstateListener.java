@@ -3,6 +3,7 @@ package com.minelife.realestate.server;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.realestate.*;
+import com.minelife.util.StringHelper;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
@@ -51,7 +52,7 @@ public class EstateListener {
             estate = insideEstate.get(player);
             insideEstate.remove(player);
             if (!estate.getOutro().trim().isEmpty())
-                player.addChatComponentMessage(new ChatComponentText(estate.getOutro().replaceAll("&", String.valueOf('\u00a7'))));
+                player.addChatComponentMessage(new ChatComponentText(StringHelper.ParseFormatting(estate.getOutro(), '&')));
             return;
         }
 
@@ -63,12 +64,12 @@ public class EstateListener {
             }
 
             if (!insideEstate.get(player).getOutro().trim().isEmpty())
-                player.addChatComponentMessage(new ChatComponentText(insideEstate.get(player).getOutro().replaceAll("&", String.valueOf('\u00a7'))));
+                player.addChatComponentMessage(new ChatComponentText(StringHelper.ParseFormatting(insideEstate.get(player).getOutro(), '&')));
             if (!estate.getIntro().trim().isEmpty()) {
-                player.addChatComponentMessage(new ChatComponentText(estate.getIntro().replaceAll("&", String.valueOf('\u00a7'))));
+                player.addChatComponentMessage(new ChatComponentText(StringHelper.ParseFormatting(estate.getIntro(), '&')));
             }
 
-            if(estate.isForRent() || estate.isPurchasable()) {
+            if (estate.isForRent() || estate.isPurchasable()) {
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Estate is for " + (estate.isForRent() && estate.isPurchasable() ? "rent and sale!" : estate.isForRent() && !estate.isPurchasable() ? "rent!" : "sale!")));
             }
         }
@@ -84,10 +85,10 @@ public class EstateListener {
 
                 insideEstate.put(player, estate);
                 if (!estate.getIntro().trim().isEmpty()) {
-                    player.addChatComponentMessage(new ChatComponentText(estate.getIntro().replaceAll("&", String.valueOf('\u00a7'))));
+                    player.addChatComponentMessage(new ChatComponentText(StringHelper.ParseFormatting(estate.getIntro(), '&')));
                 }
 
-                if(estate.isForRent() || estate.isPurchasable()) {
+                if (estate.isForRent() || estate.isPurchasable()) {
                     player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Estate is for " + (estate.isForRent() && estate.isPurchasable() ? "rent and sale!" : estate.isForRent() && !estate.isPurchasable() ? "rent!" : "sale!")));
                 }
 
@@ -149,7 +150,7 @@ public class EstateListener {
 
         Block block = event.world.getBlock(event.x, event.y, event.z);
 
-        if(((block instanceof BlockContainer) || ServerProxy.config.getIntegerList("black-listed-blocks").contains(Block.getIdFromBlock(block))) &&
+        if (((block instanceof BlockContainer) || ServerProxy.config.getIntegerList("black-listed-blocks").contains(Block.getIdFromBlock(block))) &&
                 !estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.INTERACT)) {
             player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You are not allowed to interact within this region."));
             event.setCanceled(true);
@@ -207,12 +208,12 @@ public class EstateListener {
         List<ChunkPosition> toRemove = Lists.newArrayList();
         event.getAffectedBlocks().forEach(cP -> {
             Estate estate = EstateHandler.getEstateAt(event.world, Vec3.createVectorHelper(cP.chunkPosX, cP.chunkPosY, cP.chunkPosZ));
-            if(estate != null) {
-                if(!estate.getEstatePermissions().contains(Permission.EXPLOSION)) {
+            if (estate != null) {
+                if (!estate.getEstatePermissions().contains(Permission.EXPLOSION)) {
                     toRemove.add(cP);
                 } else {
-                    if(event.explosion.getExplosivePlacedBy() instanceof EntityPlayerMP) {
-                        if(!estate.getPlayerPermissions(((EntityPlayer) event.explosion.getExplosivePlacedBy()).getUniqueID()).contains(Permission.BREAK)) {
+                    if (event.explosion.getExplosivePlacedBy() instanceof EntityPlayerMP) {
+                        if (!estate.getPlayerPermissions(((EntityPlayer) event.explosion.getExplosivePlacedBy()).getUniqueID()).contains(Permission.BREAK)) {
                             toRemove.add(cP);
                         }
                     }
