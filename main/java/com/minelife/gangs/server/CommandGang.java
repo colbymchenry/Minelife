@@ -1,6 +1,10 @@
 package com.minelife.gangs.server;
 
 import com.google.common.collect.Maps;
+import com.minelife.gangs.server.commandhandlers.Create;
+import com.minelife.gangs.server.commandhandlers.Home;
+import com.minelife.gangs.server.commandhandlers.SetHome;
+import com.minelife.gangs.server.commandhandlers.UnsetHome;
 import com.minelife.util.server.MLCommand;
 import net.minecraft.command.ICommandSender;
 
@@ -13,7 +17,10 @@ public class CommandGang extends MLCommand {
     private static Map<String, ICommandHandler> commandMap = Maps.newHashMap();
 
     static {
-
+        commandMap.put("create", new Create());
+        commandMap.put("home", new Home());
+        commandMap.put("sethome", new SetHome());
+        commandMap.put("unsethome", new UnsetHome());
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.minelife.capes.ModCapes;
 import com.minelife.clothing.ModClothes;
 import com.minelife.drug.ModDrugs;
 import com.minelife.economy.ModEconomy;
+import com.minelife.essentials.ModEssentials;
 import com.minelife.gangs.ModGangs;
 import com.minelife.gun.ModGun;
 import com.minelife.minebay.ModMinebay;
@@ -88,6 +89,7 @@ public class Minelife {
         MODS.add(new ModClothes());
         MODS.add(new ModGangs());
         MODS.add(new ModCapes());
+        MODS.add(new ModEssentials());
         try {
             config = new MLConfig("configuration");
             config.addDefault("netty_ip", 0);

@@ -1,5 +1,6 @@
 package com.minelife;
 
+import com.minelife.util.SoundTrack;
 import com.minelife.util.client.netty.ChatClient;
 import com.minelife.util.client.netty.ConnectionRetryHandler;
 import com.minelife.util.client.netty.NettyPlayerListener;
@@ -37,6 +38,7 @@ public class ServerProxy extends MLProxy {
         MinecraftForge.EVENT_BUS.register(new EntityCleaner());
         FMLCommonHandler.instance().bus().register(new ConnectionRetryHandler());
         FMLCommonHandler.instance().bus().register(new WelfareListener());
+        FMLCommonHandler.instance().bus().register(new SoundTrack());
 
 
         initSQLite();
