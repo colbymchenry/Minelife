@@ -19,6 +19,12 @@ public class Location {
         this.z = z;
     }
 
+    public Location(String world, double x, double y, double z, float yaw, float pitch) {
+        this(world, x, y, z);
+        this.yaw = yaw;
+        this.pitch = pitch;
+    }
+
     public String getWorld() {
         return world;
     }

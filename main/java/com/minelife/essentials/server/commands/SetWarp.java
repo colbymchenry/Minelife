@@ -6,8 +6,10 @@ import com.minelife.essentials.ModEssentials;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.Location;
 import com.minelife.util.NumberConversions;
+import com.minelife.util.PlayerHelper;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
@@ -54,6 +56,8 @@ public class SetWarp implements ICommand {
                 }
             }
         }
+
+        if(PlayerHelper.isOp(Player)) MaxWarps = 500;
 
         try {
             Map<String, Location> Warps = Warp.GetWarps(Player.getUniqueID());

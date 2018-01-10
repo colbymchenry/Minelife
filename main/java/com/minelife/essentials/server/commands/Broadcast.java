@@ -6,8 +6,11 @@ import com.minelife.util.StringHelper;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.WorldServer;
 
 import java.util.List;
 
@@ -39,7 +42,11 @@ public class Broadcast implements ICommand {
 
         for (String arg : args) msg += arg;
 
-        MinecraftServer.getServer().addChatMessage(new ChatComponentText(StringHelper.ParseFormatting(msg, '&')));
+        for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+            for (Object playerEntity : worldServer.playerEntities) {
+                ((EntityPlayerMP) playerEntity).addChatComponentMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "[Server] " + EnumChatFormatting.RESET + StringHelper.ParseFormatting(msg, '&')));
+            }
+        }
     }
 
     @Override

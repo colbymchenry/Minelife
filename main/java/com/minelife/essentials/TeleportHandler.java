@@ -24,27 +24,40 @@ public class TeleportHandler {
     public void serverTick(TickEvent.ServerTickEvent event) {
         tick++;
 
-        if(tick >= 20) {
+        if(tick >= 40) {
             toRemove.clear();
             teleportQue.forEach(que -> {
                 que.seconds--;
                 if(que.seconds <= 0) {
-                    que.player.setWorld(que.location.getEntityWorld());
-                    que.player.setPositionAndUpdate(que.location.getX(), que.location.getY(), que.location.getZ());
+                    // transfer to the location's world
+                    if(que.player.getEntityWorld().provider.dimensionId != que.location.getEntityWorld().provider.dimensionId) {
+                        que.player.mcServer.getConfigurationManager().transferPlayerToDimension(que.player, que.location.getEntityWorld().provider.dimensionId);
+                    }
+                    que.player.playerNetServerHandler.setPlayerLocation(que.location.getX(), que.location.getY(), que.location.getZ(), que.location.getYaw(), que.location.getPitch());
                     toRemove.add(que);
                 } else {
                     ModEssentials.sendTitle(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD.toString() + que.seconds, null, 1, que.player);
                     SoundTrack soundTrack = new SoundTrack();
-                    soundTrack.addPart("minecraft:note.pling", 0L, 1, 1);
+                    if(que.seconds == 1) {
+                        soundTrack.addPart("minecraft:note.pling", 0L, 1, 1.5F);
+                    } else {
+                        soundTrack.addPart("minecraft:note.pling", 0L, 1, 1);
+                    }
                     soundTrack.play(que.player);
                 }
             });
+
+            teleportQue.removeAll(toRemove);
             tick = 0;
         }
     }
 
     public static void teleport(EntityPlayerMP player, Location location, int duration) {
         teleportQue.add(new TeleportQue(player, location, duration));
+    }
+
+    public static void teleport(EntityPlayerMP player, Location location) {
+        teleportQue.add(new TeleportQue(player, location, ModEssentials.config.getInt("teleport_warmup")));
     }
 
     private static class TeleportQue implements Comparable<TeleportQue> {

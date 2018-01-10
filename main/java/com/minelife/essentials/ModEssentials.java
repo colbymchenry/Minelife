@@ -44,6 +44,10 @@ public class ModEssentials extends MLMod {
             event.registerServerCommand(new Warp());
             event.registerServerCommand(new DelWarp());
             event.registerServerCommand(new SetWarp());
+            event.registerServerCommand(new SetHome());
+            event.registerServerCommand(new Home());
+            event.registerServerCommand(new SetSpawn());
+            event.registerServerCommand(new Spawn());
         } catch (SQLException e) {
             e.printStackTrace();
         }

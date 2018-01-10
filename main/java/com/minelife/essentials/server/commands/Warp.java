@@ -79,7 +79,7 @@ public class Warp implements ICommand {
                     Player.addChatMessage(new ChatComponentText(StringHelper.ParseFormatting("&c=-=-=-=[&6WARPS&c]=-=-=-=", '&')));
                     int i = 1;
                     for (String s : Warps.keySet()) {
-                        Player.addChatMessage(new ChatComponentText(StringHelper.ParseFormatting("&c" + i + 1 + ". &6" + s, '&')));
+                        Player.addChatMessage(new ChatComponentText(StringHelper.ParseFormatting("&c" + i + ". &6" + s, '&')));
                         i++;
                     }
                 }
@@ -96,7 +96,7 @@ public class Warp implements ICommand {
 
             Location Location = Warps.get(WarpName);
 
-            TeleportHandler.teleport(Player, Location, 5);
+            TeleportHandler.teleport(Player, Location);
         } catch (SQLException e) {
             e.printStackTrace();
             Player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "An error occurred."));
