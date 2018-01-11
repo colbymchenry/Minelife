@@ -38,6 +38,21 @@ public class PlayerHelper {
     }
 
     @SideOnly(Side.SERVER)
+    public static EntityPlayerMP getPlayer(String player) {
+        for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+            for (int i = 0; i < worldServer.playerEntities.size(); ++i) {
+                EntityPlayerMP entityPlayer = (EntityPlayerMP) worldServer.playerEntities.get(i);
+
+                if (player.equalsIgnoreCase(entityPlayer.getCommandSenderName())) {
+                    return entityPlayer;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @SideOnly(Side.SERVER)
     public static void updatePlayerInventory(EntityPlayerMP player) {
         Minelife.NETWORK.sendTo(new PacketUpdatePlayerInventory(player), player);
     }
@@ -58,14 +73,14 @@ public class PlayerHelper {
 
         for (int i = 0; i < range; i++) {
 
-            if(i == 1 && player.worldObj.isRemote) {
+            if (i == 1 && player.worldObj.isRemote) {
                 origin = currentPosVec;
             }
 
             currentPosVec = currentPosVec.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
 
-            if(i == 1 && player.worldObj.isRemote) {
-               target = currentPosVec;
+            if (i == 1 && player.worldObj.isRemote) {
+                target = currentPosVec;
 //                ClientProxy.renderBulletLine.shot(origin, target, lookVec);
             }
 
