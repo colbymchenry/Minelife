@@ -8,6 +8,7 @@ import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,13 @@ public class TeleportAsk implements ICommand {
         }
 
         EntityPlayerMP Receiver = PlayerHelper.getPlayer(args[0]);
-        // TODO:
+
+        if(Receiver == null) {
+            Sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Player not found."));
+            return;
+        }
+
+
     }
 
     @Override
@@ -52,7 +59,7 @@ public class TeleportAsk implements ICommand {
 
     @Override
     public List addTabCompletionOptions(ICommandSender sender, String[] args) {
-        return null;
+        return Lists.newArrayList();
     }
 
     @Override
