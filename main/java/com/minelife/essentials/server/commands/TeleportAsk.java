@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class TeleportAsk implements ICommand {
 
-    private static Map<UUID, UUID> RequestMap = Maps.newHashMap();
+    private static Map<EntityPlayerMP, EntityPlayerMP> RequestMap = Maps.newHashMap();
 
     @Override
     public String getCommandName() {
@@ -49,7 +49,7 @@ public class TeleportAsk implements ICommand {
             return;
         }
 
-
+        SubmitRequest(Sender, Receiver);
     }
 
     @Override
@@ -70,5 +70,23 @@ public class TeleportAsk implements ICommand {
     @Override
     public int compareTo(Object o) {
         return 0;
+    }
+
+    public static void SubmitRequest(EntityPlayerMP Sender, EntityPlayerMP Receiver) {
+        Receiver.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN +
+                "Player " + EnumChatFormatting.BLUE + Sender.getCommandSenderName() + EnumChatFormatting.GREEN +
+                " has requested to teleport to you. Type " + EnumChatFormatting.BLUE + "/tpaccept" + EnumChatFormatting.GREEN + " to accept."));
+
+        Sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Teleport request sent to " + EnumChatFormatting.BLUE + Receiver.getCommandSenderName()));
+
+        RequestMap.put(Receiver, Sender);
+    }
+
+    public static EntityPlayerMP GetRequest(EntityPlayerMP Player) {
+        return RequestMap.get(Player);
+    }
+
+    public static void DeleteRequest(EntityPlayerMP Player) {
+        RequestMap.remove(Player);
     }
 }

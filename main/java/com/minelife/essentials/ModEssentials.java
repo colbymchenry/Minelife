@@ -48,6 +48,10 @@ public class ModEssentials extends MLMod {
             event.registerServerCommand(new Home());
             event.registerServerCommand(new SetSpawn());
             event.registerServerCommand(new Spawn());
+            event.registerServerCommand(new TeleportAccept());
+            event.registerServerCommand(new TeleportAsk());
+            event.registerServerCommand(new TeleportAskHere());
+            event.registerServerCommand(new TeleportDeny());
         } catch (SQLException e) {
             e.printStackTrace();
         }
