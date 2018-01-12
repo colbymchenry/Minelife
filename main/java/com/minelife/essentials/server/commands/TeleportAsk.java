@@ -50,6 +50,11 @@ public class TeleportAsk implements ICommand {
         }
 
         SubmitRequest(Sender, Receiver);
+        Receiver.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN +
+                "Player " + EnumChatFormatting.BLUE + Sender.getCommandSenderName() + EnumChatFormatting.GREEN +
+                " has requested to teleport to you. Type " + EnumChatFormatting.BLUE + "/tpaccept" + EnumChatFormatting.GREEN + " to accept."));
+
+        Sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Teleport request sent to " + EnumChatFormatting.BLUE + Receiver.getCommandSenderName()));
     }
 
     @Override
@@ -73,12 +78,6 @@ public class TeleportAsk implements ICommand {
     }
 
     public static void SubmitRequest(EntityPlayerMP Sender, EntityPlayerMP Receiver) {
-        Receiver.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN +
-                "Player " + EnumChatFormatting.BLUE + Sender.getCommandSenderName() + EnumChatFormatting.GREEN +
-                " has requested to teleport to you. Type " + EnumChatFormatting.BLUE + "/tpaccept" + EnumChatFormatting.GREEN + " to accept."));
-
-        Sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Teleport request sent to " + EnumChatFormatting.BLUE + Receiver.getCommandSenderName()));
-
         RequestMap.put(Receiver, Sender);
     }
 

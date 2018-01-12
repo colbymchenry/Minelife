@@ -40,6 +40,11 @@ public class TeleportAccept implements ICommand {
             return;
         }
 
+        if(Player.getEntityData().hasKey("tpahere")) {
+            Player = Sender;
+            Sender = (EntityPlayerMP) sender;
+        }
+
         Location PlayerLocation = new Location(Player.worldObj.getWorldInfo().getWorldName(), Player.posX, Player.posY, Player.posZ, Player.rotationYaw, Player.rotationPitch);
 
         TeleportHandler.teleport(Sender, PlayerLocation);

@@ -40,7 +40,11 @@ public class PacketPlaySound implements IMessage {
 
         @Override
         public IMessage onMessage(PacketPlaySound message, MessageContext ctx) {
-            Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + message.sound, message.volume, message.pitch);
+            if(message.sound.split("\\:")[0].equals("minecraft")) {
+                Minecraft.getMinecraft().thePlayer.playSound(message.sound, message.volume, message.pitch);
+            } else {
+                Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + message.sound, message.volume, message.pitch);
+            }
             return null;
         }
     }

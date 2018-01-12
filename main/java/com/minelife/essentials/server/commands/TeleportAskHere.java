@@ -44,8 +44,14 @@ public class TeleportAskHere implements ICommand {
             return;
         }
 
-        TeleportAsk.SubmitRequest(Receiver, Player);
+        TeleportAsk.SubmitRequest(Player, Receiver);
+        Receiver.getEntityData().setBoolean("tpahere", true);
+        Receiver.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN +
+                "Player " + EnumChatFormatting.BLUE + Player.getCommandSenderName() + EnumChatFormatting.GREEN +
+                " has requested for you to teleport to them. Type " + EnumChatFormatting.BLUE + "/tpaccept" + EnumChatFormatting.GREEN + " to accept."));
+
         Player.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Teleport request sent to " + EnumChatFormatting.BLUE + Receiver.getCommandSenderName()));
+
     }
 
     @Override
