@@ -40,6 +40,9 @@ public class TeleportDeny implements ICommand {
 
         Receiver.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Your request was denied."));
         Player.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Teleport request denied."));
+
+        Receiver.getEntityData().removeTag("tpahere");
+        Player.getEntityData().removeTag("tpahere");
         TeleportAsk.DeleteRequest(Player);
     }
 

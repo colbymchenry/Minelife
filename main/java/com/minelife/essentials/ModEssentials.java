@@ -52,6 +52,9 @@ public class ModEssentials extends MLMod {
             event.registerServerCommand(new TeleportAsk());
             event.registerServerCommand(new TeleportAskHere());
             event.registerServerCommand(new TeleportDeny());
+            event.registerServerCommand(new Whisper());
+            event.registerServerCommand(new Reply());
+            event.registerServerCommand(new TempBan());
         } catch (SQLException e) {
             e.printStackTrace();
         }

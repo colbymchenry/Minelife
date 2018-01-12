@@ -86,5 +86,9 @@
   "key_stroke": {
     "category": "neutral",
     "sounds": ["minelife:key_stroke"]
+  },
+  "text_message": {
+    "category": "neutral",
+    "sounds": ["minelife:text_message"]
   }
 }

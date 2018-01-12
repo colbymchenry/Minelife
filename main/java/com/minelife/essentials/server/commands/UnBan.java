@@ -47,7 +47,7 @@ public class UnBan extends MLCommand {
             return;
         }
 
-        if(!Ban.isPlayerBanned(playerUUID)) {
+        if(!Ban.IsPlayerBanned(playerUUID)) {
             sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Player is not banned."));
             return;
         }

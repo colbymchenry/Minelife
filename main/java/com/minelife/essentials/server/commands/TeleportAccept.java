@@ -41,6 +41,8 @@ public class TeleportAccept implements ICommand {
         }
 
         if(Player.getEntityData().hasKey("tpahere")) {
+            Player.getEntityData().removeTag("tpahere");
+            Sender.getEntityData().removeTag("tpahere");
             Player = Sender;
             Sender = (EntityPlayerMP) sender;
         }

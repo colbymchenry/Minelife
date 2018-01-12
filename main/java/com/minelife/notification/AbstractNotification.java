@@ -76,9 +76,9 @@ public abstract class AbstractNotification {
 
     public void toBytes(ByteBuf buf)
     {
-        writeToNBT(tagCompound);
         ByteBufUtils.writeUTF8String(buf, uniqueID.toString());
         ByteBufUtils.writeUTF8String(buf, playerUniqueID.toString());
+        writeToNBT(tagCompound);
         ByteBufUtils.writeTag(buf, tagCompound);
     }
 

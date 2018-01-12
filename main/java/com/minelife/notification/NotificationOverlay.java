@@ -52,7 +52,9 @@ public class NotificationOverlay {
             notificationY -= timePassed * speedY;
 
             if (notificationY < (currentNotification.getHeight() + 80) * -1) {
-                NOTIFICATION_QUE.removeIf(abstractGuiNotification -> abstractGuiNotification.notification.uniqueID.equals(currentNotification.notification.uniqueID));
+                NOTIFICATION_QUE.removeIf(abstractGuiNotification ->
+                        abstractGuiNotification.notification.getUniqueID() == null || currentNotification.notification.getUniqueID() == null ||
+                        abstractGuiNotification.notification.getUniqueID().equals(currentNotification.notification.getUniqueID()));
                 currentNotification = null;
                 return;
             }

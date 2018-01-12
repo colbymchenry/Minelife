@@ -100,7 +100,7 @@ public abstract class AbstractGuiNotification extends Gui implements Comparable<
     @Override
     public int compareTo(AbstractGuiNotification o)
     {
-        return o.notification.getUniqueID().equals(notification.getUniqueID()) ? 0 : 1;
+        return o.notification == null ? -1000 : o.notification.getUniqueID().toString().compareTo(notification.getUniqueID().toString());
     }
 
     @Override

@@ -48,6 +48,12 @@ public class ItemCape extends Item {
         stack.stackTagCompound = tagCompound;
     }
 
+    public void setUUID(ItemStack stack, UUID uuid) {
+        NBTTagCompound tagCompound = stack.stackTagCompound == null ? new NBTTagCompound() : stack.stackTagCompound;
+        tagCompound.setString("uuid", uuid.toString());
+        stack.stackTagCompound = tagCompound;
+    }
+
     public String getUUID(ItemStack stack) {
         if(stack.stackTagCompound == null || !stack.stackTagCompound.hasKey("uuid") ||
                 stack.stackTagCompound.getString("uuid").isEmpty()) return null;

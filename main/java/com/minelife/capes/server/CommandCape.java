@@ -2,16 +2,20 @@ package com.minelife.capes.server;
 
 import com.minelife.MLItems;
 import com.minelife.Minelife;
+import com.minelife.capes.ItemCape;
 import com.minelife.capes.network.*;
 import com.minelife.util.client.netty.NettyOutbound;
+import com.minelife.util.client.render.CapeLoader;
 import com.minelife.util.server.MLCommand;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.List;
 
@@ -55,15 +59,24 @@ public class CommandCape implements ICommand {
 
                 player.getEntityData().setBoolean("cape", true);
                 player.writeEntityToNBT(player.getEntityData());
+                player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Your cape magically appears."));
                 Minelife.NETWORK.sendToAll(new PacketUpdateCapeStatus(player.getEntityId(), true));
                 break;
             }
             case "off": {
+                // TODO: Delete cape from db after taking it off
                 player.getEntityData().setBoolean("cape", false);
                 player.writeEntityToNBT(player.getEntityData());
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Your cape magically fades away."));
                 Minelife.NETWORK.sendToAll(new PacketUpdateCapeStatus(player.getEntityId(), false));
+
+                // TODO: Populate cape with pixels
+                ItemStack to_give = new ItemStack(MLItems.cape);
+                MLItems.cape.setUUID(to_give);
+                MLItems.cape.setPixels();
+                EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
+                entity_item.delayBeforeCanPickup = 0;
                 break;
             }
             case "edit": {
@@ -113,6 +126,7 @@ public class CommandCape implements ICommand {
                 player.writeEntityToNBT(player.getEntityData());
 
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "You have put on your new cape."));
+                player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
 
                 Minelife.NETWORK.sendToAll(new PacketUpdateCape(player.getUniqueID()));
                 Minelife.NETWORK.sendToAll(new PacketUpdateCapeStatus(player.getEntityId(), true));

@@ -54,6 +54,8 @@ public class TeleportAsk implements ICommand {
                 "Player " + EnumChatFormatting.BLUE + Sender.getCommandSenderName() + EnumChatFormatting.GREEN +
                 " has requested to teleport to you. Type " + EnumChatFormatting.BLUE + "/tpaccept" + EnumChatFormatting.GREEN + " to accept."));
 
+        Receiver.getEntityData().removeTag("tpahere");
+
         Sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Teleport request sent to " + EnumChatFormatting.BLUE + Receiver.getCommandSenderName()));
     }
 
