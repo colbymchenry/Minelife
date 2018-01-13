@@ -52,31 +52,69 @@ public class CommandCape implements ICommand {
 
         switch (args[0].toLowerCase()) {
             case "on": {
+                // check if holding a cape
                 if (held_item == null || held_item.getItem() != MLItems.cape) {
                     player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You must have the cape in hand."));
                     break;
                 }
 
+                // check if the cape has pixels
+                if(MLItems.cape.getPixels(held_item) == null) {
+                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "This is a blank cape. Type '/cape create' to create a design."));
+                    break;
+                }
+
+                // drop current cape if they have one
+                ItemStack to_give = new ItemStack(MLItems.cape);
+                if(MLItems.cape.getPixels(player) != null && player.getEntityData().hasKey("cape") && player.getEntityData().getBoolean("cape")) {
+                    MLItems.cape.setUUID(to_give);
+                    MLItems.cape.setPixels(to_give, MLItems.cape.getPixels(player));
+                    EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
+                    entity_item.delayBeforeCanPickup = 0;
+                }
+
+                // update the netty server
+                NettyOutbound outbound = new NettyOutbound(0);
+                outbound.write(player.getUniqueID().toString());
+                outbound.write(MLItems.cape.getPixels(held_item));
+                outbound.send();
                 player.getEntityData().setBoolean("cape", true);
                 player.writeEntityToNBT(player.getEntityData());
+
+                // set the players data for the new cape
+                if(MLItems.cape.getPixels(held_item) != null) MLItems.cape.setPixels(player, MLItems.cape.getPixels(held_item));
+
+                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "You have put on your new cape."));
                 player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
-                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Your cape magically appears."));
+
+                // update all players with new cape
+                Minelife.NETWORK.sendToAll(new PacketUpdateCape(player.getUniqueID()));
                 Minelife.NETWORK.sendToAll(new PacketUpdateCapeStatus(player.getEntityId(), true));
                 break;
             }
             case "off": {
-                // TODO: Delete cape from db after taking it off
+                // drop current cape if they have one
+                ItemStack to_give = new ItemStack(MLItems.cape);
+                if(MLItems.cape.getPixels(player) != null && player.getEntityData().hasKey("cape") && player.getEntityData().getBoolean("cape")) {
+                    MLItems.cape.setUUID(to_give);
+                    MLItems.cape.setPixels(to_give, MLItems.cape.getPixels(player));
+                    EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
+                    entity_item.delayBeforeCanPickup = 0;
+                }
+
+                // set player data to not wear cape
                 player.getEntityData().setBoolean("cape", false);
                 player.writeEntityToNBT(player.getEntityData());
+
+                // remove cape from player data
+                MLItems.cape.setPixels(player, null);
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Your cape magically fades away."));
                 Minelife.NETWORK.sendToAll(new PacketUpdateCapeStatus(player.getEntityId(), false));
 
-                // TODO: Populate cape with pixels
-                ItemStack to_give = new ItemStack(MLItems.cape);
-                MLItems.cape.setUUID(to_give);
-                MLItems.cape.setPixels();
-                EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
-                entity_item.delayBeforeCanPickup = 0;
+                // packet used to delete cape
+                NettyOutbound outbound = new NettyOutbound(1);
+                outbound.write(player.getUniqueID().toString());
+                outbound.send();
                 break;
             }
             case "edit": {
@@ -105,31 +143,6 @@ public class CommandCape implements ICommand {
                 }
 
                 Minelife.NETWORK.sendTo(new PacketCreateGui(), player);
-                break;
-            }
-            case "wear": {
-                if (held_item == null || held_item.getItem() != MLItems.cape) {
-                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You must have the cape in hand."));
-                    break;
-                }
-
-                if(MLItems.cape.getPixels(held_item) == null) {
-                    player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "This is a blank cape. Type '/cape create' to create a design."));
-                    break;
-                }
-
-                NettyOutbound outbound = new NettyOutbound(0);
-                outbound.write(player.getUniqueID().toString());
-                outbound.write(MLItems.cape.getPixels(held_item));
-                outbound.send();
-                player.getEntityData().setBoolean("cape", true);
-                player.writeEntityToNBT(player.getEntityData());
-
-                player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "You have put on your new cape."));
-                player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
-
-                Minelife.NETWORK.sendToAll(new PacketUpdateCape(player.getUniqueID()));
-                Minelife.NETWORK.sendToAll(new PacketUpdateCapeStatus(player.getEntityId(), true));
                 break;
             }
             default: {

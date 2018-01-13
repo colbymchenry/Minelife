@@ -3,7 +3,6 @@ package com.minelife.capes;
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.capes.network.*;
-import com.minelife.capes.server.CommandCape;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
