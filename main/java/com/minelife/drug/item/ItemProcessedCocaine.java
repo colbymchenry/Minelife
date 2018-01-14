@@ -30,7 +30,15 @@ public class ItemProcessedCocaine extends Item {
         player.addPotionEffect(new PotionEffect(Potion.hunger.id, 20 * 300, 0, false));
         // 60 * 20 = 1 minute, 20 * 60 * 20 = 1 mc day, 7 * 20 * 60 * 20 = 7 mc days
         player.addPotionEffect(new PotionEffect(ModDrugs.cocaine_potion.id, 1 *(20 * (60 * 20)) , 0, false));
-        player.worldObj.playSoundEffect(player.posX, player.posY, player.posZ, Minelife.MOD_ID + ":snort", 0.5F, 0.5F);
+        player.worldObj.playSoundEffect(player.posX, player.posY, player.posZ, Minelife.MOD_ID + ":snort", 0.2F, 1F);
+
+        ItemStack inHand = player.inventory.getCurrentItem();
+        if(inHand.stackSize == 1) {
+            player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+        } else {
+            inHand.stackSize -= 1;
+            player.inventory.setInventorySlotContents(player.inventory.currentItem, inHand);
+        }
 //        player.getEntityData().setString("cocaine", ItemDrugTest.df.format(Calendar.getInstance().getTime()));
         return super.onItemRightClick(stack, world, player);
     }

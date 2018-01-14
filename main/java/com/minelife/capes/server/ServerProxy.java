@@ -17,6 +17,7 @@ public class ServerProxy extends MLProxy {
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(new DeathListener());
     }
 
     @SubscribeEvent

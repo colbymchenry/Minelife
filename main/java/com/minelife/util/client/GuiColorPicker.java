@@ -1,4 +1,4 @@
-package com.minelife.capes.client;
+package com.minelife.util.client;
 
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.gui.Gui;
@@ -23,7 +23,7 @@ public class GuiColorPicker extends Gui {
         this.height = height;
     }
 
-    public void drawScreen(int mouse_x, int mouse_y, float f) {
+    public void drawScreen(int mouse_x, int mouse_y) {
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 

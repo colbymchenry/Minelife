@@ -31,7 +31,6 @@ public class CommandCape implements ICommand {
         sender.addChatMessage(new ChatComponentText("/cape off"));
         sender.addChatMessage(new ChatComponentText("/cape edit"));
         sender.addChatMessage(new ChatComponentText("/cape create"));
-        sender.addChatMessage(new ChatComponentText("/cape wear"));
         return null;
     }
 

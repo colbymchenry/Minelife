@@ -50,6 +50,10 @@ public class MLConfig extends YamlConfiguration {
         this.set(path, vector.serialize());
     }
 
+    public void removeSection(String path) {
+        this.options().configuration().set(path, null);
+    }
+
     public File getFile() { return file; }
 
     public void reload() throws IOException, InvalidConfigurationException {

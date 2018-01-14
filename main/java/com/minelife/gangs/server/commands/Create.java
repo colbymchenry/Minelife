@@ -21,28 +21,28 @@ public class Create implements ICommandHandler {
     public void execute(ICommandSender sender, String[] args) {
         EntityPlayer player = (EntityPlayer) sender;
 
-        if(args.length < 2) {
+        if (args.length < 2) {
             sender.addChatMessage(new ChatComponentText("/g create <name>"));
             return;
         }
 
         String name = args[1];
 
-        if(ModGangs.getGang(name) != null) {
+        if (ModGangs.getGang(name) != null) {
             sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "There is already a gang with that name."));
             return;
         }
 
-        if(ModGangs.getPlayerGang(player.getUniqueID()) != null) {
+        if (ModGangs.getPlayerGang(player.getUniqueID()) != null) {
             sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You are already in a gang."));
             return;
         }
 
         try {
-            new Gang(name, player.getUniqueID());
+            ModGangs.cache_gangs.add(new Gang(name, player.getUniqueID()));
             sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Gang created!"));
 
-            ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, 1,
+            ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, FireworkBuilder.Type.LARGE_BALL,
                     new int[]{Color.GREEN.asRGB(), Color.YELLOW.asRGB()}, new int[]{Color.BLUE.asRGB(), Color.WHITE.asRGB()}).getStack(1);
 
             EntityFireworkRocket ent = new EntityFireworkRocket(player.worldObj, player.posX, player.posY + 2, player.posZ, fireworkStack);
@@ -63,11 +63,17 @@ public class Create implements ICommandHandler {
 
             soundTrack.play(player);
 
-            ModEssentials.sendTitle( EnumChatFormatting.YELLOW.toString()+ EnumChatFormatting.BOLD.toString()  + "Gang Created",
-                    EnumChatFormatting.BLUE +"Type " + EnumChatFormatting.YELLOW + "/g help" + EnumChatFormatting.BLUE + " for more commands", 5, (EntityPlayerMP) player);
+            ModEssentials.sendTitle(EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD.toString() + "Gang Created",
+                    EnumChatFormatting.BLUE + "Type " + EnumChatFormatting.YELLOW + "/g help" + EnumChatFormatting.BLUE + " for more commands", 5, (EntityPlayerMP) player);
         } catch (Exception e) {
             sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "An error occurred."));
+            e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean isUsernameIndex(int index) {
+        return false;
     }
 
 }

@@ -46,7 +46,7 @@ public class ItemSoldNotification extends AbstractNotification {
         @Override
         protected void drawForeground()
         {
-//TODO
+
         }
 
         @Override

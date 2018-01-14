@@ -1,7 +1,9 @@
 package com.minelife.util;
 
+import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -79,6 +81,25 @@ public class Location {
             if(worldServer.getWorldInfo().getWorldName().equalsIgnoreCase(world)) return worldServer;
         }
         return null;
+    }
+
+    public void toBytes(ByteBuf buf) {
+        buf.writeDouble(x);
+        buf.writeDouble(y);
+        buf.writeDouble(z);
+        buf.writeFloat(yaw);
+        buf.writeFloat(pitch);
+        ByteBufUtils.writeUTF8String(buf, world);
+    }
+
+    public static Location fromBytes(ByteBuf buf) {
+        double x = buf.readDouble();
+        double y = buf.readDouble();
+        double z = buf.readDouble();
+        float yaw = buf.readFloat();
+        float pitch = buf.readFloat();
+        String world = ByteBufUtils.readUTF8String(buf);
+        return new Location(world, x, y, z, yaw, pitch);
     }
 
 }

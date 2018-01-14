@@ -11,11 +11,11 @@ public class FireworkBuilder {
 
     public static FireworkBuilder builder() { return new FireworkBuilder(); }
 
-    public FireworkBuilder addExplosion(boolean Flicker, boolean Trail, int Type, int[] Colors, int[] FadeColors) {
+    public FireworkBuilder addExplosion(boolean Flicker, boolean Trail, Type Type, int[] Colors, int[] FadeColors) {
         NBTTagCompound tag = new NBTTagCompound();
         tag.setBoolean("Flicker", Flicker);
         tag.setBoolean("Trail", Trail);
-        tag.setInteger("Type", Type);
+        tag.setInteger("Type", Type.id);
         tag.setIntArray("Colors", Colors);
         tag.setIntArray("FadeColors", FadeColors);
         Explosions.appendTag(tag);
@@ -31,6 +31,16 @@ public class FireworkBuilder {
         tagCompound.setTag("Fireworks", Fireworks);
         fireworkStack.stackTagCompound = tagCompound;
         return fireworkStack;
+    }
+
+    public enum Type {
+
+        SMALL_BALL(0),LARGE_BALL(1), STAR(2), CREEPER(3), BURST(4);
+        int id;
+        Type(int id) {
+            this.id = id;
+        }
+
     }
 
 }

@@ -52,4 +52,9 @@ public class SetHome implements ICommandHandler{
         sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Home set!"));
     }
 
+    @Override
+    public boolean isUsernameIndex(int index) {
+        return false;
+    }
+
 }

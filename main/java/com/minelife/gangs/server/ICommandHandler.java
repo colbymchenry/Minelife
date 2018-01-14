@@ -6,4 +6,5 @@ public interface ICommandHandler {
 
     void execute(ICommandSender sender, String[] args);
 
+    boolean isUsernameIndex(int index);
 }

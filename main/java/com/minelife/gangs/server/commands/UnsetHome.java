@@ -30,4 +30,9 @@ public class UnsetHome implements ICommandHandler {
         sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Home unset!"));
     }
 
+    @Override
+    public boolean isUsernameIndex(int index) {
+        return false;
+    }
+
 }
