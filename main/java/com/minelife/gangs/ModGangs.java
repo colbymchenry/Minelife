@@ -47,7 +47,8 @@ public class ModGangs extends MLMod {
     }
 
     public static Gang GetGangAt(Location location) {
-        return cache_gangs.stream().filter(gang -> gang.get)
+//        return cache_gangs.stream().filter(gang -> gang)
+        return null;
     }
 
 }

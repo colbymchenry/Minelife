@@ -117,7 +117,7 @@ public class Gang implements Comparable<Gang> {
     // TODO: When player's die they drop their cash.
     // TODO: The CashBlock will need a tileentity to store the cash data. Each piece of cash is worth $5
     // TODO: Need a way to put the cash into their account/wallet. Maybe they can open their wallet with a GUI and drag the cash into the wallet.
-    // TODO: If they want to pull the cash back out into items they will need to go to a banker.
+    // TODO: If they want to pull the cash back out into items they will need to go to a banker.7
 
     public boolean setName(String name) {
         if (ModGangs.getGang(name) != null) return false;
