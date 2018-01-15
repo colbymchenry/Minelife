@@ -31,12 +31,12 @@ import java.util.logging.Level;
 
 public class Billing {
 
-    public static Bill createBill(int days, double amount, UUID player, String memo, boolean autoPay, BillHandler billHandler) throws Exception
+    public static Bill createBill(int days, int amount, UUID player, String memo, boolean autoPay, BillHandler billHandler) throws Exception
     {
         return new Bill(days, amount, player, memo, autoPay, billHandler);
     }
 
-    public static Bill createBill(int days, double amount, EntityPlayer player, String memo, boolean autoPay, BillHandler billHandler) throws Exception
+    public static Bill createBill(int days, int amount, EntityPlayer player, String memo, boolean autoPay, BillHandler billHandler) throws Exception
     {
         return Billing.createBill(days, amount, player.getUniqueID(), memo, autoPay, billHandler);
     }
@@ -80,7 +80,7 @@ public class Billing {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void sendPayPacketToServer(UUID bill_UUID, double amount)
+    public static void sendPayPacketToServer(UUID bill_UUID, int amount)
     {
         Minelife.NETWORK.sendToServer(new PacketPayBill(bill_UUID, amount));
     }
@@ -96,7 +96,7 @@ public class Billing {
         private UUID uuid, player;
         public boolean autoPay;
         private Date dueDate;
-        private double amount, amountDue;
+        private int amount, amountDue;
         private int days;
         private String memo;
         private BillHandler billHandler;
@@ -112,18 +112,18 @@ public class Billing {
 
             this.uuid = uuid;
             this.dueDate = df.parse(result.getString("dueDate"));
-            this.amount = result.getDouble("amount");
+            this.amount = result.getInt("amount");
             this.days = result.getInt("days");
             this.player = UUID.fromString(result.getString("player"));
             this.memo = result.getString("memo");
-            this.amountDue = result.getDouble("amountDue");
+            this.amountDue = result.getInt("amountDue");
             this.autoPay = result.getBoolean("autoPay");
             this.billHandler = (BillHandler) Class.forName(result.getString("handlers")).newInstance();
             this.billHandler.bill = this;
             this.billHandler.readFromNBT(NBTUtil.fromString(result.getString("tagCompound")));
         }
 
-        private Bill(int days, double amount, UUID player, String memo, boolean autoPay, BillHandler billHandler) throws Exception
+        private Bill(int days, int amount, UUID player, String memo, boolean autoPay, BillHandler billHandler) throws Exception
         {
             if (days <= 0) throw new Exception("Days cannot be less than 1.");
             if (amount <= 0) throw new Exception("Amount cannot be less than 1.");
@@ -171,12 +171,12 @@ public class Billing {
             writeToDB();
         }
 
-        public double getAmount()
+        public int getAmount()
         {
             return amount;
         }
 
-        public void setAmount(double amount)
+        public void setAmount(int amount)
         {
             this.amount = amount;
             writeToDB();
@@ -215,12 +215,12 @@ public class Billing {
             writeToDB();
         }
 
-        public double getAmountDue()
+        public int getAmountDue()
         {
             return amountDue;
         }
 
-        public void setAmountDue(double amountDue)
+        public void setAmountDue(int amountDue)
         {
             this.amountDue = amountDue;
             writeToDB();
@@ -294,8 +294,8 @@ public class Billing {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            bill.amount = buf.readDouble();
-            bill.amountDue = buf.readDouble();
+            bill.amount = buf.readInt();
+            bill.amountDue = buf.readInt();
             bill.days = buf.readInt();
             bill.autoPay = buf.readBoolean();
             bill.memo = ByteBufUtils.readUTF8String(buf);
@@ -386,13 +386,13 @@ public class Billing {
     public static class PacketPayBill implements IMessage {
 
         private UUID bill_UUID;
-        private double amount;
+        private int amount;
 
         public PacketPayBill()
         {
         }
 
-        public PacketPayBill(UUID bill_UUID, double amount)
+        public PacketPayBill(UUID bill_UUID, int amount)
         {
             this.bill_UUID = bill_UUID;
             this.amount = amount;
@@ -402,14 +402,14 @@ public class Billing {
         public void fromBytes(ByteBuf buf)
         {
             bill_UUID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
-            amount = buf.readDouble();
+            amount = buf.readInt();
         }
 
         @Override
         public void toBytes(ByteBuf buf)
         {
             ByteBufUtils.writeUTF8String(buf, bill_UUID.toString());
-            buf.writeDouble(amount);
+            buf.writeInt(amount);
         }
 
         public static class Handler implements IMessageHandler<PacketPayBill, IMessage> {

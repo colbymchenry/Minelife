@@ -39,7 +39,7 @@ public class GuiDeposit extends GuiUnlock {
 
         // hit the enter button
         if (button.id == 11)
-            Minelife.NETWORK.sendToServer(new PacketDeposit(Double.parseDouble(this.amount)));
+            Minelife.NETWORK.sendToServer(new PacketDeposit(Integer.parseInt(this.amount)));
     }
 
     @Override

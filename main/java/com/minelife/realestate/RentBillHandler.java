@@ -27,7 +27,7 @@ public class RentBillHandler extends BillHandler {
     }
 
     @Override
-    public void pay(Billing.Bill bill, double amount) {
+    public void pay(Billing.Bill bill, int amount) {
         Estate estate = EstateHandler.getEstate(estateID);
         try {
             if (estate != null && ModEconomy.getBalance(estate.getRenter(), false) >= amount) {

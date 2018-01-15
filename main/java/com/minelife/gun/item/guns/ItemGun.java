@@ -5,14 +5,11 @@ import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.gun.bullets.BulletHandler;
 import com.minelife.gun.client.RenderGun;
-import com.minelife.gun.client.attachments.Attachment;
 import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.ModGun;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.packet.PacketBullet;
-import com.minelife.util.ItemUtil;
-import com.minelife.util.NBTUtil;
-import com.minelife.util.PacketPlaySound;
+import com.minelife.util.ItemHelper;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -26,7 +23,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 
@@ -232,13 +228,13 @@ public abstract class ItemGun extends Item {
         NBTTagCompound tag = stack.stackTagCompound;
         if(tag == null) return null;
         if(!tag.hasKey("sight")) return null;
-        return ItemUtil.itemFromString(tag.getString("sight"));
+        return ItemHelper.itemFromString(tag.getString("sight"));
     }
 
     public static void setSight(ItemStack gun, ItemStack site) {
         NBTTagCompound tag = gun.stackTagCompound != null ? gun.stackTagCompound : new NBTTagCompound();
         if(site == null) tag.removeTag("sight");
-        else tag.setString("sight", ItemUtil.itemToString(site));
+        else tag.setString("sight", ItemHelper.itemToString(site));
         gun.stackTagCompound = tag;
     }
 

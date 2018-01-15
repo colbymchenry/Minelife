@@ -200,11 +200,11 @@ public class GuiBillPay extends GuiATM {
                 return;
             }
 
-            if (Double.parseDouble(amount) > 0) {
-                if(Double.parseDouble(amount) > ModEconomy.BALANCE_BANK_CLIENT) {
+            if (Integer.parseInt(amount) > 0) {
+                if(Integer.parseInt(amount) > ModEconomy.BALANCE_BANK_CLIENT) {
                     setStatusMessage("Insufficient funds");
                 } else {
-                    Billing.sendPayPacketToServer(bill.getUniqueID(), Double.parseDouble(amount));
+                    Billing.sendPayPacketToServer(bill.getUniqueID(), Integer.parseInt(amount));
                     Minecraft.getMinecraft().displayGuiScreen(new GuiBillPay());
                 }
             }

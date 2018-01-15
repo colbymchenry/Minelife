@@ -28,16 +28,16 @@ public class GuiTransfer extends GuiDeposit {
 
         // hit the enter button
         if (button.id == 11)
-            Minecraft.getMinecraft().displayGuiScreen(new Stage2(Long.parseLong(this.amount)));
+            Minecraft.getMinecraft().displayGuiScreen(new Stage2(Integer.parseInt(this.amount)));
     }
 
     private class Stage2 extends GuiATM {
 
-        private long amount;
+        private int amount;
         private String player = "";
         private int counter = 0;
 
-        public Stage2(long amount) {
+        public Stage2(int amount) {
             this.amount = amount;
         }
 

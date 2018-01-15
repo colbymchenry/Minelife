@@ -3,6 +3,8 @@ package com.minelife;
 import com.minelife.capes.ItemCape;
 import com.minelife.clothing.ItemDesigner;
 import com.minelife.drug.item.*;
+import com.minelife.economy.ItemMoney;
+import com.minelife.economy.ItemWallet;
 import com.minelife.gun.item.ItemGunmetal;
 import com.minelife.gun.item.ItemZincIngot;
 import com.minelife.gun.item.ItemZincPlate;
@@ -80,6 +82,16 @@ public class MLItems {
     public static ItemSight reddotSight;
     public static ItemDesigner designer;
     public static ItemCape cape;
+    public static ItemMoney dollar_1;
+    public static ItemMoney dollar_5;
+    public static ItemMoney dollar_10;
+    public static ItemMoney dollar_20;
+    public static ItemMoney dollar_50;
+    public static ItemMoney dollar_100;
+    public static ItemMoney dollar_250;
+    public static ItemMoney dollar_500;
+    public static ItemMoney dollar_1000;
+    public static ItemWallet wallet;
 
     protected static void init()
     {
@@ -144,6 +156,16 @@ public class MLItems {
         register_item(reddotSight = new ItemSight("reddot_sight"));
         register_item(designer = new ItemDesigner());
         register_item(cape = new ItemCape());
+        register_item(dollar_1 = new ItemMoney(1));
+        register_item(dollar_5 = new ItemMoney(5));
+        register_item(dollar_10 = new ItemMoney(10));
+        register_item(dollar_20 = new ItemMoney(20));
+        register_item(dollar_50 = new ItemMoney(50));
+        register_item(dollar_100 = new ItemMoney(100));
+        register_item(dollar_250 = new ItemMoney(250));
+        register_item(dollar_500 = new ItemMoney(500));
+        register_item(dollar_1000 = new ItemMoney(1000));
+        register_item(wallet = new ItemWallet());
     }
 
     private static void register_item(Item item)

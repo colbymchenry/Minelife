@@ -3,11 +3,10 @@ package com.minelife.minebay;
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
 import com.minelife.minebay.packet.PacketPopupMsg;
-import com.minelife.util.ItemUtil;
+import com.minelife.util.ItemHelper;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.render.MLItemRenderer;
-import com.minelife.util.server.Callback;
 import com.minelife.util.server.NameFetcher;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
@@ -57,7 +56,7 @@ public class ItemListing extends Listing {
             price = result.getDouble("price");
             title = result.getString("title");
             description = NameFetcher.get(seller);
-            item_stack = ItemUtil.itemFromString(result.getString("item_stack"));
+            item_stack = ItemHelper.itemFromString(result.getString("item_stack"));
             date_published = df.parse(result.getString("date_published"));
         } else {
             throw new SQLException("ItemListing not found by that uuid.");
@@ -106,8 +105,8 @@ public class ItemListing extends Listing {
     {
         try {
             int amount = (int) objects[0];
-            double price_per_item =  price() / item_stack().stackSize;
-            double price = price_per_item * (double) amount;
+            int price_per_item = (int) (price() / item_stack().stackSize);
+            int price = price_per_item * amount;
 
             if (ModEconomy.getBalance(player.getUniqueID(), false) < price) {
                 PacketPopupMsg.send("Insufficient Funds in Bank Account", (EntityPlayerMP) player);
@@ -186,7 +185,7 @@ public class ItemListing extends Listing {
                         "price='" + price() + "'," +
                         "title='" + title() + "'," +
                         "description='" + description() + "'," +
-                        "item_stack='" + ItemUtil.itemToString(item_stack()) + "'," +
+                        "item_stack='" + ItemHelper.itemToString(item_stack()) + "'," +
                         "damage='" + item_stack().getItemDamage() + "'," +
                         "stack_size='" + item_stack().stackSize + "'," +
                         "date_published='" + df.format(date_published) + "'" +
@@ -198,7 +197,7 @@ public class ItemListing extends Listing {
                         "'" + price() + "'," +
                         "'" + title() + "'," +
                         "'" + description() + "'," +
-                        "'" + ItemUtil.itemToString(item_stack()) + "'," +
+                        "'" + ItemHelper.itemToString(item_stack()) + "'," +
                         "'" + item_stack().getItemDamage() + "'," +
                         "'" + item_stack().stackSize + "'," +
                         "'" + df.format(date_published) + "')");

@@ -24,11 +24,11 @@ import java.util.Set;
 public class PacketCreateEstate implements IMessage {
 
     private Set<Permission> globalPermissions, ownerPermissions, renterPermissions, estatePermissions, globalAllowedToChangePerms;
-    private double purchasePrice, rentPrice;
+    private int purchasePrice, rentPrice;
     private int rentPeriod;
     private String intro, outro;
 
-    public PacketCreateEstate(Set<Permission> globalPermissions, Set<Permission> ownerPermissions, Set<Permission> renterPermissions, Set<Permission> estatePermissions, Set<Permission> globalAllowedToChangePerms, double purchasePrice, double rentPrice, int rentPeriod, String intro, String outro) {
+    public PacketCreateEstate(Set<Permission> globalPermissions, Set<Permission> ownerPermissions, Set<Permission> renterPermissions, Set<Permission> estatePermissions, Set<Permission> globalAllowedToChangePerms, int purchasePrice, int rentPrice, int rentPeriod, String intro, String outro) {
         this.globalPermissions = globalPermissions;
         this.ownerPermissions = ownerPermissions;
         this.renterPermissions = renterPermissions;
@@ -51,8 +51,8 @@ public class PacketCreateEstate implements IMessage {
         renterPermissions = Sets.newTreeSet();
         estatePermissions = Sets.newTreeSet();
         globalAllowedToChangePerms = Sets.newTreeSet();
-        purchasePrice = buf.readDouble();
-        rentPrice = buf.readDouble();
+        purchasePrice = buf.readInt();
+        rentPrice = buf.readInt();
         rentPeriod = buf.readInt();
         intro = ByteBufUtils.readUTF8String(buf);
         outro = ByteBufUtils.readUTF8String(buf);
@@ -75,8 +75,8 @@ public class PacketCreateEstate implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeDouble(purchasePrice);
-        buf.writeDouble(rentPrice);
+        buf.writeInt(purchasePrice);
+        buf.writeInt(rentPrice);
         buf.writeInt(rentPeriod);
         ByteBufUtils.writeUTF8String(buf, intro);
         ByteBufUtils.writeUTF8String(buf, outro);

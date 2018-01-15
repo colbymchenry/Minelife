@@ -125,8 +125,8 @@ public class PacketBuyFromShop implements IMessage {
                     }
                 });
 
-                ModEconomy.withdraw(player.getUniqueID(), tile.getPrice() * ((double) amount / (double) toSale.stackSize), true);
-                ModEconomy.deposit(tile.getOwner(), tile.getPrice() * ((double) amount / (double) toSale.stackSize), false);
+                ModEconomy.withdraw(player.getUniqueID(), tile.getPrice() * (amount / toSale.stackSize), true);
+                ModEconomy.deposit(tile.getOwner(), tile.getPrice() * (amount / toSale.stackSize), false);
 
                 ItemStack toDrop = toSale.copy();
                 toDrop.stackSize = amount;

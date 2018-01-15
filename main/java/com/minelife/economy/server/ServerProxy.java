@@ -13,6 +13,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -27,8 +28,8 @@ public class ServerProxy extends MLProxy {
         /**
          * This creates the SQL table that will store all the player's balances
          */
-        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36) NOT NULL, balanceBank DOUBLE DEFAULT 0.0, balanceWallet DOUBLE DEFAULT 0.0, pin VARCHAR(4) NOT NULL DEFAULT '')");
-        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS Economy_Bills (uuid VARCHAR(36) NOT NULL, dueDate VARCHAR(36) NOT NULL, days INT, amount DOUBLE, amountDue DOUBLE, player VARCHAR(36) NOT NULL, memo TEXT, autoPay BOOLEAN, handlers TEXT, tagCompound TEXT)");
+        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36) NOT NULL, balanceBank INT DEFAULT 0.0, balanceWallet INT DEFAULT 0.0, pin VARCHAR(4) NOT NULL DEFAULT '')");
+        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS Economy_Bills (uuid VARCHAR(36) NOT NULL, dueDate VARCHAR(36) NOT NULL, days INT, amount INT, amountDue INT, player VARCHAR(36) NOT NULL, memo TEXT, autoPay BOOLEAN, handlers TEXT, tagCompound TEXT)");
 
         ModEconomy.config = new MLConfig("economy");
         ModEconomy.config.addDefault("messages.balance", EnumChatFormatting.GOLD + "Balance: " + EnumChatFormatting.RED + "$%b");
@@ -53,6 +54,16 @@ public class ServerProxy extends MLProxy {
             e.printStackTrace();
             Minelife.getLogger().log(Level.SEVERE, "", e);
         }
+    }
+
+    @SubscribeEvent
+    public void onDeath(LivingDeathEvent event) {
+
+    }
+
+    @SubscribeEvent
+    public void onPick(PlayerEvent.ItemPickupEvent event) {
+
     }
 
 }

@@ -32,8 +32,6 @@ public class Gang implements Comparable<Gang> {
     private Set<UUID> members;
     private Map<UUID, String> titles;
     private double balance;
-    private Selection vaultBounds;
-    private int vaultDimension;
 
     public Gang(String name) throws IOException, InvalidConfigurationException {
         this.name = name;
@@ -56,13 +54,6 @@ public class Gang implements Comparable<Gang> {
             String[] data = title.split("\\=");
             titles.put(UUID.fromString(data[0]), title.replaceFirst(data[0] + "=", ""));
         });
-
-        if(config.contains("vault")) {
-            vaultBounds = new Selection();
-            vaultBounds.setPos1(config.getInt("vault.minX"), config.getInt("vault.minY"), config.getInt("vault.minZ"));
-            vaultBounds.setPos2(config.getInt("vault.maxX"), config.getInt("vault.maxY"), config.getInt("vault.maxZ"));
-            vaultDimension = config.getInt("vault.dimension");
-        }
     }
 
     public Gang(String name, UUID leader) throws IOException, InvalidConfigurationException {
@@ -109,15 +100,6 @@ public class Gang implements Comparable<Gang> {
     public double getBalance() {
         return balance;
     }
-
-    // TODO: Finish up the vault. How? They make a selection that defines where the vault is.
-    // TODO: The server will look for stacked cash via the CashBlock (NOT MADE YET).
-    // TODO: The cash block will change height based on its contents. Max amount of cash in one block is $10K.
-    // TODO: Make the cash block and the cash item in the Economy mod
-    // TODO: When player's die they drop their cash.
-    // TODO: The CashBlock will need a tileentity to store the cash data. Each piece of cash is worth $5
-    // TODO: Need a way to put the cash into their account/wallet. Maybe they can open their wallet with a GUI and drag the cash into the wallet.
-    // TODO: If they want to pull the cash back out into items they will need to go to a banker.7
 
     public boolean setName(String name) {
         if (ModGangs.getGang(name) != null) return false;

@@ -33,7 +33,7 @@ public class TileEntityShopBlock extends TileEntity {
 
     private SimpleInventory simpleInventory;
     private UUID owner;
-    private double price;
+    private int price;
     private int amount;
     private EnumFacing facing;
 
@@ -45,7 +45,7 @@ public class TileEntityShopBlock extends TileEntity {
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
         simpleInventory.writeToNBT(nbt);
-        nbt.setDouble("price", price);
+        nbt.setInteger("price", price);
         nbt.setInteger("amount", amount);
         if (owner != null) nbt.setString("owner", owner.toString());
         if (facing != null) nbt.setInteger("facing", facing.ordinal());
@@ -55,7 +55,7 @@ public class TileEntityShopBlock extends TileEntity {
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
         simpleInventory.readFromNBT(nbt);
-        if (nbt.hasKey("price")) price = nbt.getDouble("price");
+        if (nbt.hasKey("price")) price = nbt.getInteger("price");
         if (nbt.hasKey("amount")) amount = nbt.getInteger("amount");
         if (nbt.hasKey("owner")) owner = UUID.fromString(nbt.getString("owner"));
         if (nbt.hasKey("facing")) facing = EnumFacing.values()[nbt.getInteger("facing")];
@@ -108,12 +108,12 @@ public class TileEntityShopBlock extends TileEntity {
         return toSale;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
         sync();
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 
@@ -157,8 +157,8 @@ public class TileEntityShopBlock extends TileEntity {
                 }
             });
 
-            ModEconomy.withdraw(player.getUniqueID(), getPrice() * ((double) amount / (double) toSale.stackSize), true);
-            ModEconomy.deposit(getOwner(), getPrice() * ((double) amount / (double) toSale.stackSize), false);
+            ModEconomy.withdraw(player.getUniqueID(), getPrice() * (amount / toSale.stackSize), true);
+            ModEconomy.deposit(getOwner(), getPrice() * (amount / toSale.stackSize), false);
 
             ItemStack toDrop = toSale.copy();
             toDrop.stackSize = amount;

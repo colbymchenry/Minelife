@@ -400,6 +400,40 @@ public class GuiUtil {
         GL11.glDisable(GL11.GL_BLEND);
     }
 
+    public static final void drawSlot(float x, float y, float width, float height, Color color) {
+        Color bottomBorder = color;
+        Color topColor = color.brighter().brighter();
+        Color border = color.darker().darker().darker();
+
+        GL11.glColor4f(1, 1, 1, 1);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+        // TODO: Seth see if you can make the alpha work correctly. Typically it just makes the thing see through no matter the alpha
+//        GL11.glEnable(GL11.GL_BLEND);
+
+        GL11.glPushMatrix();
+        GL11.glTranslatef(x, y, 0f);
+
+        GL11.glColor4f(border.getRed() / 255f, border.getGreen() / 255f, border.getBlue() / 255f, 1f);
+        GuiUtil.drawImage(0, 0, width, 1);
+        GuiUtil.drawImage(0, 0, 1, height);
+
+        GL11.glColor4f(topColor.getRed() / 255f, topColor.getGreen() / 255f, topColor.getBlue() / 255f, 1f);
+        GuiUtil.drawImage(1, height, width, 1);
+        GuiUtil.drawImage(width, 1, 1, height -1);
+
+        GL11.glColor4f(bottomBorder.getRed() / 255f, bottomBorder.getGreen() / 255f, bottomBorder.getBlue() / 255f, 1f);
+        GuiUtil.drawImage(width, 0, 1, 1);
+        GuiUtil.drawImage(0, height, 1, 1);
+        GuiUtil.drawImage(1, 1, width - 1, height -1);
+
+        GL11.glPopMatrix();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(1, 1, 1, 1);
+        GL11.glDisable(GL11.GL_BLEND);
+    }
+
     public static int[] transition(Color far, Color close, double ratio) {
         int red = (int) Math.abs((ratio * far.getRed()) + ((1 - ratio) * close.getRed()));
         int green = (int) Math.abs((ratio * far.getGreen()) + ((1 - ratio) * close.getGreen()));

@@ -276,8 +276,8 @@ public class GuiModifyEstate extends GuiScreen {
                     if (tB.isChecked()) globalAllowedToChangePerms.add(p);
                 });
 
-                double purchasePrice = purchaseField.getText().isEmpty() ? -1.0D : Double.parseDouble(purchaseField.getText());
-                double rentPrice = rentField.getText().isEmpty() ? -1.0D : Double.parseDouble(rentField.getText());
+                int purchasePrice = purchaseField.getText().isEmpty() ? -1 : Integer.parseInt(purchaseField.getText());
+                int rentPrice = rentField.getText().isEmpty() ? -1 : Integer.parseInt(rentField.getText());
                 int rentPeriod = periodField.getText().isEmpty() ? -1 : Integer.parseInt(periodField.getText());
 
                 estateData.setPurchasePrice(purchasePrice);
@@ -298,25 +298,15 @@ public class GuiModifyEstate extends GuiScreen {
         @Override
         public void keyTyped(char keycode, int keynum) {
             super.keyTyped(keycode, keynum);
-            if ((NumberConversions.isInt(String.valueOf(keycode)) && keynum != Keyboard.KEY_BACK) || keycode == '.' || keynum == Keyboard.KEY_BACK) {
+            if ((NumberConversions.isInt(String.valueOf(keycode)) && keynum != Keyboard.KEY_BACK) || keynum == Keyboard.KEY_BACK) {
                 if (purchaseField.isFocused()) {
-                    if (keycode == '.') {
-                        if (!purchaseField.getText().contains("."))
-                            purchaseField.textboxKeyTyped(keycode, keynum);
-                    } else {
-                        purchaseField.textboxKeyTyped(keycode, keynum);
-                    }
+                    purchaseField.textboxKeyTyped(keycode, keynum);
                 }
                 if (rentField.isFocused()) {
-                    if (keycode == '.') {
-                        if (!rentField.getText().contains("."))
-                            rentField.textboxKeyTyped(keycode, keynum);
-                    } else {
-                        rentField.textboxKeyTyped(keycode, keynum);
-                    }
+                    rentField.textboxKeyTyped(keycode, keynum);
                 }
 
-                if (keycode != '.' || keynum == Keyboard.KEY_BACK)
+                if (keynum == Keyboard.KEY_BACK)
                     periodField.textboxKeyTyped(keycode, keynum);
             }
             introField.textboxKeyTyped(keycode, keynum);

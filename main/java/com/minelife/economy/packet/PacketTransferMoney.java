@@ -17,12 +17,12 @@ import java.util.UUID;
 public class PacketTransferMoney implements IMessage {
 
     private String player;
-    private double amount;
+    private int amount;
 
     public PacketTransferMoney() {
     }
 
-    public PacketTransferMoney(String player, double amount) {
+    public PacketTransferMoney(String player, int amount) {
         this.player = player;
         this.amount = amount;
     }
@@ -30,13 +30,13 @@ public class PacketTransferMoney implements IMessage {
     @Override
     public void fromBytes(ByteBuf buf) {
         this.player = ByteBufUtils.readUTF8String(buf);
-        this.amount = buf.readDouble();
+        this.amount = buf.readInt();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         ByteBufUtils.writeUTF8String(buf, this.player);
-        buf.writeDouble(this.amount);
+        buf.writeInt(this.amount);
     }
 
     public static class Handler implements IMessageHandler<PacketTransferMoney, IMessage> {

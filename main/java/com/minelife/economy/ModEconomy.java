@@ -1,14 +1,11 @@
 package com.minelife.economy;
 
-import com.minelife.MLProxy;
-import com.minelife.CustomMessageException;
-import com.minelife.Minelife;
+import com.minelife.*;
 import com.minelife.economy.client.gui.GuiBillPay;
 import com.minelife.economy.server.CommandEconomy;
 import com.minelife.util.MLConfig;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.PlayerHelper;
-import com.minelife.MLMod;
 import com.minelife.economy.packet.*;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -26,8 +23,8 @@ public class ModEconomy extends MLMod {
     @SideOnly(Side.SERVER)
     public static MLConfig config;
 
-    public static double BALANCE_WALLET_CLIENT = 0;
-    public static double BALANCE_BANK_CLIENT = 0;
+    public static int BALANCE_WALLET_CLIENT = 0;
+    public static int BALANCE_BANK_CLIENT = 0;
 
     @Override
     public void preInit(FMLPreInitializationEvent event)
@@ -48,6 +45,12 @@ public class ModEconomy extends MLMod {
         registerPacket(GuiBillPay.PacketResponseBills.Handler.class, GuiBillPay.PacketResponseBills.class, Side.CLIENT);
         registerPacket(Billing.PacketModifyBill.Handler.class, Billing.PacketModifyBill.class, Side.SERVER);
         registerPacket(Billing.PacketPayBill.Handler.class, Billing.PacketPayBill.class, Side.SERVER);
+
+    }
+
+    @Override
+    public AbstractGuiHandler gui_handler() {
+        return new GuiHandler();
     }
 
     @Override
@@ -68,11 +71,11 @@ public class ModEconomy extends MLMod {
         return com.minelife.economy.server.ServerProxy.class;
     }
 
-    public static final void deposit(UUID player, double amount, boolean wallet) throws Exception
+    public static final void deposit(UUID player, int amount, boolean wallet) throws Exception
     {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
-        double balance = getBalance(player, wallet);
+        int balance = getBalance(player, wallet);
         balance += amount;
         String column = wallet ? "balanceWallet" : "balanceBank";
 
@@ -83,7 +86,7 @@ public class ModEconomy extends MLMod {
             Minelife.NETWORK.sendTo(new PacketBalanceResult(getBalance(player, false), getBalance(player, true)), PlayerHelper.getPlayer(player));
     }
 
-    public static final void withdraw(UUID player, double amount, boolean wallet) throws Exception
+    public static final void withdraw(UUID player, int amount, boolean wallet) throws Exception
     {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
@@ -102,7 +105,7 @@ public class ModEconomy extends MLMod {
             Minelife.NETWORK.sendTo(new PacketBalanceResult(getBalance(player, false), getBalance(player, true)), PlayerHelper.getPlayer(player));
     }
 
-    public static final void set(UUID player, double amount, boolean wallet) throws Exception
+    public static final void set(UUID player, int amount, boolean wallet) throws Exception
     {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
@@ -119,13 +122,13 @@ public class ModEconomy extends MLMod {
             Minelife.NETWORK.sendTo(new PacketBalanceResult(getBalance(player, false), getBalance(player, true)), PlayerHelper.getPlayer(player));
     }
 
-    public static final double getBalance(UUID player, boolean wallet) throws Exception
+    public static final int getBalance(UUID player, boolean wallet) throws Exception
     {
         if (!playerExists(player)) throw new CustomMessageException("Player not found.");
 
         String table = wallet ? "balanceWallet" : "balanceBank";
         ResultSet result = Minelife.SQLITE.query("SELECT " + table + " AS balance FROM players WHERE uuid='" + player.toString() + "'");
-        if (result.next()) return result.getDouble("balance");
+        if (result.next()) return result.getInt("balance");
 
         return 0;
     }
@@ -173,7 +176,7 @@ public class ModEconomy extends MLMod {
     }
 
     public static boolean handleInput(String text, boolean isFocused, char key_char, int key_id) {
-        if (NumberConversions.isInt(String.valueOf(key_char)) || key_id == Keyboard.KEY_PERIOD || key_id == Keyboard.KEY_BACK) {
+        if (NumberConversions.isInt(String.valueOf(key_char)) || key_id == Keyboard.KEY_BACK) {
             if (isFocused && NumberConversions.isDouble(text + key_char)) {
                 if (key_id == Keyboard.KEY_BACK || ModEconomy.isValidAmount(text + key_char))
                     return true;

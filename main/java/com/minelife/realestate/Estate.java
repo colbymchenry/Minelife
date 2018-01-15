@@ -41,16 +41,16 @@ public class Estate implements Comparable<Estate> {
         return config;
     }
 
-    public double getPurchasePrice() {
-        return config.getDouble("price.purchase", -1);
+    public int getPurchasePrice() {
+        return config.getInt("price.purchase", -1);
     }
 
     public boolean isPurchasable() {
         return getPurchasePrice() != -1;
     }
 
-    public double getRentPrice() {
-        return config.getDouble("price.rent", -1);
+    public int getRentPrice() {
+        return config.getInt("price.rent", -1);
     }
 
     public boolean isForRent() {
@@ -365,12 +365,12 @@ public class Estate implements Comparable<Estate> {
         config.save();
     }
 
-    public void setPurchasePrice(double price) {
+    public void setPurchasePrice(int price) {
         config.set("price.purchase", price);
         config.save();
     }
 
-    public void setRentPrice(double price) {
+    public void setRentPrice(int price) {
         config.set("price.rent", price);
         config.save();
     }

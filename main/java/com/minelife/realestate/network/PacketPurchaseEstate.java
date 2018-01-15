@@ -95,7 +95,7 @@ public class PacketPurchaseEstate implements IMessage {
 
                 if (!message.renting) {
                     estate.setOwner(player.getUniqueID());
-                    estate.setPurchasePrice(-1.0D);
+                    estate.setPurchasePrice(-1);
                 }
 
             } catch (Exception e) {

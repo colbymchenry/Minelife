@@ -88,7 +88,7 @@ public class GuiShopBlockSell extends GuiScreen {
 
         if(set_btn.mousePressed(mc, mouse_x, mouse_y)) {
             Minelife.NETWORK.sendToServer(new PacketSetShopBlock(this.stackToDisplay, NumberConversions.toInt(amount_field.getText()),
-                    NumberConversions.toDouble(price_field.getText()), tile_entity.xCoord, tile_entity.yCoord, tile_entity.zCoord));
+                    NumberConversions.toInt(price_field.getText()), tile_entity.xCoord, tile_entity.yCoord, tile_entity.zCoord));
         }
     }
 

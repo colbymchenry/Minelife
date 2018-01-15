@@ -1,14 +1,21 @@
 package com.minelife.economy.server;
 
 import com.google.common.collect.Lists;
+import com.minelife.MLItems;
+import com.minelife.economy.ItemMoney;
 import com.minelife.economy.ModEconomy;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.server.MLCommand;
 import com.minelife.util.server.UUIDFetcher;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import scala.Int;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +34,8 @@ public class CommandEconomy extends MLCommand {
                 "/economy balance <player> <wallet:TRUE-FALSE>\n" +
                         "/economy set <player> <amount> <wallet:TRUE-FALSE>\n" +
                         "/economy withdraw <player> <amount> <wallet:TRUE-FALSE>\n" +
-                        "/economy deposit <player> <amount> <wallet:TRUE-FALSE>\n";
+                        "/economy deposit <player> <amount> <wallet:TRUE-FALSE>\n" +
+                        "/economy get <amount>\n";
 
         for (String s : commandUsage.split("\n")) {
             sender.addChatMessage(new ChatComponentText(s));
@@ -64,8 +72,40 @@ public class CommandEconomy extends MLCommand {
             return;
         }
 
+        if (args[0].equalsIgnoreCase("get")) {
+            if (!(sender instanceof EntityPlayerMP)) {
+                sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You must be a player to do this."));
+                return;
+            }
+
+            if (args.length < 2) {
+                getCommandUsage(sender);
+                return;
+            }
+
+            if (!NumberConversions.isInt(args[1])) {
+                sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Amount must be an integer."));
+                return;
+            }
+
+            List<ItemStack> stacks = ItemMoney.getDrops(NumberConversions.toInt(args[1]));
+
+            if(stacks == null) {
+                sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Max amount at a time: $2,304,000"));
+                return;
+            }
+
+            for (ItemStack stack : stacks) {
+                if (stack != null) {
+                    EntityItem entity_item = ((EntityPlayerMP) sender).dropPlayerItemWithRandomChoice(stack, false);
+                    if (entity_item != null) entity_item.delayBeforeCanPickup = 0;
+                }
+            }
+            return;
+        }
+
         String cmd = args[0].toLowerCase();
-        double amount = 0;
+        int amount = 0;
         boolean wallet;
 
         if (cmd.equalsIgnoreCase("balance")) {
@@ -81,14 +121,19 @@ public class CommandEconomy extends MLCommand {
                 return;
             }
 
-            amount = Double.parseDouble(args[2]);
+            if(!NumberConversions.isInt(args[2])) {
+                sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Please input an integer for amount."));
+                return;
+            }
+
+            amount = Integer.parseInt(args[2]);
             wallet = "true".contains(args[3].toLowerCase()) ? true : false;
         }
 
         String playerName = args[1];
         UUID playerUUID = UUIDFetcher.get(playerName);
 
-        if(playerUUID == null) {
+        if (playerUUID == null) {
             sender.addChatMessage(new ChatComponentText("Player not found."));
             return;
         }

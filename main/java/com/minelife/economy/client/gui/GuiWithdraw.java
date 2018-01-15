@@ -23,7 +23,7 @@ public class GuiWithdraw extends GuiDeposit {
 
         // hit the enter button
         if(button.id == 11)
-            Minelife.NETWORK.sendToServer(new PacketWithdraw(Long.parseLong(this.amount)));
+            Minelife.NETWORK.sendToServer(new PacketWithdraw(Integer.parseInt(this.amount)));
     }
 
 

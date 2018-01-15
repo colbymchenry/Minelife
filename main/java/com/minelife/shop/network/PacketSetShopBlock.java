@@ -20,12 +20,12 @@ public class PacketSetShopBlock implements IMessage {
     private int x,y,z;
     private int amount;
     private ItemStack stack;
-    private double price;
+    private int price;
 
     public PacketSetShopBlock() {
     }
 
-    public PacketSetShopBlock(ItemStack stack, int amount, double price, int x, int y, int z) {
+    public PacketSetShopBlock(ItemStack stack, int amount, int price, int x, int y, int z) {
         this.stack = stack;
         this.amount = amount;
         this.price = price;
@@ -38,7 +38,7 @@ public class PacketSetShopBlock implements IMessage {
     public void fromBytes(ByteBuf buf) {
         stack = ByteBufUtils.readItemStack(buf);
         amount = buf.readInt();
-        price = buf.readDouble();
+        price = buf.readInt();
         x = buf.readInt();
         y = buf.readInt();
         z = buf.readInt();
@@ -48,7 +48,7 @@ public class PacketSetShopBlock implements IMessage {
     public void toBytes(ByteBuf buf) {
         ByteBufUtils.writeItemStack(buf, stack);
         buf.writeInt(amount);
-        buf.writeDouble(price);
+        buf.writeInt(price);
         buf.writeInt(x);
         buf.writeInt(y);
         buf.writeInt(z);

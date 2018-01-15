@@ -12,23 +12,23 @@ import net.minecraft.entity.player.EntityPlayerMP;
 
 public class PacketDeposit implements IMessage {
 
-    private double amount;
+    private int amount;
 
     public PacketDeposit() {
     }
 
-    public PacketDeposit(double amount) {
+    public PacketDeposit(int amount) {
         this.amount = amount;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        this.amount = buf.readDouble();
+        this.amount = buf.readInt();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeDouble(this.amount);
+        buf.writeInt(this.amount);
     }
 
     public static class Handler implements IMessageHandler<PacketDeposit, IMessage> {

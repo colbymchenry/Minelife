@@ -13,26 +13,26 @@ import net.minecraft.client.Minecraft;
 
 public class PacketBalanceResult implements IMessage {
 
-    private double balanceBank, balanceWallet;
+    private int balanceBank, balanceWallet;
 
     public PacketBalanceResult() {
     }
 
-    public PacketBalanceResult(double balanceBank, double balanceWallet) {
+    public PacketBalanceResult(int balanceBank, int balanceWallet) {
         this.balanceBank = balanceBank;
         this.balanceWallet = balanceWallet;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        this.balanceBank = buf.readDouble();
-        this.balanceWallet = buf.readDouble();
+        this.balanceBank = buf.readInt();
+        this.balanceWallet = buf.readInt();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeDouble(this.balanceBank);
-        buf.writeDouble(this.balanceWallet);
+        buf.writeInt(this.balanceBank);
+        buf.writeInt(this.balanceWallet);
     }
 
     public static class Handler implements IMessageHandler<PacketBalanceResult, IMessage> {

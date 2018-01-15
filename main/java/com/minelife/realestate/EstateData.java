@@ -30,14 +30,14 @@ public class EstateData extends Estate implements INameReceiver, Callback {
 
     private UUID owner, renter;
     private int id, rentPeriod;
-    private double purchasePrice, rentPrice;
+    private int purchasePrice, rentPrice;
     private String ownerName, renterName, intro, outro;
     private Set<Permission> globalPermissionList, ownerPermissionList, renterPermissionList,
             allowedToChangePermissionList, estatePermissionList;
     private AxisAlignedBB bounds;
     private Map<UUID, Set<Permission>> members;
 
-    public EstateData(int id, UUID owner, UUID renter, int rentPeriod, double purchasePrice, double rentPrice, String intro, String outro, Set<Permission> globalPermissionList, Set<Permission> ownerPermissionList, Set<Permission> renterPermissionList, Set<Permission> allowedToChangePermissionList, Set<Permission> estatePermissionList, AxisAlignedBB bounds, Map<UUID, Set<Permission>> members) throws IOException, InvalidConfigurationException {
+    public EstateData(int id, UUID owner, UUID renter, int rentPeriod, int purchasePrice, int rentPrice, String intro, String outro, Set<Permission> globalPermissionList, Set<Permission> ownerPermissionList, Set<Permission> renterPermissionList, Set<Permission> allowedToChangePermissionList, Set<Permission> estatePermissionList, AxisAlignedBB bounds, Map<UUID, Set<Permission>> members) throws IOException, InvalidConfigurationException {
         this.id = id;
         this.owner = owner;
         this.renter = renter;
@@ -94,7 +94,7 @@ public class EstateData extends Estate implements INameReceiver, Callback {
     }
 
     @Override
-    public double getPurchasePrice() {
+    public int getPurchasePrice() {
         return purchasePrice;
     }
 
@@ -104,7 +104,7 @@ public class EstateData extends Estate implements INameReceiver, Callback {
     }
 
     @Override
-    public double getRentPrice() {
+    public int getRentPrice() {
         return rentPrice;
     }
 
@@ -283,12 +283,12 @@ public class EstateData extends Estate implements INameReceiver, Callback {
     }
 
     @Override
-    public void setPurchasePrice(double price) {
+    public void setPurchasePrice(int price) {
         purchasePrice = price;
     }
 
     @Override
-    public void setRentPrice(double price) {
+    public void setRentPrice(int price) {
         rentPrice = price;
     }
 
@@ -333,8 +333,8 @@ public class EstateData extends Estate implements INameReceiver, Callback {
         ByteBufUtils.writeUTF8String(buf, getOwner() != null ? getOwner().toString() : " ");
         ByteBufUtils.writeUTF8String(buf, getRenter() != null ? getRenter().toString() : " ");
         buf.writeInt(getRentPeriod());
-        buf.writeDouble(getPurchasePrice());
-        buf.writeDouble(getRentPrice());
+        buf.writeInt(getPurchasePrice());
+        buf.writeInt(getRentPrice());
         ByteBufUtils.writeUTF8String(buf, getIntro() != null && !getIntro().trim().isEmpty() ? getIntro() : " ");
         ByteBufUtils.writeUTF8String(buf, getOutro() != null && !getOutro().trim().isEmpty() ? getOutro() : " ");
         buf.writeInt(getGlobalPermissions().size());
@@ -368,8 +368,8 @@ public class EstateData extends Estate implements INameReceiver, Callback {
         UUID owner = ownerStr.trim().isEmpty() ? null : UUID.fromString(ownerStr);
         UUID renter = renterStr.trim().isEmpty() ? null : UUID.fromString(renterStr);
         int rentPeriod = buf.readInt();
-        double purchasePrice = buf.readDouble();
-        double rentPrice = buf.readDouble();
+        int purchasePrice = buf.readInt();
+        int rentPrice = buf.readInt();
         String intro = ByteBufUtils.readUTF8String(buf);
         String outro = ByteBufUtils.readUTF8String(buf);
         int globalPermsSize = buf.readInt();

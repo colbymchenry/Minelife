@@ -1,16 +1,13 @@
 package com.minelife.minebay;
 
-import com.minelife.Minelife;
 import com.minelife.notification.AbstractGuiNotification;
 import com.minelife.notification.AbstractNotification;
-import com.minelife.util.ItemUtil;
+import com.minelife.util.ItemHelper;
 import com.minelife.util.NumberConversions;
-import com.minelife.util.client.GuiUtil;
 import com.minelife.util.client.render.MLItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.util.UUID;
@@ -32,13 +29,13 @@ public class SoldNotification extends AbstractNotification {
 
     @Override
     public void writeToNBT(NBTTagCompound tagCompound) {
-        tagCompound.setString("item_stack", ItemUtil.itemToString(item_stack));
+        tagCompound.setString("item_stack", ItemHelper.itemToString(item_stack));
         tagCompound.setDouble("price", price);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
-        item_stack = ItemUtil.itemFromString(tagCompound.getString("item_stack"));
+        item_stack = ItemHelper.itemFromString(tagCompound.getString("item_stack"));
         price = tagCompound.getDouble("price");
     }
 

@@ -2,7 +2,7 @@ package com.minelife.minebay.client;
 
 import com.minelife.notification.AbstractGuiNotification;
 import com.minelife.notification.AbstractNotification;
-import com.minelife.util.ItemUtil;
+import com.minelife.util.ItemHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -20,14 +20,14 @@ public class ItemSoldNotification extends AbstractNotification {
     public void writeToNBT(NBTTagCompound tagCompound)
     {
         tagCompound.setDouble("price", price);
-        tagCompound.setString("item_sold", ItemUtil.itemToString(item_sold));
+        tagCompound.setString("item_sold", ItemHelper.itemToString(item_sold));
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tagCompound)
     {
         price = tagCompound.getDouble("price");
-        item_sold = ItemUtil.itemFromString(tagCompound.getString("price"));
+        item_sold = ItemHelper.itemFromString(tagCompound.getString("price"));
     }
 
     @Override

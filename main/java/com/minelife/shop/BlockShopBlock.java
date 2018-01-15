@@ -26,6 +26,7 @@ public class BlockShopBlock extends BlockBuildCraft {
 
     private IIcon icon;
 
+    // TODO: Needs recipe
     public BlockShopBlock() {
         super(Material.iron, CreativeTabs.tabRedstone);
         setBlockName("shopBlock");
