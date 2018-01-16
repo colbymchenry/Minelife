@@ -2,6 +2,8 @@ package com.minelife.economy.client.wallet;
 
 import buildcraft.core.lib.inventory.SimpleInventory;
 import com.minelife.util.client.GuiUtil;
+import com.minelife.util.client.INameReceiver;
+import com.minelife.util.server.NameFetcher;
 import com.sk89q.worldedit.entity.Player;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -11,9 +13,12 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.util.UUID;
 
-public class GuiWallet extends GuiContainer {
+public class GuiWallet extends GuiContainer implements INameReceiver {
 
+    private boolean fetchedName = false;
+    private String OwnerName = "Fetching...";
     private InventoryPlayer PlayerInventory;
     private InventoryWallet WalletInventory;
     private Color slotColor = new Color(139, 139, 139, 255);
@@ -23,7 +28,9 @@ public class GuiWallet extends GuiContainer {
         this.PlayerInventory = PlayerInventory;
         this.WalletInventory = WalletInventory;
         this.xSize = 176;
-        this.ySize = 166;
+
+        int inventoryRows = WalletInventory.getSizeInventory() / 9;
+        this.ySize = 114 + inventoryRows * 18;
     }
 
     @Override
@@ -41,8 +48,17 @@ public class GuiWallet extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String s = "Wallet";
+        if(!fetchedName && WalletInventory.WalletStack.hasTagCompound() && WalletInventory.WalletStack.getTagCompound().hasKey("owner")) {
+            OwnerName = NameFetcher.asyncFetchClient(UUID.fromString(WalletInventory.WalletStack.getTagCompound().getString("owner")), this);
+            fetchedName = true;
+        }
+        String s = OwnerName + "'s Wallet";
         this.fontRendererObj.drawString(s, 88 - this.fontRendererObj.getStringWidth(s) / 2, 6, 4210752);
-        this.fontRendererObj.drawString(PlayerInventory.getInventoryName(), 8, 72, 4210752);
+        this.fontRendererObj.drawString("Inventory", 8, 128, 4210752);
+    }
+
+    @Override
+    public void nameReceived(UUID uuid, String name) {
+        if(uuid != null && name != null) OwnerName = name;
     }
 }

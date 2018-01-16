@@ -27,6 +27,8 @@ public class ItemGrinder extends Item {
         setUnlocalizedName("grinder");
     }
 
+    // TODO: Get's used immediately, not good.
+
     @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamage(int damage)
     {

@@ -2,8 +2,10 @@ package com.minelife.economy.client.wallet;
 
 import buildcraft.core.lib.gui.BuildCraftContainer;
 import buildcraft.core.lib.inventory.SimpleInventory;
+import com.minelife.economy.ItemWallet;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import com.minelife.economy.client.wallet.InventoryWallet;
 import net.minecraft.item.ItemStack;
@@ -18,23 +20,30 @@ public class ContainerWallet extends BuildCraftContainer {
         this.InventoryPlayer = inventoryPlayer;
         this.WalletInventory = WalletInventory;
 
-        // Tile Entity, Slot 0-8, Slot IDs 0-8
-        for (int y = 0; y < 3; ++y) {
-            for (int x = 0; x < 3; ++x) {
-                this.addSlotToContainer(new SlotWallet(WalletInventory, x + y * 3, 62 + x * 18, 17 + y * 18));
+        int numRows = WalletInventory.getSizeInventory() / 9;
+        int i = (numRows - 4) * 18;
+        int j;
+        int k;
+
+        for (j = 0; j < numRows; ++j)
+        {
+            for (k = 0; k < 9; ++k)
+            {
+                this.addSlotToContainer(new SlotWallet(WalletInventory, k + j * 9, 8 + k * 18, 18 + j * 18));
             }
         }
 
-        // Player Inventory, Slot 9-35, Slot IDs 9-35
-        for (int y = 0; y < 3; ++y) {
-            for (int x = 0; x < 9; ++x) {
-                this.addSlotToContainer(new Slot(InventoryPlayer, x + y * 9 + 9, 8 + x * 18, 84 + y * 18));
+        for (j = 0; j < 3; ++j)
+        {
+            for (k = 0; k < 9; ++k)
+            {
+                this.addSlotToContainer(new Slot(inventoryPlayer, k + j * 9 + 9, 8 + k * 18, 103 + j * 18 + i));
             }
         }
 
-        // Player Inventory, Slot 0-8, Slot IDs 36-44
-        for (int x = 0; x < 9; ++x) {
-            this.addSlotToContainer(new Slot(InventoryPlayer, x, 8 + x * 18, 142));
+        for (j = 0; j < 9; ++j)
+        {
+            this.addSlotToContainer(new Slot(inventoryPlayer, j, 8 + j * 18, 161 + i));
         }
     }
 
@@ -53,6 +62,14 @@ public class ContainerWallet extends BuildCraftContainer {
     @Override
     public void onContainerClosed(EntityPlayer player) {
         WalletInventory.markDirty();
-        player.inventory.setInventorySlotContents(player.inventory.currentItem, WalletInventory.WalletStack);
+        for (int i = 0; i < player.inventory.mainInventory.length; i++) {
+            ItemStack itemStack = player.inventory.mainInventory[i];
+            if(itemStack != null && itemStack.getItem() instanceof ItemWallet) {
+                if(itemStack.hasTagCompound() && itemStack.getTagCompound().hasKey("UUID") && itemStack.getTagCompound().getString("UUID").equals(WalletInventory.WalletStack.getTagCompound().getString("UUID"))) {
+                    player.inventory.setInventorySlotContents(i, WalletInventory.WalletStack);
+                    break;
+                }
+            }
+        }
     }
 }

@@ -46,6 +46,7 @@ public class ModEconomy extends MLMod {
         registerPacket(Billing.PacketModifyBill.Handler.class, Billing.PacketModifyBill.class, Side.SERVER);
         registerPacket(Billing.PacketPayBill.Handler.class, Billing.PacketPayBill.class, Side.SERVER);
 
+        ItemWallet.registerRecipes();
     }
 
     @Override

@@ -4,24 +4,35 @@ import com.google.common.collect.Lists;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.util.ItemHelper;
+import com.minelife.util.NumberConversions;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 
 import java.util.List;
 
 public class ItemMoney extends Item {
 
+    public final int amount;
+
     public ItemMoney(int amount) {
+        this.amount = amount;
         setCreativeTab(CreativeTabs.tabMisc);
         setUnlocalizedName("money_" + amount);
         setTextureName(Minelife.MOD_ID + ":dollar_" + amount);
     }
 
+    @Override
+    public String getItemStackDisplayName(ItemStack stack) {
+        return "$" + NumberConversions.formatter.format(((ItemMoney) stack.getItem()).amount * stack.stackSize);
+    }
+
     public static List<ItemStack> getDrops(double amount) {
         amount = Math.floor(amount);
 
-        if(amount > 2304000) return null;
+        if (amount > 2304000) return null;
 
         int thousands = (int) Math.floor(amount / 1000);
         amount -= (thousands * 1000);

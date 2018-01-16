@@ -74,3 +74,7 @@ potion.cocaine_effect=Detectable Cocaine
 tile.redstone_lamp_on=Redstone Lamp (ON)
 
 item.cape.name=Cape
+item.wallet.name=Wallet
+item.money_1.name=$1
+item.money_5.name=$5
+item.money_10.name=$10

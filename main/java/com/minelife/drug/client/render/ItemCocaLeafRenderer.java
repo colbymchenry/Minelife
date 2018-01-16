@@ -58,7 +58,8 @@ public class ItemCocaLeafRenderer implements IItemRenderer {
         if (type == ItemRenderType.INVENTORY) {
             mc.getTextureManager().bindTexture(texture);
             GuiUtil.drawImage(0, 0, 16, 16);
-        }else if (type == ItemRenderType.EQUIPPED_FIRST_PERSON) {
+        }
+        else if (type == ItemRenderType.EQUIPPED_FIRST_PERSON) {
             GL11.glPushMatrix();
             {
                 GL11.glRotatef(70f, 0f, 1f, 0f);
