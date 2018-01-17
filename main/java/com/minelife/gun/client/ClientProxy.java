@@ -1,5 +1,6 @@
 package com.minelife.gun.client;
 
+import com.minelife.MLBlocks;
 import com.minelife.MLItems;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
@@ -9,12 +10,17 @@ import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.item.attachments.ItemSight;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketMouseClick;
+import com.minelife.gun.turrets.TileEntityTurret;
+import com.minelife.gun.turrets.TileEntityTurretRenderer;
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,6 +38,8 @@ public class ClientProxy extends MLProxy {
         ItemGun.registerRenderers();
         MinecraftForge.EVENT_BUS.register(new BulletRenderer());
         Attachment.registerRenderers();
+//        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(MLBlocks.turret), new ItemDryingRackRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTurret.class, new TileEntityTurretRenderer());
     }
 
     /**

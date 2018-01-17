@@ -5,6 +5,7 @@ import com.minelife.economy.BlockATM;
 import com.minelife.economy.BlockATMTop;
 import com.minelife.gangs.BlockVaultCreator;
 import com.minelife.gun.block.BlockZincOre;
+import com.minelife.gun.turrets.BlockTurret;
 import com.minelife.shop.BlockShopBlock;
 import com.minelife.util.blocks.BlockRedstoneLampOn;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -35,6 +36,7 @@ public class MLBlocks {
     public static BlockCementMixer cement_mixer;
     public static BlockShopBlock shopBlock;
     public static BlockRedstoneLampOn redstoneLampOn;
+    public static BlockTurret turret;
 //    public static BlockVaultCreator vaultCreator;
 
     protected static void init()
@@ -65,6 +67,7 @@ public class MLBlocks {
         register_block(cement_mixer = new BlockCementMixer());
         register_block(shopBlock = new BlockShopBlock());
         register_block(redstoneLampOn = new BlockRedstoneLampOn());
+        register_block(turret = new BlockTurret());
 //        register_block(vaultCreator = new BlockVaultCreator());
     }
 

@@ -38,7 +38,8 @@ public class Bullet {
         buf.writeDouble(lookVec.xCoord);
         buf.writeDouble(lookVec.yCoord);
         buf.writeDouble(lookVec.zCoord);
-        buf.writeInt(shooter.getEntityId());
+        buf.writeBoolean(shooter != null);
+        if(shooter != null) buf.writeInt(shooter.getEntityId());
         ByteBufUtils.writeUTF8String(buf, ammoType.name());
     }
 
@@ -48,7 +49,7 @@ public class Bullet {
         bullet.origin = Vec3.createVectorHelper(buf.readDouble(), buf.readDouble(), buf.readDouble());
         bullet.target = Vec3.createVectorHelper(buf.readDouble(), buf.readDouble(), buf.readDouble());
         bullet.lookVec = Vec3.createVectorHelper(buf.readDouble(), buf.readDouble(), buf.readDouble());
-        bullet.shooter = (EntityLivingBase) Minecraft.getMinecraft().theWorld.getEntityByID(buf.readInt());
+        if(buf.readBoolean()) bullet.shooter = (EntityLivingBase) Minecraft.getMinecraft().theWorld.getEntityByID(buf.readInt());
         bullet.ammoType = ItemAmmo.AmmoType.valueOf(ByteBufUtils.readUTF8String(buf));
         bullet.world = Minecraft.getMinecraft().theWorld;
         return bullet;

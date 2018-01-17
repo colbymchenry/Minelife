@@ -7,10 +7,15 @@ import com.minelife.capes.network.PacketCreateCape;
 import com.minelife.capes.network.PacketCreateGui;
 import com.minelife.gangs.network.PacketOpenGangGui;
 import com.minelife.gangs.server.CommandGang;
+import com.minelife.realestate.Estate;
+import com.minelife.realestate.EstateHandler;
+import com.minelife.realestate.Permission;
 import com.minelife.util.Location;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 
 import java.util.Set;
 import java.util.UUID;
@@ -46,9 +51,20 @@ public class ModGangs extends MLMod {
         return null;
     }
 
-    public static Gang GetGangAt(Location location) {
-//        return cache_gangs.stream().filter(gang -> gang)
-        return null;
+    public static Set<Estate> getEstates(Gang gang) {
+        Set<Estate> estates = Sets.newTreeSet();
+
+        for (Estate estate : EstateHandler.loadedEstates) {
+            if(estate.getOwner() != null) {
+                if(gang.getLeader() != null) {
+                    if (estate.getOwner().equals(gang.getLeader())) {
+                        estates.add(estate);
+                    }
+                }
+            }
+        }
+
+        return estates;
     }
 
 }

@@ -1,9 +1,12 @@
 package com.minelife.gun.bullets;
 
 import com.google.common.collect.Lists;
+import com.minelife.MLBlocks;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.server.BulletHitEvent;
+import com.minelife.gun.turrets.TileEntityTurret;
+import com.minelife.util.Vector;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.block.Block;
@@ -37,6 +40,16 @@ public class BulletHandler {
         return bullet;
     }
 
+    public static Bullet addBullet(TileEntityTurret turret, ItemAmmo.AmmoType ammoType) {
+        Vector v = turret.getLookVec();
+        Vec3 lookVec = Vec3.createVectorHelper(v.getX(), v.getY(), v.getZ());
+        Vec3 origin = Vec3.createVectorHelper(turret.xCoord + 0.5, turret.yCoord + 1.5, turret.zCoord + 0.5);
+        Vec3 target = origin.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
+        Bullet bullet = new Bullet(turret.getWorldObj(), null, origin, target, lookVec, ammoType);
+        bulletList.add(bullet);
+        return bullet;
+    }
+
     @SubscribeEvent
     public void onTick(TickEvent event) {
         tickCount++;
@@ -49,25 +62,33 @@ public class BulletHandler {
         while (iterator.hasNext()) {
             bullet = iterator.next();
 
-            bullet.origin = bullet.origin.addVector(bullet.lookVec.xCoord, bullet.lookVec.yCoord, bullet.lookVec.zCoord);
-            bullet.target = bullet.target.addVector(bullet.lookVec.xCoord, bullet.lookVec.yCoord, bullet.lookVec.zCoord);
+            boolean calledToQuit = false;
 
-            if (!bullet.world.isRemote) {
 
-                int x = MathHelper.floor_double(bullet.target.xCoord);
-                int y = MathHelper.floor_double(bullet.target.yCoord);
-                int z = MathHelper.floor_double(bullet.target.zCoord);
+            int x = MathHelper.floor_double(bullet.target.xCoord);
+            int y = MathHelper.floor_double(bullet.target.yCoord);
+            int z = MathHelper.floor_double(bullet.target.zCoord);
 
-                Block block = bullet.world.getBlock(x, y, z);
+            Block block = bullet.world.getBlock(x, y, z);
 
-                if (block != null && block != Blocks.air) {
-                    block.setBlockBoundsBasedOnState(bullet.world, x, y, z);
-                    AxisAlignedBB axisalignedbb = block.getCollisionBoundingBoxFromPool(bullet.world, x, y, z);
+            /**
+             * Check if we hit a block
+             */
+            if (block != null && block != Blocks.air && block != MLBlocks.turret) {
+                if (!bullet.world.isRemote) block.setBlockBoundsBasedOnState(bullet.world, x, y, z);
+                AxisAlignedBB axisalignedbb = block.getCollisionBoundingBoxFromPool(bullet.world, x, y, z);
 
-                    if (axisalignedbb != null && axisalignedbb.isVecInside(Vec3.createVectorHelper(bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord))) {
-                        if (!blackListedBlocks.contains(block)) {
+                if (axisalignedbb != null && axisalignedbb.isVecInside(bullet.target)) {
+                    if (!blackListedBlocks.contains(block)) {
 
-                            BulletHitEvent shotEvent = new BulletHitEvent(bullet.shooter, bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord, bullet.shooter.getHeldItem());
+
+                        bullet.world.spawnParticle("blockcrack_" + Block.getIdFromBlock(block) + "_14", bullet.origin.xCoord, bullet.origin.yCoord, bullet.origin.zCoord, 0, 0, 0);
+                        bullet.world.spawnParticle("blockcrack_" + Block.getIdFromBlock(block) + "_14", bullet.origin.xCoord, bullet.origin.yCoord, bullet.origin.zCoord, 0, 0, 0);
+                        bullet.world.spawnParticle("blockcrack_" + Block.getIdFromBlock(block) + "_14", bullet.origin.xCoord, bullet.origin.yCoord, bullet.origin.zCoord, 0, 0, 0);
+                        bullet.world.spawnParticle("blockcrack_" + Block.getIdFromBlock(block) + "_14", bullet.origin.xCoord, bullet.origin.yCoord, bullet.origin.zCoord, 0, 0, 0);
+
+                        if (!bullet.world.isRemote) {
+                            BulletHitEvent shotEvent = new BulletHitEvent(bullet.shooter, bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord, bullet.shooter != null ? bullet.shooter.getHeldItem() : null);
                             MinecraftForge.EVENT_BUS.post(shotEvent);
 
                             if (shotEvent.isCanceled()) return;
@@ -79,37 +100,57 @@ public class BulletHandler {
                                     bullet.world.setBlock((int) bullet.target.xCoord, (int) bullet.target.yCoord + 1, (int) bullet.target.zCoord, Blocks.fire);
                                 }
                             }
-                            iterator.remove();
-                            continue;
                         }
-                    }
-                }
-
-                float offset = 0.3f;
-
-                AxisAlignedBB surrounding_check = AxisAlignedBB.getBoundingBox(bullet.target.xCoord - offset, bullet.target.yCoord - offset, bullet.target.zCoord - offset, bullet.target.xCoord + offset, bullet.target.yCoord + offset, bullet.target.zCoord + offset);
-                for (EntityLivingBase e : (List<EntityLivingBase>) bullet.world.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check)) {
-                    if (e != bullet.shooter && e.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(bullet.target)) {
-                        BulletHitEvent shotEvent = new BulletHitEvent(bullet.shooter, e, bullet.shooter.getHeldItem());
-                        MinecraftForge.EVENT_BUS.post(shotEvent);
-
-                        if (shotEvent.isCanceled()) return;
-                        int damage = ((ItemGun) bullet.shooter.getHeldItem().getItem()).getDamage();
-                        e.attackEntityFrom(DamageSource.causeMobDamage(bullet.shooter), damage);
-
-                        if (bullet.ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
-                            bullet.world.createExplosion(bullet.shooter, bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord, 4.0F, false);
-                        } else if (bullet.ammoType == ItemAmmo.AmmoType.INCENDIARY) {
-                            e.setFire(6);
-                        }
-
                         iterator.remove();
+                        calledToQuit = true;
                         continue;
                     }
                 }
             }
 
-            if(bullet.target.distanceTo(Vec3.createVectorHelper(bullet.shooter.posX, bullet.shooter.posY, bullet.shooter.posZ)) > 500) iterator.remove();
+            /**
+             * Check if we hit an entity
+             */
+
+            float offset = 0.3f;
+
+            AxisAlignedBB surrounding_check = AxisAlignedBB.getBoundingBox(bullet.target.xCoord - offset, bullet.target.yCoord - offset, bullet.target.zCoord - offset, bullet.target.xCoord + offset, bullet.target.yCoord + offset, bullet.target.zCoord + offset);
+            for (EntityLivingBase e : (List<EntityLivingBase>) bullet.world.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check)) {
+                if (e != bullet.shooter && e.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(bullet.target)) {
+                    BulletHitEvent shotEvent = new BulletHitEvent(bullet.shooter, e, bullet.shooter == null ? null : bullet.shooter.getHeldItem());
+                    MinecraftForge.EVENT_BUS.post(shotEvent);
+
+                    if (shotEvent.isCanceled()) return;
+                    int damage = bullet.shooter == null ? 10 : ((ItemGun) bullet.shooter.getHeldItem().getItem()).getDamage();
+                    e.attackEntityFrom(DamageSource.causeMobDamage(bullet.shooter), damage);
+
+                    if (bullet.ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
+                        bullet.world.createExplosion(bullet.shooter, bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord, 4.0F, false);
+                    } else if (bullet.ammoType == ItemAmmo.AmmoType.INCENDIARY) {
+                        e.setFire(6);
+                    }
+
+                    if (!calledToQuit) {
+                        iterator.remove();
+                        calledToQuit = true;
+                    }
+                    continue;
+                }
+            }
+
+            bullet.origin = bullet.origin.addVector(bullet.lookVec.xCoord, bullet.lookVec.yCoord, bullet.lookVec.zCoord);
+            bullet.target = bullet.target.addVector(bullet.lookVec.xCoord, bullet.lookVec.yCoord, bullet.lookVec.zCoord);
+
+
+            /**
+             * Check if the bullet is far enough away to remove
+             */
+            if (bullet.target.distanceTo(Vec3.createVectorHelper(bullet.origin.xCoord, bullet.origin.yCoord, bullet.origin.zCoord)) > 500) {
+                if (!calledToQuit) {
+                    iterator.remove();
+                    calledToQuit = true;
+                }
+            }
         }
 
         tickCount = 0;

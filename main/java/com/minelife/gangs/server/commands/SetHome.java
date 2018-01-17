@@ -39,12 +39,8 @@ public class SetHome implements ICommandHandler{
             return;
         }
 
-        Set<Permission> permissions = estate.getPlayerPermissions(player.getUniqueID());
-
-        if(!permissions.contains(Permission.ADD_MEMBER) && !permissions.contains(Permission.REMOVE_MEMBER) &&
-                !permissions.contains(Permission.BREAK) && !permissions.contains(Permission.PLACE) && !permissions.contains(Permission.INTERACT) &&
-                !permissions.contains(Permission.ENTER)) {
-            player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You do not have permission to do that here."));
+        if (estate.getOwner() == null || gang.getLeader() == null || !estate.getOwner().equals(gang.getLeader())) {
+            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You do not have permission. Gang leader must also be the owner of the estate."));
             return;
         }
 

@@ -59,6 +59,10 @@
     "category": "neutral",
     "sounds": ["minelife:guns/DesertEagle_RELOAD"]
   },
+  "guns.turret_shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/turret_shot"]
+  },
   "cha_ching": {
     "category": "neutral",
     "sounds": ["minelife:cha_ching"]
