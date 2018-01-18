@@ -4,8 +4,10 @@ import buildcraft.core.lib.inventory.SimpleInventory;
 import codechicken.lib.vec.Vector3;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.minelife.MLBlocks;
 import com.minelife.Minelife;
+import com.minelife.gangs.ModGangs;
 import com.minelife.gun.bullets.BulletHandler;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.packet.PacketBullet;
@@ -16,6 +18,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -23,6 +26,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
@@ -33,16 +37,19 @@ import net.minecraft.util.*;
 import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class TileEntityTurret extends TileEntity implements IInventory {
 
     private EnumFacing direction = EnumFacing.NORTH;
-    private EntityLiving target;
+    private EntityLivingBase target;
     private int targetID;
     private int tick;
     public float rotationYaw, rotationPitch;
     private SimpleInventory inventory;
     private boolean hitRight = true;
+    private Set<EnumMob> MobWhiteList = Sets.newTreeSet();
+    private Set<Integer> GangWhiteList = Sets.newTreeSet();
 
     public TileEntityTurret() {
         inventory = new SimpleInventory(54, "Turret", 64);
@@ -88,13 +95,26 @@ public class TileEntityTurret extends TileEntity implements IInventory {
 
 
         int range = MinecraftServer.getServer().getConfigurationManager().getEntityViewDistance() / 2;
-        List<EntityLiving> entities = worldObj.getEntitiesWithinAABB(EntityLiving.class,
+        List<EntityLivingBase> entities = worldObj.getEntitiesWithinAABB(EntityLivingBase.class,
                 AxisAlignedBB.getBoundingBox(xCoord - range, yCoord - range, zCoord - range,
                         xCoord + range, yCoord + range, zCoord + range));
 
-        EntityLiving closestEntity = null;
+        List<EntityLivingBase> toRemove = Lists.newArrayList();
+
+        entities.forEach(e -> {
+            for (EnumMob enumMob : MobWhiteList) {
+                if(e.getClass().equals(enumMob.getMobClass())) toRemove.add(e);
+            }
+        });
+
+        entities.removeAll(toRemove);
+
+
+        // TODO: Implement gangs
+
+        EntityLivingBase closestEntity = null;
         double distance = 1000;
-        for (EntityLiving entity : entities) {
+        for (EntityLivingBase entity : entities) {
             if (Vec3.createVectorHelper(xCoord, yCoord, zCoord).distanceTo(Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ)) < distance) {
                 Vector v = getLookVec(entity);
                 Vec3 lookVec = Vec3.createVectorHelper(v.getX(), v.getY(), v.getZ());
@@ -172,6 +192,14 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         tagCompound.setString("direction", this.direction.name());
         tagCompound.setInteger("targetID", targetID);
         inventory.writeToNBT(tagCompound, "Items");
+
+        String mobs = "";
+        String gangs = "";
+        for (EnumMob enumMob : MobWhiteList) mobs += enumMob.name() + ",";
+        for (int gangID : GangWhiteList) gangs += gangID + ",";
+
+        tagCompound.setString("MobWhiteList", mobs);
+        tagCompound.setString("GangWhiteList", gangs);
     }
 
     @Override
@@ -181,6 +209,22 @@ public class TileEntityTurret extends TileEntity implements IInventory {
                 EnumFacing.valueOf(tagCompound.getString("direction")) : EnumFacing.NORTH;
         this.targetID = tagCompound.getInteger("targetID");
         this.inventory.readFromNBT(tagCompound, "Items");
+
+        if (tagCompound.hasKey("MobWhiteList")) {
+            for (String mob : tagCompound.getString("MobWhiteList").split(",")) {
+                if (!mob.isEmpty()) {
+                    MobWhiteList.add(EnumMob.valueOf(mob));
+                }
+            }
+        }
+
+        if (tagCompound.hasKey("GangWhiteList")) {
+            for (String gangID : tagCompound.getString("GangWhiteList").split(",")) {
+                if (!gangID.isEmpty()) {
+                    GangWhiteList.add(Integer.parseInt(gangID));
+                }
+            }
+        }
     }
 
     @Override
@@ -209,7 +253,7 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         return vector.multiply(0.05);
     }
 
-    public Vector getLookVec(EntityLiving target) {
+    public Vector getLookVec(EntityLivingBase target) {
         if (target == null) return new Vector(0, 0, 0);
 
         Vector from = new Vector(xCoord + 0.5, yCoord + 1.5, zCoord + 0.5);
@@ -291,5 +335,23 @@ public class TileEntityTurret extends TileEntity implements IInventory {
     public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
         System.out.println("CALLED");
         return p_94041_2_ != null && p_94041_2_.getItem() instanceof ItemAmmo;
+    }
+
+    public Set<Integer> getGangWhiteList() {
+        return GangWhiteList;
+    }
+
+    public Set<EnumMob> getMMobWhiteList() {
+        return MobWhiteList;
+    }
+
+    public void setGangWhiteList(Set<Integer> gangWhiteList) {
+        GangWhiteList = gangWhiteList;
+        Sync();
+    }
+
+    public void setMobWhiteList(Set<EnumMob> MobWhiteList) {
+        this.MobWhiteList = MobWhiteList;
+        Sync();
     }
 }

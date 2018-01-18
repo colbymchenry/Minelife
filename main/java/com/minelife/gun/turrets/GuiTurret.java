@@ -1,7 +1,9 @@
 package com.minelife.gun.turrets;
 
+import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.util.client.GuiUtil;
+import cpw.mods.fml.client.config.GuiCheckBox;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -10,13 +12,16 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.util.List;
+
 
 public class GuiTurret extends GuiContainer {
 
     private ResourceLocation TexCog = new ResourceLocation(Minelife.MOD_ID, "textures/gui/cog.png");
     private ResourceLocation TexInv = new ResourceLocation(Minelife.MOD_ID, "textures/gui/inventory_icon.png");
     private boolean editSettings = false;
-    private GuiButton BtnSettings;
+    private GuiButton BtnSettings, BtnLeft, BtnRight, BtnAddGang, BtnRemoveGang;
+    private GuiTurretScrollList WhiteListMob, BlackListMob, WhiteListGang;
 
     private Color slotColor = new Color(139, 139, 139, 255);
 
@@ -78,5 +83,9 @@ public class GuiTurret extends GuiContainer {
     public void initGui() {
         super.initGui();
         BtnSettings = new GuiButton(0, this.guiLeft + this.xSize, this.guiTop, 20, 20, "");
+        String[] PassiveMobs = new String[EnumMob.values().length];
+        for (int i = 0; i < EnumMob.values().length; i++) PassiveMobs[i] = EnumMob.values()[i].name();
+
+        WhiteListMob
     }
 }
