@@ -75,6 +75,11 @@ public class ModGun extends MLMod {
     }
 
     @Override
+    public AbstractGuiHandler gui_handler() {
+        return new GuiHandler();
+    }
+
+    @Override
     public Class<? extends MLProxy> getClientProxyClass() {
         return com.minelife.gun.client.ClientProxy.class;
     }

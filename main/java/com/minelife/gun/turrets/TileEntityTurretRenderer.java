@@ -51,29 +51,41 @@ public class TileEntityTurretRenderer extends TileEntitySpecialRenderer {
         TileEntityTurret turret = (TileEntityTurret) tileEntity;
 
 
-        // TODO: Turret rendering in hand, and turret viewarea, and turret deciding what to shoot and who to shoot
+        // TODO: Turret rendering in hand, and turret viewarea, and turret deciding what to shoot and who to shoot, GUI for choosing who to not shoot, and what gangs to not shoot
         GL11.glPushMatrix();
         {
             GL11.glTranslated(x, y, z + 1);
             GL11.glTranslatef(0, 1f, 0);
 
             GL11.glTranslated(0.5, 0.3, -0.5);
+
             bindTexture(TexBodyOff);
 
             GL11.glRotatef(turret.getDirection() == EnumFacing.NORTH ? -90 : turret.getDirection() == EnumFacing.SOUTH ? 90 : turret.getDirection() == EnumFacing.EAST ? -180 : 0, 0, 1, 0);
 
-            if(turret.getWorldObj().getEntityByID(turret.getTargetID()) != null) {
+            if (turret.getWorldObj().getEntityByID(turret.getTargetID()) != null) {
                 EntityLiving target = (EntityLiving) turret.getWorldObj().getEntityByID(turret.getTargetID());
                 Vector lookVec = turret.getLookVec(target);
-                float yaw = (float) Math.atan2(lookVec.getX(),lookVec.getZ());
-                float pitch = (float) Math.asin(lookVec.getY()/Math.sqrt(lookVec.getZ() * lookVec.getZ() + lookVec.getX() * lookVec.getX()));
+                float yaw = (float) Math.atan2(lookVec.getX(), lookVec.getZ());
+                float pitch = (float) Math.asin(lookVec.getY() / Math.sqrt(lookVec.getZ() * lookVec.getZ() + lookVec.getX() * lookVec.getX()));
                 yaw = (float) Math.toDegrees(yaw);
                 pitch = (float) Math.toDegrees(pitch) + 6;
-                GL11.glRotatef(yaw, 0, 1, 0);
+
+                if (turret.getDirection() == EnumFacing.SOUTH)
+                    GL11.glRotatef(yaw - 180, 0, 1, 0);
+                else if (turret.getDirection() == EnumFacing.NORTH)
+                    GL11.glRotatef(yaw, 0, 1, 0);
+                else if (turret.getDirection() == EnumFacing.EAST) {
+                    GL11.glRotatef(yaw + 90, 0, 1, 0);
+                } else if(turret.getDirection() == EnumFacing.WEST) {
+                    GL11.glRotatef(yaw - 90, 0, 1, 0);
+                }
                 GL11.glRotatef(pitch, 0, 0, 1);
             } else {
                 GL11.glRotated(turret.rotationYaw, 0, 1, 0);
             }
+
+
             GL11.glTranslated(-0.5, -0.3, 0.5);
             ModelBody.renderAll();
         }

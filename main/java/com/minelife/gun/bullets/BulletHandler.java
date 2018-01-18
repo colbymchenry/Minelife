@@ -74,7 +74,7 @@ public class BulletHandler {
             /**
              * Check if we hit a block
              */
-            if (block != null && block != Blocks.air && block != MLBlocks.turret) {
+            if (block != null && block != Blocks.air && block != MLBlocks.turret && block != MLBlocks.turret.topTurret) {
                 if (!bullet.world.isRemote) block.setBlockBoundsBasedOnState(bullet.world, x, y, z);
                 AxisAlignedBB axisalignedbb = block.getCollisionBoundingBoxFromPool(bullet.world, x, y, z);
 

@@ -1,6 +1,8 @@
 package com.minelife.gun.turrets;
 
+import buildcraft.core.lib.inventory.SimpleInventory;
 import codechicken.lib.vec.Vector3;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.MLBlocks;
 import com.minelife.Minelife;
@@ -18,6 +20,8 @@ import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -30,15 +34,19 @@ import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Map;
 
-public class TileEntityTurret extends TileEntity {
+public class TileEntityTurret extends TileEntity implements IInventory {
 
     private EnumFacing direction = EnumFacing.NORTH;
     private EntityLiving target;
     private int targetID;
     private int tick;
     public float rotationYaw, rotationPitch;
-
+    private SimpleInventory inventory;
     private boolean hitRight = true;
+
+    public TileEntityTurret() {
+        inventory = new SimpleInventory(54, "Turret", 64);
+    }
 
     @Override
     public void updateEntity() {
@@ -74,6 +82,11 @@ public class TileEntityTurret extends TileEntity {
 
         tick = 0;
 
+        Map<Integer, ItemStack> ammo = getAmmo();
+
+        if (ammo.isEmpty()) return;
+
+
         int range = MinecraftServer.getServer().getConfigurationManager().getEntityViewDistance() / 2;
         List<EntityLiving> entities = worldObj.getEntitiesWithinAABB(EntityLiving.class,
                 AxisAlignedBB.getBoundingBox(xCoord - range, yCoord - range, zCoord - range,
@@ -97,11 +110,11 @@ public class TileEntityTurret extends TileEntity {
                     Block block = worldObj.getBlock(x, y, z);
 
 
-                    if(entity.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(target)) {
+                    if (entity.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(target)) {
                         break;
                     }
 
-                    if (block != Blocks.air && block != MLBlocks.turret) {
+                    if (block != Blocks.air && block != MLBlocks.turret && block != MLBlocks.turret.topTurret) {
                         if (block.getCollisionBoundingBoxFromPool(worldObj, x, y, z) != null) {
                             if (block.getCollisionBoundingBoxFromPool(worldObj, x, y, z).isVecInside(target)) {
                                 foundBlock = true;
@@ -126,13 +139,27 @@ public class TileEntityTurret extends TileEntity {
             this.target = closestEntity;
             this.targetID = closestEntity.getEntityId();
 
-            this.getWorldObj().markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
-            this.markDirty();
+            int slot = (int) getAmmo().keySet().toArray()[0];
+            ItemStack stack = getAmmo().get(slot);
+            stack.stackSize -= 1;
+
+            setInventorySlotContents(slot, stack.stackSize < 1 ? null : stack);
+
+            Sync();
 
             Minelife.NETWORK.sendToAllAround(new PacketBullet(BulletHandler.addBullet(this, ItemAmmo.AmmoType.NORMAL)),
                     new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, MinecraftServer.getServer().getConfigurationManager().getEntityViewDistance()));
         }
 
+    }
+
+    public Map<Integer, ItemStack> getAmmo() {
+        Map<Integer, ItemStack> ammo = Maps.newHashMap();
+        for (int i = 0; i < getSizeInventory(); i++) {
+            if (getStackInSlot(i) != null) ammo.put(i, getStackInSlot(i));
+        }
+
+        return ammo;
     }
 
     public double distance(Vec3 v1, Vec3 v2) {
@@ -144,6 +171,7 @@ public class TileEntityTurret extends TileEntity {
         super.writeToNBT(tagCompound);
         tagCompound.setString("direction", this.direction.name());
         tagCompound.setInteger("targetID", targetID);
+        inventory.writeToNBT(tagCompound, "Items");
     }
 
     @Override
@@ -152,6 +180,7 @@ public class TileEntityTurret extends TileEntity {
         this.direction = tagCompound.hasKey("direction") ?
                 EnumFacing.valueOf(tagCompound.getString("direction")) : EnumFacing.NORTH;
         this.targetID = tagCompound.getInteger("targetID");
+        this.inventory.readFromNBT(tagCompound, "Items");
     }
 
     @Override
@@ -164,6 +193,11 @@ public class TileEntityTurret extends TileEntity {
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
         this.readFromNBT(pkt.func_148857_g());
+    }
+
+    public void Sync() {
+        this.getWorldObj().markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
+        this.markDirty();
     }
 
     public Vector getLookVec() {
@@ -196,5 +230,66 @@ public class TileEntityTurret extends TileEntity {
 
     public EnumFacing getDirection() {
         return direction;
+    }
+
+    @Override
+    public int getSizeInventory() {
+        return inventory.getSizeInventory();
+    }
+
+    @Override
+    public ItemStack getStackInSlot(int slot) {
+        return inventory.getStackInSlot(slot);
+    }
+
+    @Override
+    public ItemStack decrStackSize(int p_70298_1_, int p_70298_2_) {
+        return inventory.decrStackSize(p_70298_1_, p_70298_2_);
+    }
+
+    @Override
+    public ItemStack getStackInSlotOnClosing(int p_70304_1_) {
+        return inventory.getStackInSlotOnClosing(p_70304_1_);
+    }
+
+    @Override
+    public void setInventorySlotContents(int p_70299_1_, ItemStack p_70299_2_) {
+        inventory.setInventorySlotContents(p_70299_1_, p_70299_2_);
+    }
+
+    @Override
+    public String getInventoryName() {
+        return inventory.getInventoryName();
+    }
+
+    @Override
+    public boolean hasCustomInventoryName() {
+        return inventory.hasCustomInventoryName();
+    }
+
+    @Override
+    public int getInventoryStackLimit() {
+        return inventory.getInventoryStackLimit();
+    }
+
+    @Override
+    public boolean isUseableByPlayer(EntityPlayer p_70300_1_) {
+        return true;
+    }
+
+    @Override
+    public void openInventory() {
+
+    }
+
+    @Override
+    public void closeInventory() {
+
+    }
+
+    @Override
+    public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
+        System.out.println("CALLED");
+        return p_94041_2_ != null && p_94041_2_.getItem() instanceof ItemAmmo;
     }
 }
