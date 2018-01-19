@@ -10,6 +10,7 @@ import com.minelife.gun.client.guns.ItemGunClient;
 import com.minelife.gun.item.attachments.ItemSight;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.packet.PacketMouseClick;
+import com.minelife.gun.turrets.ItemTurretRenderer;
 import com.minelife.gun.turrets.TileEntityTurret;
 import com.minelife.gun.turrets.TileEntityTurretRenderer;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -40,6 +41,7 @@ public class ClientProxy extends MLProxy {
         Attachment.registerRenderers();
 //        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(MLBlocks.turret), new ItemDryingRackRenderer());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTurret.class, new TileEntityTurretRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(MLBlocks.turret), new ItemTurretRenderer());
     }
 
     /**

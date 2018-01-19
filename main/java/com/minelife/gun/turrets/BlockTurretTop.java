@@ -30,7 +30,7 @@ public class BlockTurretTop extends Block {
 
     @Override
     public void breakBlock(World world, int x, int y, int z, Block p_149749_5_, int p_149749_6_) {
-        MLBlocks.turret.breakBlock(world, x, y, z, p_149749_5_, 1);
+        MLBlocks.turret.breakBlock(world, x, y - 1, z, p_149749_5_, 1);
     }
 
     @Override

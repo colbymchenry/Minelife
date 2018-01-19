@@ -124,8 +124,9 @@ public class TileEntityTurret extends TileEntity implements IInventory {
                     if(memberKeys.contains(e.getUniqueID())) toRemove.add(e);
                     if(ownersKeys.contains(e.getUniqueID())) toRemove.add(e);
                 }
-            }
 
+                if(getOwner() != null && e.getUniqueID().equals(getOwner())) toRemove.add(e);
+            }
 
         });
 
@@ -190,6 +191,10 @@ public class TileEntityTurret extends TileEntity implements IInventory {
 
             Minelife.NETWORK.sendToAllAround(new PacketBullet(BulletHandler.addBullet(this, ItemAmmo.AmmoType.NORMAL)),
                     new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, MinecraftServer.getServer().getConfigurationManager().getEntityViewDistance()));
+        } else {
+            this.target = null;
+            this.targetID = -1;
+            Sync();
         }
 
     }

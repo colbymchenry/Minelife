@@ -26,7 +26,6 @@ import java.awt.*;
 
 public class ItemCocaLeafRenderer implements IItemRenderer {
 
-    protected static RenderItem itemRender = new RenderItem();
     protected static Minecraft mc = Minecraft.getMinecraft();
     protected static ResourceLocation texture = new ResourceLocation(Minelife.MOD_ID + ":textures/items/coca_leaf.png");
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
