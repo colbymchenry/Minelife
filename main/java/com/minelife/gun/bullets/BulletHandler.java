@@ -19,6 +19,9 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
 
@@ -51,7 +54,7 @@ public class BulletHandler {
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent event) {
+    public void onTick(TickEvent event) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         tickCount++;
 
         if (tickCount < 2) return;
@@ -117,17 +120,25 @@ public class BulletHandler {
             AxisAlignedBB surrounding_check = AxisAlignedBB.getBoundingBox(bullet.target.xCoord - offset, bullet.target.yCoord - offset, bullet.target.zCoord - offset, bullet.target.xCoord + offset, bullet.target.yCoord + offset, bullet.target.zCoord + offset);
             for (EntityLivingBase e : (List<EntityLivingBase>) bullet.world.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check)) {
                 if (e != bullet.shooter && e.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(bullet.target)) {
-                    BulletHitEvent shotEvent = new BulletHitEvent(bullet.shooter, e, bullet.shooter == null ? null : bullet.shooter.getHeldItem());
-                    MinecraftForge.EVENT_BUS.post(shotEvent);
 
-                    if (shotEvent.isCanceled()) return;
-                    int damage = bullet.shooter == null ? 10 : ((ItemGun) bullet.shooter.getHeldItem().getItem()).getDamage();
-                    e.attackEntityFrom(DamageSource.causeMobDamage(bullet.shooter), damage);
+                    if(!bullet.world.isRemote) {
+                        BulletHitEvent shotEvent = new BulletHitEvent(bullet.shooter, e, bullet.shooter == null ? null : bullet.shooter.getHeldItem());
+                        MinecraftForge.EVENT_BUS.post(shotEvent);
 
-                    if (bullet.ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
-                        bullet.world.createExplosion(bullet.shooter, bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord, 4.0F, false);
-                    } else if (bullet.ammoType == ItemAmmo.AmmoType.INCENDIARY) {
-                        e.setFire(6);
+                        if (shotEvent.isCanceled()) return;
+
+
+                        int damage = bullet.shooter == null ? 10 : ((ItemGun) bullet.shooter.getHeldItem().getItem()).getDamage();
+//                    e.attackEntityFrom(DamageSource.causeMobDamage(bullet.shooter), damage);
+                        Method damageEntity = EntityLivingBase.class.getDeclaredMethod("damageEntity", DamageSource.class, float.class);
+                        damageEntity.setAccessible(true);
+                        damageEntity.invoke(e, DamageSource.causeMobDamage(bullet.shooter), damage);
+
+                        if (bullet.ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
+                            bullet.world.createExplosion(bullet.shooter, bullet.target.xCoord, bullet.target.yCoord, bullet.target.zCoord, 4.0F, false);
+                        } else if (bullet.ammoType == ItemAmmo.AmmoType.INCENDIARY) {
+                            e.setFire(6);
+                        }
                     }
 
                     if (!calledToQuit) {

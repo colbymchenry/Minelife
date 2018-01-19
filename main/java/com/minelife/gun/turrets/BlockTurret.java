@@ -44,9 +44,10 @@ public class BlockTurret extends BlockContainer {
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack p_149689_6_) {
         int l = MathHelper.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-        TileEntityTurret tileEntityATM = (TileEntityTurret) world.getTileEntity(x, y, z);
-        tileEntityATM.setDirection(l == 0 ? EnumFacing.NORTH : l == 1 ? EnumFacing.EAST : l == 2 ? EnumFacing.SOUTH : EnumFacing.WEST);
+        TileEntityTurret tileTurret = (TileEntityTurret) world.getTileEntity(x, y, z);
+        tileTurret.setDirection(l == 0 ? EnumFacing.NORTH : l == 1 ? EnumFacing.EAST : l == 2 ? EnumFacing.SOUTH : EnumFacing.WEST);
         world.setBlock(x, y + 1, z, topTurret);
+        tileTurret.setOwner(player.getUniqueID());
     }
 
     @Override

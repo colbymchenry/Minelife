@@ -3,9 +3,11 @@ package com.minelife.gun.turrets;
 import codechicken.lib.vec.Vector3;
 import com.minelife.Minelife;
 import com.minelife.util.Vector;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -64,7 +66,7 @@ public class TileEntityTurretRenderer extends TileEntitySpecialRenderer {
             GL11.glRotatef(turret.getDirection() == EnumFacing.NORTH ? -90 : turret.getDirection() == EnumFacing.SOUTH ? 90 : turret.getDirection() == EnumFacing.EAST ? -180 : 0, 0, 1, 0);
 
             if (turret.getWorldObj().getEntityByID(turret.getTargetID()) != null) {
-                EntityLiving target = (EntityLiving) turret.getWorldObj().getEntityByID(turret.getTargetID());
+                EntityLivingBase target = (EntityLivingBase) turret.getWorldObj().getEntityByID(turret.getTargetID());
                 Vector lookVec = turret.getLookVec(target);
                 float yaw = (float) Math.atan2(lookVec.getX(), lookVec.getZ());
                 float pitch = (float) Math.asin(lookVec.getY() / Math.sqrt(lookVec.getZ() * lookVec.getZ() + lookVec.getX() * lookVec.getX()));

@@ -7,10 +7,13 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.MLBlocks;
 import com.minelife.Minelife;
+import com.minelife.gangs.Gang;
 import com.minelife.gangs.ModGangs;
 import com.minelife.gun.bullets.BulletHandler;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.packet.PacketBullet;
+import com.minelife.realestate.Estate;
+import com.minelife.realestate.EstateHandler;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.Vector;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -38,6 +41,7 @@ import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class TileEntityTurret extends TileEntity implements IInventory {
 
@@ -49,7 +53,8 @@ public class TileEntityTurret extends TileEntity implements IInventory {
     private SimpleInventory inventory;
     private boolean hitRight = true;
     private Set<EnumMob> MobWhiteList = Sets.newTreeSet();
-    private Set<Integer> GangWhiteList = Sets.newTreeSet();
+    private Set<UUID> GangWhiteList = Sets.newTreeSet();
+    private UUID owner;
 
     public TileEntityTurret() {
         inventory = new SimpleInventory(54, "Turret", 64);
@@ -101,14 +106,30 @@ public class TileEntityTurret extends TileEntity implements IInventory {
 
         List<EntityLivingBase> toRemove = Lists.newArrayList();
 
+        Estate estate = EstateHandler.getEstateAt(worldObj, Vec3.createVectorHelper(xCoord, yCoord, zCoord));
+        Set<UUID> memberKeys = estate != null ? estate.getSurroundingMembers().keySet() : Sets.newTreeSet();
+        Set<UUID> ownersKeys = estate != null ? estate.getSurroundingOwners() : Sets.newTreeSet();
+
         entities.forEach(e -> {
             for (EnumMob enumMob : MobWhiteList) {
                 if(e.getClass().equals(enumMob.getMobClass())) toRemove.add(e);
             }
+
+            if(e instanceof EntityPlayer) {
+                Gang gang = ModGangs.getPlayerGang(e.getUniqueID());
+                if(gang != null && GangWhiteList.contains(gang.getGangID())) toRemove.add(e);
+
+                if(estate != null) {
+                    if(estate.getOwner() !=  null && estate.getOwner().equals(e.getUniqueID())) toRemove.add(e);
+                    if(memberKeys.contains(e.getUniqueID())) toRemove.add(e);
+                    if(ownersKeys.contains(e.getUniqueID())) toRemove.add(e);
+                }
+            }
+
+
         });
 
         entities.removeAll(toRemove);
-
 
         // TODO: Implement gangs
 
@@ -196,7 +217,7 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         String mobs = "";
         String gangs = "";
         for (EnumMob enumMob : MobWhiteList) mobs += enumMob.name() + ",";
-        for (int gangID : GangWhiteList) gangs += gangID + ",";
+        for (UUID gangID : GangWhiteList) gangs += gangID.toString() + ",";
 
         tagCompound.setString("MobWhiteList", mobs);
         tagCompound.setString("GangWhiteList", gangs);
@@ -221,7 +242,7 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         if (tagCompound.hasKey("GangWhiteList")) {
             for (String gangID : tagCompound.getString("GangWhiteList").split(",")) {
                 if (!gangID.isEmpty()) {
-                    GangWhiteList.add(Integer.parseInt(gangID));
+                    GangWhiteList.add(UUID.fromString(gangID));
                 }
             }
         }
@@ -337,7 +358,7 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         return p_94041_2_ != null && p_94041_2_.getItem() instanceof ItemAmmo;
     }
 
-    public Set<Integer> getGangWhiteList() {
+    public Set<UUID> getGangWhiteList() {
         return GangWhiteList;
     }
 
@@ -345,7 +366,7 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         return MobWhiteList;
     }
 
-    public void setGangWhiteList(Set<Integer> gangWhiteList) {
+    public void setGangWhiteList(Set<UUID> gangWhiteList) {
         GangWhiteList = gangWhiteList;
         Sync();
     }
@@ -353,5 +374,14 @@ public class TileEntityTurret extends TileEntity implements IInventory {
     public void setMobWhiteList(Set<EnumMob> MobWhiteList) {
         this.MobWhiteList = MobWhiteList;
         Sync();
+    }
+
+    public void setOwner(UUID owner) {
+        this.owner = owner;
+        Sync();
+    }
+
+    public UUID getOwner() {
+        return owner;
     }
 }

@@ -30,7 +30,7 @@ public class GunM4A4 extends ItemGun {
 
     @Override
     public int getDamage() {
-        return 33;
+        return 6;
     }
 
     @Override

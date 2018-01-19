@@ -51,6 +51,7 @@ public class TeleportAccept implements ICommand {
 
         TeleportHandler.teleport(Sender, PlayerLocation);
         TeleportAsk.DeleteRequest(Player);
+        TeleportAsk.DeleteRequest(Sender);
     }
 
     @Override

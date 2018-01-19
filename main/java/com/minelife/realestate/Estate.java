@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.economy.Billing;
+import com.minelife.realestate.server.EstateListener;
 import com.minelife.util.ArrayUtil;
 import com.minelife.util.MLConfig;
 import com.minelife.util.configuration.InvalidConfigurationException;
@@ -120,6 +121,29 @@ public class Estate implements Comparable<Estate> {
         return members;
     }
 
+    public Map<UUID, Set<Permission>> getSurroundingMembers() {
+        Map<UUID, Set<Permission>> members = Maps.newHashMap();
+        Estate e = getParentEstate();
+        while(e != null) {
+            members.putAll(e.getMembers());
+            e = e.getParentEstate();
+        }
+
+        members.putAll(getMembers());
+        return members;
+    }
+
+    public Set<UUID> getSurroundingOwners() {
+        Set<UUID> owners = Sets.newTreeSet();
+        Estate e = getParentEstate();
+        while(e != null) {
+            owners.add(e.getOwner());
+            e = e.getParentEstate();
+        }
+        owners.add(getOwner());
+        return owners;
+    }
+
     public AxisAlignedBB getBounds() {
         Selection s = new Selection();
         s.setPos1(config.getInt("pos1.x"), config.getInt("pos1.y"), config.getInt("pos1.z"));
@@ -182,6 +206,11 @@ public class Estate implements Comparable<Estate> {
     }
 
     public void deleteEstate() {
+        Map<EntityPlayer, Estate> newMap = Maps.newHashMap();
+        for (EntityPlayer entityPlayer : EstateListener.insideEstate.keySet()) {
+            if(EstateListener.insideEstate.get(entityPlayer).getID() != getID()) newMap.put(entityPlayer, EstateListener.insideEstate.get(entityPlayer));
+        }
+        EstateListener.insideEstate = newMap;
         EstateHandler.loadedEstates.remove(this);
         config.getFile().delete();
     }
@@ -413,7 +442,7 @@ public class Estate implements Comparable<Estate> {
 
     @Override
     public int compareTo(Estate o) {
-        return o.id == id ? 0 : 1;
+        return o == null ? -1 : o.id - id;
     }
 
     @Override

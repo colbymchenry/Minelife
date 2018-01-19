@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 public class EstateListener {
 
-    private static Map<EntityPlayer, Estate> insideEstate = Maps.newHashMap();
+    public static Map<EntityPlayer, Estate> insideEstate = Maps.newHashMap();
 
     @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent event) {

@@ -24,6 +24,7 @@ import java.util.UUID;
 
 public class Gang implements Comparable<Gang> {
 
+    private UUID uuid;
     private MLConfig config;
     private String name;
     private Location home;
@@ -33,9 +34,9 @@ public class Gang implements Comparable<Gang> {
     private Map<UUID, String> titles;
     private double balance;
 
-    public Gang(String name) throws IOException, InvalidConfigurationException {
-        this.name = name;
-        config = new MLConfig(new File(Minelife.getConfigDirectory(), "gangs"), name);
+    public Gang(UUID uuid) throws IOException, InvalidConfigurationException {
+        this.uuid = uuid;
+        config = new MLConfig(new File(Minelife.getConfigDirectory(), "gangs"), uuid.toString());
 
         if (config.contains("home.world") && config.contains("home.x") && config.contains("home.y") && config.contains("home.z"))
             home = new Location(config.getString("home.world"), config.getDouble("home.x"), config.getDouble("home.y"), config.getDouble("home.z"));
@@ -54,6 +55,8 @@ public class Gang implements Comparable<Gang> {
             String[] data = title.split("\\=");
             titles.put(UUID.fromString(data[0]), title.replaceFirst(data[0] + "=", ""));
         });
+
+        name = config.getString("name");
     }
 
     public Gang(String name, UUID leader) throws IOException, InvalidConfigurationException {
@@ -65,6 +68,7 @@ public class Gang implements Comparable<Gang> {
         titles = Maps.newHashMap();
         config = new MLConfig(new File(Minelife.getConfigDirectory(), "gangs"), name);
         config.set("name", name);
+        config.set("uuid", UUID.randomUUID().toString());
         config.set("leader", leader);
         config.set("balance", 0.0);
         config.addDefault("officers", Lists.newArrayList());
@@ -75,6 +79,10 @@ public class Gang implements Comparable<Gang> {
 
     public String getName() {
         return name;
+    }
+
+    public UUID getGangID() {
+        return uuid;
     }
 
     public Location getHome() {

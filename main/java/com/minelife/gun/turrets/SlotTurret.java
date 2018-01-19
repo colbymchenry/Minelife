@@ -1,5 +1,6 @@
 package com.minelife.gun.turrets;
 
+import com.minelife.MLItems;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -13,6 +14,6 @@ public class SlotTurret extends Slot {
 
     @Override
     public boolean isItemValid(ItemStack p_75214_1_) {
-        return p_75214_1_ != null && p_75214_1_.getItem() instanceof ItemAmmo;
+        return p_75214_1_ != null && p_75214_1_.getItem() == MLItems.ammo_pistol;
     }
 }

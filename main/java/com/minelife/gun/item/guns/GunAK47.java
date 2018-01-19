@@ -32,7 +32,7 @@ public class GunAK47 extends ItemGun {
 
     @Override
     public int getDamage() {
-        return 22;
+        return 4;
     }
 
     @Override

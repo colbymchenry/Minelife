@@ -28,7 +28,7 @@ public class GunMagnum extends ItemGun {
 
     @Override
     public int getDamage() {
-        return 20;
+        return 5;
     }
 
     @Override

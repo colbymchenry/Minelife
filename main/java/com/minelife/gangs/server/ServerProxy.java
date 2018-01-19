@@ -8,6 +8,7 @@ import com.minelife.util.MLConfig;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 import java.io.File;
+import java.util.UUID;
 
 public class ServerProxy extends MLProxy {
 
@@ -15,7 +16,7 @@ public class ServerProxy extends MLProxy {
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         File gangDir = new File(Minelife.getConfigDirectory(), "gangs");
         if(gangDir.exists()) {
-            for (File file : gangDir.listFiles()) ModGangs.cache_gangs.add(new Gang(file.getName().replaceAll(".yml", "")));
+            for (File file : gangDir.listFiles()) ModGangs.cache_gangs.add(new Gang(UUID.fromString(file.getName().replaceAll(".yml", ""))));
         }
     }
 }

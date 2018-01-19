@@ -28,7 +28,7 @@ public class GunDesertEagle extends ItemGun {
 
     @Override
     public int getDamage() {
-        return 20;
+        return 7;
     }
 
     @Override

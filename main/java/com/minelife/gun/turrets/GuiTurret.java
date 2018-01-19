@@ -86,6 +86,6 @@ public class GuiTurret extends GuiContainer {
         String[] PassiveMobs = new String[EnumMob.values().length];
         for (int i = 0; i < EnumMob.values().length; i++) PassiveMobs[i] = EnumMob.values()[i].name();
 
-        WhiteListMob
+//        WhiteListMob
     }
 }

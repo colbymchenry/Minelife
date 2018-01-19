@@ -29,7 +29,7 @@ public class GunAWP extends ItemGun {
 
     @Override
     public int getDamage() {
-        return 100;
+        return 15;
     }
 
     @Override
