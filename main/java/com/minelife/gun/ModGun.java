@@ -68,6 +68,8 @@ public class ModGun extends MLMod {
         registerPacket(PacketBullet.Handler.class, PacketBullet.class, Side.CLIENT);
         registerPacket(PacketSetSiteColor.Handler.class, PacketSetSiteColor.class, Side.SERVER);
         registerPacket(PacketSetSite.Handler.class, PacketSetSite.class, Side.SERVER);
+        registerPacket(PacketGetGangName.Handler.class, PacketGetGangName.class, Side.CLIENT);
+        registerPacket(PacketSetTurretSettings.Handler.class, PacketSetTurretSettings.class, Side.SERVER);
 
         ItemGunPart.registerRecipes();
         ItemAmmo.registerRecipes();

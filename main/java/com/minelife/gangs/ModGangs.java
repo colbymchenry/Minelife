@@ -43,6 +43,10 @@ public class ModGangs extends MLMod {
         return cache_gangs.stream().filter(g -> g.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
+    public static Gang getGang(UUID id) {
+        return cache_gangs.stream().filter(g -> g.getGangID().equals(id)).findFirst().orElse(null);
+    }
+
     public static Gang getPlayerGang(UUID player) {
         for (Gang gang : cache_gangs) {
             if(gang.getLeader().equals(player)) return gang;

@@ -176,7 +176,6 @@ public class TileEntityTurret extends TileEntity implements IInventory {
             }
         }
 
-
         if (closestEntity != null) {
             this.target = closestEntity;
             this.targetID = closestEntity.getEntityId();
@@ -196,6 +195,8 @@ public class TileEntityTurret extends TileEntity implements IInventory {
             this.targetID = -1;
             Sync();
         }
+
+
 
     }
 
@@ -367,7 +368,7 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         return GangWhiteList;
     }
 
-    public Set<EnumMob> getMMobWhiteList() {
+    public Set<EnumMob> getMobWhiteList() {
         return MobWhiteList;
     }
 
@@ -388,5 +389,19 @@ public class TileEntityTurret extends TileEntity implements IInventory {
 
     public UUID getOwner() {
         return owner;
+    }
+
+    public boolean HasPermissionToModifySettings(EntityPlayerMP Player) {
+        Estate estate = EstateHandler.getEstateAt(worldObj, Vec3.createVectorHelper(xCoord, yCoord, zCoord));
+
+        if(estate != null) {
+            if(estate.getOwner() !=  null && estate.getOwner().equals(Player.getUniqueID())) return true;
+            if(estate.getSurroundingMembers().keySet().contains(Player.getUniqueID())) return true;
+            if(estate.getSurroundingOwners().contains(Player.getUniqueID())) return true;
+        }
+
+        if(getOwner() != null && Player.getUniqueID().equals(getOwner())) return true;
+
+        return false;
     }
 }
