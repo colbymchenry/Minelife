@@ -3,13 +3,18 @@ package com.minelife.gun.turrets;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.gun.packet.PacketGetGangName;
+import com.minelife.gun.packet.PacketSetTurretSettings;
+import com.minelife.util.client.GuiPopup;
 import com.minelife.util.client.GuiUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -29,6 +34,7 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
     private GuiButton BtnSettings, BtnLeft, BtnRight, BtnAddGang, BtnRemoveGang, BtnUpdate;
     private GuiTurretScrollList WhiteListMob, BlackListMob, WhiteListGang;
     private GuiTextField TxtFieldWhiteListGang;
+    private Set<UUID> GangWhiteListUUIDs = Sets.newTreeSet();
 
     private Color slotColor = new Color(139, 139, 139, 255);
 
@@ -53,7 +59,7 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glColor4f(1, 1, 1, 1);
 
-        if(!editSettings) {
+        if (!editSettings) {
             BtnSettings.drawButton(mc, mouseX, mouseY);
             mc.getTextureManager().bindTexture(TexCog);
             GuiUtil.drawImage(BtnSettings.xPosition + 3, BtnSettings.yPosition + 3, 14, 14);
@@ -76,7 +82,7 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         /**
          * Draw bullet inventory
          */
-        if(!editSettings) {
+        if (!editSettings) {
             super.drawScreen(mouseX, mouseY, f);
             return;
         }
@@ -98,7 +104,7 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
 
         BtnSettings.drawButton(mc, mouseX, mouseY);
         mc.getTextureManager().bindTexture(TexInv);
-        GuiUtil.drawImage(BtnSettings.xPosition + 4, BtnSettings.yPosition + 3, 12, 12);
+        GuiUtil.drawImage(BtnSettings.xPosition + 4, BtnSettings.yPosition + 3.5f, 12, 12);
 
         int dWheel = Mouse.getDWheel();
         WhiteListMob.draw(mouseX, mouseY, dWheel);
@@ -124,37 +130,38 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
 
     @Override
     protected void keyTyped(char KeyChar, int KeyCode) {
-        super.keyTyped(KeyChar, KeyCode);
-        if(editSettings) {
+        if (editSettings) {
             WhiteListMob.keyTyped(KeyChar, KeyCode);
             BlackListMob.keyTyped(KeyChar, KeyCode);
             WhiteListGang.keyTyped(KeyChar, KeyCode);
             TxtFieldWhiteListGang.textboxKeyTyped(KeyChar, KeyCode);
+            if (KeyCode == Keyboard.KEY_ESCAPE) {
+                super.keyTyped(KeyChar, KeyCode);
+            }
+        } else {
+            super.keyTyped(KeyChar, KeyCode);
         }
     }
 
-
-    // TODO: Still need to send packet to server on updating the turret, also need to be able to add the gangs and remove them.
-    // TODO: Also need to make an item that copies the turrets settings and can be pasted into another. Maybe use the wrench or something.
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseBtn) {
         super.mouseClicked(mouseX, mouseY, mouseBtn);
 
-        if(BtnSettings.mousePressed(mc, mouseX, mouseY)) {
+        if (BtnSettings.mousePressed(mc, mouseX, mouseY)) {
             editSettings = !editSettings;
             return;
         }
 
-        if(editSettings) {
-            if(BtnRight.mousePressed(mc, mouseX, mouseY)) {
-                if(BlackListMob.selected != -1 && BlackListMob.selected < BlackListMob.StringList.size()) {
+        if (editSettings) {
+            if (BtnRight.mousePressed(mc, mouseX, mouseY)) {
+                if (BlackListMob.selected != -1 && BlackListMob.selected < BlackListMob.StringList.size()) {
                     String mob = BlackListMob.StringList.get(BlackListMob.selected);
                     BlackListMob.StringList.remove(mob);
                     WhiteListMob.StringList.add(mob);
                 }
             }
-            if(BtnLeft.mousePressed(mc, mouseX, mouseY)) {
-                if(WhiteListMob.selected != -1 && WhiteListMob.selected < WhiteListMob.StringList.size()) {
+            if (BtnLeft.mousePressed(mc, mouseX, mouseY)) {
+                if (WhiteListMob.selected != -1 && WhiteListMob.selected < WhiteListMob.StringList.size()) {
                     String mob = WhiteListMob.StringList.get(WhiteListMob.selected);
                     WhiteListMob.StringList.remove(mob);
                     BlackListMob.StringList.add(mob);
@@ -162,7 +169,25 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
             }
 
             TxtFieldWhiteListGang.mouseClicked(mouseX, mouseY, mouseBtn);
+
+            if (TileTurret.getWorldObj().isRemote) {
+                if (BtnAddGang.mousePressed(mc, mouseX, mouseY)) {
+                    Minelife.NETWORK.sendToServer(new PacketGetGangName(TxtFieldWhiteListGang.getText(), this));
+                }
+            }
         }
+    }
+
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        Set<EnumMob> MobWhiteList = Sets.newTreeSet();
+        if(!WhiteListMob.StringList.isEmpty()) WhiteListMob.StringList.forEach(mob -> {
+            if(mob != null) {
+                MobWhiteList.add(EnumMob.valueOf(mob));
+            }
+        });
+        Minelife.NETWORK.sendToServer(new PacketSetTurretSettings(MobWhiteList, GangWhiteListUUIDs, TileTurret.xCoord, TileTurret.yCoord, TileTurret.zCoord));
     }
 
     @Override
@@ -170,28 +195,48 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         super.initGui();
         BtnSettings = new GuiButton(0, this.guiLeft + this.xSize + 2, this.guiTop, 20, 20, "");
 
-        Set<EnumMob> MobBlackList = Sets.newTreeSet();
-        MobBlackList.addAll(Arrays.asList(EnumMob.values()));
-        Set<EnumMob> MobWhiteList = TileTurret.getMobWhiteList();
-        MobBlackList.removeAll(MobWhiteList);
+        if(BlackListMob == null) {
+            Set<EnumMob> MobBlackList = Sets.newTreeSet();
+            MobBlackList.addAll(Arrays.asList(EnumMob.values()));
+            Set<String> MobWhiteList = Sets.newTreeSet();
+            MobBlackList.removeAll(TileTurret.getMobWhiteList());
 
-        String[] MBLArray = new String[MobBlackList.size()];
-        for (int i = 0; i < MobBlackList.size(); i++) MBLArray[i] = ((EnumMob)MobBlackList.toArray()[i]).name();
+            String[] MBLArray = new String[MobBlackList.size()];
+            for (int i = 0; i < MobBlackList.size(); i++) MBLArray[i] = ((EnumMob) MobBlackList.toArray()[i]).name();
 
-        String[] MWLArray = new String[MobWhiteList.size()];
-        for (int i = 0; i < MobWhiteList.size(); i++) MBLArray[i] = ((EnumMob)MobWhiteList.toArray()[i]).name();
+            TileTurret.getMobWhiteList().forEach(mob -> MobWhiteList.add(mob.name()));
 
-        BlackListMob = new GuiTurretScrollList(mc, guiLeft + 5, guiTop + 25, (xSize / 3) + 10, ySize / 4, MBLArray);
-        WhiteListMob = new GuiTurretScrollList(mc, guiLeft + xSize - ((xSize / 3) + 10) - 5, BlackListMob.yPosition, (xSize / 3) + 10, ySize / 4, MWLArray);
+            BlackListMob = new GuiTurretScrollList(mc, guiLeft + 5, guiTop + 25, (xSize / 3) + 10, ySize / 4, MBLArray);
+            WhiteListMob = new GuiTurretScrollList(mc, guiLeft + xSize - ((xSize / 3) + 10) - 5, BlackListMob.yPosition, (xSize / 3) + 10, ySize / 4, MobWhiteList.toArray(new String[MobWhiteList.size()]));
+        } else {
+            BlackListMob.xPosition = guiLeft + 5;
+            BlackListMob.yPosition = guiTop + 25;
+            BlackListMob.width = (xSize / 3) + 10;
+            BlackListMob.height = ySize / 4;
 
-        String[] gangs = new String[TileTurret.getGangWhiteList().size()];
-        for (int i = 0; i < gangs.length; i++) {
-            gangs[i] = "" + TileTurret.getGangWhiteList().toArray()[i];
+            WhiteListMob.xPosition =guiLeft + xSize - ((xSize / 3) + 10) - 5;
+            WhiteListMob.yPosition =  BlackListMob.yPosition;
+            WhiteListMob.width = (xSize / 3) + 10;
+            WhiteListMob.height = ySize / 4;
         }
 
-        WhiteListGang = new GuiTurretScrollList(mc, guiLeft + 5, BlackListMob.yPosition + BlackListMob.height + 30, (xSize / 2) + 10, ySize / 4, gangs);
+        if(WhiteListGang == null) {
+            String[] gangs = new String[TileTurret.getGangWhiteList().size()];
+            for (int i = 0; i < gangs.length; i++) {
+                gangs[i] = "" + TileTurret.getGangWhiteList().toArray()[i];
+            }
 
-        TileTurret.getGangWhiteList().forEach(gangID -> Minelife.NETWORK.sendToServer(new PacketGetGangName(gangID, this)));
+            WhiteListGang = new GuiTurretScrollList(mc, guiLeft + 5, BlackListMob.yPosition + BlackListMob.height + 30, (xSize / 2) + 10, ySize / 4, gangs);
+
+            if (TileTurret.getWorldObj().isRemote)
+                TileTurret.getGangWhiteList().forEach(gangID -> Minelife.NETWORK.sendToServer(new PacketGetGangName(gangID, this)));
+        } else {
+            WhiteListGang.xPosition = guiLeft + 5;
+            WhiteListGang.yPosition = BlackListMob.yPosition + BlackListMob.height + 30;
+            WhiteListGang.width = (xSize / 2) + 10;
+            WhiteListGang.height = ySize / 4;
+        }
+
 
         BtnRight = new GuiButton(0, guiLeft + ((xSize - 20) / 2), WhiteListMob.yPosition + 6, 20, 20, "");
         BtnLeft = new GuiButton(0, guiLeft + ((xSize - 20) / 2), WhiteListMob.yPosition + 30, 20, 20, "");
@@ -203,9 +248,23 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
 
     @Override
     public void nameReceived(UUID uuid, String name) {
+        if (uuid == null) {
+            GuiScreen previousScreen = Minecraft.getMinecraft().currentScreen;
+            Minecraft.getMinecraft().displayGuiScreen(new GuiPopup("Gang not found.", 0xC6C6C6, previousScreen));
+            return;
+        }
+
+        if (name.equalsIgnoreCase(TxtFieldWhiteListGang.getText())) {
+            TxtFieldWhiteListGang.setText("");
+            WhiteListGang.StringList.add(name);
+            GangWhiteListUUIDs.add(uuid);
+            return;
+        }
+
         for (int i = 0; i < WhiteListGang.StringList.size(); i++) {
-            if(WhiteListGang.StringList.get(i).equals(uuid.toString())) {
+            if (WhiteListGang.StringList.get(i).equals(uuid.toString())) {
                 WhiteListGang.StringList.set(i, name);
+                GangWhiteListUUIDs.add(uuid);
             }
         }
     }
@@ -213,7 +272,7 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        if(editSettings) {
+        if (editSettings) {
             BtnAddGang.enabled = !TxtFieldWhiteListGang.getText().isEmpty();
         }
     }

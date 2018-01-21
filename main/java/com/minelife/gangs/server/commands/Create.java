@@ -39,7 +39,8 @@ public class Create implements ICommandHandler {
         }
 
         try {
-            ModGangs.cache_gangs.add(new Gang(name, player.getUniqueID()));
+            Gang g = new Gang(name, player.getUniqueID());
+            ModGangs.cache_gangs.add(g);
             sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Gang created!"));
 
             ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, FireworkBuilder.Type.LARGE_BALL,

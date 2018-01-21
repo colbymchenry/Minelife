@@ -61,7 +61,7 @@ public class TileEntityTurretRenderer extends TileEntitySpecialRenderer {
 
             GL11.glTranslated(0.5, 0.3, -0.5);
 
-            bindTexture(TexBodyOff);
+            bindTexture(turret.getAmmo().isEmpty() ? TexBodyOff : TexBodyOn);
 
             GL11.glRotatef(turret.getDirection() == EnumFacing.NORTH ? -90 : turret.getDirection() == EnumFacing.SOUTH ? 90 : turret.getDirection() == EnumFacing.EAST ? -180 : 0, 0, 1, 0);
 

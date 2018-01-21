@@ -66,9 +66,11 @@ public class Gang implements Comparable<Gang> {
         this.officers = Sets.newTreeSet();
         this.members = Sets.newTreeSet();
         titles = Maps.newHashMap();
-        config = new MLConfig(new File(Minelife.getConfigDirectory(), "gangs"), name);
+        UUID uuid = UUID.randomUUID();
+        config = new MLConfig(new File(Minelife.getConfigDirectory(), "gangs"), uuid.toString());
+        this.uuid = uuid;
         config.set("name", name);
-        config.set("uuid", UUID.randomUUID().toString());
+        config.set("uuid", uuid.toString());
         config.set("leader", leader);
         config.set("balance", 0.0);
         config.addDefault("officers", Lists.newArrayList());

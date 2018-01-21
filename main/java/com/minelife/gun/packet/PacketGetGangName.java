@@ -1,5 +1,6 @@
 package com.minelife.gun.packet;
 
+import com.minelife.Minelife;
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.ModGangs;
 import com.minelife.gun.turrets.IGangNameReceiver;
@@ -17,7 +18,7 @@ import java.util.UUID;
 public class PacketGetGangName implements IMessage {
 
     private UUID GangUUID;
-    private Class<? extends IGangNameReceiver> receiver;
+    private String receiver;
     private String name;
 
     public PacketGetGangName() {
@@ -25,37 +26,52 @@ public class PacketGetGangName implements IMessage {
 
     public PacketGetGangName(UUID gangUUID, IGangNameReceiver receiver) {
         GangUUID = gangUUID;
-        this.receiver = receiver.getClass();
+        this.receiver = receiver.getClass().getName();
+    }
+
+    public PacketGetGangName(String name, IGangNameReceiver receiver) {
+        this.name = name;
+        this.receiver = receiver.getClass().getName();
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        GangUUID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
-        try {
-            receiver = (Class<? extends IGangNameReceiver>) Class.forName(ByteBufUtils.readUTF8String(buf));
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        receiver = ByteBufUtils.readUTF8String(buf);
+
+        if (buf.readBoolean()) {
+            name = ByteBufUtils.readUTF8String(buf);
+        } else {
+            GangUUID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
         }
-        if(buf.readBoolean()) name = ByteBufUtils.readUTF8String(buf);
+
+        Gang g = GangUUID != null ? ModGangs.getGang(GangUUID) : ModGangs.getGang(name);
+
+        if (g != null) {
+            name = g.getName();
+            GangUUID = g.getGangID();
+        } else {
+            name = null;
+            GangUUID = null;
+        }
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeUTF8String(buf, GangUUID.toString());
-        ByteBufUtils.writeUTF8String(buf, this.receiver.getName());
-        Gang g = ModGangs.getGang(GangUUID);
-        buf.writeBoolean(g != null);
-        ByteBufUtils.writeUTF8String(buf, g.getName());
+        ByteBufUtils.writeUTF8String(buf, receiver);
+
+        buf.writeBoolean(name != null);
+
+        if (name != null)
+            ByteBufUtils.writeUTF8String(buf, name);
+        else
+            ByteBufUtils.writeUTF8String(buf, GangUUID.toString());
     }
 
     public static class Handler implements IMessageHandler<PacketGetGangName, IMessage> {
 
-        @SideOnly(Side.CLIENT)
+        @Override
         public IMessage onMessage(PacketGetGangName message, MessageContext ctx) {
-            if(Minecraft.getMinecraft().currentScreen.getClass().equals(message.receiver)) {
-                IGangNameReceiver gangNameReceiver = (IGangNameReceiver) Minecraft.getMinecraft().currentScreen;
-                gangNameReceiver.nameReceived(message.GangUUID, message.name);
-            }
+            Minelife.NETWORK.sendTo(new PacketRespondGetGangName(message.name, message.GangUUID, message.receiver), ctx.getServerHandler().playerEntity);
             return null;
         }
     }

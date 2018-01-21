@@ -238,6 +238,7 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         this.inventory.readFromNBT(tagCompound, "Items");
 
         if (tagCompound.hasKey("MobWhiteList")) {
+            MobWhiteList.clear();
             for (String mob : tagCompound.getString("MobWhiteList").split(",")) {
                 if (!mob.isEmpty()) {
                     MobWhiteList.add(EnumMob.valueOf(mob));
@@ -246,6 +247,7 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         }
 
         if (tagCompound.hasKey("GangWhiteList")) {
+            GangWhiteList.clear();
             for (String gangID : tagCompound.getString("GangWhiteList").split(",")) {
                 if (!gangID.isEmpty()) {
                     GangWhiteList.add(UUID.fromString(gangID));
