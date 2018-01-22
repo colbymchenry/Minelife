@@ -1,6 +1,7 @@
 package com.minelife.gangs.client.gui;
 
 import com.minelife.gangs.Gang;
+import com.minelife.util.NumberConversions;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Mouse;
@@ -22,9 +23,9 @@ public class GuiGangMenu extends GuiGang {
                 GuiMembersList.xPosition + (GuiMembersList.width - mc.fontRenderer.getStringWidth("Members")) / 2,
                 GuiMembersList.yPosition - 13, 0xFFFFFF);
 
-        mc.fontRenderer.drawString(EnumChatFormatting.GREEN + "Gang Balance: ",
-                GuiMembersList.xPosition + (GuiMembersList.width - mc.fontRenderer.getStringWidth("Members")) / 2,
-                GuiMembersList.yPosition - 13, 0xFFFFFF);
+        mc.fontRenderer.drawString(EnumChatFormatting.GREEN + "Gang Balance: " + EnumChatFormatting.WHITE + "$" + NumberConversions.formatter.format(Gang.getBalance()),
+                this.XPosition + 8,
+                this.YPosition + Height - 12, 0xFFFFFF);
         mc.fontRenderer.setUnicodeFlag(false);
 
 

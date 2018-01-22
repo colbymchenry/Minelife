@@ -4,10 +4,7 @@ import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.gangs.ModGangs;
 import com.minelife.gangs.network.PacketOpenGangGui;
-import com.minelife.gangs.server.commands.Create;
-import com.minelife.gangs.server.commands.Home;
-import com.minelife.gangs.server.commands.SetHome;
-import com.minelife.gangs.server.commands.UnsetHome;
+import com.minelife.gangs.server.commands.*;
 import com.minelife.util.server.MLCommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -26,6 +23,7 @@ public class CommandGang extends MLCommand {
         commandMap.put("home", new Home());
         commandMap.put("sethome", new SetHome());
         commandMap.put("unsethome", new UnsetHome());
+        commandMap.put("help", new Help());
     }
 
     @Override

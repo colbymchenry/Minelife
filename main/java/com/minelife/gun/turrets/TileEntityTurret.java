@@ -362,7 +362,6 @@ public class TileEntityTurret extends TileEntity implements IInventory {
 
     @Override
     public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
-        System.out.println("CALLED");
         return p_94041_2_ != null && p_94041_2_.getItem() instanceof ItemAmmo;
     }
 

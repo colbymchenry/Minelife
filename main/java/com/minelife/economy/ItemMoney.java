@@ -1,15 +1,21 @@
 package com.minelife.economy;
 
 import com.google.common.collect.Lists;
+import com.minelife.MLBlocks;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
+import com.minelife.economy.cash.TileEntityCash;
 import com.minelife.util.ItemHelper;
 import com.minelife.util.NumberConversions;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 import java.util.List;
 
@@ -22,6 +28,52 @@ public class ItemMoney extends Item {
         setCreativeTab(CreativeTabs.tabMisc);
         setUnlocalizedName("money_" + amount);
         setTextureName(Minelife.MOD_ID + ":dollar_" + amount);
+    }
+
+    @Override
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float p_77648_8_, float p_77648_9_, float p_77648_10_) {
+        if (world.isRemote) return true;
+
+        if (world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileEntityCash) {
+            TileEntityCash TileCash = (TileEntityCash) world.getTileEntity(x, y, z);
+            int newStackSize = TileCash.addCash(stack);
+            ItemStack newStack = stack.copy();
+            newStack.stackSize = newStackSize;
+            player.inventory.setInventorySlotContents(player.inventory.currentItem, newStack);
+            return true;
+        }
+
+        System.out.println(side);
+
+        switch (side) {
+            case 0:
+                y -= 1;
+                break;
+            case 1:
+                y += 1;
+                break;
+            case 2:
+                z -= 1;
+                break;
+            case 3:
+                z += 1;
+                break;
+            case 4:
+                x -= 1;
+                break;
+            case 5:
+                x += 1;
+                break;
+        }
+
+        world.setBlock(x, y, z, MLBlocks.cash);
+        TileEntityCash tileEntityCash = (TileEntityCash) world.getTileEntity(x, y, z);
+        tileEntityCash.addCash(stack);
+
+        int l = MathHelper.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+
+        tileEntityCash.setFacing(l == 0 ? EnumFacing.NORTH : l == 1 ? EnumFacing.EAST : l == 2 ? EnumFacing.SOUTH : EnumFacing.WEST);
+        return true;
     }
 
     @Override

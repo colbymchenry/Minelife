@@ -246,6 +246,9 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         BtnAddGang.enabled = false;
     }
 
+    // TODO: Make item to link turrets together for their settings
+    // TODO: Make it to where they can choose to shoot all players or not, and to only target players of specific gangs
+
     @Override
     public void nameReceived(UUID uuid, String name) {
         if (uuid == null) {

@@ -94,7 +94,7 @@ public class BlockTurret extends BlockContainer {
 
     @Override
     public void registerBlockIcons(IIconRegister iconRegister) {
-        icon = iconRegister.registerIcon(Minelife.MOD_ID + ":cement_mixer");
+        icon = iconRegister.registerIcon(Minelife.MOD_ID + ":presser");
     }
 
     @Override

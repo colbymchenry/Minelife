@@ -3,6 +3,7 @@ package com.minelife;
 import com.minelife.drug.block.*;
 import com.minelife.economy.BlockATM;
 import com.minelife.economy.BlockATMTop;
+import com.minelife.economy.cash.BlockCash;
 import com.minelife.gangs.BlockVaultCreator;
 import com.minelife.gun.block.BlockZincOre;
 import com.minelife.gun.turrets.BlockTurret;
@@ -37,6 +38,7 @@ public class MLBlocks {
     public static BlockShopBlock shopBlock;
     public static BlockRedstoneLampOn redstoneLampOn;
     public static BlockTurret turret;
+    public static BlockCash cash;
 //    public static BlockVaultCreator vaultCreator;
 
     protected static void init()
@@ -68,6 +70,7 @@ public class MLBlocks {
         register_block(shopBlock = new BlockShopBlock());
         register_block(redstoneLampOn = new BlockRedstoneLampOn());
         register_block(turret = new BlockTurret());
+        register_block(cash = new BlockCash());
 //        register_block(vaultCreator = new BlockVaultCreator());
     }
 

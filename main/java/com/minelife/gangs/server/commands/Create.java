@@ -15,6 +15,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Create implements ICommandHandler {
 
     @Override
@@ -27,6 +30,14 @@ public class Create implements ICommandHandler {
         }
 
         String name = args[1];
+
+        Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(name);
+
+        if(m.find()) {
+            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Gang name cannot have special characters."));
+            return;
+        }
 
         if (ModGangs.getGang(name) != null) {
             sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "There is already a gang with that name."));
