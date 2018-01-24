@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
+import com.minelife.realestate.Estate;
+import com.minelife.realestate.EstateHandler;
 import com.minelife.realestate.Selection;
 import com.minelife.util.Location;
 import com.minelife.util.MLConfig;
@@ -13,6 +15,9 @@ import com.minelife.util.server.NameFetcher;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import java.io.File;
@@ -32,7 +37,6 @@ public class Gang implements Comparable<Gang> {
     private Set<UUID> officers;
     private Set<UUID> members;
     private Map<UUID, String> titles;
-    private double balance;
 
     public Gang(UUID uuid) throws IOException, InvalidConfigurationException {
         this.uuid = uuid;
@@ -42,7 +46,6 @@ public class Gang implements Comparable<Gang> {
             home = new Location(config.getString("home.world"), config.getDouble("home.x"), config.getDouble("home.y"), config.getDouble("home.z"));
 
         leader = config.getUUID("leader", null);
-        balance = config.getDouble("balance", 0);
 
         officers = Sets.newTreeSet();
         config.getStringList("officers").forEach(officer -> officers.add(UUID.fromString(officer)));
@@ -62,7 +65,6 @@ public class Gang implements Comparable<Gang> {
     public Gang(String name, UUID leader) throws IOException, InvalidConfigurationException {
         this.name = name;
         this.leader = leader;
-        this.balance = 0.0;
         this.officers = Sets.newTreeSet();
         this.members = Sets.newTreeSet();
         titles = Maps.newHashMap();
@@ -72,7 +74,6 @@ public class Gang implements Comparable<Gang> {
         config.set("name", name);
         config.set("uuid", uuid.toString());
         config.set("leader", leader);
-        config.set("balance", 0.0);
         config.addDefault("officers", Lists.newArrayList());
         config.addDefault("members", Lists.newArrayList());
         config.addDefault("titles", Lists.newArrayList());
@@ -107,8 +108,23 @@ public class Gang implements Comparable<Gang> {
         return titles;
     }
 
-    public double getBalance() {
-        return balance;
+    public int getBalance() {
+        int total = 0;
+        for (Estate estate : getEstates()) {
+            Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
+            Vec3 max = Vec3.createVectorHelper(estate.getBounds().maxX, estate.getBounds().maxY, estate.getBounds().maxZ);
+            0
+        }
+    }
+
+    public Set<Estate> getEstates() {
+        Set<Estate> estates = Sets.newTreeSet();
+        for (Estate estate : EstateHandler.loadedEstates) {
+            if (estate.getOwner() != null && getLeader() != null && estate.getOwner().equals(getLeader())) {
+                estates.add(estate);
+            }
+        }
+        return estates;
     }
 
     public boolean setName(String name) {
@@ -170,13 +186,6 @@ public class Gang implements Comparable<Gang> {
         return true;
     }
 
-    public boolean setBalance(double balance) {
-        this.balance = balance;
-        config.set("balance", balance);
-        config.save();
-        return true;
-    }
-
     @Override
     public int compareTo(Gang o) {
         return o.getName().compareTo(getName());
@@ -196,7 +205,6 @@ public class Gang implements Comparable<Gang> {
             ByteBufUtils.writeUTF8String(buf, uuid.toString());
             ByteBufUtils.writeUTF8String(buf, name);
         });
-        buf.writeDouble(balance);
     }
 
     private Gang(){}
@@ -223,7 +231,6 @@ public class Gang implements Comparable<Gang> {
         gang.officers = officers;
         gang.members = members;
         gang.titles = titles;
-        gang.balance = balance;
         return gang;
     }
 }

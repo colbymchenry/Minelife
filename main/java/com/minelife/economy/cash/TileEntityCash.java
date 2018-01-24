@@ -1,6 +1,7 @@
 package com.minelife.economy.cash;
 
 import buildcraft.core.lib.inventory.SimpleInventory;
+import codechicken.lib.inventory.InventoryUtils;
 import com.minelife.economy.ItemMoney;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -22,30 +23,7 @@ public class TileEntityCash extends TileEntity implements IInventory {
     }
 
     public int addCash(ItemStack cash) {
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            if(inventory.getStackInSlot(i) != null) {
-                if(inventory.getStackInSlot(i).getItem() == cash.getItem()) {
-                    int amount = 64 - inventory.getStackInSlot(i).stackSize;
-                    if(amount > 0) {
-                        cash.stackSize -= amount;
-                        ItemStack stack = inventory.getStackInSlot(i);
-                        stack.stackSize += amount;
-                        inventory.setInventorySlotContents(i, stack);
-                        if(cash.stackSize <= 0) return 0;
-                    }
-                }
-            }
-        }
-
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            if (inventory.getStackInSlot(i) == null) {
-                inventory.setInventorySlotContents(i, cash);
-                return 0;
-            }
-        }
-
-        Sync();
-        return cash.stackSize;
+        return InventoryUtils.insertItem(this, cash, false);
     }
 
     @Override
@@ -143,5 +121,20 @@ public class TileEntityCash extends TileEntity implements IInventory {
     public void setFacing(EnumFacing facing) {
         this.direction = facing;
         Sync();
+    }
+
+    public EnumFacing getDirection() {
+        return direction;
+    }
+
+    public int getHoldings() {
+        int total = 0;
+        for (int i = 0; i < getSizeInventory(); i++) {
+            if(getStackInSlot(i) != null) {
+                total += (((ItemMoney) getStackInSlot(i).getItem())).amount * getStackInSlot(i).stackSize;
+            }
+        }
+
+        return total;
     }
 }
