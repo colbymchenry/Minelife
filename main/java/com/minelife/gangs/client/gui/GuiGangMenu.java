@@ -23,7 +23,7 @@ public class GuiGangMenu extends GuiGang {
                 GuiMembersList.xPosition + (GuiMembersList.width - mc.fontRenderer.getStringWidth("Members")) / 2,
                 GuiMembersList.yPosition - 13, 0xFFFFFF);
 
-        mc.fontRenderer.drawString(EnumChatFormatting.GREEN + "Gang Balance: " + EnumChatFormatting.WHITE + "$" + NumberConversions.formatter.format(Gang.getBalance()),
+        mc.fontRenderer.drawString(EnumChatFormatting.GREEN + "Gang Balance: " + EnumChatFormatting.WHITE + "$" + NumberConversions.formatter.format(Gang.getBalanceClient()),
                 this.XPosition + 8,
                 this.YPosition + Height - 12, 0xFFFFFF);
         mc.fontRenderer.setUnicodeFlag(false);

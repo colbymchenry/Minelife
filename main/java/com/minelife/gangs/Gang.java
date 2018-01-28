@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
+import com.minelife.economy.cash.TileEntityCash;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
 import com.minelife.realestate.Selection;
@@ -14,18 +15,18 @@ import com.minelife.util.configuration.InvalidConfigurationException;
 import com.minelife.util.server.NameFetcher;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class Gang implements Comparable<Gang> {
 
@@ -37,6 +38,8 @@ public class Gang implements Comparable<Gang> {
     private Set<UUID> officers;
     private Set<UUID> members;
     private Map<UUID, String> titles;
+
+    private int balanceClient;
 
     public Gang(UUID uuid) throws IOException, InvalidConfigurationException {
         this.uuid = uuid;
@@ -108,13 +111,39 @@ public class Gang implements Comparable<Gang> {
         return titles;
     }
 
+    // TODO: Implement claiming land needing money for estates and gangs.
     public int getBalance() {
         int total = 0;
+
+        List<TileEntityCash> alreadyChecked = Lists.newArrayList();
+
         for (Estate estate : getEstates()) {
             Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
             Vec3 max = Vec3.createVectorHelper(estate.getBounds().maxX, estate.getBounds().maxY, estate.getBounds().maxZ);
-            0
+            AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord);
+
+            for (int x = (int) min.xCoord; x <= (int) max.xCoord + 16; x += 16) {
+                for (int z = (int) min.zCoord; z <= (int) max.zCoord + 16; z += 16) {
+                    Iterator<TileEntity> iterator = estate.getWorld().getChunkFromBlockCoords(x, z).chunkTileEntityMap.values().iterator();
+
+                    while(iterator.hasNext()) {
+                        TileEntity te = iterator.next();
+                        if(te instanceof TileEntityCash) {
+                            if(!alreadyChecked.contains(te) && bounds.isVecInside(Vec3.createVectorHelper(te.xCoord, te.yCoord, te.zCoord))) {
+                                total += ((TileEntityCash) te).getHoldings();
+                                alreadyChecked.add((TileEntityCash) te);
+                            }
+                        }
+                    }
+                }
+            }
         }
+
+        return total;
+    }
+
+    public int getBalanceClient() {
+        return balanceClient;
     }
 
     public Set<Estate> getEstates() {
@@ -194,7 +223,7 @@ public class Gang implements Comparable<Gang> {
     public void toBytes(ByteBuf buf) {
         ByteBufUtils.writeUTF8String(buf, name);
         buf.writeBoolean(home != null);
-        if(home != null) home.toBytes(buf);
+        if (home != null) home.toBytes(buf);
         ByteBufUtils.writeUTF8String(buf, leader.toString());
         buf.writeInt(officers.size());
         officers.forEach(uuid -> ByteBufUtils.writeUTF8String(buf, uuid.toString()));
@@ -205,14 +234,17 @@ public class Gang implements Comparable<Gang> {
             ByteBufUtils.writeUTF8String(buf, uuid.toString());
             ByteBufUtils.writeUTF8String(buf, name);
         });
+
+        buf.writeInt(getBalance());
     }
 
-    private Gang(){}
+    private Gang() {
+    }
 
     public static Gang fromBytes(ByteBuf buf) {
         String name = ByteBufUtils.readUTF8String(buf);
         Location home = null;
-        if(buf.readBoolean()) home = Location.fromBytes(buf);
+        if (buf.readBoolean()) home = Location.fromBytes(buf);
         UUID leader = UUID.fromString(ByteBufUtils.readUTF8String(buf));
         int officersSize = buf.readInt();
         Set<UUID> officers = Sets.newTreeSet();
@@ -222,9 +254,11 @@ public class Gang implements Comparable<Gang> {
         for (int i = 0; i < membersSize; i++) members.add(UUID.fromString(ByteBufUtils.readUTF8String(buf)));
         int titlesSize = buf.readInt();
         Map<UUID, String> titles = Maps.newHashMap();
-        for (int i = 0; i < titlesSize; i++) titles.put(UUID.fromString(ByteBufUtils.readUTF8String(buf)), ByteBufUtils.readUTF8String(buf));
-        double balance= buf.readDouble();
+        for (int i = 0; i < titlesSize; i++)
+            titles.put(UUID.fromString(ByteBufUtils.readUTF8String(buf)), ByteBufUtils.readUTF8String(buf));
+
         Gang gang = new Gang();
+        gang.balanceClient = buf.readInt();
         gang.name = name;
         gang.home = home;
         gang.leader = leader;

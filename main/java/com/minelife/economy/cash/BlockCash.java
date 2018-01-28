@@ -10,13 +10,17 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 public class BlockCash extends BlockContainer {
+
+    private IIcon icon;
 
     public BlockCash() {
         super(Material.iron);
@@ -78,5 +82,16 @@ public class BlockCash extends BlockContainer {
                 }
             }
         }
+    }
+
+    @Override
+    public void registerBlockIcons(IIconRegister iconRegister) {
+        icon = iconRegister.registerIcon(Minelife.MOD_ID + ":cash_100");
+    }
+
+
+    @Override
+    public IIcon getIcon(int p_149691_1_, int p_149691_2_) {
+        return icon;
     }
 }
