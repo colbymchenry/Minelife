@@ -2,8 +2,11 @@ package com.minelife.economy.cash;
 
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.lib.vec.Vector3;
+import com.google.common.collect.Lists;
+import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.economy.ItemMoney;
+import com.minelife.economy.ItemWallet;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -17,6 +20,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class BlockCash extends BlockContainer {
 
@@ -74,13 +79,19 @@ public class BlockCash extends BlockContainer {
 
     @Override
     public void breakBlock(World world, int x, int y, int z, Block p_149749_5_, int p_149749_6_) {
+        // TODO: Maybe instead implement the bag of cash and just drop the bag to prevent too many entities
         Vector3 vec3 = new Vector3(x, y, z);
         if(world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileEntityCash) {
+            List<ItemStack> cashStacks = Lists.newArrayList();
             for (int i = 0; i < ((TileEntityCash) world.getTileEntity(x, y, z)).getSizeInventory(); i++) {
                 if(((TileEntityCash) world.getTileEntity(x, y, z)).getStackInSlot(i) != null) {
-                    InventoryUtils.dropItem(((TileEntityCash) world.getTileEntity(x, y, z)).getStackInSlot(i), world, vec3);
+                    cashStacks.add(((TileEntityCash) world.getTileEntity(x, y, z)).getStackInSlot(i));
                 }
             }
+
+            ItemStack bagOCash = new ItemStack(MLItems.bagOCash);
+            ItemWallet.setHoldings(bagOCash, cashStacks);
+            InventoryUtils.dropItem(bagOCash, world, vec3);
         }
     }
 

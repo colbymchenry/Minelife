@@ -1,6 +1,7 @@
 package com.minelife.economy.client.wallet;
 
 import buildcraft.core.lib.inventory.SimpleInventory;
+import com.minelife.MLItems;
 import com.minelife.util.client.GuiUtil;
 import com.minelife.util.client.INameReceiver;
 import com.minelife.util.server.NameFetcher;
@@ -52,7 +53,7 @@ public class GuiWallet extends GuiContainer implements INameReceiver {
             OwnerName = NameFetcher.asyncFetchClient(UUID.fromString(WalletInventory.WalletStack.getTagCompound().getString("owner")), this);
             fetchedName = true;
         }
-        String s = OwnerName + "'s Wallet";
+        String s = WalletInventory.WalletStack.getItem() == MLItems.bagOCash ? "Bag O' Cash" : OwnerName + "'s Wallet";
         this.fontRendererObj.drawString(s, 88 - this.fontRendererObj.getStringWidth(s) / 2, 6, 4210752);
         this.fontRendererObj.drawString("Inventory", 8, 128, 4210752);
     }

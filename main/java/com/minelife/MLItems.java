@@ -3,6 +3,7 @@ package com.minelife;
 import com.minelife.capes.ItemCape;
 import com.minelife.clothing.ItemDesigner;
 import com.minelife.drug.item.*;
+import com.minelife.economy.ItemBagOCash;
 import com.minelife.economy.ItemMoney;
 import com.minelife.economy.ItemWallet;
 import com.minelife.gun.item.ItemGunmetal;
@@ -92,6 +93,7 @@ public class MLItems {
     public static ItemMoney dollar_500;
     public static ItemMoney dollar_1000;
     public static ItemWallet wallet;
+    public static ItemBagOCash bagOCash;
 
     protected static void init()
     {
@@ -166,6 +168,7 @@ public class MLItems {
         register_item(dollar_500 = new ItemMoney(500));
         register_item(dollar_1000 = new ItemMoney(1000));
         register_item(wallet = new ItemWallet());
+        register_item(bagOCash = new ItemBagOCash());
     }
 
     private static void register_item(Item item)

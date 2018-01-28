@@ -18,6 +18,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.UUID;
 
 public class ItemWallet extends Item {
@@ -92,6 +93,25 @@ public class ItemWallet extends Item {
         }
 
         return holdings;
+    }
+
+    public static void setHoldings(ItemStack stack, List<ItemStack> stacks) {
+        if(!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
+
+        if (stack.hasTagCompound()) {
+            NBTTagList slots = new NBTTagList();
+
+            for(byte index = 0; index < stacks.size(); ++index) {
+                if (stacks.get(index) != null && stacks.get(index).stackSize > 0) {
+                    NBTTagCompound slot = new NBTTagCompound();
+                    slots.appendTag(slot);
+                    slot.setByte("Slot", index);
+                    stacks.get(index).writeToNBT(slot);
+                }
+            }
+
+            stack.getTagCompound().setTag("Items", slots);
+        }
     }
 
 }

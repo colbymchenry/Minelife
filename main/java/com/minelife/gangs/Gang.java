@@ -111,7 +111,7 @@ public class Gang implements Comparable<Gang> {
         return titles;
     }
 
-    // TODO: Implement claiming land needing money for estates and gangs.
+    // TODO: Implement claiming land needing money for estates and gangs. ATM accesses money from your personal vault. Or you can pull some out of your gangs vault if you are an officer via the ATM
     public int getBalance() {
         int total = 0;
 

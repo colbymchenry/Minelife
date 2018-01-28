@@ -43,8 +43,6 @@ public class ItemMoney extends Item {
             return true;
         }
 
-        System.out.println(side);
-
         switch (side) {
             case 0:
                 y -= 1;
