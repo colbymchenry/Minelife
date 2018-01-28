@@ -3,6 +3,7 @@ package com.minelife.economy.server;
 import com.google.common.collect.Lists;
 import com.minelife.MLItems;
 import com.minelife.economy.ItemMoney;
+import com.minelife.economy.ItemWallet;
 import com.minelife.economy.ModEconomy;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.NumberConversions;
@@ -91,16 +92,19 @@ public class CommandEconomy extends MLCommand {
             List<ItemStack> stacks = ItemMoney.getDrops(NumberConversions.toInt(args[1]));
 
             if(stacks == null) {
-                sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Max amount at a time: $2,304,000"));
+                sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Max amount at a time: $3,456,000"));
                 return;
             }
 
-            for (ItemStack stack : stacks) {
-                if (stack != null) {
-                    EntityItem entity_item = ((EntityPlayerMP) sender).dropPlayerItemWithRandomChoice(stack, false);
-                    if (entity_item != null) entity_item.delayBeforeCanPickup = 0;
-                }
+            if(stacks.size() > 63) {
+                sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Too many stacks."));
+                return;
             }
+
+            ItemStack bagOCash = new ItemStack(MLItems.bagOCash);
+            ItemWallet.setHoldings(bagOCash, stacks);
+            EntityItem entity_item = ((EntityPlayerMP) sender).dropPlayerItemWithRandomChoice(bagOCash, false);
+            if (entity_item != null) entity_item.delayBeforeCanPickup = 0;
             return;
         }
 

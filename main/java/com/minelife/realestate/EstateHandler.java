@@ -2,6 +2,7 @@ package com.minelife.realestate;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.minelife.util.MLConfig;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import net.minecraft.entity.player.EntityPlayer;
@@ -119,6 +120,16 @@ public class EstateHandler {
 
     public static Estate getEstate(int id) {
         return loadedEstates.stream().filter(e -> e.getID() == id).findFirst().orElse(null);
+    }
+
+    public static Set<Estate> getEstates(UUID playerUUID) {
+        Set<Estate> estates = Sets.newTreeSet();
+        for (Estate estate : EstateHandler.loadedEstates) {
+            if (estate.getOwner() != null && playerUUID != null && estate.getOwner().equals(playerUUID)) {
+                estates.add(estate);
+            }
+        }
+        return estates;
     }
 
 }

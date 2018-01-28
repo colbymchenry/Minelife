@@ -82,7 +82,7 @@ public class ItemMoney extends Item {
     public static List<ItemStack> getDrops(double amount) {
         amount = Math.floor(amount);
 
-        if (amount > 2304000) return null;
+        if (amount > 3456000) return null;
 
         int thousands = (int) Math.floor(amount / 1000);
         amount -= (thousands * 1000);

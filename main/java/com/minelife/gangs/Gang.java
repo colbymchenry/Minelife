@@ -115,9 +115,11 @@ public class Gang implements Comparable<Gang> {
     public int getBalance() {
         int total = 0;
 
+        if(getLeader() == null) return 0;
+
         List<TileEntityCash> alreadyChecked = Lists.newArrayList();
 
-        for (Estate estate : getEstates()) {
+        for (Estate estate : EstateHandler.getEstates(getLeader())) {
             Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
             Vec3 max = Vec3.createVectorHelper(estate.getBounds().maxX, estate.getBounds().maxY, estate.getBounds().maxZ);
             AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord);
@@ -144,16 +146,6 @@ public class Gang implements Comparable<Gang> {
 
     public int getBalanceClient() {
         return balanceClient;
-    }
-
-    public Set<Estate> getEstates() {
-        Set<Estate> estates = Sets.newTreeSet();
-        for (Estate estate : EstateHandler.loadedEstates) {
-            if (estate.getOwner() != null && getLeader() != null && estate.getOwner().equals(getLeader())) {
-                estates.add(estate);
-            }
-        }
-        return estates;
     }
 
     public boolean setName(String name) {

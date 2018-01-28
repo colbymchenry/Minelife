@@ -37,7 +37,7 @@ public class TileEntityCash extends TileEntity implements IInventory {
     public void writeToNBT(NBTTagCompound tagCompound) {
         super.writeToNBT(tagCompound);
         this.inventory.writeToNBT(tagCompound, "Items");
-        tagCompound.setString("facing", direction.name());
+        if (direction != null) tagCompound.setString("facing", direction.name());
     }
 
     @Override
@@ -130,7 +130,7 @@ public class TileEntityCash extends TileEntity implements IInventory {
     public int getHoldings() {
         int total = 0;
         for (int i = 0; i < getSizeInventory(); i++) {
-            if(getStackInSlot(i) != null) {
+            if (getStackInSlot(i) != null) {
                 total += (((ItemMoney) getStackInSlot(i).getItem())).amount * getStackInSlot(i).stackSize;
             }
         }
