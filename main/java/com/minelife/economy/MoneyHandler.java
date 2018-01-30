@@ -2,6 +2,7 @@ package com.minelife.economy;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.minelife.MLItems;
 import com.minelife.economy.cash.TileEntityCash;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
@@ -9,6 +10,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -16,6 +18,7 @@ import net.minecraft.util.Vec3;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class MoneyHandler {
@@ -69,7 +72,18 @@ public class MoneyHandler {
     // TODO: Do these methods.
     @SideOnly(Side.SERVER)
     public static List<ItemStack> takeMoneyInventory(EntityPlayerMP player, int amount) {
+        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+            ItemStack stack = player.inventory.getStackInSlot(i);
+            if(stack != null) {
+                if(stack.getItem() instanceof ItemMoney) {
 
+                } else if (stack.getItem() == MLItems.wallet) {
+
+                } else if (stack.getItem() == MLItems.bagOCash) {
+
+                }
+            }
+        }
     }
 
     @SideOnly(Side.SERVER)
@@ -95,6 +109,12 @@ public class MoneyHandler {
     @SideOnly(Side.SERVER)
     public static void addMoneyVault(UUID playerUUID, int amount) {
 
+    }
+
+    private static Map<Integer, ItemStack> getMoneyStacks(IInventory inventory, int amount) {
+        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+
+        }
     }
 
 }
