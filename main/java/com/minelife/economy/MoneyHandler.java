@@ -1,11 +1,15 @@
 package com.minelife.economy;
 
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.vec.Vector3;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.MLItems;
 import com.minelife.economy.cash.TileEntityCash;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
+import com.minelife.util.NumberConversions;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,10 +42,10 @@ public class MoneyHandler {
                 for (int z = (int) min.zCoord; z <= (int) max.zCoord + 16; z += 16) {
                     Iterator<TileEntity> iterator = estate.getWorld().getChunkFromBlockCoords(x, z).chunkTileEntityMap.values().iterator();
 
-                    while(iterator.hasNext()) {
+                    while (iterator.hasNext()) {
                         TileEntity te = iterator.next();
-                        if(te instanceof TileEntityCash) {
-                            if(!alreadyChecked.contains(te) && bounds.isVecInside(Vec3.createVectorHelper(te.xCoord, te.yCoord, te.zCoord))) {
+                        if (te instanceof TileEntityCash) {
+                            if (!alreadyChecked.contains(te) && bounds.isVecInside(Vec3.createVectorHelper(te.xCoord, te.yCoord, te.zCoord))) {
                                 total += ((TileEntityCash) te).getHoldings();
                                 alreadyChecked.add((TileEntityCash) te);
                             }
@@ -62,8 +66,12 @@ public class MoneyHandler {
     public static int getBalanceInventory(EntityPlayer player) {
         int amount = 0;
         for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            if(player.inventory.getStackInSlot(i) != null && player.inventory.getStackInSlot(i).getItem() instanceof ItemWallet) {
-                amount += ItemWallet.getHoldings(player.inventory.getStackInSlot(i));
+            if (player.inventory.getStackInSlot(i) != null) {
+                if (player.inventory.getStackInSlot(i).getItem() instanceof ItemWallet) {
+                    amount += ItemWallet.getHoldings(player.inventory.getStackInSlot(i));
+                } else if (player.inventory.getStackInSlot(i).getItem() instanceof ItemMoney) {
+                    amount += ((ItemMoney) player.inventory.getStackInSlot(i).getItem()).amount * player.inventory.getStackInSlot(i).stackSize;
+                }
             }
         }
         return amount;
@@ -71,19 +79,60 @@ public class MoneyHandler {
 
     // TODO: Do these methods.
     @SideOnly(Side.SERVER)
-    public static List<ItemStack> takeMoneyInventory(EntityPlayerMP player, int amount) {
-        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            ItemStack stack = player.inventory.getStackInSlot(i);
-            if(stack != null) {
-                if(stack.getItem() instanceof ItemMoney) {
+    public static void takeMoneyInventory(EntityPlayerMP player, int amount) {
+        Map<Integer, ItemStack> playerInventoryMoney = getMoneyStacks(player.inventory);
 
-                } else if (stack.getItem() == MLItems.wallet) {
+        List<Integer> toRemove = Lists.newArrayList();
+        ItemStack largeStack = null;
 
-                } else if (stack.getItem() == MLItems.bagOCash) {
+        for (Integer slot : playerInventoryMoney.keySet()) {
+            ItemStack stack = playerInventoryMoney.get(slot);
+            int stackAmount = ((ItemMoney) stack.getItem()).amount * stack.stackSize;
 
+            if(stackAmount <= 0) break;
+
+            if (stackAmount >= amount) {
+                // decrease stack size from inventory
+                largeStack = stack;
+                toRemove.add(slot);
+                break;
+            } else {
+                // remove stack of cash from inventory
+                toRemove.add(slot);
+                amount -= stackAmount;
+            }
+
+        }
+
+        for (Integer slot : toRemove) {
+            player.inventory.setInventorySlotContents(slot, null);
+        }
+
+        if(largeStack != null) {
+            int stackAmount = ((ItemMoney) largeStack.getItem()).amount * largeStack.stackSize;
+            List<ItemStack> stacks = ItemMoney.getDrops(stackAmount - amount);
+            for (ItemStack s : stacks) {
+                int couldNotAdd = InventoryUtils.insertItem(player.inventory, s, false);
+                if (couldNotAdd > 0) {
+                    ItemStack toDrop = s.copy();
+                    toDrop.stackSize = couldNotAdd;
+                    InventoryUtils.dropItem(toDrop, player.worldObj, new Vector3(player.posX, player.posY, player.posZ));
                 }
             }
         }
+
+//        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+//            ItemStack stack = player.inventory.getStackInSlot(i);
+//            if (stack != null) {
+//                if (stack.getItem() instanceof ItemMoney) {
+//
+//                } else if (stack.getItem() == MLItems.wallet) {
+//
+//                } else if (stack.getItem() == MLItems.bagOCash) {
+//
+//                }
+//            }
+//        }
     }
 
     @SideOnly(Side.SERVER)
@@ -103,7 +152,7 @@ public class MoneyHandler {
 
     @SideOnly(Side.SERVER)
     public static List<ItemStack> takeMoneyVault(UUID playerUUID, int amount) {
-
+        return null;
     }
 
     @SideOnly(Side.SERVER)
@@ -111,10 +160,15 @@ public class MoneyHandler {
 
     }
 
-    private static Map<Integer, ItemStack> getMoneyStacks(IInventory inventory, int amount) {
+    private static Map<Integer, ItemStack> getMoneyStacks(IInventory inventory) {
+        Map<Integer, ItemStack> map = Maps.newHashMap();
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
-
+            if (inventory.getStackInSlot(i) != null && inventory.getStackInSlot(i).getItem() instanceof ItemMoney) {
+                map.put(i, inventory.getStackInSlot(i));
+            }
         }
+
+        return map;
     }
 
 }

@@ -5,8 +5,10 @@ import com.minelife.MLItems;
 import com.minelife.economy.ItemMoney;
 import com.minelife.economy.ItemWallet;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.MoneyHandler;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.NumberConversions;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.server.MLCommand;
 import com.minelife.util.server.UUIDFetcher;
 import net.minecraft.command.ICommandSender;
@@ -161,6 +163,9 @@ public class CommandEconomy extends MLCommand {
                 ModEconomy.deposit(playerUUID, amount, wallet);
                 sender.addChatMessage(new ChatComponentText("Balance updated."));
                 return;
+            }
+            case "take": {
+                MoneyHandler.takeMoneyInventory(PlayerHelper.getPlayer(playerUUID), amount);
             }
             default: {
                 getCommandUsage(sender);
