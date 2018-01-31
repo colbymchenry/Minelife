@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 
 import java.util.Iterator;
 import java.util.List;
@@ -80,59 +81,20 @@ public class MoneyHandler {
     // TODO: Do these methods.
     @SideOnly(Side.SERVER)
     public static void takeMoneyInventory(EntityPlayerMP player, int amount) {
-        Map<Integer, ItemStack> playerInventoryMoney = getMoneyStacks(player.inventory);
+        Vector3 playerVec = new Vector3(player.posX, player.posY, player.posZ);
 
-        List<Integer> toRemove = Lists.newArrayList();
-        ItemStack largeStack = null;
+        amount = takeMoney(player.inventory, amount, playerVec, player.worldObj);
 
-        for (Integer slot : playerInventoryMoney.keySet()) {
-            ItemStack stack = playerInventoryMoney.get(slot);
-            int stackAmount = ((ItemMoney) stack.getItem()).amount * stack.stackSize;
-
-            if(stackAmount <= 0) break;
-
-            if (stackAmount >= amount) {
-                // decrease stack size from inventory
-                largeStack = stack;
-                toRemove.add(slot);
-                break;
-            } else {
-                // remove stack of cash from inventory
-                toRemove.add(slot);
-                amount -= stackAmount;
-            }
-
-        }
-
-        for (Integer slot : toRemove) {
-            player.inventory.setInventorySlotContents(slot, null);
-        }
-
-        if(largeStack != null) {
-            int stackAmount = ((ItemMoney) largeStack.getItem()).amount * largeStack.stackSize;
-            List<ItemStack> stacks = ItemMoney.getDrops(stackAmount - amount);
-            for (ItemStack s : stacks) {
-                int couldNotAdd = InventoryUtils.insertItem(player.inventory, s, false);
-                if (couldNotAdd > 0) {
-                    ItemStack toDrop = s.copy();
-                    toDrop.stackSize = couldNotAdd;
-                    InventoryUtils.dropItem(toDrop, player.worldObj, new Vector3(player.posX, player.posY, player.posZ));
+        if(amount > 0) {
+            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                ItemStack stack = player.inventory.getStackInSlot(i);
+                if (stack != null && stack.getItem() instanceof ItemWallet) {
+                    // TODO
                 }
             }
         }
 
-//        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-//            ItemStack stack = player.inventory.getStackInSlot(i);
-//            if (stack != null) {
-//                if (stack.getItem() instanceof ItemMoney) {
-//
-//                } else if (stack.getItem() == MLItems.wallet) {
-//
-//                } else if (stack.getItem() == MLItems.bagOCash) {
-//
-//                }
-//            }
-//        }
+
     }
 
     @SideOnly(Side.SERVER)
@@ -169,6 +131,51 @@ public class MoneyHandler {
         }
 
         return map;
+    }
+
+    private static int takeMoney(IInventory inventory, int amount, Vector3 toDropVec, World toDropWorld) {
+        Map<Integer, ItemStack> inventoryMoney = getMoneyStacks(inventory);
+
+        List<Integer> toRemove = Lists.newArrayList();
+        ItemStack largeStack = null;
+
+        for (Integer slot : inventoryMoney.keySet()) {
+            ItemStack stack = inventoryMoney.get(slot);
+            int stackAmount = ((ItemMoney) stack.getItem()).amount * stack.stackSize;
+
+            if (stackAmount <= 0) break;
+
+            if (stackAmount >= amount) {
+                // decrease stack size from inventory
+                largeStack = stack;
+                toRemove.add(slot);
+                break;
+            } else {
+                // remove stack of cash from inventory
+                toRemove.add(slot);
+                amount -= stackAmount;
+            }
+
+        }
+
+        for (Integer slot : toRemove) {
+            inventory.setInventorySlotContents(slot, null);
+        }
+
+        if (largeStack != null) {
+            int stackAmount = ((ItemMoney) largeStack.getItem()).amount * largeStack.stackSize;
+            List<ItemStack> stacks = ItemMoney.getDrops(stackAmount - amount);
+            for (ItemStack s : stacks) {
+                int couldNotAdd = InventoryUtils.insertItem(inventory, s, false);
+                if (couldNotAdd > 0) {
+                    ItemStack toDrop = s.copy();
+                    toDrop.stackSize = couldNotAdd;
+                    InventoryUtils.dropItem(toDrop, toDropWorld, toDropVec);
+                }
+            }
+        }
+
+        return amount;
     }
 
 }
