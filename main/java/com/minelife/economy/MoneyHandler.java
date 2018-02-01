@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.MLItems;
 import com.minelife.economy.cash.TileEntityCash;
+import com.minelife.economy.client.wallet.InventoryWallet;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
 import com.minelife.util.NumberConversions;
@@ -83,13 +84,18 @@ public class MoneyHandler {
     public static void takeMoneyInventory(EntityPlayerMP player, int amount) {
         Vector3 playerVec = new Vector3(player.posX, player.posY, player.posZ);
 
+        // TODO:
+        // When trying to remove from inventory while inventory is full it doesn't drop
+        // the rest it actually takes from inventory and from wallets
         amount = takeMoney(player.inventory, amount, playerVec, player.worldObj);
+        System.out.println("Amount: " + amount);
 
         if(amount > 0) {
             for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
                 ItemStack stack = player.inventory.getStackInSlot(i);
                 if (stack != null && stack.getItem() instanceof ItemWallet) {
-                    // TODO
+                    amount = takeMoney(new InventoryWallet(stack), amount, playerVec, player.worldObj);
+                    if(amount <= 0) return;
                 }
             }
         }
@@ -133,7 +139,7 @@ public class MoneyHandler {
         return map;
     }
 
-    private static int takeMoney(IInventory inventory, int amount, Vector3 toDropVec, World toDropWorld) {
+    private static List<ItemStack> takeMoney(IInventory inventory, int amount) {
         Map<Integer, ItemStack> inventoryMoney = getMoneyStacks(inventory);
 
         List<Integer> toRemove = Lists.newArrayList();
@@ -145,7 +151,7 @@ public class MoneyHandler {
 
             if (stackAmount <= 0) break;
 
-            if (stackAmount >= amount) {
+            if (stackAmount > amount) {
                 // decrease stack size from inventory
                 largeStack = stack;
                 toRemove.add(slot);
@@ -165,17 +171,10 @@ public class MoneyHandler {
         if (largeStack != null) {
             int stackAmount = ((ItemMoney) largeStack.getItem()).amount * largeStack.stackSize;
             List<ItemStack> stacks = ItemMoney.getDrops(stackAmount - amount);
-            for (ItemStack s : stacks) {
-                int couldNotAdd = InventoryUtils.insertItem(inventory, s, false);
-                if (couldNotAdd > 0) {
-                    ItemStack toDrop = s.copy();
-                    toDrop.stackSize = couldNotAdd;
-                    InventoryUtils.dropItem(toDrop, toDropWorld, toDropVec);
-                }
-            }
+            return stacks;
         }
 
-        return amount;
+        return Lists.newArrayList();
     }
 
 }
