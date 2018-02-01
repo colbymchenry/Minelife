@@ -111,8 +111,8 @@ public class MoneyHandler {
     }
 
     @SideOnly(Side.SERVER)
-    public static void addMoneyVault(EntityPlayerMP player, int amount) {
-        addMoneyVault(player.getUniqueID(), amount);
+    public static int addMoneyVault(EntityPlayerMP player, int amount) {
+        return addMoneyVault(player.getUniqueID(), amount);
     }
 
     @SideOnly(Side.SERVER)
@@ -120,9 +120,36 @@ public class MoneyHandler {
         return null;
     }
 
+    // TODO: Need to test this
     @SideOnly(Side.SERVER)
-    public static void addMoneyVault(UUID playerUUID, int amount) {
+    public static int addMoneyVault(UUID playerUUID, int amount) {
+        int couldNotAdd = 0;
 
+        List<TileEntityCash> alreadyChecked = Lists.newArrayList();
+
+        for (Estate estate : EstateHandler.getEstates(playerUUID)) {
+            Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
+            Vec3 max = Vec3.createVectorHelper(estate.getBounds().maxX, estate.getBounds().maxY, estate.getBounds().maxZ);
+            AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord);
+
+            for (int x = (int) min.xCoord; x <= (int) max.xCoord + 16; x += 16) {
+                for (int z = (int) min.zCoord; z <= (int) max.zCoord + 16; z += 16) {
+                    Iterator<TileEntity> iterator = estate.getWorld().getChunkFromBlockCoords(x, z).chunkTileEntityMap.values().iterator();
+
+                    while (iterator.hasNext()) {
+                        TileEntity te = iterator.next();
+                        if (te instanceof TileEntityCash) {
+                            if (!alreadyChecked.contains(te) && bounds.isVecInside(Vec3.createVectorHelper(te.xCoord, te.yCoord, te.zCoord))) {
+                                couldNotAdd += addMoney(((TileEntityCash) te), amount + couldNotAdd);
+                                amount -= couldNotAdd;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return amount;
     }
 
     private static Map<Integer, ItemStack> getMoneyStacks(IInventory inventory) {
@@ -188,6 +215,15 @@ public class MoneyHandler {
         }
 
         return amount;
+    }
+
+    private static int addMoney(IInventory inventory, int amount) {
+        List<ItemStack> stacks = ItemMoney.getDrops(amount);
+
+        int couldNotAdd = 0;
+        for (ItemStack stack : stacks) couldNotAdd += InventoryUtils.insertItem(inventory, stack, true);
+
+        return couldNotAdd;
     }
 
     private int getAmount(List<ItemStack> stacks) {
