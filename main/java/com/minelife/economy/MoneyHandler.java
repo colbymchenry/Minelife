@@ -13,6 +13,8 @@ import com.minelife.realestate.EstateHandler;
 import com.minelife.util.NumberConversions;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dan200.computercraft.shared.util.InventoryUtil;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
@@ -84,22 +86,17 @@ public class MoneyHandler {
     public static void takeMoneyInventory(EntityPlayerMP player, int amount) {
         Vector3 playerVec = new Vector3(player.posX, player.posY, player.posZ);
 
-        // TODO:
-        // When trying to remove from inventory while inventory is full it doesn't drop
-        // the rest it actually takes from inventory and from wallets
-        amount = takeMoney(player.inventory, amount, playerVec, player.worldObj);
-        System.out.println("Amount: " + amount);
+        amount = takeMoney(player.inventory, amount, player.worldObj, playerVec);
 
-        if(amount > 0) {
+        if (amount > 0) {
             for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
                 ItemStack stack = player.inventory.getStackInSlot(i);
                 if (stack != null && stack.getItem() instanceof ItemWallet) {
-                    amount = takeMoney(new InventoryWallet(stack), amount, playerVec, player.worldObj);
-                    if(amount <= 0) return;
+                    amount = takeMoney(new InventoryWallet(stack), amount, player.worldObj, playerVec);
+                    if (amount <= 0) return;
                 }
             }
         }
-
 
     }
 
@@ -139,7 +136,7 @@ public class MoneyHandler {
         return map;
     }
 
-    private static List<ItemStack> takeMoney(IInventory inventory, int amount) {
+    private static int takeMoney(IInventory inventory, int amount, World toDropWorld, Vector3 toDropVec) {
         Map<Integer, ItemStack> inventoryMoney = getMoneyStacks(inventory);
 
         List<Integer> toRemove = Lists.newArrayList();
@@ -170,11 +167,38 @@ public class MoneyHandler {
 
         if (largeStack != null) {
             int stackAmount = ((ItemMoney) largeStack.getItem()).amount * largeStack.stackSize;
+            System.out.println("StackAmount: " + stackAmount);
+            System.out.println("StackAmount - Amount: " + (stackAmount - amount));
             List<ItemStack> stacks = ItemMoney.getDrops(stackAmount - amount);
-            return stacks;
+            System.out.println("STACKS: " + stacks.size());
+            for (ItemStack s : stacks) {
+                System.out.println("$" + ((ItemMoney) s.getItem()).amount);
+                int couldNotAdd = InventoryUtils.insertItem(inventory, s, false);
+                System.out.println(couldNotAdd);
+                if (couldNotAdd > 0) {
+                    ItemStack toDrop = s.copy();
+                    toDrop.stackSize = 2;
+                    System.out.println("CALLED " + ((ItemMoney) toDrop.getItem()).amount);
+                    // TODO: For some reason it's not dropping the item stack
+                    InventoryUtils.dropItem(toDrop, toDropWorld, toDropVec);
+                }
+            }
+
+            amount = 0;
         }
 
-        return Lists.newArrayList();
+        return amount;
+    }
+
+    private int getAmount(List<ItemStack> stacks) {
+        int total = 0;
+        for (ItemStack stack : stacks) {
+            if (stack != null && stack.getItem() instanceof ItemMoney) {
+                total += ((ItemMoney) stack.getItem()).amount * stack.stackSize;
+            }
+        }
+
+        return total;
     }
 
 }

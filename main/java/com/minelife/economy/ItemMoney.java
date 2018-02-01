@@ -104,15 +104,24 @@ public class ItemMoney extends Item {
         amount -= (ones * 1);
 
         List<ItemStack> stacks = Lists.newArrayList();
-        stacks.addAll(ItemHelper.getStacks(MLItems.dollar_1000, thousands));
-        stacks.addAll(ItemHelper.getStacks(MLItems.dollar_500, five_hundreds));
-        stacks.addAll(ItemHelper.getStacks(MLItems.dollar_250, two_hundred_fifties));
-        stacks.addAll(ItemHelper.getStacks(MLItems.dollar_100, hundreds));
-        stacks.addAll(ItemHelper.getStacks(MLItems.dollar_50, fifties));
-        stacks.addAll(ItemHelper.getStacks(MLItems.dollar_20, twenties));
-        stacks.addAll(ItemHelper.getStacks(MLItems.dollar_10, tens));
-        stacks.addAll(ItemHelper.getStacks(MLItems.dollar_5, fives));
-        stacks.addAll(ItemHelper.getStacks(MLItems.dollar_1, ones));
+        if (thousands > 0)
+            stacks.addAll(ItemHelper.getStacks(MLItems.dollar_1000, thousands));
+        if (five_hundreds > 0)
+            stacks.addAll(ItemHelper.getStacks(MLItems.dollar_500, five_hundreds));
+        if (two_hundred_fifties > 0)
+            stacks.addAll(ItemHelper.getStacks(MLItems.dollar_250, two_hundred_fifties));
+        if (hundreds > 0)
+            stacks.addAll(ItemHelper.getStacks(MLItems.dollar_100, hundreds));
+        if (fifties > 0)
+            stacks.addAll(ItemHelper.getStacks(MLItems.dollar_50, fifties));
+        if (twenties > 0)
+            stacks.addAll(ItemHelper.getStacks(MLItems.dollar_20, twenties));
+        if (tens > 0)
+            stacks.addAll(ItemHelper.getStacks(MLItems.dollar_10, tens));
+        if (fives > 0)
+            stacks.addAll(ItemHelper.getStacks(MLItems.dollar_5, fives));
+        if (ones > 0)
+            stacks.addAll(ItemHelper.getStacks(MLItems.dollar_1, ones));
 
         return stacks;
     }
