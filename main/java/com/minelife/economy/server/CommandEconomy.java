@@ -169,6 +169,9 @@ public class CommandEconomy implements ICommand {
                 case "take": {
                     MoneyHandler.takeMoneyInventory(PlayerHelper.getPlayer(playerUUID), amount);
                 }
+                case "give": {
+                    MoneyHandler.addMoneyInventory(PlayerHelper.getPlayer(playerUUID), amount);
+                }
                 default: {
                     getCommandUsage(sender);
                     return;

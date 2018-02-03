@@ -2,6 +2,7 @@ package com.minelife.economy;
 
 import com.minelife.MLItems;
 import com.minelife.Minelife;
+import com.minelife.economy.client.wallet.InventoryWallet;
 import com.minelife.util.DyeColor;
 import com.minelife.util.NumberConversions;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -112,6 +113,11 @@ public class ItemWallet extends Item {
 
             stack.getTagCompound().setTag("Items", slots);
         }
+    }
+
+    public static void updateItem(ItemStack stack, InventoryWallet wallet) {
+        if(!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
+        if (stack.hasTagCompound()) wallet.writeToNBT(stack.getTagCompound());
     }
 
 }

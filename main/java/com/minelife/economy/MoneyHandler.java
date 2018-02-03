@@ -10,6 +10,7 @@ import com.minelife.economy.cash.TileEntityCash;
 import com.minelife.economy.client.wallet.InventoryWallet;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
+import com.minelife.util.ArrayUtil;
 import com.minelife.util.NumberConversions;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -17,6 +18,7 @@ import dan200.computercraft.shared.util.InventoryUtil;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -24,49 +26,25 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class MoneyHandler {
 
+    // DONE
     @SideOnly(Side.SERVER)
     public static int getBalanceVault(UUID playerUUID) {
         int total = 0;
-
-        List<TileEntityCash> alreadyChecked = Lists.newArrayList();
-
-        for (Estate estate : EstateHandler.getEstates(playerUUID)) {
-            Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
-            Vec3 max = Vec3.createVectorHelper(estate.getBounds().maxX, estate.getBounds().maxY, estate.getBounds().maxZ);
-            AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord);
-
-            for (int x = (int) min.xCoord; x <= (int) max.xCoord + 16; x += 16) {
-                for (int z = (int) min.zCoord; z <= (int) max.zCoord + 16; z += 16) {
-                    Iterator<TileEntity> iterator = estate.getWorld().getChunkFromBlockCoords(x, z).chunkTileEntityMap.values().iterator();
-
-                    while (iterator.hasNext()) {
-                        TileEntity te = iterator.next();
-                        if (te instanceof TileEntityCash) {
-                            if (!alreadyChecked.contains(te) && bounds.isVecInside(Vec3.createVectorHelper(te.xCoord, te.yCoord, te.zCoord))) {
-                                total += ((TileEntityCash) te).getHoldings();
-                                alreadyChecked.add((TileEntityCash) te);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
+        for (TileEntityCash tileEntityCash : getCashBlocks(playerUUID)) total += tileEntityCash.getHoldings();
         return total;
     }
 
+    // DONE
     @SideOnly(Side.SERVER)
     public static int getBalanceVault(EntityPlayerMP player) {
         return getBalanceVault(player.getUniqueID());
     }
 
+    // DONE
     public static int getBalanceInventory(EntityPlayer player) {
         int amount = 0;
         for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
@@ -81,28 +59,103 @@ public class MoneyHandler {
         return amount;
     }
 
-    // TODO: Do these methods.
+    // DONE
     @SideOnly(Side.SERVER)
     public static void takeMoneyInventory(EntityPlayerMP player, int amount) {
-        Vector3 playerVec = new Vector3(player.posX, player.posY, player.posZ);
+        Vector3 playerVec = new Vector3(player.posX, player.posY + 1, player.posZ);
+        int couldNotAdd = 0;
 
-        amount = takeMoney(player.inventory, amount, player.worldObj, playerVec);
+        // first try with the player's inventory
+        int[] attempt = takeMoney(player.inventory, amount);
+        int couldTakeAttempt = attempt[0];
+        int couldNotAddAttempt = attempt[1];
 
-        if (amount > 0) {
-            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                ItemStack stack = player.inventory.getStackInSlot(i);
-                if (stack != null && stack.getItem() instanceof ItemWallet) {
-                    amount = takeMoney(new InventoryWallet(stack), amount, player.worldObj, playerVec);
-                    if (amount <= 0) return;
+        couldNotAdd += couldNotAddAttempt;
+        amount -= couldTakeAttempt;
+
+        int attemptCount = 0;
+        while (couldNotAdd > 0 && attemptCount < 3) {
+            // if we could not get all the money we needed from the player's inventory we will try their wallets and bags
+            if (amount > 0) {
+                for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                    ItemStack stack = player.inventory.getStackInSlot(i);
+                    if (stack != null && stack.getItem() instanceof ItemWallet) {
+                        InventoryWallet inventoryWallet = new InventoryWallet(stack);
+                        attempt = takeMoney(inventoryWallet, amount);
+                        couldTakeAttempt = attempt[0];
+                        couldNotAddAttempt = attempt[1];
+                        couldNotAdd += couldNotAddAttempt;
+                        amount -= couldTakeAttempt;
+                        ItemWallet.updateItem(stack, inventoryWallet);
+                        player.inventory.setInventorySlotContents(i, stack);
+                        if (amount <= 0) break;
+                    }
                 }
             }
+
+            // try to re-add what we could not
+            if (couldNotAdd > 0) {
+                for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                    ItemStack stack = player.inventory.getStackInSlot(i);
+                    if (stack != null && stack.getItem() instanceof ItemWallet) {
+                        InventoryWallet inventoryWallet = new InventoryWallet(stack);
+                        couldNotAdd = addMoney(inventoryWallet, couldNotAdd);
+                        ItemWallet.updateItem(stack, inventoryWallet);
+                        player.inventory.setInventorySlotContents(i, stack);
+                        if (couldNotAdd <= 0) break;
+                    }
+                }
+            }
+
+            attemptCount++;
         }
 
+        // drop what could not be added to inventory
+        ItemMoney.getDrops(couldNotAdd).forEach(stack -> InventoryUtils.dropItem(stack, player.worldObj, playerVec));
     }
 
     @SideOnly(Side.SERVER)
     public static void addMoneyInventory(EntityPlayerMP player, int amount) {
+        // first add to player's inventory
+        Map<Integer, ItemStack> moneyStacks = getMoneyStacks(player.inventory);
+        moneyStacks.forEach((slot, stack) -> player.inventory.setInventorySlotContents(slot, null));
+        int toAdd = amount;
+        for (ItemStack itemStack : moneyStacks.values()) toAdd += getAmount(itemStack);
 
+        int couldNotAdd = 0;
+
+        List<ItemStack> stacksToInsert = ItemMoney.getDrops(toAdd);
+        for (ItemStack stack : stacksToInsert)
+            couldNotAdd += InventoryUtils.insertItem(player.inventory, stack, false) * ((ItemMoney) stack.getItem()).amount;
+
+        amount = couldNotAdd;
+        if (couldNotAdd > 0) {
+            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                ItemStack stack = player.inventory.getStackInSlot(i);
+                if (stack != null && stack.getItem() instanceof ItemWallet) {
+
+                    InventoryWallet inventoryWallet = new InventoryWallet(stack);
+                    moneyStacks = getMoneyStacks(inventoryWallet);
+                    moneyStacks.forEach((slot, s) -> inventoryWallet.setInventorySlotContents(slot, null));
+                    toAdd = amount;
+                    for (ItemStack itemStack : moneyStacks.values()) toAdd += getAmount(itemStack);
+
+                    stacksToInsert = ItemMoney.getDrops(toAdd);
+                    for (ItemStack s : stacksToInsert)
+                        couldNotAdd = InventoryUtils.insertItem(inventoryWallet, s, false) * ((ItemMoney) s.getItem()).amount;
+
+                    ItemWallet.updateItem(stack, inventoryWallet);
+                    player.inventory.setInventorySlotContents(i, stack);
+
+                    amount = couldNotAdd;
+                    if (amount == 0) break;
+                }
+            }
+        }
+
+
+        // drop what could not be added to inventory
+        ItemMoney.getDrops(couldNotAdd).forEach(stack -> InventoryUtils.dropItem(stack, player.worldObj, new Vector3(player.posX, player.posY, player.posZ)));
     }
 
     @SideOnly(Side.SERVER)
@@ -152,18 +205,11 @@ public class MoneyHandler {
         return amount;
     }
 
-    private static Map<Integer, ItemStack> getMoneyStacks(IInventory inventory) {
-        Map<Integer, ItemStack> map = Maps.newHashMap();
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            if (inventory.getStackInSlot(i) != null && inventory.getStackInSlot(i).getItem() instanceof ItemMoney) {
-                map.put(i, inventory.getStackInSlot(i));
-            }
-        }
+    // DONE
+    private static int[] takeMoney(IInventory inventory, int amount) {
+        int couldNotAdd = 0;
+        int couldTake = 0;
 
-        return map;
-    }
-
-    private static int takeMoney(IInventory inventory, int amount, World toDropWorld, Vector3 toDropVec) {
         Map<Integer, ItemStack> inventoryMoney = getMoneyStacks(inventory);
 
         List<Integer> toRemove = Lists.newArrayList();
@@ -171,7 +217,7 @@ public class MoneyHandler {
 
         for (Integer slot : inventoryMoney.keySet()) {
             ItemStack stack = inventoryMoney.get(slot);
-            int stackAmount = ((ItemMoney) stack.getItem()).amount * stack.stackSize;
+            int stackAmount = getAmount(stack);
 
             if (stackAmount <= 0) break;
 
@@ -184,49 +230,36 @@ public class MoneyHandler {
                 // remove stack of cash from inventory
                 toRemove.add(slot);
                 amount -= stackAmount;
+                couldTake += stackAmount;
             }
 
         }
 
-        for (Integer slot : toRemove) {
-            inventory.setInventorySlotContents(slot, null);
-        }
+        toRemove.forEach(slot -> inventory.setInventorySlotContents(slot, null));
 
         if (largeStack != null) {
-            int stackAmount = ((ItemMoney) largeStack.getItem()).amount * largeStack.stackSize;
-            System.out.println("StackAmount: " + stackAmount);
-            System.out.println("StackAmount - Amount: " + (stackAmount - amount));
+            int stackAmount = getAmount(largeStack);
             List<ItemStack> stacks = ItemMoney.getDrops(stackAmount - amount);
-            System.out.println("STACKS: " + stacks.size());
-            for (ItemStack s : stacks) {
-                System.out.println("$" + ((ItemMoney) s.getItem()).amount);
-                int couldNotAdd = InventoryUtils.insertItem(inventory, s, false);
-                System.out.println(couldNotAdd);
-                if (couldNotAdd > 0) {
-                    ItemStack toDrop = s.copy();
-                    toDrop.stackSize = 2;
-                    System.out.println("CALLED " + ((ItemMoney) toDrop.getItem()).amount);
-                    // TODO: For some reason it's not dropping the item stack
-                    InventoryUtils.dropItem(toDrop, toDropWorld, toDropVec);
-                }
-            }
-
-            amount = 0;
+            couldNotAdd += addMoney(inventory, stackAmount - amount);
+            couldTake += getAmount(stacks);
         }
 
-        return amount;
+        return new int[]{couldTake, couldNotAdd};
     }
 
+    // DONE
     private static int addMoney(IInventory inventory, int amount) {
         List<ItemStack> stacks = ItemMoney.getDrops(amount);
 
         int couldNotAdd = 0;
-        for (ItemStack stack : stacks) couldNotAdd += InventoryUtils.insertItem(inventory, stack, true);
+        for (ItemStack stack : stacks)
+            couldNotAdd += InventoryUtils.insertItem(inventory, stack, false) * ((ItemMoney) stack.getItem()).amount;
 
         return couldNotAdd;
     }
 
-    private int getAmount(List<ItemStack> stacks) {
+    // DONE
+    private static int getAmount(List<ItemStack> stacks) {
         int total = 0;
         for (ItemStack stack : stacks) {
             if (stack != null && stack.getItem() instanceof ItemMoney) {
@@ -235,6 +268,51 @@ public class MoneyHandler {
         }
 
         return total;
+    }
+
+    // DONE
+    private static int getAmount(ItemStack stack) {
+        return stack.getItem() instanceof ItemMoney ? ((ItemMoney) stack.getItem()).amount * stack.stackSize : 0;
+    }
+
+    // DONE
+    private static Map<Integer, ItemStack> getMoneyStacks(IInventory inventory) {
+        Map<Integer, ItemStack> map = Maps.newHashMap();
+        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+            if (inventory.getStackInSlot(i) != null && inventory.getStackInSlot(i).getItem() instanceof ItemMoney) {
+                map.put(i, inventory.getStackInSlot(i));
+            }
+        }
+
+        return map;
+    }
+
+    // DONE
+    private static List<TileEntityCash> getCashBlocks(UUID playerID) {
+        List<TileEntityCash> alreadyChecked = Lists.newArrayList();
+
+        for (Estate estate : EstateHandler.getEstates(playerID)) {
+            Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
+            Vec3 max = Vec3.createVectorHelper(estate.getBounds().maxX, estate.getBounds().maxY, estate.getBounds().maxZ);
+            AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord);
+
+            for (int x = (int) min.xCoord; x <= (int) max.xCoord + 16; x += 16) {
+                for (int z = (int) min.zCoord; z <= (int) max.zCoord + 16; z += 16) {
+                    Iterator<TileEntity> iterator = estate.getWorld().getChunkFromBlockCoords(x, z).chunkTileEntityMap.values().iterator();
+
+                    while (iterator.hasNext()) {
+                        TileEntity te = iterator.next();
+                        if (te instanceof TileEntityCash) {
+                            if (!alreadyChecked.contains(te) && bounds.isVecInside(Vec3.createVectorHelper(te.xCoord, te.yCoord, te.zCoord))) {
+                                alreadyChecked.add((TileEntityCash) te);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return alreadyChecked;
     }
 
 }
