@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class CommandEconomy implements ICommand {
+public class CommandEconomy extends MLCommand {
 
     @Override
     public String getCommandName() {
@@ -69,11 +69,14 @@ public class CommandEconomy implements ICommand {
 
     @Override
     public boolean isUsernameIndex(String[] args, int index) {
-        return false;
+        if(args[0].equalsIgnoreCase("get")) return false;
+        System.out.println(index);
+        return index == 1;
     }
 
+    // TODO: Can't be multithreaded when getting balance. Needs to be on main server world thread
     @Override
-    public void processCommand(ICommandSender sender, String[] args) {
+    public synchronized void execute(ICommandSender sender, String[] args) {
         try {
             if (args.length == 0) {
                 getCommandUsage(sender);
@@ -202,8 +205,4 @@ public class CommandEconomy implements ICommand {
         }
     }
 
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
 }
