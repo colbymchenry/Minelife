@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.MLItems;
+import com.minelife.Minelife;
 import com.minelife.economy.cash.TileEntityCash;
 import com.minelife.economy.client.wallet.InventoryWallet;
 import com.minelife.realestate.Estate;
@@ -26,6 +27,8 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 public class MoneyHandler {
@@ -60,9 +63,9 @@ public class MoneyHandler {
     }
 
     // DONE
+    // TODO: May want to do this one the same way we do the addMoneyInventory
     @SideOnly(Side.SERVER)
-    public static void takeMoneyInventory(EntityPlayerMP player, int amount) {
-        Vector3 playerVec = new Vector3(player.posX, player.posY + 1, player.posZ);
+    public static int takeMoneyInventory(EntityPlayerMP player, int amount) throws SQLException {
         int couldNotAdd = 0;
 
         // first try with the player's inventory
@@ -110,12 +113,13 @@ public class MoneyHandler {
             attemptCount++;
         }
 
-        // drop what could not be added to inventory
-        ItemMoney.getDrops(couldNotAdd).forEach(stack -> InventoryUtils.dropItem(stack, player.worldObj, playerVec));
+        depositATM(player.getUniqueID(), couldNotAdd);
+        return couldNotAdd;
     }
 
+    // DONE
     @SideOnly(Side.SERVER)
-    public static void addMoneyInventory(EntityPlayerMP player, int amount) {
+    public static int addMoneyInventory(EntityPlayerMP player, int amount) throws SQLException {
         // first add to player's inventory
         Map<Integer, ItemStack> moneyStacks = getMoneyStacks(player.inventory);
         moneyStacks.forEach((slot, stack) -> player.inventory.setInventorySlotContents(slot, null));
@@ -153,56 +157,62 @@ public class MoneyHandler {
             }
         }
 
-
-        // drop what could not be added to inventory
-        ItemMoney.getDrops(couldNotAdd).forEach(stack -> InventoryUtils.dropItem(stack, player.worldObj, new Vector3(player.posX, player.posY, player.posZ)));
+        depositATM(player.getUniqueID(), couldNotAdd);
+        return couldNotAdd;
     }
 
     @SideOnly(Side.SERVER)
-    public static List<ItemStack> takeMoneyVault(EntityPlayerMP player, int amount) {
+    public static int takeMoneyVault(EntityPlayerMP player, int amount) throws SQLException {
         return takeMoneyVault(player.getUniqueID(), amount);
     }
 
     @SideOnly(Side.SERVER)
-    public static int addMoneyVault(EntityPlayerMP player, int amount) {
+    public static int addMoneyVault(EntityPlayerMP player, int amount) throws SQLException {
         return addMoneyVault(player.getUniqueID(), amount);
     }
 
     @SideOnly(Side.SERVER)
-    public static List<ItemStack> takeMoneyVault(UUID playerUUID, int amount) {
-        return null;
+    public static int takeMoneyVault(UUID playerUUID, int amount) throws SQLException {
+        List<TileEntityCash> cashBlocks = getCashBlocks(playerUUID);
+
+        int couldNotAdd = 0;
+
+        for (TileEntityCash cashBlock : cashBlocks) {
+            int[] attempt = takeMoney(cashBlock, amount);
+            int couldTakeAttempt = attempt[0];
+            int couldNotAddAttempt = attempt[1];
+
+            couldNotAdd += couldNotAddAttempt;
+            amount -= couldTakeAttempt;
+            if (amount <= 0) break;
+        }
+
+        depositATM(playerUUID, couldNotAdd);
+        return couldNotAdd;
     }
 
     // TODO: Need to test this
     @SideOnly(Side.SERVER)
-    public static int addMoneyVault(UUID playerUUID, int amount) {
+    public static int addMoneyVault(UUID playerUUID, int amount) throws SQLException {
+        List<TileEntityCash> cashBlocks = getCashBlocks(playerUUID);
+
         int couldNotAdd = 0;
+        for (TileEntityCash cashBlock : cashBlocks) {
+            // first add to player's inventory
+            Map<Integer, ItemStack> moneyStacks = getMoneyStacks(cashBlock);
+            moneyStacks.forEach((slot, stack) -> cashBlock.setInventorySlotContents(slot, null));
+            int toAdd = amount;
+            for (ItemStack itemStack : moneyStacks.values()) toAdd += getAmount(itemStack);
 
-        List<TileEntityCash> alreadyChecked = Lists.newArrayList();
+            List<ItemStack> stacksToInsert = ItemMoney.getDrops(toAdd);
+            for (ItemStack stack : stacksToInsert)
+                couldNotAdd += InventoryUtils.insertItem(cashBlock, stack, false) * ((ItemMoney) stack.getItem()).amount;
 
-        for (Estate estate : EstateHandler.getEstates(playerUUID)) {
-            Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
-            Vec3 max = Vec3.createVectorHelper(estate.getBounds().maxX, estate.getBounds().maxY, estate.getBounds().maxZ);
-            AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord);
-
-            for (int x = (int) min.xCoord; x <= (int) max.xCoord + 16; x += 16) {
-                for (int z = (int) min.zCoord; z <= (int) max.zCoord + 16; z += 16) {
-                    Iterator<TileEntity> iterator = estate.getWorld().getChunkFromBlockCoords(x, z).chunkTileEntityMap.values().iterator();
-
-                    while (iterator.hasNext()) {
-                        TileEntity te = iterator.next();
-                        if (te instanceof TileEntityCash) {
-                            if (!alreadyChecked.contains(te) && bounds.isVecInside(Vec3.createVectorHelper(te.xCoord, te.yCoord, te.zCoord))) {
-                                couldNotAdd += addMoney(((TileEntityCash) te), amount + couldNotAdd);
-                                amount -= couldNotAdd;
-                            }
-                        }
-                    }
-                }
-            }
+            amount = couldNotAdd;
         }
 
-        return amount;
+        depositATM(playerUUID, couldNotAdd);
+        return couldNotAdd;
     }
 
     // DONE
@@ -315,4 +325,24 @@ public class MoneyHandler {
         return alreadyChecked;
     }
 
+    public static void depositATM(UUID player, int amount) throws SQLException {
+        Minelife.SQLITE.query("UPDATE economy SET amount='" + (getBalanceATM(player) + amount) + "' WHERE player='" + player.toString() + "'");
+    }
+
+    public static void withdrawATM(UUID player, int amount) throws SQLException {
+        Minelife.SQLITE.query("UPDATE economy SET amount='" + (getBalanceATM(player) - amount) + "' WHERE player='" + player.toString() + "'");
+    }
+
+    public static int getBalanceATM(UUID player) throws SQLException {
+        ResultSet result = Minelife.SQLITE.query("SELECT * FROM economy WHERE player='" + player.toString() + "'");
+        return result.next() ? result.getInt("amount") : 0;
+    }
+
+    public static void setATM(UUID player, int amount) throws SQLException {
+        Minelife.SQLITE.query("UPDATE economy SET amount='" + amount + "' WHERE player='" + player.toString() + "'");
+    }
+
+    public static boolean hasATM(UUID player) throws SQLException {
+        return Minelife.SQLITE.query("SELECT * FROM economy WHERE player='" + player.toString() + "'").next();
+    }
 }

@@ -2,6 +2,7 @@ package com.minelife.economy.packet;
 
 import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
+import com.minelife.economy.MoneyHandler;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.economy.ModEconomy;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -38,10 +39,11 @@ public class PacketWithdraw implements IMessage {
             EntityPlayerMP player = ctx.getServerHandler().playerEntity;
 
             try {
-                if (ModEconomy.getBalance(player.getUniqueID(), false) < message.amount) throw new CustomMessageException("Insufficient funds.");
+                if (MoneyHandler.getBalanceATM(player.getUniqueID()) < message.amount) throw new CustomMessageException("Insufficient funds.");
 
-                ModEconomy.withdraw(player.getUniqueID(), message.amount, false);
-                ModEconomy.deposit(player.getUniqueID(), message.amount, true);
+                // TODO: Test this to make sure you can't duplicate money
+                MoneyHandler.withdrawATM(player.getUniqueID(), message.amount);
+                MoneyHandler.addMoneyInventory(player, message.amount);
 
                 Minelife.NETWORK.sendTo(new PacketUpdateATMGui("Success."), player);
             } catch (CustomMessageException e) {

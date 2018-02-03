@@ -3,6 +3,7 @@ package com.minelife.realestate;
 import com.minelife.economy.BillHandler;
 import com.minelife.economy.Billing;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.MoneyHandler;
 import com.minelife.util.PlayerHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -30,9 +31,9 @@ public class RentBillHandler extends BillHandler {
     public void pay(Billing.Bill bill, int amount) {
         Estate estate = EstateHandler.getEstate(estateID);
         try {
-            if (estate != null && ModEconomy.getBalance(estate.getRenter(), false) >= amount) {
-                ModEconomy.deposit(estate.getOwner(), amount, false);
-                ModEconomy.withdraw(estate.getRenter(), amount, false);
+            if (estate != null && MoneyHandler.getBalanceVault(estate.getRenter()) >= amount) {
+                MoneyHandler.addMoneyVault(estate.getOwner(), amount);
+                MoneyHandler.takeMoneyVault(estate.getRenter(), amount);
                 bill.setAmountDue(bill.getAmountDue() - amount);
                 // send notification to owner for payment
                 PaymentNotification notification = new PaymentNotification(estate.getOwner(), amount, estateID, true);

@@ -17,7 +17,6 @@ public class GuiHandler extends AbstractGuiHandler {
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == 80098) {
-            if (player.getHeldItem() == null || !(player.getHeldItem().getItem() instanceof ItemWallet)) return null;
             return new ContainerWallet(player.inventory, new InventoryWallet(player.getHeldItem()));
         }
         if (ID == 80099) {
@@ -30,7 +29,6 @@ public class GuiHandler extends AbstractGuiHandler {
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == 80098) {
-            if (player.getHeldItem() == null || !(player.getHeldItem().getItem() instanceof ItemWallet)) return null;
             return new GuiWallet(player.inventory, new InventoryWallet(player.getHeldItem()));
         }
         if (ID == 80099) {

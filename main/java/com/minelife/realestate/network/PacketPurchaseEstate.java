@@ -3,6 +3,7 @@ package com.minelife.realestate.network;
 import com.minelife.Minelife;
 import com.minelife.economy.Billing;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.MoneyHandler;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
 import com.minelife.realestate.PaymentNotification;
@@ -61,15 +62,16 @@ public class PacketPurchaseEstate implements IMessage {
                     return null;
                 }
 
+                int playerBalance = MoneyHandler.getBalanceInventory(player);
 
-                if ((message.renting && ModEconomy.getBalance(player.getUniqueID(), true) < estate.getRentPrice()) ||
-                        (!message.renting && ModEconomy.getBalance(player.getUniqueID(), true) < estate.getPurchasePrice())) {
+                if ((message.renting && playerBalance < estate.getRentPrice()) ||
+                        (!message.renting && playerBalance < estate.getPurchasePrice())) {
                     Minelife.NETWORK.sendTo(new PacketPopupMessage("Insufficient funds", 0xC6C6C6), player);
                     return null;
                 }
 
                 if (message.renting) {
-                    if(ModEconomy.getBalance(player.getUniqueID(), true) < estate.getRentPrice()) {
+                    if(playerBalance < estate.getRentPrice()) {
                         Minelife.NETWORK.sendTo(new PacketPopupMessage("Insufficient funds", 0xC6C6C6), player);
                         return null;
                     }
@@ -78,12 +80,12 @@ public class PacketPurchaseEstate implements IMessage {
                     billHandler.estateID = estate.getID();
                     Billing.createBill(estate.getRentPeriod(), estate.getRentPrice(), player.getUniqueID(),
                             "Estate Rent: #" + estate.getID(), true, billHandler);
-                    ModEconomy.withdraw(player.getUniqueID(), estate.getRentPrice(), true);
-                    ModEconomy.deposit(estate.getOwner(), estate.getRentPrice(), false);
+                    MoneyHandler.takeMoneyInventory(player, estate.getRentPrice());
+                    MoneyHandler.addMoneyVault(estate.getOwner(), estate.getRentPrice());
                     estate.setBill(billHandler);
                 } else {
-                    ModEconomy.withdraw(player.getUniqueID(), estate.getPurchasePrice(), true);
-                    ModEconomy.deposit(estate.getOwner(), estate.getPurchasePrice(), false);
+                    MoneyHandler.takeMoneyInventory(player, estate.getPurchasePrice());
+                    MoneyHandler.addMoneyVault(estate.getOwner(), estate.getPurchasePrice());
                 }
 
                 PaymentNotification notification = new PaymentNotification(estate.getOwner(), message.renting ? estate.getRentPrice() : estate.getPurchasePrice(), estate.getID(), message.renting);

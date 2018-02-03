@@ -10,7 +10,7 @@ public class GuiWithdraw extends GuiDeposit {
 
     @Override
     protected void actionPerformed(GuiButton button) {
-        if (pin.length() < 4 && button.id < 10) {
+        if (button.id < 10) {
             // make sure this isn't larger than a valid long
             if (NumberConversions.isDouble(this.amount + button.displayString)) {
                 this.amount += button.displayString;

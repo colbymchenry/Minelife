@@ -39,7 +39,7 @@ public class ItemMoney extends Item {
             int newStackSize = TileCash.addCash(stack);
             ItemStack newStack = stack.copy();
             newStack.stackSize = newStackSize;
-            player.inventory.setInventorySlotContents(player.inventory.currentItem, newStack);
+            player.inventory.setInventorySlotContents(player.inventory.currentItem, newStackSize <= 0 ? null : newStack);
             return true;
         }
 
@@ -64,9 +64,13 @@ public class ItemMoney extends Item {
                 break;
         }
 
+        // TODO: There is an odd hanging every couple of 45 seconds, need to figure that out.
         world.setBlock(x, y, z, MLBlocks.cash);
         TileEntityCash tileEntityCash = (TileEntityCash) world.getTileEntity(x, y, z);
-        tileEntityCash.addCash(stack);
+        int newStackSize = tileEntityCash.addCash(stack);
+        ItemStack newStack = stack.copy();
+        newStack.stackSize = newStackSize;
+        player.inventory.setInventorySlotContents(player.inventory.currentItem, newStackSize <= 0 ? null : newStack);
 
         int l = MathHelper.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
 

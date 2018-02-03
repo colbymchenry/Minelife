@@ -2,6 +2,7 @@ package com.minelife.minebay;
 
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.MoneyHandler;
 import com.minelife.minebay.packet.PacketPopupMsg;
 import com.minelife.util.ItemHelper;
 import com.minelife.util.NumberConversions;
@@ -108,8 +109,8 @@ public class ItemListing extends Listing {
             int price_per_item = (int) (price() / item_stack().stackSize);
             int price = price_per_item * amount;
 
-            if (ModEconomy.getBalance(player.getUniqueID(), false) < price) {
-                PacketPopupMsg.send("Insufficient Funds in Bank Account", (EntityPlayerMP) player);
+            if (MoneyHandler.getBalanceVault(player.getUniqueID()) < price) {
+                PacketPopupMsg.send("Insufficient Funds. You need to create more cash piles within your estates.", (EntityPlayerMP) player);
                 return;
             }
 
@@ -119,8 +120,8 @@ public class ItemListing extends Listing {
             EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
             entity_item.delayBeforeCanPickup = 0;
 
-            ModEconomy.withdraw(player.getUniqueID(), price, false);
-            ModEconomy.deposit(seller(), price, false);
+            MoneyHandler.takeMoneyVault(player.getUniqueID(), price);
+            MoneyHandler.addMoneyVault(seller(), price);
 
             if(item_stack.stackSize > 0) {
                 write_to_db();

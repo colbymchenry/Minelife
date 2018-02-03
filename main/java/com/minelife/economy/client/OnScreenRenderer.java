@@ -23,7 +23,8 @@ public class OnScreenRenderer {
     public void onRenderOverlay(RenderGameOverlayEvent.Pre event) {
         if (event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
             GL11.glColor4f(1f, 1f, 1f, 1f);
-            Minecraft.getMinecraft().fontRenderer.drawString("Wallet: " + EnumChatFormatting.GREEN + "$" + NumberConversions.formatter.format(ModEconomy.BALANCE_WALLET_CLIENT), 2, 2, 0xFFFFFF);
+            // TODO: Use to get all money in inventory
+//            Minecraft.getMinecraft().fontRenderer.drawString("Wallet: " + EnumChatFormatting.GREEN + "$" + NumberConversions.formatter.format(ModEconomy.BALANCE_WALLET_CLIENT), 2, 2, 0xFFFFFF);
             GL11.glColor4f(1f, 1f, 1f, 1f);
         }
     }

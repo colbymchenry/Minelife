@@ -2,6 +2,7 @@ package com.minelife.welfare;
 
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.MoneyHandler;
 import com.minelife.notification.ModNotifications;
 import com.minelife.tracker.ModTracker;
 import com.minelife.util.PlayerHelper;
@@ -32,7 +33,7 @@ public class WelfareListener {
                         UUID playerUUID = UUID.fromString(result.getString("uuid"));
                         EntityPlayer player = PlayerHelper.getPlayer(playerUUID);
                         int payout = ModTracker.getHoursPlayed(playerUUID) * 60;
-                        ModEconomy.deposit(playerUUID, payout, false);
+                        MoneyHandler.depositATM(playerUUID, payout);
                         if(player != null) {
                             new WelfareNotification(playerUUID, payout).sendTo((EntityPlayerMP) player);
                         }

@@ -13,33 +13,29 @@ import net.minecraft.client.Minecraft;
 
 public class PacketBalanceResult implements IMessage {
 
-    private int balanceBank, balanceWallet;
+    private int balanceBank;
 
     public PacketBalanceResult() {
     }
 
-    public PacketBalanceResult(int balanceBank, int balanceWallet) {
+    public PacketBalanceResult(int balanceBank) {
         this.balanceBank = balanceBank;
-        this.balanceWallet = balanceWallet;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
         this.balanceBank = buf.readInt();
-        this.balanceWallet = buf.readInt();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeInt(this.balanceBank);
-        buf.writeInt(this.balanceWallet);
     }
 
     public static class Handler implements IMessageHandler<PacketBalanceResult, IMessage> {
 
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketBalanceResult message, MessageContext ctx) {
-            ModEconomy.BALANCE_WALLET_CLIENT = message.balanceWallet;
             ModEconomy.BALANCE_BANK_CLIENT = message.balanceBank;
             return null;
         }

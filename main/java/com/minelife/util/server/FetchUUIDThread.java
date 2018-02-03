@@ -17,9 +17,12 @@ public class FetchUUIDThread implements Runnable {
     @Override
     public void run() {
         System.out.println("**** UUID FETCHER THREAD STARTED! ****");
+        List<SimpleUUIDThreadObject> simpleQue = Lists.newArrayList();
+        List<UUIDThreadObject> que = Lists.newArrayList();
         while(true) {
+            simpleQue.clear();
+            que.clear();
             try {
-                List<UUIDThreadObject> que = Lists.newArrayList();
                 que.addAll(queList);
                 ListIterator<UUIDThreadObject> iterator = que.listIterator();
 
@@ -34,7 +37,7 @@ public class FetchUUIDThread implements Runnable {
 
                 // ----------------------------------------
 
-                List<SimpleUUIDThreadObject> simpleQue = Lists.newArrayList();
+
                 simpleQue.addAll(simpleQueList);
                 ListIterator<SimpleUUIDThreadObject> simpleIterator = simpleQue.listIterator();
 
@@ -42,12 +45,14 @@ public class FetchUUIDThread implements Runnable {
                     SimpleUUIDThreadObject object = simpleIterator.next();
                     UUID uuid = UUIDFetcher.get(object.name);
                     String name = NameFetcher.get(uuid);
-                    System.out.println("CALLLEEEDDDD " + object.includes.length);
                     object.callback.callback(uuid, name, object.includes);
                 }
 
                 simpleQueList.removeAll(simpleQue);
             }catch(Exception e) {
+                e.printStackTrace();
+                simpleQueList.removeAll(simpleQue);
+                queList.removeAll(que);
             }
         }
 

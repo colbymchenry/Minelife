@@ -35,21 +35,21 @@ public class PacketDeposit implements IMessage {
 
         @Override
         public IMessage onMessage(PacketDeposit message, MessageContext ctx) {
-            EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-
-            try {
-                if (ModEconomy.getBalance(player.getUniqueID(), true) < message.amount) throw new CustomMessageException("Insufficient funds.");
-
-                ModEconomy.withdraw(player.getUniqueID(), message.amount, true);
-                ModEconomy.deposit(player.getUniqueID(), message.amount, false);
-
-                Minelife.NETWORK.sendTo(new PacketUpdateATMGui("Success."), player);
-            } catch (CustomMessageException e) {
-                Minelife.NETWORK.sendTo(new PacketUpdateATMGui(e.getMessage()), player);
-                Minelife.NETWORK.sendTo(new PacketPlaySound("gui.atm.error", 0.5F, 1.0F), player);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+//
+//            try {
+//                if (ModEconomy.getBalance(player.getUniqueID(), true) < message.amount) throw new CustomMessageException("Insufficient funds.");
+//
+//                ModEconomy.withdraw(player.getUniqueID(), message.amount, true);
+//                ModEconomy.deposit(player.getUniqueID(), message.amount, false);
+//
+//                Minelife.NETWORK.sendTo(new PacketUpdateATMGui("Success."), player);
+//            } catch (CustomMessageException e) {
+//                Minelife.NETWORK.sendTo(new PacketUpdateATMGui(e.getMessage()), player);
+//                Minelife.NETWORK.sendTo(new PacketPlaySound("gui.atm.error", 0.5F, 1.0F), player);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
             return null;
         }
 

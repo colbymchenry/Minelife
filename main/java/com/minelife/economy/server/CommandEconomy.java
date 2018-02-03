@@ -35,11 +35,14 @@ public class CommandEconomy implements ICommand {
     @Override
     public String getCommandUsage(ICommandSender sender) {
         String commandUsage =
-                "/economy balance <player> <wallet:TRUE-FALSE>\n" +
-                        "/economy set <player> <amount> <wallet:TRUE-FALSE>\n" +
-                        "/economy withdraw <player> <amount> <wallet:TRUE-FALSE>\n" +
-                        "/economy deposit <player> <amount> <wallet:TRUE-FALSE>\n" +
+                        "/economy balance <player>\n" +
+                        "/economy set <player> <amount>\n" +
+                        "/economy withdraw <player> <amount>\n" +
+                        "/economy deposit <player> <amount>\n" +
+                        "/economy give <player> <amount>\n" +
+                        "/economy take <player> <amount>\n" +
                         "/economy get <amount>\n";
+
 
         for (String s : commandUsage.split("\n")) {
             sender.addChatMessage(new ChatComponentText(s));
@@ -114,17 +117,14 @@ public class CommandEconomy implements ICommand {
 
             String cmd = args[0].toLowerCase();
             int amount = 0;
-            boolean wallet;
 
             if (cmd.equalsIgnoreCase("balance")) {
-                if (args.length != 3) {
+                if (args.length != 2) {
                     getCommandUsage(sender);
                     return;
                 }
-
-                wallet = "true".contains(args[2].toLowerCase()) ? true : false;
             } else {
-                if (args.length != 4) {
+                if (args.length != 3) {
                     getCommandUsage(sender);
                     return;
                 }
@@ -135,7 +135,6 @@ public class CommandEconomy implements ICommand {
                 }
 
                 amount = Integer.parseInt(args[2]);
-                wallet = "true".contains(args[3].toLowerCase()) ? true : false;
             }
 
             String playerName = args[1];
@@ -146,31 +145,52 @@ public class CommandEconomy implements ICommand {
                 return;
             }
 
+            EntityPlayerMP targetPlayer = PlayerHelper.getPlayer(playerUUID);
+
             switch (cmd.toLowerCase()) {
                 case "balance": {
-                    sender.addChatMessage(new ChatComponentText("$" + NumberConversions.formatter.format(ModEconomy.getBalance(playerUUID, wallet))));
+                    // TODO: Make a method to get all balances together
+                    sender.addChatMessage(new ChatComponentText("$" + NumberConversions.formatter.format(MoneyHandler.getBalanceVault(playerUUID))));
                     return;
                 }
                 case "set": {
-                    ModEconomy.set(playerUUID, amount, wallet);
-                    sender.addChatMessage(new ChatComponentText("Balance updated."));
+                    MoneyHandler.setATM(playerUUID, amount);
+                    sender.addChatMessage(new ChatComponentText("ATM balance updated."));
                     return;
                 }
                 case "withdraw": {
-                    ModEconomy.withdraw(playerUUID, amount, wallet);
-                    sender.addChatMessage(new ChatComponentText("Balance updated."));
+                    MoneyHandler.withdrawATM(playerUUID, amount);
+                    sender.addChatMessage(new ChatComponentText("ATM balance updated."));
                     return;
                 }
                 case "deposit": {
-                    ModEconomy.deposit(playerUUID, amount, wallet);
-                    sender.addChatMessage(new ChatComponentText("Balance updated."));
+                    MoneyHandler.depositATM(playerUUID, amount);
+                    sender.addChatMessage(new ChatComponentText("ATM balance updated."));
                     return;
                 }
                 case "take": {
-                    MoneyHandler.takeMoneyInventory(PlayerHelper.getPlayer(playerUUID), amount);
+                    if(targetPlayer == null) {
+                        MoneyHandler.takeMoneyVault(playerUUID, amount);
+                    } else {
+                        int couldNotAdd = MoneyHandler.takeMoneyInventory(targetPlayer, amount);
+                        targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + amount + " was taken from your account."));
+                        if(couldNotAdd > 0) {
+                            targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + couldNotAdd + " would not fit in your inventory so it was deposited into your checking account."));
+                        }
+                    }
+                    return;
                 }
                 case "give": {
-                    MoneyHandler.addMoneyInventory(PlayerHelper.getPlayer(playerUUID), amount);
+                    if(targetPlayer == null) {
+                        MoneyHandler.addMoneyVault(playerUUID, amount);
+                    } else {
+                        int couldNotAdd = MoneyHandler.addMoneyInventory(targetPlayer, amount);
+                        targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "You were given $" + amount));
+                        if(couldNotAdd > 0) {
+                            targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "$" + couldNotAdd + " would not fit in your inventory so it was deposited into your checking account."));
+                        }
+                    }
+                    return;
                 }
                 default: {
                     getCommandUsage(sender);

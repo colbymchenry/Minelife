@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.MoneyHandler;
 import com.minelife.util.NumberConversions;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -157,8 +158,13 @@ public class TileEntityShopBlock extends TileEntity {
                 }
             });
 
-            ModEconomy.withdraw(player.getUniqueID(), getPrice() * (amount / toSale.stackSize), true);
-            ModEconomy.deposit(getOwner(), getPrice() * (amount / toSale.stackSize), false);
+            if(MoneyHandler.getBalanceInventory(player) < getPrice() * (amount / toSale.stackSize)) {
+                player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Insufficient funds."));
+                return;
+            }
+
+            MoneyHandler.takeMoneyInventory(player, getPrice() * (amount / toSale.stackSize));
+            MoneyHandler.addMoneyVault(getOwner(), getPrice() * (amount / toSale.stackSize));
 
             ItemStack toDrop = toSale.copy();
             toDrop.stackSize = amount;

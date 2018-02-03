@@ -2,7 +2,7 @@ package com.minelife.economy;
 
 import com.minelife.MLBlocks;
 import com.minelife.Minelife;
-import com.minelife.economy.packet.PacketOpenATM;
+import com.minelife.economy.packet.PacketUnlockATM;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -65,7 +65,7 @@ public class BlockATMTop extends Block {
         if (world.isRemote) return true;
 
         try {
-            Minelife.NETWORK.sendTo(new PacketOpenATM(ModEconomy.getPin(player.getUniqueID()).isEmpty()), (EntityPlayerMP) player);
+            Minelife.NETWORK.sendTo(new PacketUnlockATM(), (EntityPlayerMP) player);
         } catch (Exception e) {
             e.printStackTrace();
         }

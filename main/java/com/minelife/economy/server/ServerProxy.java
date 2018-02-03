@@ -4,6 +4,7 @@ import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.economy.Billing;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.MoneyHandler;
 import com.minelife.economy.packet.PacketBalanceResult;
 import com.minelife.util.MLConfig;
 import com.minelife.util.configuration.InvalidConfigurationException;
@@ -16,19 +17,19 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
 public class ServerProxy extends MLProxy {
 
     @Override
-    public void preInit(FMLPreInitializationEvent event) throws SQLException, IOException, InvalidConfigurationException
-    {
+    public void preInit(FMLPreInitializationEvent event) throws SQLException, IOException, InvalidConfigurationException {
 
         /**
          * This creates the SQL table that will store all the player's balances
          */
-        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS players (uuid VARCHAR(36) NOT NULL, balanceBank INT DEFAULT 0.0, balanceWallet INT DEFAULT 0.0, pin VARCHAR(4) NOT NULL DEFAULT '')");
+        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS economy (player VARCHAR(36) NOT NULL, amount INT)");
         Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS Economy_Bills (uuid VARCHAR(36) NOT NULL, dueDate VARCHAR(36) NOT NULL, days INT, amount INT, amountDue INT, player VARCHAR(36) NOT NULL, memo TEXT, autoPay BOOLEAN, handlers TEXT, tagCompound TEXT)");
 
         ModEconomy.config = new MLConfig("economy");
@@ -43,13 +44,13 @@ public class ServerProxy extends MLProxy {
     }
 
     @SubscribeEvent
-    public void onLogin(PlayerEvent.PlayerLoggedInEvent event)
-    {
+    public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         try {
-            if (!ModEconomy.playerExists(event.player.getUniqueID()))
-                Minelife.SQLITE.query("INSERT INTO players (uuid) VALUES ('" + event.player.getUniqueID().toString() + "')");
+            ResultSet result = Minelife.SQLITE.query("SELECT * FROM economy WHERE player='" + event.player.getUniqueID().toString() + "'");
+            if (!result.next())
+                Minelife.SQLITE.query("INSERT INTO economy (player, amount) VALUES ('" + event.player.getUniqueID().toString() + "', '0')");
 
-            Minelife.NETWORK.sendTo(new PacketBalanceResult(ModEconomy.getBalance(event.player.getUniqueID(), false), ModEconomy.getBalance(event.player.getUniqueID(), true)), (EntityPlayerMP) event.player);
+            Minelife.NETWORK.sendTo(new PacketBalanceResult(MoneyHandler.getBalanceATM(event.player.getUniqueID())), (EntityPlayerMP) event.player);
         } catch (Exception e) {
             e.printStackTrace();
             Minelife.getLogger().log(Level.SEVERE, "", e);

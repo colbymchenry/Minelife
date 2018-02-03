@@ -3,6 +3,7 @@ package com.minelife.shop.network;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.MoneyHandler;
 import com.minelife.shop.TileEntityShopBlock;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.PacketPopupMessage;
@@ -125,8 +126,13 @@ public class PacketBuyFromShop implements IMessage {
                     }
                 });
 
-                ModEconomy.withdraw(player.getUniqueID(), tile.getPrice() * (amount / toSale.stackSize), true);
-                ModEconomy.deposit(tile.getOwner(), tile.getPrice() * (amount / toSale.stackSize), false);
+                if(MoneyHandler.getBalanceInventory(player) < tile.getPrice() * (amount / toSale.stackSize)) {
+                    player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Insufficient funds."));
+                    return;
+                }
+
+                MoneyHandler.takeMoneyInventory(player, tile.getPrice() * (amount / toSale.stackSize));
+                MoneyHandler.addMoneyVault(tile.getOwner(), tile.getPrice() * (amount / toSale.stackSize));
 
                 ItemStack toDrop = toSale.copy();
                 toDrop.stackSize = amount;

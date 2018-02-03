@@ -421,7 +421,7 @@ public class Billing {
 
                 if (bill != null) {
                     try {
-                        if (message.amount <= ModEconomy.getBalance(ctx.getServerHandler().playerEntity.getUniqueID(), false)) {
+                        if (message.amount <= MoneyHandler.getBalanceVault(ctx.getServerHandler().playerEntity)) {
                             bill.billHandler.pay(bill, message.amount);
                             Minelife.NETWORK.sendTo(new PacketUpdateATMGui("billpay.success"), ctx.getServerHandler().playerEntity);
                         } else {

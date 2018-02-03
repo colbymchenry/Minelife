@@ -2,7 +2,6 @@ package com.minelife.economy.packet;
 
 import com.minelife.economy.client.gui.GuiATM;
 import com.minelife.economy.client.gui.GuiBillPay;
-import com.minelife.economy.client.gui.GuiUnlock;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -47,9 +46,9 @@ public class PacketUpdateATMGui implements IMessage {
 
                 guiATM.setStatusMessage(message.message);
 
-                if(message.message.equalsIgnoreCase("Incorrect pin.")) {
-                    ((GuiUnlock) guiATM).pin = "";
-                }
+//                if(message.message.equalsIgnoreCase("Incorrect pin.")) {
+//                    ((GuiUnlock) guiATM).pin = "";
+//                }
             }
             return null;
         }
