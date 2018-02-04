@@ -77,4 +77,19 @@ public class ItemCape extends Item {
                 stack.stackTagCompound.getString("uuid").isEmpty()) return null;
         return stack.stackTagCompound.getString("uuid");
     }
+
+    @Override
+    public boolean hasContainerItem(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public ItemStack getContainerItem(ItemStack itemStack) {
+        return itemStack;
+    }
+
+    @Override
+    public boolean doesContainerItemLeaveCraftingGrid(ItemStack par1ItemStack) {
+        return false;
+    }
 }

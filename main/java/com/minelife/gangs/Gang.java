@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
+import com.minelife.economy.MoneyHandler;
 import com.minelife.economy.cash.TileEntityCash;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
@@ -113,35 +114,7 @@ public class Gang implements Comparable<Gang> {
 
     // TODO: Implement claiming land needing money for estates and gangs. ATM accesses money from your personal vault. Or you can pull some out of your gangs vault if you are an officer via the ATM
     public int getBalance() {
-        int total = 0;
-
-        if(getLeader() == null) return 0;
-
-        List<TileEntityCash> alreadyChecked = Lists.newArrayList();
-
-        for (Estate estate : EstateHandler.getEstates(getLeader())) {
-            Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
-            Vec3 max = Vec3.createVectorHelper(estate.getBounds().maxX, estate.getBounds().maxY, estate.getBounds().maxZ);
-            AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord);
-
-            for (int x = (int) min.xCoord; x <= (int) max.xCoord + 16; x += 16) {
-                for (int z = (int) min.zCoord; z <= (int) max.zCoord + 16; z += 16) {
-                    Iterator<TileEntity> iterator = estate.getWorld().getChunkFromBlockCoords(x, z).chunkTileEntityMap.values().iterator();
-
-                    while(iterator.hasNext()) {
-                        TileEntity te = iterator.next();
-                        if(te instanceof TileEntityCash) {
-                            if(!alreadyChecked.contains(te) && bounds.isVecInside(Vec3.createVectorHelper(te.xCoord, te.yCoord, te.zCoord))) {
-                                total += ((TileEntityCash) te).getHoldings();
-                                alreadyChecked.add((TileEntityCash) te);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return total;
+        return getLeader() == null ? 0 : MoneyHandler.getBalanceVault(getLeader());
     }
 
     public int getBalanceClient() {

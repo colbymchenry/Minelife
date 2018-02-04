@@ -5,6 +5,7 @@ import codechicken.lib.vec.Vector3;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.minelife.MLBlocks;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.economy.cash.TileEntityCash;
@@ -115,7 +116,7 @@ public class MoneyHandler {
             attemptCount++;
         }
 
-        depositATM(player.getUniqueID(), couldNotAdd);
+        if (couldNotAdd > 0) depositATM(player.getUniqueID(), couldNotAdd);
         return couldNotAdd;
     }
 
@@ -159,7 +160,7 @@ public class MoneyHandler {
             }
         }
 
-        depositATM(player.getUniqueID(), couldNotAdd);
+        if(couldNotAdd > 0) depositATM(player.getUniqueID(), couldNotAdd);
         return couldNotAdd;
     }
 
@@ -189,7 +190,7 @@ public class MoneyHandler {
             if (amount <= 0) break;
         }
 
-        depositATM(playerUUID, couldNotAdd);
+        if(couldNotAdd > 0) depositATM(playerUUID, couldNotAdd);
         return couldNotAdd;
     }
 
@@ -213,7 +214,7 @@ public class MoneyHandler {
             amount = couldNotAdd;
         }
 
-        depositATM(playerUUID, couldNotAdd);
+        if (couldNotAdd > 0) depositATM(playerUUID, couldNotAdd);
         return couldNotAdd;
     }
 
@@ -310,11 +311,11 @@ public class MoneyHandler {
             try {
                 ResultSet result = Minelife.SQLITE.query("SELECT * FROM cash_blocks WHERE x >= " + bounds.minX + " AND x <= " + bounds.maxX + "" +
                         " AND y >= " + bounds.minY + " AND y <= " + bounds.maxY + " AND z >= " + bounds.minZ + " AND z <= " + bounds.maxZ + "" +
-                " AND dimension='" + estate.getWorld().provider.dimensionId + "'");
+                        " AND dimension='" + estate.getWorld().provider.dimensionId + "'");
 
-                while(result.next()) {
+                while (result.next()) {
                     TileEntity tileEntity = estate.getWorld().getTileEntity(result.getInt("x"), result.getInt("y"), result.getInt("z"));
-                    if(tileEntity != null && tileEntity instanceof TileEntityCash)
+                    if (tileEntity != null && tileEntity instanceof TileEntityCash)
                         alreadyChecked.add((TileEntityCash) tileEntity);
                 }
             } catch (SQLException e) {
@@ -345,4 +346,5 @@ public class MoneyHandler {
     public static boolean hasATM(UUID player) throws SQLException {
         return Minelife.SQLITE.query("SELECT * FROM economy WHERE player='" + player.toString() + "'").next();
     }
+
 }

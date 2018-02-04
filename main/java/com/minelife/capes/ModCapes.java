@@ -9,12 +9,15 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class ModCapes extends MLMod {
 
-    // TODO: Add a recipe for the cape.
+    // TODO: Add a recipe for the cape. Also make it to where if you have a blank cape and a cape with a design it creates duplicates of that design
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         registerPacket(PacketCreateGui.Handler.class, PacketCreateGui.class, Side.CLIENT);
@@ -24,6 +27,7 @@ public class ModCapes extends MLMod {
         registerPacket(PacketEditCape.Handler.class, PacketEditCape.class, Side.SERVER);
         registerPacket(PacketEditGui.Handler.class, PacketEditGui.class, Side.CLIENT);
         registerPacket(PacketRemoveCapeItemTexture.Handler.class, PacketRemoveCapeItemTexture.class, Side.CLIENT);
+        registerRecipe();
     }
 
     @Override
@@ -40,4 +44,13 @@ public class ModCapes extends MLMod {
     public Class<? extends MLProxy> getServerProxyClass() {
         return com.minelife.capes.server.ServerProxy.class;
     }
+
+    private static void registerRecipe() {
+        GameRegistry.addRecipe(new CapeRecipe(new ItemStack(MLItems.cape), "WW", "WW", "WW", 'W', new ItemStack(Blocks.wool, 1, OreDictionary.WILDCARD_VALUE)));
+        GameRegistry.addRecipe(new CapeRecipe(new ItemStack(MLItems.cape), "AWW", " WW", " WW", 'W', new ItemStack(Blocks.wool, 1, OreDictionary.WILDCARD_VALUE), 'A', MLItems.cape));
+        GameRegistry.addRecipe(new CapeRecipe(new ItemStack(MLItems.cape), " WW", "AWW", " WW", 'W', new ItemStack(Blocks.wool, 1, OreDictionary.WILDCARD_VALUE), 'A', MLItems.cape));
+        GameRegistry.addRecipe(new CapeRecipe(new ItemStack(MLItems.cape), " WW", " WW", "AWW", 'W', new ItemStack(Blocks.wool, 1, OreDictionary.WILDCARD_VALUE), 'A', MLItems.cape));
+        GameRegistry.addRecipe(new CapeRecipe(new ItemStack(MLItems.cape), "AA", 'A', MLItems.cape));
+    }
+
 }
