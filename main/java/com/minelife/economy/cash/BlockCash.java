@@ -21,6 +21,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class BlockCash extends BlockContainer {
@@ -41,7 +42,7 @@ public class BlockCash extends BlockContainer {
                     ItemStack stack = player.getHeldItem().copy();
                     int oldStackSize = stack.stackSize;
                     int newStackSize = ((TileEntityCash) world.getTileEntity(x, y, z)).addCash(player.getHeldItem());
-                    if(oldStackSize == newStackSize) {
+                    if (oldStackSize == newStackSize) {
                         player.openGui(Minelife.instance, 80099, world, x, y, z);
                     } else {
                         stack.stackSize = newStackSize;
@@ -79,19 +80,27 @@ public class BlockCash extends BlockContainer {
 
     @Override
     public void breakBlock(World world, int x, int y, int z, Block p_149749_5_, int p_149749_6_) {
-        // TODO: Maybe instead implement the bag of cash and just drop the bag to prevent too many entities
+        if(world.isRemote) return;
+
         Vector3 vec3 = new Vector3(x, y, z);
-        if(world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileEntityCash) {
+        if (world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileEntityCash) {
+            TileEntityCash tileCash = (TileEntityCash) world.getTileEntity(x, y, z);
             List<ItemStack> cashStacks = Lists.newArrayList();
-            for (int i = 0; i < ((TileEntityCash) world.getTileEntity(x, y, z)).getSizeInventory(); i++) {
-                if(((TileEntityCash) world.getTileEntity(x, y, z)).getStackInSlot(i) != null) {
-                    cashStacks.add(((TileEntityCash) world.getTileEntity(x, y, z)).getStackInSlot(i));
-                }
+            for (int i = 0; i < tileCash.getSizeInventory(); i++) {
+                if (tileCash.getStackInSlot(i) != null) cashStacks.add(tileCash.getStackInSlot(i));
             }
 
-            ItemStack bagOCash = new ItemStack(MLItems.bagOCash);
-            ItemWallet.setHoldings(bagOCash, cashStacks);
-            InventoryUtils.dropItem(bagOCash, world, vec3);
+            if(!cashStacks.isEmpty()) {
+                ItemStack bagOCash = new ItemStack(MLItems.bagOCash);
+                ItemWallet.setHoldings(bagOCash, cashStacks);
+                InventoryUtils.dropItem(bagOCash, world, vec3);
+            }
+        }
+
+        try {
+            Minelife.SQLITE.query("DELETE FROM cash_blocks WHERE x='" + x + "' AND y='" + y + "' AND z='" + z + "' AND dimension='" + world.provider.dimensionId + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

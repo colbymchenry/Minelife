@@ -17,8 +17,10 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.world.WorldServer;
 import scala.Int;
 
 import java.util.Arrays;
@@ -70,7 +72,6 @@ public class CommandEconomy extends MLCommand {
     @Override
     public boolean isUsernameIndex(String[] args, int index) {
         if(args[0].equalsIgnoreCase("get")) return false;
-        System.out.println(index);
         return index == 1;
     }
 
@@ -153,7 +154,12 @@ public class CommandEconomy extends MLCommand {
             switch (cmd.toLowerCase()) {
                 case "balance": {
                     // TODO: Make a method to get all balances together
-                    sender.addChatMessage(new ChatComponentText("$" + NumberConversions.formatter.format(MoneyHandler.getBalanceVault(playerUUID))));
+                    scheduledTasks.add(new Runnable() {
+                        @Override
+                        public void run() {
+                            sender.addChatMessage(new ChatComponentText("$" + NumberConversions.formatter.format(MoneyHandler.getBalanceVault(playerUUID))));
+                        }
+                    });
                     return;
                 }
                 case "set": {

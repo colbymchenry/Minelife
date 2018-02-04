@@ -5,10 +5,7 @@ import com.minelife.util.client.netty.ChatClient;
 import com.minelife.util.client.netty.ConnectionRetryHandler;
 import com.minelife.util.client.netty.NettyPlayerListener;
 import com.minelife.util.client.netty.PacketSendNettyServer;
-import com.minelife.util.server.EntityCleaner;
-import com.minelife.util.server.FetchNameThread;
-import com.minelife.util.server.FetchUUIDThread;
-import com.minelife.util.server.UUIDFetcher;
+import com.minelife.util.server.*;
 import com.minelife.welfare.WelfareListener;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -25,6 +22,7 @@ public class ServerProxy extends MLProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         FMLCommonHandler.instance().bus().register(new UUIDFetcher());
+        FMLCommonHandler.instance().bus().register(new MLCommand.Ticker());
         new Thread(FetchNameThread.instance = new FetchNameThread()).start();
         new Thread(FetchUUIDThread.instance = new FetchUUIDThread()).start();
 

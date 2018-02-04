@@ -22,10 +22,12 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import org.lwjgl.Sys;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -302,23 +304,21 @@ public class MoneyHandler {
         List<TileEntityCash> alreadyChecked = Lists.newArrayList();
 
         for (Estate estate : EstateHandler.getEstates(playerID)) {
-            Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
-            Vec3 max = Vec3.createVectorHelper(estate.getBounds().maxX, estate.getBounds().maxY, estate.getBounds().maxZ);
-            AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord);
+            AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ,
+                    estate.getBounds().maxX, estate.getBounds().maxY, estate.getBounds().maxZ);
 
-            for (int x = (int) min.xCoord; x <= (int) max.xCoord + 16; x += 16) {
-                for (int z = (int) min.zCoord; z <= (int) max.zCoord + 16; z += 16) {
-                    Iterator<TileEntity> iterator = estate.getWorld().getChunkFromBlockCoords(x, z).chunkTileEntityMap.values().iterator();
+            try {
+                ResultSet result = Minelife.SQLITE.query("SELECT * FROM cash_blocks WHERE x >= " + bounds.minX + " AND x <= " + bounds.maxX + "" +
+                        " AND y >= " + bounds.minY + " AND y <= " + bounds.maxY + " AND z >= " + bounds.minZ + " AND z <= " + bounds.maxZ + "" +
+                " AND dimension='" + estate.getWorld().provider.dimensionId + "'");
 
-                    while (iterator.hasNext()) {
-                        TileEntity te = iterator.next();
-                        if (te instanceof TileEntityCash) {
-                            if (!alreadyChecked.contains(te) && bounds.isVecInside(Vec3.createVectorHelper(te.xCoord, te.yCoord, te.zCoord))) {
-                                alreadyChecked.add((TileEntityCash) te);
-                            }
-                        }
-                    }
+                while(result.next()) {
+                    TileEntity tileEntity = estate.getWorld().getTileEntity(result.getInt("x"), result.getInt("y"), result.getInt("z"));
+                    if(tileEntity != null && tileEntity instanceof TileEntityCash)
+                        alreadyChecked.add((TileEntityCash) tileEntity);
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
 

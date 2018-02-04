@@ -2,6 +2,7 @@ package com.minelife.economy.cash;
 
 import buildcraft.core.lib.inventory.SimpleInventory;
 import codechicken.lib.inventory.InventoryUtils;
+import com.minelife.Minelife;
 import com.minelife.economy.ItemMoney;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -12,6 +13,9 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class TileEntityCash extends TileEntity implements IInventory {
 
@@ -53,8 +57,20 @@ public class TileEntityCash extends TileEntity implements IInventory {
     }
 
     public void Sync() {
-        this.getWorldObj().markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
-        this.markDirty();
+        if(!worldObj.isRemote) {
+            this.getWorldObj().markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
+            this.markDirty();
+            try {
+                ResultSet result = Minelife.SQLITE.query("SELECT * FROM cash_blocks WHERE x='" + xCoord + "' AND y='" + yCoord + "' AND z='" + zCoord + "' AND dimension='" + worldObj.provider.dimensionId + "'");
+                if (!result.next()) {
+                    Minelife.SQLITE.query("INSERT INTO cash_blocks (x, y, z, dimension) VALUES ('" + xCoord + "', '" + yCoord + "', '" + zCoord + "', '" + worldObj.provider.dimensionId + "')");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            if (getHoldings() == 0) worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+        }
     }
 
 
