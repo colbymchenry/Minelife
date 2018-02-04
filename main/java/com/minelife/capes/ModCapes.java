@@ -17,7 +17,6 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class ModCapes extends MLMod {
 
-    // TODO: Add a recipe for the cape. Also make it to where if you have a blank cape and a cape with a design it creates duplicates of that design
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         registerPacket(PacketCreateGui.Handler.class, PacketCreateGui.class, Side.CLIENT);
