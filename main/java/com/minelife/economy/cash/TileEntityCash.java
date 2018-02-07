@@ -68,8 +68,6 @@ public class TileEntityCash extends TileEntity implements IInventory {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
-            if (getHoldings() == 0) worldObj.setBlockToAir(xCoord, yCoord, zCoord);
         }
     }
 

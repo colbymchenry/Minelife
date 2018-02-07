@@ -116,7 +116,7 @@ public class MoneyHandler {
             attemptCount++;
         }
 
-        if (couldNotAdd > 0) depositATM(player.getUniqueID(), couldNotAdd);
+//        if (couldNotAdd > 0) depositATM(player.getUniqueID(), couldNotAdd);
         return couldNotAdd;
     }
 
@@ -160,7 +160,7 @@ public class MoneyHandler {
             }
         }
 
-        if(couldNotAdd > 0) depositATM(player.getUniqueID(), couldNotAdd);
+//        if(couldNotAdd > 0) depositATM(player.getUniqueID(), couldNotAdd);
         return couldNotAdd;
     }
 
@@ -190,9 +190,11 @@ public class MoneyHandler {
             if (amount <= 0) break;
         }
 
-        if(couldNotAdd > 0) depositATM(playerUUID, couldNotAdd);
+//        if(couldNotAdd > 0) depositATM(playerUUID, couldNotAdd);
         return couldNotAdd;
     }
+
+    // TODO: Fix weird 40 second hang.
 
     // TODO: Need to test this
     @SideOnly(Side.SERVER)
@@ -201,7 +203,6 @@ public class MoneyHandler {
 
         int couldNotAdd = 0;
         for (TileEntityCash cashBlock : cashBlocks) {
-            // first add to player's inventory
             Map<Integer, ItemStack> moneyStacks = getMoneyStacks(cashBlock);
             moneyStacks.forEach((slot, stack) -> cashBlock.setInventorySlotContents(slot, null));
             int toAdd = amount;
@@ -214,7 +215,7 @@ public class MoneyHandler {
             amount = couldNotAdd;
         }
 
-        if (couldNotAdd > 0) depositATM(playerUUID, couldNotAdd);
+//        if (couldNotAdd > 0) depositATM(playerUUID, couldNotAdd);
         return couldNotAdd;
     }
 
@@ -326,6 +327,7 @@ public class MoneyHandler {
         return alreadyChecked;
     }
 
+    // TODO: We just use the ATM for the welfare
     public static void depositATM(UUID player, int amount) throws SQLException {
         Minelife.SQLITE.query("UPDATE economy SET amount='" + (getBalanceATM(player) + amount) + "' WHERE player='" + player.toString() + "'");
     }
@@ -334,9 +336,15 @@ public class MoneyHandler {
         Minelife.SQLITE.query("UPDATE economy SET amount='" + (getBalanceATM(player) - amount) + "' WHERE player='" + player.toString() + "'");
     }
 
-    public static int getBalanceATM(UUID player) throws SQLException {
-        ResultSet result = Minelife.SQLITE.query("SELECT * FROM economy WHERE player='" + player.toString() + "'");
-        return result.next() ? result.getInt("amount") : 0;
+    public static int getBalanceATM(UUID player) {
+        ResultSet result = null;
+        try {
+            result = Minelife.SQLITE.query("SELECT * FROM economy WHERE player='" + player.toString() + "'");
+            return result.next() ? result.getInt("amount") : 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public static void setATM(UUID player, int amount) throws SQLException {

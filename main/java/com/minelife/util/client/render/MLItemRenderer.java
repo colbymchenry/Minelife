@@ -38,7 +38,7 @@ public class MLItemRenderer {
         this.zLevel = 0F;
     }
 
-    public void attempt_gl_reset()
+    public static void attempt_gl_reset()
     {
         GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glEnable(GL11.GL_DEPTH_TEST);

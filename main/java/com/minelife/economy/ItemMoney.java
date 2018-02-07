@@ -64,7 +64,6 @@ public class ItemMoney extends Item {
                 break;
         }
 
-        // TODO: There is an odd hanging every couple of 45 seconds, need to figure that out.
         world.setBlock(x, y, z, MLBlocks.cash);
         TileEntityCash tileEntityCash = (TileEntityCash) world.getTileEntity(x, y, z);
         int newStackSize = tileEntityCash.addCash(stack);

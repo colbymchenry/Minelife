@@ -65,8 +65,6 @@ public class GuiSightDropDown extends GuiDropDown {
         }
         GL11.glPopMatrix();
 
-        // TODO: Draw colors for options.
-
         int slot = (int) optionsMap.keySet().toArray()[selected];
         if(slot == -1) {
             int[] colors = ItemSight.getSightColor(ItemGun.getSight(Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(Minecraft.getMinecraft().thePlayer.inventory.currentItem)));
@@ -83,12 +81,13 @@ public class GuiSightDropDown extends GuiDropDown {
                 if (i != selected) {
                     y += mc.fontRenderer.FONT_HEIGHT + 5;
                     boolean hovering = mouse_x >= xPosition && mouse_x <= xPosition + width && mouse_y >= y && mouse_y <= y + mc.fontRenderer.FONT_HEIGHT;
+
                     if (hovering)
                         drawRect(xPosition, y - 3, xPosition + width, y + mc.fontRenderer.FONT_HEIGHT + 2, color_highlight.hashCode());
 
                     slot = (int) optionsMap.keySet().toArray()[i];
                     if(slot > -1) {
-                        int[] colors = ItemSight.getSightColor(ItemGun.getSight(Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(slot)));
+                        int[] colors = ItemSight.getSightColor(Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(slot));
                         mc.fontRenderer.drawString((String) optionsMap.values().toArray()[i], xPosition + 2, y, (colors[0] << 16 | colors[1] << 8 | colors[2]));
                     } else {
                         mc.fontRenderer.drawString((String) optionsMap.values().toArray()[i], xPosition + 2, y, 0xFFFFFF);

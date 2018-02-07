@@ -4,6 +4,7 @@ import com.minelife.MLItems;
 import com.minelife.MLProxy;
 import com.minelife.MLBlocks;
 import com.minelife.economy.TileEntityATM;
+import com.minelife.economy.cash.RenderCashBlockItem;
 import com.minelife.economy.cash.TileEntityCash;
 import com.minelife.economy.cash.TileEntityCashRenderer;
 import com.minelife.economy.client.wallet.ItemWalletRenderer;
@@ -23,8 +24,6 @@ public class ClientProxy extends MLProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCash.class, new TileEntityCashRenderer());
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(MLBlocks.atm), new RenderATMItem());
         MinecraftForgeClient.registerItemRenderer(MLItems.wallet, new ItemWalletRenderer());
-
-        MinecraftForge.EVENT_BUS.register(new OnScreenRenderer());
-        FMLCommonHandler.instance().bus().register(new OnScreenRenderer());
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(MLBlocks.cash), new RenderCashBlockItem());
     }
 }

@@ -12,6 +12,8 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 
 import java.sql.ResultSet;
@@ -43,6 +45,8 @@ public class ModEconomy extends MLMod {
         registerPacket(Billing.PacketPayBill.Handler.class, Billing.PacketPayBill.class, Side.SERVER);
 
         ItemWallet.registerRecipes();
+
+        GameRegistry.addShapedRecipe(new ItemStack(MLBlocks.cash), "SSS", 'S', Items.stick);
     }
 
     @Override

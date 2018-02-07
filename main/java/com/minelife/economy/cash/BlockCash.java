@@ -3,6 +3,7 @@ package com.minelife.economy.cash;
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.lib.vec.Vector3;
 import com.google.common.collect.Lists;
+import com.minelife.MLBlocks;
 import com.minelife.MLItems;
 import com.minelife.Minelife;
 import com.minelife.economy.ItemMoney;
@@ -14,10 +15,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -79,10 +84,22 @@ public class BlockCash extends BlockContainer {
     }
 
     @Override
+    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase placer, ItemStack stack) {
+        if(world.isRemote) return;
+
+        int l = MathHelper.floor_double((double) (placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+
+        if(world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileEntityCash) {
+            TileEntityCash tileEntityCash = (TileEntityCash) world.getTileEntity(x, y, z);
+            tileEntityCash.setFacing(l == 0 ? EnumFacing.NORTH : l == 1 ? EnumFacing.EAST : l == 2 ? EnumFacing.SOUTH : EnumFacing.WEST);
+        }
+    }
+
+    @Override
     public void breakBlock(World world, int x, int y, int z, Block p_149749_5_, int p_149749_6_) {
         if(world.isRemote) return;
 
-        Vector3 vec3 = new Vector3(x, y, z);
+        Vector3 vec3 = new Vector3(x, y + 0.25, z);
         if (world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileEntityCash) {
             TileEntityCash tileCash = (TileEntityCash) world.getTileEntity(x, y, z);
             List<ItemStack> cashStacks = Lists.newArrayList();
@@ -97,6 +114,8 @@ public class BlockCash extends BlockContainer {
             }
         }
 
+        InventoryUtils.dropItem(new ItemStack(MLBlocks.cash), world, vec3);
+
         try {
             Minelife.SQLITE.query("DELETE FROM cash_blocks WHERE x='" + x + "' AND y='" + y + "' AND z='" + z + "' AND dimension='" + world.provider.dimensionId + "'");
         } catch (SQLException e) {
@@ -108,7 +127,6 @@ public class BlockCash extends BlockContainer {
     public void registerBlockIcons(IIconRegister iconRegister) {
         icon = iconRegister.registerIcon(Minelife.MOD_ID + ":cash_100");
     }
-
 
     @Override
     public IIcon getIcon(int p_149691_1_, int p_149691_2_) {

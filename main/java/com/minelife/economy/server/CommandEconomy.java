@@ -37,7 +37,7 @@ public class CommandEconomy extends MLCommand {
     @Override
     public String getCommandUsage(ICommandSender sender) {
         String commandUsage =
-                        "/economy balance <player>\n" +
+                "/economy balance <player> <vault|atm>\n" +
                         "/economy set <player> <amount>\n" +
                         "/economy withdraw <player> <amount>\n" +
                         "/economy deposit <player> <amount>\n" +
@@ -73,11 +73,10 @@ public class CommandEconomy extends MLCommand {
 
     @Override
     public boolean isUsernameIndex(String[] args, int index) {
-        if(args[0].equalsIgnoreCase("get")) return false;
+        if (args[0].equalsIgnoreCase("get")) return false;
         return index == 1;
     }
 
-    // TODO: Can't be multithreaded when getting balance. Needs to be on main server world thread
     @Override
     public synchronized void execute(ICommandSender sender, String[] args) {
         try {
@@ -125,7 +124,7 @@ public class CommandEconomy extends MLCommand {
             int amount = 0;
 
             if (cmd.equalsIgnoreCase("balance")) {
-                if (args.length != 2) {
+                if (args.length != 3) {
                     getCommandUsage(sender);
                     return;
                 }
@@ -155,11 +154,16 @@ public class CommandEconomy extends MLCommand {
 
             switch (cmd.toLowerCase()) {
                 case "balance": {
-                    // TODO: Make a method to get all balances together
                     scheduledTasks.add(new Runnable() {
                         @Override
                         public void run() {
-                            sender.addChatMessage(new ChatComponentText("$" + NumberConversions.formatter.format(MoneyHandler.getBalanceVault(playerUUID))));
+                            if (args[2].equalsIgnoreCase("vault"))
+                                sender.addChatMessage(new ChatComponentText("$" + NumberConversions.formatter.format(MoneyHandler.getBalanceVault(playerUUID))));
+                            else if(args[2].equalsIgnoreCase("atm"))
+                                sender.addChatMessage(new ChatComponentText("$" + NumberConversions.formatter.format(MoneyHandler.getBalanceATM(playerUUID))));
+                            else
+                                getCommandUsage(sender);
+
                         }
                     });
                     return;
@@ -180,48 +184,48 @@ public class CommandEconomy extends MLCommand {
                     return;
                 }
                 case "take": {
-                    if(targetPlayer == null) {
+                    if (targetPlayer == null) {
                         MoneyHandler.takeMoneyVault(playerUUID, amount);
                     } else {
                         int couldNotAdd = MoneyHandler.takeMoneyInventory(targetPlayer, amount);
                         targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + amount + " was taken from your account."));
-                        if(couldNotAdd > 0) {
+                        if (couldNotAdd > 0) {
                             targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + couldNotAdd + " would not fit in your inventory so it was deposited into your checking account."));
                         }
                     }
                     return;
                 }
                 case "give": {
-                    if(targetPlayer == null) {
+                    if (targetPlayer == null) {
                         MoneyHandler.addMoneyVault(playerUUID, amount);
                     } else {
                         int couldNotAdd = MoneyHandler.addMoneyInventory(targetPlayer, amount);
                         targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "You were given $" + amount));
-                        if(couldNotAdd > 0) {
+                        if (couldNotAdd > 0) {
                             targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "$" + couldNotAdd + " would not fit in your inventory so it was deposited into your checking account."));
                         }
                     }
                     return;
                 }
                 case "addvault": {
-                    if(targetPlayer == null) {
+                    if (targetPlayer == null) {
                         MoneyHandler.addMoneyVault(playerUUID, amount);
                     } else {
                         int couldNotAdd = MoneyHandler.addMoneyVault(targetPlayer, amount);
                         targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "$" + amount + " was added to your vault!"));
-                        if(couldNotAdd > 0) {
+                        if (couldNotAdd > 0) {
                             targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "$" + couldNotAdd + " would not fit in your vault so it was deposited into your checking account."));
                         }
                     }
                     return;
                 }
                 case "takevault": {
-                    if(targetPlayer == null) {
+                    if (targetPlayer == null) {
                         MoneyHandler.takeMoneyVault(playerUUID, amount);
                     } else {
                         int couldNotAdd = MoneyHandler.takeMoneyVault(targetPlayer, amount);
                         targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + amount + " was taken from your vault."));
-                        if(couldNotAdd > 0) {
+                        if (couldNotAdd > 0) {
                             targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + couldNotAdd + " would not fit in your vault so it was deposited into your checking account."));
                         }
                     }
@@ -232,7 +236,7 @@ public class CommandEconomy extends MLCommand {
                     return;
                 }
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

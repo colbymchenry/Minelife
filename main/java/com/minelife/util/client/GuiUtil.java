@@ -1,5 +1,6 @@
 package com.minelife.util.client;
 
+import com.minelife.util.client.render.MLItemRenderer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
@@ -452,20 +453,24 @@ public class GuiUtil {
             }
 
             mc.getTextureManager().bindTexture(mc.getTextureManager().getResourceLocation(item.getItemSpriteNumber()));
-            TextureUtil.func_152777_a(false, false, 1.0F);
+            // had to comment this out, was causing weird rendering bugs
+//            TextureUtil.func_152777_a(false, false, 1.0F);
             Tessellator tessellator = Tessellator.instance;
             float min_x = iicon.getMinU();
             float max_x = iicon.getMaxU();
             float min_y = iicon.getMinV();
             float max_y = iicon.getMaxV();
-            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+            // rescale caused weird lighting bugs
+//            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             GL11.glTranslatef(-0.5f, 0f, 0.0F);
             float scale = 0.9F;
             GL11.glScalef(scale, scale, scale);
             ItemRenderer.renderItemIn2D(tessellator, max_x, min_y, min_x, max_y, iicon.getIconWidth(), iicon.getIconHeight(), 0.0625F);
-            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+//            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         }
         GL11.glPopMatrix();
+
+//        MLItemRenderer.attempt_gl_reset();
     }
 
 }
