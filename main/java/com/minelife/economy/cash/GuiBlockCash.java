@@ -19,7 +19,7 @@ public class GuiBlockCash extends GuiContainer {
         this.TileCash = TileCash;
         this.xSize = 176;
 
-        int inventoryRows = TileCash.getSizeInventory() / 9;
+        int inventoryRows = TileCash.getInventory().getSizeInventory() / 9;
         this.ySize = 114 + inventoryRows * 18;
     }
 

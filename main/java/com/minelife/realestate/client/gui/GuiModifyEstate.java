@@ -305,6 +305,9 @@ public class GuiModifyEstate extends GuiScreen {
                 if (rentField.isFocused()) {
                     rentField.textboxKeyTyped(keycode, keynum);
                 }
+                if (periodField.isFocused()) {
+                    periodField.textboxKeyTyped(keycode, keynum);
+                }
 
                 if (keynum == Keyboard.KEY_BACK)
                     periodField.textboxKeyTyped(keycode, keynum);

@@ -62,17 +62,17 @@ public class PacketPurchaseEstate implements IMessage {
                     return null;
                 }
 
-                int playerBalance = MoneyHandler.getBalanceInventory(player);
+                int playerBalance = MoneyHandler.getBalanceVault(player);
 
                 if ((message.renting && playerBalance < estate.getRentPrice()) ||
                         (!message.renting && playerBalance < estate.getPurchasePrice())) {
-                    Minelife.NETWORK.sendTo(new PacketPopupMessage("Insufficient funds", 0xC6C6C6), player);
+                    Minelife.NETWORK.sendTo(new PacketPopupMessage("Insufficient funds. Add more to your cash piles in your estates.", 0xC6C6C6), player);
                     return null;
                 }
 
                 if (message.renting) {
                     if(playerBalance < estate.getRentPrice()) {
-                        Minelife.NETWORK.sendTo(new PacketPopupMessage("Insufficient funds", 0xC6C6C6), player);
+                        Minelife.NETWORK.sendTo(new PacketPopupMessage("Insufficient funds. Add more to your cash piles in your estates.", 0xC6C6C6), player);
                         return null;
                     }
                     estate.setRenter(player.getUniqueID());
@@ -80,12 +80,14 @@ public class PacketPurchaseEstate implements IMessage {
                     billHandler.estateID = estate.getID();
                     Billing.createBill(estate.getRentPeriod(), estate.getRentPrice(), player.getUniqueID(),
                             "Estate Rent: #" + estate.getID(), true, billHandler);
-                    MoneyHandler.takeMoneyInventory(player, estate.getRentPrice());
+                    MoneyHandler.takeMoneyVault(player, estate.getRentPrice());
                     MoneyHandler.addMoneyVault(estate.getOwner(), estate.getRentPrice());
                     estate.setBill(billHandler);
+                    player.closeScreen();
                 } else {
-                    MoneyHandler.takeMoneyInventory(player, estate.getPurchasePrice());
+                    MoneyHandler.takeMoneyVault(player, estate.getPurchasePrice());
                     MoneyHandler.addMoneyVault(estate.getOwner(), estate.getPurchasePrice());
+                    player.closeScreen();
                 }
 
                 PaymentNotification notification = new PaymentNotification(estate.getOwner(), message.renting ? estate.getRentPrice() : estate.getPurchasePrice(), estate.getID(), message.renting);

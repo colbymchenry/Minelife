@@ -17,7 +17,7 @@ import net.minecraft.util.EnumFacing;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class TileEntityCash extends TileEntity implements IInventory {
+public class TileEntityCash extends TileEntity {
 
     private SimpleInventory inventory;
     private EnumFacing direction;
@@ -26,8 +26,9 @@ public class TileEntityCash extends TileEntity implements IInventory {
         inventory = new SimpleInventory(54, "cash", 64);
     }
 
+    // just used to ItemMoney
     public int addCash(ItemStack cash) {
-        return InventoryUtils.insertItem(this, cash, false);
+        return InventoryUtils.insertItem(inventory, cash, false);
     }
 
     @Override
@@ -35,6 +36,7 @@ public class TileEntityCash extends TileEntity implements IInventory {
         super.readFromNBT(tagCompound);
         this.inventory.readFromNBT(tagCompound, "Items");
         direction = EnumFacing.valueOf(tagCompound.getString("facing"));
+        System.out.println("CALLED readFromNBT: " + getHoldings());
     }
 
     @Override
@@ -42,6 +44,7 @@ public class TileEntityCash extends TileEntity implements IInventory {
         super.writeToNBT(tagCompound);
         this.inventory.writeToNBT(tagCompound, "Items");
         if (direction != null) tagCompound.setString("facing", direction.name());
+        System.out.println("CALLED writeToNBT: " + getHoldings());
     }
 
     @Override
@@ -72,62 +75,10 @@ public class TileEntityCash extends TileEntity implements IInventory {
     }
 
 
-    @Override
-    public int getSizeInventory() {
-        return inventory.getSizeInventory();
+    public SimpleInventory getInventory() {
+        return inventory;
     }
 
-    @Override
-    public ItemStack getStackInSlot(int p_70301_1_) {
-        return inventory.getStackInSlot(p_70301_1_);
-    }
-
-    @Override
-    public ItemStack decrStackSize(int p_70298_1_, int p_70298_2_) {
-        return inventory.decrStackSize(p_70298_1_, p_70298_2_);
-    }
-
-    @Override
-    public ItemStack getStackInSlotOnClosing(int p_70304_1_) {
-        return inventory.getStackInSlotOnClosing(p_70304_1_);
-    }
-
-    @Override
-    public void setInventorySlotContents(int p_70299_1_, ItemStack p_70299_2_) {
-        inventory.setInventorySlotContents(p_70299_1_, p_70299_2_);
-    }
-
-    @Override
-    public String getInventoryName() {
-        return inventory.getInventoryName();
-    }
-
-    @Override
-    public boolean hasCustomInventoryName() {
-        return false;
-    }
-
-    @Override
-    public int getInventoryStackLimit() {
-        return inventory.getInventoryStackLimit();
-    }
-
-    @Override
-    public boolean isUseableByPlayer(EntityPlayer p_70300_1_) {
-        return true;
-    }
-
-    @Override
-    public void openInventory() {
-
-    }
-
-    @Override
-    public void closeInventory() {
-
-    }
-
-    @Override
     public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
         return p_94041_2_ != null && p_94041_2_.getItem() instanceof ItemMoney;
     }
@@ -143,12 +94,13 @@ public class TileEntityCash extends TileEntity implements IInventory {
 
     public int getHoldings() {
         int total = 0;
-        for (int i = 0; i < getSizeInventory(); i++) {
-            if (getStackInSlot(i) != null) {
-                total += (((ItemMoney) getStackInSlot(i).getItem())).amount * getStackInSlot(i).stackSize;
+        for (int i = 0; i < getInventory().getSizeInventory(); i++) {
+            if (getInventory().getStackInSlot(i) != null) {
+                total += (((ItemMoney) getInventory().getStackInSlot(i).getItem())).amount * getInventory().getStackInSlot(i).stackSize;
             }
         }
 
         return total;
     }
+
 }

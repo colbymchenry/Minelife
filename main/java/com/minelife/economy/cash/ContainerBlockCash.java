@@ -12,11 +12,11 @@ public class ContainerBlockCash  extends BuildCraftContainer {
     private TileEntityCash TileCash;
 
     public ContainerBlockCash(InventoryPlayer PlayerInventory, TileEntityCash TileCash) {
-        super(TileCash.getSizeInventory());
+        super(TileCash.getInventory().getSizeInventory());
         this.PlayerInventory = PlayerInventory;
         this.TileCash = TileCash;
 
-        int numRows = TileCash.getSizeInventory() / 9;
+        int numRows = TileCash.getInventory().getSizeInventory() / 9;
         int i = (numRows - 4) * 18;
         int j;
         int k;
@@ -25,7 +25,7 @@ public class ContainerBlockCash  extends BuildCraftContainer {
         {
             for (k = 0; k < 9; ++k)
             {
-                this.addSlotToContainer(new SlotCash(TileCash, k + j * 9, 8 + k * 18, 18 + j * 18));
+                this.addSlotToContainer(new SlotCash(TileCash.getInventory(), k + j * 9, 8 + k * 18, 18 + j * 18));
             }
         }
 
@@ -47,6 +47,8 @@ public class ContainerBlockCash  extends BuildCraftContainer {
     public boolean canInteractWith(EntityPlayer p_75145_1_) {
         return true;
     }
+
+    // TODO: Cash block not updating when removing the cash. We are testing this buy renting an estate.
 
     @Override
     protected boolean mergeItemStack(ItemStack p_75135_1_, int p_75135_2_, int p_75135_3_, boolean p_75135_4_) {

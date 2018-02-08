@@ -32,8 +32,8 @@ public class TileEntityCashRenderer extends TileEntitySpecialRenderer {
 
         TileEntityCash TileCash = (TileEntityCash) tileEntity;
         double xOffset = 0, yOffset = 0, zOffset = 0;
-        for (int i = 0; i < TileCash.getSizeInventory(); i++) {
-            if (TileCash.getStackInSlot(i) != null) {
+        for (int i = 0; i < TileCash.getInventory().getSizeInventory(); i++) {
+            if (TileCash.getInventory().getStackInSlot(i) != null) {
                 GL11.glPushMatrix();
                 {
 
@@ -53,7 +53,7 @@ public class TileEntityCashRenderer extends TileEntitySpecialRenderer {
                         }
                     }
 
-                    GuiUtil.render_item_in_world(Minecraft.getMinecraft(), TileCash.getStackInSlot(i));
+                    GuiUtil.render_item_in_world(Minecraft.getMinecraft(), TileCash.getInventory().getStackInSlot(i));
                 }
                 GL11.glPopMatrix();
             }

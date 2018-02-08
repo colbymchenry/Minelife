@@ -103,8 +103,8 @@ public class BlockCash extends BlockContainer {
         if (world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileEntityCash) {
             TileEntityCash tileCash = (TileEntityCash) world.getTileEntity(x, y, z);
             List<ItemStack> cashStacks = Lists.newArrayList();
-            for (int i = 0; i < tileCash.getSizeInventory(); i++) {
-                if (tileCash.getStackInSlot(i) != null) cashStacks.add(tileCash.getStackInSlot(i));
+            for (int i = 0; i < tileCash.getInventory().getSizeInventory(); i++) {
+                if (tileCash.getInventory().getStackInSlot(i) != null) cashStacks.add(tileCash.getInventory().getStackInSlot(i));
             }
 
             if(!cashStacks.isEmpty()) {

@@ -25,6 +25,10 @@ public class RentBillHandler extends BillHandler {
     public void update() {
         Estate estate = EstateHandler.getEstate(estateID);
         if(estate == null) bill.delete();
+        else {
+            if(estate.getRenter() == null) bill.delete();
+            else if (!estate.getRenter().equals(bill.getPlayer())) bill.delete();
+        }
     }
 
     @Override

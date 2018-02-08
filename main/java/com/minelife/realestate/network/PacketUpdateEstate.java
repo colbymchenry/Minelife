@@ -2,11 +2,9 @@ package com.minelife.realestate.network;
 
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
+import com.minelife.economy.Billing;
 import com.minelife.permission.ModPermission;
-import com.minelife.realestate.Estate;
-import com.minelife.realestate.EstateData;
-import com.minelife.realestate.EstateHandler;
-import com.minelife.realestate.Permission;
+import com.minelife.realestate.*;
 import com.minelife.util.client.PacketPopupMessage;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -18,6 +16,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -68,6 +67,21 @@ public class PacketUpdateEstate implements IMessage {
             // if player has permission to rent the estate, set the rent price
             if (Objects.equals(estate.getOwner(), player.getUniqueID())) {
                 estate.setRentPrice(estateData.getRentPrice());
+
+                // remove renter
+                if(estate.getRentPrice() < 1) {
+                    if(estate.getRenter() != null) {
+                        List<Billing.Bill> bills = Billing.getBillsForPlayer(estate.getRenter());
+                        for (Billing.Bill bill : bills) {
+                            if(bill.getBillHandler() instanceof RentBillHandler) {
+                                RentBillHandler rentBillHandler = (RentBillHandler) bill.getBillHandler();
+                                if(rentBillHandler.estateID == estate.getID()) rentBillHandler.bill.delete();
+                            }
+                        }
+                    }
+                    estate.setRenter(null);
+                }
+
             }
 
             // if player has permission to modify the rent period, set the rent period

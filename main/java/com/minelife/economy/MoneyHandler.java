@@ -181,12 +181,15 @@ public class MoneyHandler {
         int couldNotAdd = 0;
 
         for (TileEntityCash cashBlock : cashBlocks) {
-            int[] attempt = takeMoney(cashBlock, amount);
+            int[] attempt = takeMoney(cashBlock.getInventory(), amount);
             int couldTakeAttempt = attempt[0];
             int couldNotAddAttempt = attempt[1];
 
             couldNotAdd += couldNotAddAttempt;
             amount -= couldTakeAttempt;
+
+            cashBlock.Sync();
+
             if (amount <= 0) break;
         }
 
@@ -203,16 +206,18 @@ public class MoneyHandler {
 
         int couldNotAdd = 0;
         for (TileEntityCash cashBlock : cashBlocks) {
-            Map<Integer, ItemStack> moneyStacks = getMoneyStacks(cashBlock);
-            moneyStacks.forEach((slot, stack) -> cashBlock.setInventorySlotContents(slot, null));
+            Map<Integer, ItemStack> moneyStacks = getMoneyStacks(cashBlock.getInventory());
+            moneyStacks.forEach((slot, stack) -> cashBlock.getInventory().setInventorySlotContents(slot, null));
             int toAdd = amount;
             for (ItemStack itemStack : moneyStacks.values()) toAdd += getAmount(itemStack);
 
             List<ItemStack> stacksToInsert = ItemMoney.getDrops(toAdd);
             for (ItemStack stack : stacksToInsert)
-                couldNotAdd += InventoryUtils.insertItem(cashBlock, stack, false) * ((ItemMoney) stack.getItem()).amount;
+                couldNotAdd += InventoryUtils.insertItem(cashBlock.getInventory(), stack, false) * ((ItemMoney) stack.getItem()).amount;
 
             amount = couldNotAdd;
+
+            cashBlock.Sync();
         }
 
 //        if (couldNotAdd > 0) depositATM(playerUUID, couldNotAdd);
