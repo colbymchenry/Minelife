@@ -60,6 +60,7 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         inventory = new SimpleInventory(54, "Turret", 64);
     }
 
+    // TODO: Work on Turrets with gangs and what not, needs to be polished
     @Override
     public void updateEntity() {
 

@@ -30,6 +30,7 @@ item.2x_sight.name=2X Sight
 item.acog_sight.name=ACOG Sight
 itemGroup.guns=Guns
 itemGroup.ammo=Ammo
+tile.turret.name=Turret
 # Drugs Mod
 tile.drying_rack.name=Drying Rack
 tile.leaf_mulcher.name=Leaf Mulcher

@@ -333,7 +333,6 @@ public class MoneyHandler {
         return alreadyChecked;
     }
 
-    // TODO: We just use the ATM for the welfare
     public static void depositATM(UUID player, int amount) throws SQLException {
         Minelife.SQLITE.query("UPDATE economy SET amount='" + (getBalanceATM(player) + amount) + "' WHERE player='" + player.toString() + "'");
     }

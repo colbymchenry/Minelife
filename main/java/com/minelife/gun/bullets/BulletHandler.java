@@ -6,12 +6,14 @@ import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.server.BulletHitEvent;
 import com.minelife.gun.turrets.TileEntityTurret;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.Vector;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
@@ -127,6 +129,7 @@ public class BulletHandler {
 
                         if (shotEvent.isCanceled()) return;
 
+                        if(e instanceof EntityPlayerMP && ((EntityPlayerMP) e).theItemInWorldManager.isCreative()) return;
 
                         int damage = bullet.shooter == null ? 10 : ((ItemGun) bullet.shooter.getHeldItem().getItem()).getDamage();
 //                    e.attackEntityFrom(DamageSource.causeMobDamage(bullet.shooter), damage);
