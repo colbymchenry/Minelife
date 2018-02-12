@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 
-
+// TODO: Add Copy & Paste buttons
 public class GuiTurret extends GuiContainer implements IGangNameReceiver {
 
     private TileEntityTurret TileTurret;

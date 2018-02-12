@@ -1,7 +1,6 @@
 package com.minelife.gun.turrets;
 
 import buildcraft.core.lib.inventory.SimpleInventory;
-import codechicken.lib.vec.Vector3;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -17,27 +16,24 @@ import com.minelife.realestate.EstateHandler;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.Vector;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,7 +56,6 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         inventory = new SimpleInventory(54, "Turret", 64);
     }
 
-    // TODO: Work on Turrets with gangs and what not, needs to be polished
     @Override
     public void updateEntity() {
 
@@ -113,30 +108,30 @@ public class TileEntityTurret extends TileEntity implements IInventory {
 
         entities.forEach(e -> {
             for (EnumMob enumMob : MobWhiteList) {
-                if(e.getClass().equals(enumMob.getMobClass())) toRemove.add(e);
+                if (e.getClass().equals(enumMob.getMobClass())) toRemove.add(e);
             }
 
-            if(e instanceof EntityPlayer) {
+            if (e instanceof EntityPlayer) {
+                if (((EntityPlayerMP) e).theItemInWorldManager.isCreative()) toRemove.add(e);
+                if (owner != null && owner.equals(e.getUniqueID())) toRemove.add(e);
                 Gang gang = ModGangs.getPlayerGang(e.getUniqueID());
-                if(gang != null && GangWhiteList.contains(gang.getGangID())) toRemove.add(e);
+                if (gang != null && GangWhiteList.contains(gang.getGangID())) toRemove.add(e);
 
-                if(estate != null) {
-                    if(estate.getOwner() !=  null && estate.getOwner().equals(e.getUniqueID())) toRemove.add(e);
-                    if(memberKeys.contains(e.getUniqueID())) toRemove.add(e);
-                    if(ownersKeys.contains(e.getUniqueID())) toRemove.add(e);
+                if (estate != null) {
+                    if (estate.getOwner() != null && estate.getOwner().equals(e.getUniqueID())) toRemove.add(e);
+                    if (memberKeys.contains(e.getUniqueID())) toRemove.add(e);
+                    if (ownersKeys.contains(e.getUniqueID())) toRemove.add(e);
                 }
 
-                if(getOwner() != null && e.getUniqueID().equals(getOwner())) toRemove.add(e);
+                if (getOwner() != null && e.getUniqueID().equals(getOwner())) toRemove.add(e);
             }
 
         });
 
         entities.removeAll(toRemove);
 
-        // TODO: Implement gangs
-
         EntityLivingBase closestEntity = null;
-        double distance = 1000;
+        double distance = MinecraftServer.getServer().getConfigurationManager().getEntityViewDistance();
         for (EntityLivingBase entity : entities) {
             if (Vec3.createVectorHelper(xCoord, yCoord, zCoord).distanceTo(Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ)) < distance) {
                 Vector v = getLookVec(entity);
@@ -146,24 +141,20 @@ public class TileEntityTurret extends TileEntity implements IInventory {
 
                 boolean foundBlock = false;
 
+                blockChecker:
                 for (int i = 0; i < range; i++) {
                     int x = MathHelper.floor_double(origin.xCoord);
                     int y = MathHelper.floor_double(origin.yCoord);
                     int z = MathHelper.floor_double(origin.zCoord);
                     Block block = worldObj.getBlock(x, y, z);
 
-
                     if (entity.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(target)) {
                         break;
                     }
 
                     if (block != Blocks.air && block != MLBlocks.turret && block != MLBlocks.turret.topTurret) {
-                        if (block.getCollisionBoundingBoxFromPool(worldObj, x, y, z) != null) {
-                            if (block.getCollisionBoundingBoxFromPool(worldObj, x, y, z).isVecInside(target)) {
-                                foundBlock = true;
-                                break;
-                            }
-                        }
+                        foundBlock = true;
+                        break blockChecker;
                     }
 
                     origin = origin.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
@@ -173,13 +164,18 @@ public class TileEntityTurret extends TileEntity implements IInventory {
                 if (!foundBlock) {
                     closestEntity = entity;
                     distance = Vec3.createVectorHelper(xCoord, yCoord, zCoord).distanceTo(Vec3.createVectorHelper(entity.posX, entity.posY, entity.posZ));
+                } else {
+                    closestEntity = null;
                 }
             }
         }
 
         if (closestEntity != null) {
-            this.target = closestEntity;
-            this.targetID = closestEntity.getEntityId();
+            if (this.target != closestEntity) {
+                this.target = closestEntity;
+                this.targetID = closestEntity.getEntityId();
+                Sync();
+            }
 
             int slot = (int) getAmmo().keySet().toArray()[0];
             ItemStack stack = getAmmo().get(slot);
@@ -187,16 +183,15 @@ public class TileEntityTurret extends TileEntity implements IInventory {
 
             setInventorySlotContents(slot, stack.stackSize < 1 ? null : stack);
 
-            Sync();
-
             Minelife.NETWORK.sendToAllAround(new PacketBullet(BulletHandler.addBullet(this, ItemAmmo.AmmoType.NORMAL)),
                     new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, MinecraftServer.getServer().getConfigurationManager().getEntityViewDistance()));
         } else {
-            this.target = null;
-            this.targetID = -1;
-            Sync();
+            if (this.target != null) {
+                this.target = null;
+                this.targetID = -1;
+                Sync();
+            }
         }
-
 
 
     }
@@ -220,6 +215,8 @@ public class TileEntityTurret extends TileEntity implements IInventory {
         tagCompound.setString("direction", this.direction.name());
         tagCompound.setInteger("targetID", targetID);
         inventory.writeToNBT(tagCompound, "Items");
+        if (owner != null)
+            tagCompound.setString("owner", owner.toString());
 
         String mobs = "";
         String gangs = "";
@@ -237,6 +234,8 @@ public class TileEntityTurret extends TileEntity implements IInventory {
                 EnumFacing.valueOf(tagCompound.getString("direction")) : EnumFacing.NORTH;
         this.targetID = tagCompound.getInteger("targetID");
         this.inventory.readFromNBT(tagCompound, "Items");
+        if (tagCompound.hasKey("owner"))
+            this.owner = UUID.fromString(tagCompound.getString("owner"));
 
         if (tagCompound.hasKey("MobWhiteList")) {
             MobWhiteList.clear();
@@ -277,8 +276,8 @@ public class TileEntityTurret extends TileEntity implements IInventory {
     public Vector getLookVec() {
         if (target == null) return new Vector(0, 0, 0);
 
-        Vector from = new Vector(xCoord + 0.5, yCoord + 1.5, zCoord + 0.5);
-        Vector to = new Vector(target.posX, target.posY, target.posZ);
+        Vector from = new Vector(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5);
+        Vector to = new Vector(target.posX, target.posY + target.getEyeHeight() - 1, target.posZ);
         Vector vector = to.subtract(from);
         return vector.multiply(0.05);
     }
@@ -286,8 +285,8 @@ public class TileEntityTurret extends TileEntity implements IInventory {
     public Vector getLookVec(EntityLivingBase target) {
         if (target == null) return new Vector(0, 0, 0);
 
-        Vector from = new Vector(xCoord + 0.5, yCoord + 1.5, zCoord + 0.5);
-        Vector to = new Vector(target.posX, target.posY, target.posZ);
+        Vector from = new Vector(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5);
+        Vector to = new Vector(target.posX, target.posY + target.getEyeHeight() - 1, target.posZ);
         Vector vector = to.subtract(from);
         return vector.multiply(0.05);
     }
@@ -396,13 +395,13 @@ public class TileEntityTurret extends TileEntity implements IInventory {
     public boolean HasPermissionToModifySettings(EntityPlayerMP Player) {
         Estate estate = EstateHandler.getEstateAt(worldObj, Vec3.createVectorHelper(xCoord, yCoord, zCoord));
 
-        if(estate != null) {
-            if(estate.getOwner() !=  null && estate.getOwner().equals(Player.getUniqueID())) return true;
-            if(estate.getSurroundingMembers().keySet().contains(Player.getUniqueID())) return true;
-            if(estate.getSurroundingOwners().contains(Player.getUniqueID())) return true;
+        if (estate != null) {
+            if (estate.getOwner() != null && estate.getOwner().equals(Player.getUniqueID())) return true;
+            if (estate.getSurroundingMembers().keySet().contains(Player.getUniqueID())) return true;
+            if (estate.getSurroundingOwners().contains(Player.getUniqueID())) return true;
         }
 
-        if(getOwner() != null && Player.getUniqueID().equals(getOwner())) return true;
+        if (getOwner() != null && Player.getUniqueID().equals(getOwner())) return true;
 
         return false;
     }
