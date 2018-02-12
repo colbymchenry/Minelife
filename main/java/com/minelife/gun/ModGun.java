@@ -30,7 +30,6 @@ public class ModGun extends MLMod {
         }
     };
 
-    // TODO: Turrets
     public static final CreativeTabs tabAmmo = new CreativeTabs("ammo") {
         @Override
         public Item getTabIconItem() {

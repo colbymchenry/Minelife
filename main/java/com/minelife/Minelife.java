@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="required-after:BuildCraft|Transport;required-after:BuildCraft|Energy;required-after:BuildCraft|Core;required-after:BuildCraft|Factory;required-after:IC2;after:WorldEdit")
+@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="required-after:BuildCraft|Transport;required-after:BuildCraft|Energy;required-after:BuildCraft|Core;required-after:BuildCraft|Factory;required-after:IC2;after:WorldEdit;required-after:ComputerCraft")
 public class Minelife {
 
     public static MLConfig config;
@@ -58,6 +58,8 @@ public class Minelife {
     public static ChatClient NETTY_CONNECTION;
 
     private static Side side;
+
+    // TODO: Make tutorials that pay players for completing them
 
     public static final String MOD_ID = "minelife", VERSION = "2017.1", NAME = "Minelife";
 

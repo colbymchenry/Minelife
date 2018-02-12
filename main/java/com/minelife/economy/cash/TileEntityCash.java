@@ -34,9 +34,9 @@ public class TileEntityCash extends TileEntity {
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
+        this.inventory = new SimpleInventory(54, "cash", 64);
         this.inventory.readFromNBT(tagCompound, "Items");
         direction = EnumFacing.valueOf(tagCompound.getString("facing"));
-        System.out.println("CALLED readFromNBT: " + getHoldings());
     }
 
     @Override
@@ -44,7 +44,6 @@ public class TileEntityCash extends TileEntity {
         super.writeToNBT(tagCompound);
         this.inventory.writeToNBT(tagCompound, "Items");
         if (direction != null) tagCompound.setString("facing", direction.name());
-        System.out.println("CALLED writeToNBT: " + getHoldings());
     }
 
     @Override

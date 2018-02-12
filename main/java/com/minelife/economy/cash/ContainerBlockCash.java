@@ -48,15 +48,6 @@ public class ContainerBlockCash  extends BuildCraftContainer {
         return true;
     }
 
-    // TODO: Cash block not updating when removing the cash. We are testing this buy renting an estate.
-
-    @Override
-    protected boolean mergeItemStack(ItemStack p_75135_1_, int p_75135_2_, int p_75135_3_, boolean p_75135_4_) {
-        boolean value = super.mergeItemStack(p_75135_1_, p_75135_2_, p_75135_3_, p_75135_4_);
-        TileCash.Sync();
-        return value;
-    }
-
     @Override
     public void onContainerClosed(EntityPlayer player) {
         TileCash.Sync();

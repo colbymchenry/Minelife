@@ -41,11 +41,16 @@ public class PacketWithdraw implements IMessage {
             try {
                 if (MoneyHandler.getBalanceATM(player.getUniqueID()) < message.amount) throw new CustomMessageException("Insufficient funds.");
 
-                // TODO: Test this to make sure you can't duplicate money
-                MoneyHandler.withdrawATM(player.getUniqueID(), message.amount);
-                MoneyHandler.addMoneyInventory(player, message.amount);
+                int couldNotAdd = MoneyHandler.addMoneyInventory(player, message.amount);
 
-                Minelife.NETWORK.sendTo(new PacketUpdateATMGui("Success."), player);
+                if(couldNotAdd > 0) {
+                    Minelife.NETWORK.sendTo(new PacketUpdateATMGui("Could not withdraw $" + couldNotAdd), player);
+                } else {
+                    Minelife.NETWORK.sendTo(new PacketUpdateATMGui("Success."), player);
+                }
+
+                MoneyHandler.withdrawATM(player.getUniqueID(), message.amount - couldNotAdd);
+
             } catch (CustomMessageException e) {
                 Minelife.NETWORK.sendTo(new PacketUpdateATMGui(e.getMessage()), player);
                 Minelife.NETWORK.sendTo(new PacketPlaySound("gui.atm.error", 0.5F, 1.0F), player);

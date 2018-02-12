@@ -39,8 +39,8 @@ public class ModEconomy extends MLMod {
         registerPacket(PacketDeposit.Handler.class, PacketDeposit.class, Side.SERVER);
         registerPacket(PacketWithdraw.Handler.class, PacketWithdraw.class, Side.SERVER);
         registerPacket(PacketTransferMoney.Handler.class, PacketTransferMoney.class, Side.SERVER);
-        registerPacket(GuiBillPay.PacketRequestBills.Handler.class, GuiBillPay.PacketRequestBills.class, Side.SERVER);
-        registerPacket(GuiBillPay.PacketResponseBills.Handler.class, GuiBillPay.PacketResponseBills.class, Side.CLIENT);
+        registerPacket(PacketRequestBills.Handler.class, PacketRequestBills.class, Side.SERVER);
+        registerPacket(PacketResponseBills.Handler.class, PacketResponseBills.class, Side.CLIENT);
         registerPacket(Billing.PacketModifyBill.Handler.class, Billing.PacketModifyBill.class, Side.SERVER);
         registerPacket(Billing.PacketPayBill.Handler.class, Billing.PacketPayBill.class, Side.SERVER);
 

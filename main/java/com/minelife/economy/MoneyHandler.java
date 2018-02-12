@@ -1,7 +1,9 @@
 package com.minelife.economy;
 
+import codechicken.lib.inventory.InventoryRange;
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.lib.vec.Vector3;
+import cofh.lib.util.helpers.InventoryHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -131,9 +133,11 @@ public class MoneyHandler {
 
         int couldNotAdd = 0;
 
+        InventoryRange inventoryRange = new InventoryRange(player.inventory, 0, 36);
+
         List<ItemStack> stacksToInsert = ItemMoney.getDrops(toAdd);
         for (ItemStack stack : stacksToInsert)
-            couldNotAdd += InventoryUtils.insertItem(player.inventory, stack, false) * ((ItemMoney) stack.getItem()).amount;
+            couldNotAdd += InventoryUtils.insertItem(inventoryRange, stack, false) * ((ItemMoney) stack.getItem()).amount;
 
         amount = couldNotAdd;
         if (couldNotAdd > 0) {
@@ -197,9 +201,6 @@ public class MoneyHandler {
         return couldNotAdd;
     }
 
-    // TODO: Fix weird 40 second hang.
-
-    // TODO: Need to test this
     @SideOnly(Side.SERVER)
     public static int addMoneyVault(UUID playerUUID, int amount) throws SQLException {
         List<TileEntityCash> cashBlocks = getCashBlocks(playerUUID);
