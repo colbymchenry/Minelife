@@ -144,6 +144,7 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         }
     }
 
+    // TODO: add way to remove gangs
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseBtn) {
         super.mouseClicked(mouseX, mouseY, mouseBtn);
@@ -181,7 +182,6 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
                 copied = this;
             }
 
-            //TODO
             if (BtnPaste.mousePressed(mc, mouseX, mouseY) && copied != null) {
                 WhiteListMob = copied.WhiteListMob;
                 BlackListMob = copied.BlackListMob;

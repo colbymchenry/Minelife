@@ -9,6 +9,7 @@ import com.minelife.util.server.MLCommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 
 import java.util.Arrays;
 import java.util.List;
@@ -58,10 +59,10 @@ public class CommandGang extends MLCommand {
                 if(ModGangs.getPlayerGang(((EntityPlayerMP) sender).getUniqueID()) != null) {
                     Minelife.NETWORK.sendTo(new PacketOpenGangGui(ModGangs.getPlayerGang(((EntityPlayerMP) sender).getUniqueID())), (EntityPlayerMP) sender);
                 } else {
-                    sender.addChatMessage(new ChatComponentText("Unknown sub-command. Type /g help for a list of commands."));
+                    sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Type '/g create <name>' to create a gang."));
                 }
             } else {
-                sender.addChatMessage(new ChatComponentText("Unknown sub-command. Type /g help for a list of commands."));
+                sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Only players may perform this command."));
             }
             return;
         }
@@ -69,7 +70,7 @@ public class CommandGang extends MLCommand {
         if(commandMap.containsKey(args[0].toLowerCase())) {
             commandMap.get(args[0].toLowerCase()).execute(sender, args);
         } else {
-            getCommandUsage(sender);
+            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Type /g help for a list of commands."));
         }
     }
 }

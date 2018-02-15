@@ -5,6 +5,7 @@ import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.capes.network.PacketCreateCape;
 import com.minelife.capes.network.PacketCreateGui;
+import com.minelife.gangs.network.PacketInviteToGang;
 import com.minelife.gangs.network.PacketOpenGangGui;
 import com.minelife.gangs.server.CommandGang;
 import com.minelife.realestate.Estate;
@@ -27,6 +28,7 @@ public class ModGangs extends MLMod {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         registerPacket(PacketOpenGangGui.Handler.class, PacketOpenGangGui.class, Side.CLIENT);
+        registerPacket(PacketInviteToGang.Handler.class, PacketInviteToGang.class, Side.SERVER);
     }
 
     @Override

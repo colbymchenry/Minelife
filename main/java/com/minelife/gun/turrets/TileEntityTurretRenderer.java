@@ -53,7 +53,6 @@ public class TileEntityTurretRenderer extends TileEntitySpecialRenderer {
         TileEntityTurret turret = (TileEntityTurret) tileEntity;
 
 
-        // TODO: Turret rendering in hand, and turret viewarea, and turret deciding what to shoot and who to shoot, GUI for choosing who to not shoot, and what gangs to not shoot
         GL11.glPushMatrix();
         {
             GL11.glTranslated(x, y, z + 1);
