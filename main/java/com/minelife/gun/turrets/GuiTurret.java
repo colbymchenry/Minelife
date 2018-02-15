@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 
-// TODO: Add Copy & Paste buttons
 public class GuiTurret extends GuiContainer implements IGangNameReceiver {
 
     private TileEntityTurret TileTurret;
@@ -31,12 +30,14 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
     private ResourceLocation TexInv = new ResourceLocation(Minelife.MOD_ID, "textures/gui/inventory_icon.png");
     private ResourceLocation TexArrow = new ResourceLocation(Minelife.MOD_ID, "textures/gui/arrow.png");
     private boolean editSettings = false;
-    private GuiButton BtnSettings, BtnLeft, BtnRight, BtnAddGang, BtnRemoveGang, BtnUpdate;
+    private GuiButton BtnSettings, BtnLeft, BtnRight, BtnAddGang, BtnRemoveGang, BtnCopy, BtnPaste;
     private GuiTurretScrollList WhiteListMob, BlackListMob, WhiteListGang;
     private GuiTextField TxtFieldWhiteListGang;
     private Set<UUID> GangWhiteListUUIDs = Sets.newTreeSet();
 
     private Color slotColor = new Color(139, 139, 139, 255);
+
+    private static GuiTurret copied = null;
 
     public GuiTurret(InventoryPlayer PlayerInventory, TileEntityTurret TileTurret) {
         super(new ContainerTurret(PlayerInventory, TileTurret));
@@ -67,14 +68,11 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         }
     }
 
-    // TODO: Finish the settings menu
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         String s = "Turret's Ammo Supply";
         this.fontRendererObj.drawString(s, 88 - this.fontRendererObj.getStringWidth(s) / 2, 6, 4210752);
         this.fontRendererObj.drawString("Inventory", 8, 128, 4210752);
-
-
     }
 
     @Override
@@ -126,6 +124,9 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         GL11.glRotatef(90f, 0f, 0f, 1f);
         GuiUtil.drawImage(0, 0, 16, 16);
         GL11.glPopMatrix();
+
+        BtnCopy.drawButton(mc, mouseX, mouseY);
+        BtnPaste.drawButton(mc, mouseX, mouseY);
     }
 
     @Override
@@ -175,6 +176,19 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
                     Minelife.NETWORK.sendToServer(new PacketGetGangName(TxtFieldWhiteListGang.getText(), this));
                 }
             }
+
+            if (BtnCopy.mousePressed(mc, mouseX, mouseY)) {
+                copied = this;
+            }
+
+            //TODO
+            if (BtnPaste.mousePressed(mc, mouseX, mouseY) && copied != null) {
+                WhiteListMob = copied.WhiteListMob;
+                BlackListMob = copied.BlackListMob;
+                GangWhiteListUUIDs.clear();
+                WhiteListGang = copied.WhiteListGang;
+                copied.WhiteListGang.StringList.forEach(gang -> Minelife.NETWORK.sendToServer(new PacketGetGangName(gang, this)));
+            }
         }
     }
 
@@ -182,8 +196,8 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
     public void onGuiClosed() {
         super.onGuiClosed();
         Set<EnumMob> MobWhiteList = Sets.newTreeSet();
-        if(!WhiteListMob.StringList.isEmpty()) WhiteListMob.StringList.forEach(mob -> {
-            if(mob != null) {
+        if (!WhiteListMob.StringList.isEmpty()) WhiteListMob.StringList.forEach(mob -> {
+            if (mob != null) {
                 MobWhiteList.add(EnumMob.valueOf(mob));
             }
         });
@@ -195,7 +209,7 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         super.initGui();
         BtnSettings = new GuiButton(0, this.guiLeft + this.xSize + 2, this.guiTop, 20, 20, "");
 
-        if(BlackListMob == null) {
+        if (BlackListMob == null) {
             Set<EnumMob> MobBlackList = Sets.newTreeSet();
             MobBlackList.addAll(Arrays.asList(EnumMob.values()));
             Set<String> MobWhiteList = Sets.newTreeSet();
@@ -214,13 +228,13 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
             BlackListMob.width = (xSize / 3) + 10;
             BlackListMob.height = ySize / 4;
 
-            WhiteListMob.xPosition =guiLeft + xSize - ((xSize / 3) + 10) - 5;
-            WhiteListMob.yPosition =  BlackListMob.yPosition;
+            WhiteListMob.xPosition = guiLeft + xSize - ((xSize / 3) + 10) - 5;
+            WhiteListMob.yPosition = BlackListMob.yPosition;
             WhiteListMob.width = (xSize / 3) + 10;
             WhiteListMob.height = ySize / 4;
         }
 
-        if(WhiteListGang == null) {
+        if (WhiteListGang == null) {
             String[] gangs = new String[TileTurret.getGangWhiteList().size()];
             for (int i = 0; i < gangs.length; i++) {
                 gangs[i] = "" + TileTurret.getGangWhiteList().toArray()[i];
@@ -244,10 +258,10 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         TxtFieldWhiteListGang = new GuiTextField(fontRendererObj, WhiteListGang.xPosition + WhiteListGang.width + 5, WhiteListGang.yPosition + 5, 60, 20);
         BtnAddGang = new GuiButton(0, TxtFieldWhiteListGang.xPosition, TxtFieldWhiteListGang.yPosition + TxtFieldWhiteListGang.height + 5, 60, 20, "Add Gang");
         BtnAddGang.enabled = false;
+        BtnCopy = new GuiButton(0, guiLeft + xSize + 2, guiTop + 80, 40, 20, "Copy");
+        BtnPaste = new GuiButton(0, guiLeft + xSize + 2, guiTop + 101, 40, 20, "Paste");
+        BtnPaste.enabled = copied != null;
     }
-
-    // TODO: Make item to link turrets together for their settings
-    // TODO: Make it to where they can choose to shoot all players or not, and to only target players of specific gangs
 
     @Override
     public void nameReceived(UUID uuid, String name) {
@@ -270,6 +284,8 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
                 GangWhiteListUUIDs.add(uuid);
             }
         }
+
+        if (!GangWhiteListUUIDs.contains(uuid)) GangWhiteListUUIDs.add(uuid);
     }
 
     @Override
@@ -277,6 +293,7 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         super.updateScreen();
         if (editSettings) {
             BtnAddGang.enabled = !TxtFieldWhiteListGang.getText().isEmpty();
+            BtnPaste.enabled = copied != null;
         }
     }
 }
