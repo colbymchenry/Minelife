@@ -1,6 +1,6 @@
 package com.minelife.gangs.server.commands;
 
-import com.minelife.gangs.server.ICommandHandler;
+import com.minelife.ICommandHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;

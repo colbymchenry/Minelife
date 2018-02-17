@@ -2,7 +2,7 @@ package com.minelife.gangs.server.commands;
 
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.ModGangs;
-import com.minelife.gangs.server.ICommandHandler;
+import com.minelife.ICommandHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;

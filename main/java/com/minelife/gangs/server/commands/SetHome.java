@@ -2,17 +2,14 @@ package com.minelife.gangs.server.commands;
 
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.ModGangs;
-import com.minelife.gangs.server.ICommandHandler;
+import com.minelife.ICommandHandler;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateHandler;
-import com.minelife.realestate.Permission;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
-
-import java.util.Set;
 
 public class SetHome implements ICommandHandler{
 

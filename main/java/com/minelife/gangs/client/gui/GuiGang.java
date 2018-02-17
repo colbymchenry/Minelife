@@ -8,7 +8,7 @@ import java.awt.*;
 
 public class GuiGang extends GuiScreen {
 
-    protected static Color BackgroundColor = new Color(77, 77, 77, 255);
+    public static Color BackgroundColor = new Color(77, 77, 77, 255);
     protected static int Width = 256, Height = 200;
     protected int XPosition, YPosition;
     protected Gang Gang;

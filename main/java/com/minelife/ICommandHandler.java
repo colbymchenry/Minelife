@@ -1,4 +1,4 @@
-package com.minelife.gangs.server;
+package com.minelife;
 
 import net.minecraft.command.ICommandSender;
 

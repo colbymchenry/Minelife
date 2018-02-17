@@ -14,6 +14,8 @@ public class GuiGangMenu extends GuiGang {
         super(gang);
     }
 
+    // TODO: Implement GuiMember.
+
     @Override
     public void drawScreen(int mouse_x, int mouse_y, float f) {
         super.drawScreen(mouse_x, mouse_y, f);
@@ -27,8 +29,6 @@ public class GuiGangMenu extends GuiGang {
                 this.XPosition + 8,
                 this.YPosition + Height - 12, 0xFFFFFF);
         mc.fontRenderer.setUnicodeFlag(false);
-
-
     }
 
     @Override

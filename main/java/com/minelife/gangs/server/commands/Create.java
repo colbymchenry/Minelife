@@ -5,7 +5,7 @@ import com.minelife.util.FireworkBuilder;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.ModGangs;
-import com.minelife.gangs.server.ICommandHandler;
+import com.minelife.ICommandHandler;
 import com.minelife.util.SoundTrack;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityFireworkRocket;

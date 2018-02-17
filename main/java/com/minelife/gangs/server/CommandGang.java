@@ -1,6 +1,7 @@
 package com.minelife.gangs.server;
 
 import com.google.common.collect.Maps;
+import com.minelife.ICommandHandler;
 import com.minelife.Minelife;
 import com.minelife.gangs.ModGangs;
 import com.minelife.gangs.network.PacketOpenGangGui;
