@@ -442,11 +442,9 @@ public class GuiUtil {
         return new int[]{red, green, blue};
     }
 
-    public static void render_item_in_world(Minecraft mc, ItemStack item) {
+    public static void render_item_in_world(Minecraft mc, ItemStack item, IIcon iicon) {
         GL11.glPushMatrix();
         {
-            IIcon iicon = mc.thePlayer.getItemIcon(item, 0);
-
             if (iicon == null) {
                 GL11.glPopMatrix();
                 return;
@@ -471,6 +469,10 @@ public class GuiUtil {
         GL11.glPopMatrix();
 
 //        MLItemRenderer.attempt_gl_reset();
+    }
+
+    public static void render_item_in_world(Minecraft mc, ItemStack item) {
+       render_item_in_world(mc, item, mc.thePlayer.getItemIcon(item, 0));
     }
 
 }

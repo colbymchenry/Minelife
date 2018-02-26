@@ -27,6 +27,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Date;
 
@@ -61,7 +62,7 @@ public class ModDrugs extends MLMod {
         // register recipes
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.calcium_hydroxide), Items.water_bucket, MLItems.calcium_oxide);
         GameRegistry.addSmelting(Item.getItemFromBlock(MLBlocks.limestone), new ItemStack(MLItems.calcium_oxide), 0.3F);
-        GameRegistry.addShapelessRecipe(new ItemStack(MLItems.cannabis_shredded), MLItems.cannabis_buds, MLItems.grinder);
+        GameRegistry.addShapelessRecipe(new ItemStack(MLItems.cannabis_shredded), MLItems.cannabis_buds, new ItemStack(MLItems.grinder, 1, OreDictionary.WILDCARD_VALUE));
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.coca_leaf_shredded), MLItems.grinder, new ItemStack(MLItems.coca_leaf, 1, 0));
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.joint), MLItems.cannabis_shredded, Items.paper);
         // register grinder recipes

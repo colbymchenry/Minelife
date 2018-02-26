@@ -24,5 +24,6 @@ public class ClientProxy extends MLProxy {
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(MLBlocks.cement_mixer), new ItemCementMixerRenderer());
         MinecraftForgeClient.registerItemRenderer(MLItems.coca_leaf, new ItemCocaLeafRenderer());
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(MLBlocks.drying_rack), new ItemDryingRackRenderer());
+        MinecraftForgeClient.registerItemRenderer(MLItems.grinder, new ItemGrinderRenderer());
     }
 }
