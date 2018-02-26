@@ -30,8 +30,6 @@ public class ItemGrinder extends Item {
         setNoRepair();
     }
 
-    // TODO: Get's used immediately, not good. Textures go off damage amount, so may need to do color a different way
-
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item item, CreativeTabs tab, List items_list)
     {

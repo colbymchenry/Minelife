@@ -68,7 +68,6 @@ public class MoneyHandler {
     }
 
     // DONE
-    // TODO: May want to do this one the same way we do the addMoneyInventory
     @SideOnly(Side.SERVER)
     public static int takeMoneyInventory(EntityPlayerMP player, int amount) throws SQLException {
         int couldNotAdd = 0;
