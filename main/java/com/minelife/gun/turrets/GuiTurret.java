@@ -1,5 +1,6 @@
 package com.minelife.gun.turrets;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.gun.packet.PacketGetGangName;
@@ -20,6 +21,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,9 +33,9 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
     private ResourceLocation TexArrow = new ResourceLocation(Minelife.MOD_ID, "textures/gui/arrow.png");
     private boolean editSettings = false;
     private GuiButton BtnSettings, BtnLeft, BtnRight, BtnAddGang, BtnRemoveGang, BtnCopy, BtnPaste;
-    private GuiTurretScrollList WhiteListMob, BlackListMob, WhiteListGang;
+    protected GuiTurretScrollList WhiteListMob, BlackListMob, WhiteListGang;
     private GuiTextField TxtFieldWhiteListGang;
-    private Set<UUID> GangWhiteListUUIDs = Sets.newTreeSet();
+    protected Map<UUID, String> GangWhiteListUUIDs = Maps.newHashMap();
 
     private Color slotColor = new Color(139, 139, 139, 255);
 
@@ -144,7 +146,6 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         }
     }
 
-    // TODO: add way to remove gangs
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseBtn) {
         super.mouseClicked(mouseX, mouseY, mouseBtn);
@@ -201,7 +202,8 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
                 MobWhiteList.add(EnumMob.valueOf(mob));
             }
         });
-        Minelife.NETWORK.sendToServer(new PacketSetTurretSettings(MobWhiteList, GangWhiteListUUIDs, TileTurret.xCoord, TileTurret.yCoord, TileTurret.zCoord));
+
+        Minelife.NETWORK.sendToServer(new PacketSetTurretSettings(MobWhiteList, GangWhiteListUUIDs.keySet(), TileTurret.xCoord, TileTurret.yCoord, TileTurret.zCoord));
     }
 
     @Override
@@ -240,7 +242,14 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
                 gangs[i] = "" + TileTurret.getGangWhiteList().toArray()[i];
             }
 
-            WhiteListGang = new GuiTurretScrollList(mc, guiLeft + 5, BlackListMob.yPosition + BlackListMob.height + 30, (xSize / 2) + 10, ySize / 4, gangs);
+            GuiScreen parentScreen = this;
+
+            WhiteListGang = new GuiTurretScrollList(mc, guiLeft + 5, BlackListMob.yPosition + BlackListMob.height + 30, (xSize / 2) + 10, ySize / 4, gangs) {
+                @Override
+                public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
+                    if(doubleClick) Minecraft.getMinecraft().displayGuiScreen(new GuiRemoveGang(this.StringList.get(index), parentScreen));
+                }
+            };
 
             if (TileTurret.getWorldObj().isRemote)
                 TileTurret.getGangWhiteList().forEach(gangID -> Minelife.NETWORK.sendToServer(new PacketGetGangName(gangID, this)));
@@ -274,18 +283,18 @@ public class GuiTurret extends GuiContainer implements IGangNameReceiver {
         if (name.equalsIgnoreCase(TxtFieldWhiteListGang.getText())) {
             TxtFieldWhiteListGang.setText("");
             WhiteListGang.StringList.add(name);
-            GangWhiteListUUIDs.add(uuid);
+            GangWhiteListUUIDs.put(uuid, name);
             return;
         }
 
         for (int i = 0; i < WhiteListGang.StringList.size(); i++) {
             if (WhiteListGang.StringList.get(i).equals(uuid.toString())) {
                 WhiteListGang.StringList.set(i, name);
-                GangWhiteListUUIDs.add(uuid);
+                GangWhiteListUUIDs.put(uuid, name);
             }
         }
 
-        if (!GangWhiteListUUIDs.contains(uuid)) GangWhiteListUUIDs.add(uuid);
+        if (!GangWhiteListUUIDs.containsKey(uuid)) GangWhiteListUUIDs.put(uuid, name);
     }
 
     @Override
