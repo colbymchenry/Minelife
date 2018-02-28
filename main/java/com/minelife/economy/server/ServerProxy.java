@@ -61,14 +61,4 @@ public class ServerProxy extends MLProxy {
         }
     }
 
-    @SubscribeEvent
-    public void onDeath(LivingDeathEvent event) {
-
-    }
-
-    @SubscribeEvent
-    public void onPick(PlayerEvent.ItemPickupEvent event) {
-
-    }
-
 }
