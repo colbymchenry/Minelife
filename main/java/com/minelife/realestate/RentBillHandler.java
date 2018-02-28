@@ -36,8 +36,12 @@ public class RentBillHandler extends BillHandler {
         Estate estate = EstateHandler.getEstate(estateID);
         try {
             if (estate != null && MoneyHandler.getBalanceVault(estate.getRenter()) >= amount) {
-                MoneyHandler.addMoneyVault(estate.getOwner(), amount);
-                MoneyHandler.takeMoneyVault(estate.getRenter(), amount);
+                int leftOverAdd = MoneyHandler.addMoneyVault(estate.getOwner(), amount);
+                int leftOverTake = MoneyHandler.takeMoneyVault(estate.getRenter(), amount);
+
+                MoneyHandler.depositATM(estate.getOwner(), leftOverAdd);
+                MoneyHandler.depositATM(estate.getRenter(), leftOverTake);
+
                 bill.setAmountDue(bill.getAmountDue() - amount);
                 // send notification to owner for payment
                 PaymentNotification notification = new PaymentNotification(estate.getOwner(), amount, estateID, true);

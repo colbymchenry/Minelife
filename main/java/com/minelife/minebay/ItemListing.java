@@ -18,6 +18,8 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -120,8 +122,15 @@ public class ItemListing extends Listing {
             EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
             entity_item.delayBeforeCanPickup = 0;
 
-            MoneyHandler.takeMoneyVault(player.getUniqueID(), price);
-            MoneyHandler.addMoneyVault(seller(), price);
+            int leftOverTake = MoneyHandler.takeMoneyVault(player.getUniqueID(), price);
+            int leftOverAdd = MoneyHandler.addMoneyVault(seller(), price);
+
+            MoneyHandler.depositATM(player.getUniqueID(), leftOverTake);
+            MoneyHandler.depositATM(seller(), leftOverAdd);
+
+            if(leftOverTake > 0)
+                player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + NumberConversions.formatter.format(leftOverTake) + " was deposited to your checking account because there wasn't enough inventory space."));
+
 
             if(item_stack.stackSize > 0) {
                 write_to_db();

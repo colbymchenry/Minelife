@@ -163,8 +163,14 @@ public class TileEntityShopBlock extends TileEntity {
                 return;
             }
 
-            MoneyHandler.takeMoneyInventory(player, getPrice() * (amount / toSale.stackSize));
-            MoneyHandler.addMoneyVault(getOwner(), getPrice() * (amount / toSale.stackSize));
+            int couldNotTake = MoneyHandler.takeMoneyInventory(player, getPrice() * (amount / toSale.stackSize));
+            int couldNotAdd = MoneyHandler.addMoneyVault(getOwner(), getPrice() * (amount / toSale.stackSize));
+
+            MoneyHandler.depositATM(getOwner(), couldNotAdd);
+            MoneyHandler.depositATM(player.getUniqueID(), couldNotTake);
+
+            if(couldNotTake > 0)
+             player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + NumberConversions.formatter.format(couldNotTake) + " was deposited to your checking account because there wasn't enough inventory space."));
 
             ItemStack toDrop = toSale.copy();
             toDrop.stackSize = amount;

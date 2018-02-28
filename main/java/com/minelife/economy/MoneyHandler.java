@@ -333,10 +333,12 @@ public class MoneyHandler {
     }
 
     public static void depositATM(UUID player, int amount) throws SQLException {
+        if(amount == 0) return;
         Minelife.SQLITE.query("UPDATE economy SET amount='" + (getBalanceATM(player) + amount) + "' WHERE player='" + player.toString() + "'");
     }
 
     public static void withdrawATM(UUID player, int amount) throws SQLException {
+        if(amount == 0) return;
         Minelife.SQLITE.query("UPDATE economy SET amount='" + (getBalanceATM(player) - amount) + "' WHERE player='" + player.toString() + "'");
     }
 

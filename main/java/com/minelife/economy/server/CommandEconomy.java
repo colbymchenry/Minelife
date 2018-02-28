@@ -191,6 +191,7 @@ public class CommandEconomy extends MLCommand {
                         targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + amount + " was taken from your account."));
                         if (couldNotAdd > 0) {
                             targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + couldNotAdd + " would not fit in your inventory so it was deposited into your checking account."));
+                            MoneyHandler.depositATM(targetPlayer.getUniqueID(), couldNotAdd);
                         }
                     }
                     return;
@@ -203,6 +204,7 @@ public class CommandEconomy extends MLCommand {
                         targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "You were given $" + amount));
                         if (couldNotAdd > 0) {
                             targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "$" + couldNotAdd + " would not fit in your inventory so it was deposited into your checking account."));
+                            MoneyHandler.depositATM(targetPlayer.getUniqueID(), couldNotAdd);
                         }
                     }
                     return;
@@ -215,6 +217,7 @@ public class CommandEconomy extends MLCommand {
                         targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "$" + amount + " was added to your vault!"));
                         if (couldNotAdd > 0) {
                             targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "$" + couldNotAdd + " would not fit in your vault so it was deposited into your checking account."));
+                            MoneyHandler.depositATM(targetPlayer.getUniqueID(), couldNotAdd);
                         }
                     }
                     return;
@@ -227,6 +230,7 @@ public class CommandEconomy extends MLCommand {
                         targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + amount + " was taken from your vault."));
                         if (couldNotAdd > 0) {
                             targetPlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + couldNotAdd + " would not fit in your vault so it was deposited into your checking account."));
+                            MoneyHandler.depositATM(targetPlayer.getUniqueID(), couldNotAdd);
                         }
                     }
                     return;

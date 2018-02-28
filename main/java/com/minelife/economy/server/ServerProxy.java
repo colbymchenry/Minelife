@@ -2,6 +2,7 @@ package com.minelife.economy.server;
 
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
+import com.minelife.economy.ATMPenaltyListener;
 import com.minelife.economy.Billing;
 import com.minelife.economy.ModEconomy;
 import com.minelife.economy.MoneyHandler;
@@ -38,10 +39,12 @@ public class ServerProxy extends MLProxy {
         ModEconomy.config.addDefault("messages.set", EnumChatFormatting.GOLD + "%p's %w has been set to " + EnumChatFormatting.RED + "$%b");
         ModEconomy.config.addDefault("messages.deposit", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " deposited into %p's %w.");
         ModEconomy.config.addDefault("messages.withdraw", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " withdrawn from %p's %w.");
+        ModEconomy.config.addDefault("atm_penalty", 0.20);
         ModEconomy.config.save();
 
         FMLCommonHandler.instance().bus().register(this);
         FMLCommonHandler.instance().bus().register(new Billing.TickHandler());
+        FMLCommonHandler.instance().bus().register(new ATMPenaltyListener());
     }
 
     @SubscribeEvent
