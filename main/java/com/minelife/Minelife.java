@@ -15,6 +15,7 @@ import com.minelife.police.ModPolice;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.shop.ModShop;
 import com.minelife.tracker.ModTracker;
+import com.minelife.tutorial.ModTutorial;
 import com.minelife.util.MLConfig;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.PacketPopupMessage;
@@ -92,6 +93,7 @@ public class Minelife {
         MODS.add(new ModGangs());
         MODS.add(new ModCapes());
         MODS.add(new ModEssentials());
+        MODS.add(new ModTutorial());
         try {
             config = new MLConfig("configuration");
             config.addDefault("netty_ip", 0);

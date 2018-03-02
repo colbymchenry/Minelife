@@ -28,22 +28,21 @@ public class GuiMembersList extends GuiScrollableContent {
 
     @Override
     public void drawObject(int index, int mouseX, int mouseY, boolean isHovering) {
-        UUID memberUUID = (UUID) gang.getMembers().toArray()[index];
+        UUID memberUUID = (UUID) names.keySet().toArray()[index];
         String name = names.getOrDefault(memberUUID, "Fetching...");
         String title = gang.getTitles().getOrDefault(memberUUID, null);
-
-        mc.fontRenderer.drawString(StringHelper.ParseFormatting((title != null ? title + " " : "") + (gang.getOfficers().contains(memberUUID) ? "&c" : "") + name, '&'), 3, 2, 0xFFFFFF);
+        mc.fontRenderer.drawString(StringHelper.ParseFormatting((title != null ? title + " " : "") + (gang.getOfficers().contains(memberUUID) ? "&6" : gang.getLeader().equals(memberUUID) ? "&c" : "") + name, '&'), 3, 2, 0xFFFFFF);
     }
 
     @Override
     public int getSize() {
-        return gang.getMembers().size();
+        return names.size();
     }
 
     @Override
     public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
         if (doubleClick) {
-            UUID memberUUID = (UUID) gang.getMembers().toArray()[index];
+            UUID memberUUID = (UUID) names.keySet().toArray()[index];
             String name = names.getOrDefault(memberUUID, "Fetching...");
             previousScreen.setGuiMember(name, memberUUID, gang);
         }

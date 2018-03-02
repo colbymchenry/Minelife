@@ -96,6 +96,11 @@ public class PacketModifyPlayer implements IMessage {
                     return null;
                 }
 
+                if(message.playerUUID.equals(gang.getLeader())) {
+                    Minelife.NETWORK.sendTo(new PacketPopupMessage("You must make another member a leader."), playerSender);
+                    return null;
+                }
+
 
                 if (message.setOfficer) {
                     members.remove(message.playerUUID);
@@ -114,6 +119,12 @@ public class PacketModifyPlayer implements IMessage {
             }
 
             if (message.kick) {
+
+                if(message.playerUUID.equals(gang.getLeader())) {
+                    Minelife.NETWORK.sendTo(new PacketPopupMessage("You cannot kick the leader."), playerSender);
+                    return null;
+                }
+
                 if (gang.getOfficers().contains(playerSender.getUniqueID()) && gang.getOfficers().contains(message.playerUUID)) {
                     Minelife.NETWORK.sendTo(new PacketPopupMessage("An officer cannot kick another officer."), playerSender);
                     return null;

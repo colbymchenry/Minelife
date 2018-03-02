@@ -55,6 +55,7 @@ public class ModGangs extends MLMod {
         for (Gang gang : cache_gangs) {
             if(gang.getLeader().equals(player)) return gang;
             if(gang.getMembers().stream().filter(member -> member.equals(player)).findFirst().orElse(null) != null) return gang;
+            if(gang.getOfficers().stream().filter(member -> member.equals(player)).findFirst().orElse(null) != null) return gang;
         }
         return null;
     }

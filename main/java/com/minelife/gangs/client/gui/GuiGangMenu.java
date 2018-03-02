@@ -26,12 +26,10 @@ public class GuiGangMenu extends GuiGang implements INameReceiver {
 
     public GuiGangMenu(Gang gang) {
         super(gang);
-        // TODO: show officers in list
         gang.getMembers().forEach(memberUUID -> NameFetcher.asyncFetchClient(memberUUID, this));
         gang.getOfficers().forEach(memberUUID -> NameFetcher.asyncFetchClient(memberUUID, this));
+        NameFetcher.asyncFetchClient(gang.getLeader(), this);
     }
-
-    // TODO: Implement GuiMember.
 
     @Override
     public void drawScreen(int mouse_x, int mouse_y, float f) {

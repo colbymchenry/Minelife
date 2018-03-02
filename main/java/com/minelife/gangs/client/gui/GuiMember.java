@@ -34,6 +34,14 @@ public class GuiMember extends Gui {
         this.btnLeader = new GuiButton(0, btnOfficer.xPosition, btnOfficer.yPosition + 66, 50, 20, "Leader");
 
         this.btnOfficer.enabled = !gang.getOfficers().contains(playerUUID);
+        this.btnLeader.enabled = !gang.getLeader().equals(playerUUID);
+
+        if(gang.getLeader().equals(playerUUID)) {
+            btnLeader.enabled = false;
+            btnOfficer.enabled = false;
+            btnMember.enabled = false;
+            btnKick.enabled = false;
+        }
     }
 
     public void draw(int mouseX, int mouseY) {

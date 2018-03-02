@@ -15,6 +15,7 @@ import com.minelife.gun.item.guns.*;
 import com.minelife.gun.item.parts.*;
 import com.minelife.police.ItemHandcuffs;
 import com.minelife.police.ItemTicket;
+import com.minelife.tutorial.ItemTutorialBook;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.Item;
 
@@ -94,6 +95,7 @@ public class MLItems {
     public static ItemMoney dollar_1000;
     public static ItemWallet wallet;
     public static ItemBagOCash bagOCash;
+    public static ItemTutorialBook tutorialBook;
 
     protected static void init()
     {
@@ -169,6 +171,7 @@ public class MLItems {
         register_item(dollar_1000 = new ItemMoney(1000));
         register_item(wallet = new ItemWallet());
         register_item(bagOCash = new ItemBagOCash());
+        register_item(tutorialBook = new ItemTutorialBook());
     }
 
     private static void register_item(Item item)
