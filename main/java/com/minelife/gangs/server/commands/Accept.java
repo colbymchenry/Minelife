@@ -1,8 +1,10 @@
 package com.minelife.gangs.server.commands;
 
+import com.minelife.Minelife;
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.network.PacketInviteToGang;
 import com.minelife.ICommandHandler;
+import com.minelife.gangs.network.PacketUpdateMemberList;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
@@ -29,6 +31,7 @@ public class Accept implements ICommandHandler {
 
         playerSender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Gang invite accepted!"));
         PacketInviteToGang.gangInvites.remove(playerSender.getUniqueID());
+        gang.sendPacketToAll(new PacketUpdateMemberList(playerSender.getUniqueID(), playerSender.getGameProfile().getName()));
     }
 
     @Override

@@ -13,6 +13,8 @@ public class Help implements ICommandHandler {
         sender.addChatMessage(new ChatComponentText("/g home"));
         sender.addChatMessage(new ChatComponentText("/g sethome"));
         sender.addChatMessage(new ChatComponentText("/g unsethome"));
+        sender.addChatMessage(new ChatComponentText("/g disband"));
+        sender.addChatMessage(new ChatComponentText("/g leave"));
         sender.addChatMessage(new ChatComponentText( EnumChatFormatting.GREEN.toString() + EnumChatFormatting.BOLD.toString() + "/g " + EnumChatFormatting.YELLOW.toString() + EnumChatFormatting.BOLD.toString() + "- opens the gang GUI."));;
     }
 

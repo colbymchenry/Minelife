@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class GuiMember extends Gui {
 
-    private static final int width = 100, height = 50;
+    public static final int width = 100, height = 120;
 
     private Minecraft mc;
     private int xPosition, yPosition;
@@ -28,7 +28,7 @@ public class GuiMember extends Gui {
         this.playerName = playerName;
         this.playerUUID = playerUUID;
         this.gang = gang;
-        this.btnOfficer = new GuiButton(0, xPosition, yPosition, 50, 20, "Officer");
+        this.btnOfficer = new GuiButton(0, xPosition + ((width - 50) / 2), yPosition + 25, 50, 20, "Officer");
         this.btnMember = new GuiButton(0, btnOfficer.xPosition, btnOfficer.yPosition + 22, 50, 20, "Member");
         this.btnKick = new GuiButton(0, btnOfficer.xPosition, btnOfficer.yPosition + 44, 50, 20, "Kick");
         this.btnLeader = new GuiButton(0, btnOfficer.xPosition, btnOfficer.yPosition + 66, 50, 20, "Leader");
@@ -38,6 +38,7 @@ public class GuiMember extends Gui {
 
     public void draw(int mouseX, int mouseY) {
         GuiUtil.drawDefaultBackground(xPosition, yPosition, width, height, GuiGang.BackgroundColor);
+        mc.fontRenderer.drawString(playerName, xPosition + ((width - mc.fontRenderer.getStringWidth(playerName)) / 2), yPosition + 12, 0xFFFFFF);
         btnOfficer.drawButton(mc, mouseX, mouseY);
         btnLeader.drawButton(mc, mouseX, mouseY);
         btnMember.drawButton(mc, mouseX, mouseY);
@@ -45,9 +46,11 @@ public class GuiMember extends Gui {
     }
 
     public void onMouseClicked(int mouseX, int mouseY) {
+        if(btnKick.mousePressed(mc, mouseX, mouseY) || btnMember.mousePressed(mc, mouseX,mouseY) || btnOfficer.mousePressed(mc, mouseX, mouseY) || btnLeader.mousePressed(mc, mouseX, mouseY)) {
             Minelife.NETWORK.sendToServer(new PacketModifyPlayer(gang, playerUUID, btnKick.mousePressed(mc, mouseX, mouseY),
                     btnMember.mousePressed(mc, mouseX, mouseY), btnOfficer.mousePressed(mc, mouseX, mouseY),
                     btnLeader.mousePressed(mc, mouseX, mouseY)));
+        }
     }
 
 }

@@ -11,11 +11,14 @@ import com.minelife.realestate.EstateHandler;
 import com.minelife.realestate.Selection;
 import com.minelife.util.Location;
 import com.minelife.util.MLConfig;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.Vector;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import com.minelife.util.server.NameFetcher;
 import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -35,10 +38,10 @@ public class Gang implements Comparable<Gang> {
     private MLConfig config;
     private String name;
     private Location home;
-    private UUID leader;
-    private Set<UUID> officers;
-    private Set<UUID> members;
-    private Map<UUID, String> titles;
+    public UUID leader;
+    public Set<UUID> officers;
+    public Set<UUID> members;
+    public Map<UUID, String> titles;
 
     private int balanceClient;
 
@@ -180,6 +183,16 @@ public class Gang implements Comparable<Gang> {
         return true;
     }
 
+    public boolean disband() {
+        boolean deletion = new File(Minelife.getConfigDirectory(), "gangs" + File.separator + uuid.toString() + ".yml").delete();
+        if(deletion) {
+            ModGangs.cache_gangs.remove(this);
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public int compareTo(Gang o) {
         return o.getName().compareTo(getName());
@@ -201,6 +214,7 @@ public class Gang implements Comparable<Gang> {
         });
 
         buf.writeInt(getBalance());
+        ByteBufUtils.writeUTF8String(buf, getGangID().toString());
     }
 
     private Gang() {
@@ -230,6 +244,20 @@ public class Gang implements Comparable<Gang> {
         gang.officers = officers;
         gang.members = members;
         gang.titles = titles;
+        gang.uuid = UUID.fromString(ByteBufUtils.readUTF8String(buf));
         return gang;
+    }
+
+    public void sendPacketToAll(IMessage message) {
+        EntityPlayerMP playerLeader = PlayerHelper.getPlayer(leader);
+        if(playerLeader != null) Minelife.NETWORK.sendTo(message, playerLeader);
+        for (UUID member : members) {
+            EntityPlayerMP playerMember = PlayerHelper.getPlayer(member);
+            if(playerMember != null) Minelife.NETWORK.sendTo(message, playerMember);
+        }
+        for (UUID officer : officers) {
+            EntityPlayerMP playerOfficer = PlayerHelper.getPlayer(officer);
+            if(playerOfficer != null) Minelife.NETWORK.sendTo(message, playerOfficer);
+        }
     }
 }

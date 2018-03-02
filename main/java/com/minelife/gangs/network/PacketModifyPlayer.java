@@ -63,7 +63,7 @@ public class PacketModifyPlayer implements IMessage {
 
             Gang gang = ModGangs.getPlayerGang(playerSender.getUniqueID());
 
-            if(gang == null) {
+            if (gang == null) {
                 Minelife.NETWORK.sendTo(new PacketPopupMessage("You do not belong to a gang."), playerSender);
                 return null;
             }
@@ -73,7 +73,7 @@ public class PacketModifyPlayer implements IMessage {
             Set<UUID> officers = gang.getOfficers();
             Set<UUID> members = gang.getMembers();
 
-            if(isLeader && message.setLeader) {
+            if (isLeader && message.setLeader) {
                 officers.add(gang.getLeader());
                 gang.setLeader(message.playerUUID);
                 officers.remove(message.playerUUID);
@@ -81,42 +81,45 @@ public class PacketModifyPlayer implements IMessage {
                 gang.setOfficers(officers);
                 gang.setMembers(members);
 
-                if(playerReceiver != null) playerReceiver.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "You are now the leader of the gang!"));
+                if (playerReceiver != null)
+                    playerReceiver.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "You are now the leader of the gang!"));
                 return null;
-            } else if(!isLeader && message.setLeader) {
+            } else if (!isLeader && message.setLeader) {
                 Minelife.NETWORK.sendTo(new PacketPopupMessage("You do not have permission to do that."), playerSender);
                 return null;
             }
 
 
-            if(message.setOfficer || message.setMember) {
-                if(!isLeader) {
+            if (message.setOfficer || message.setMember) {
+                if (!isLeader) {
                     Minelife.NETWORK.sendTo(new PacketPopupMessage("You do not have permission to do that."), playerSender);
                     return null;
                 }
 
 
-                if(message.setOfficer) {
+                if (message.setOfficer) {
                     members.remove(message.playerUUID);
                     officers.add(message.playerUUID);
-                    if(playerReceiver != null) playerReceiver.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "You are now an officer of the gang!"));
+                    if (playerReceiver != null)
+                        playerReceiver.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "You are now an officer of the gang!"));
                 } else if (message.setMember) {
                     officers.remove(message.playerUUID);
                     members.add(message.playerUUID);
-                    if(playerReceiver != null) playerReceiver.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You are now a member of the gang..."));
+                    if (playerReceiver != null)
+                        playerReceiver.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You are now a member of the gang..."));
                 }
 
                 gang.setOfficers(officers);
                 gang.setMembers(members);
             }
 
-            if(message.kick) {
-                if(gang.getOfficers().contains(playerSender.getUniqueID()) && gang.getOfficers().contains(message.playerUUID)) {
+            if (message.kick) {
+                if (gang.getOfficers().contains(playerSender.getUniqueID()) && gang.getOfficers().contains(message.playerUUID)) {
                     Minelife.NETWORK.sendTo(new PacketPopupMessage("An officer cannot kick another officer."), playerSender);
                     return null;
                 }
 
-                if(!gang.getOfficers().contains(playerSender.getUniqueID()) && !isLeader) {
+                if (!gang.getOfficers().contains(playerSender.getUniqueID()) && !isLeader) {
                     Minelife.NETWORK.sendTo(new PacketPopupMessage("You do not have permission to do that."), playerSender);
                     return null;
                 }
@@ -127,8 +130,13 @@ public class PacketModifyPlayer implements IMessage {
                 gang.setOfficers(officers);
                 gang.setMembers(members);
 
-                if(playerReceiver != null) playerReceiver.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You have been kicked from the gang..."));
+                if (playerReceiver != null)
+                    playerReceiver.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You have been kicked from the gang..."));
+
             }
+
+            gang.sendPacketToAll(new PacketModifyPlayerResponse(message.playerUUID, message.kick, message.setMember, message.setOfficer, message.setLeader));
+
             return null;
         }
     }

@@ -11,7 +11,7 @@ public class GuiGang extends GuiScreen {
     public static Color BackgroundColor = new Color(77, 77, 77, 255);
     protected static int Width = 256, Height = 200;
     protected int XPosition, YPosition;
-    protected Gang Gang;
+    public Gang Gang;
 
     public GuiGang(Gang Gang) {
         this.Gang = Gang;
@@ -29,4 +29,6 @@ public class GuiGang extends GuiScreen {
         XPosition = (this.width - Width) / 2;
         YPosition = (this.height - Height) / 2;
     }
+
+
 }

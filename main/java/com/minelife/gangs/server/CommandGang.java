@@ -26,6 +26,10 @@ public class CommandGang extends MLCommand {
         commandMap.put("sethome", new SetHome());
         commandMap.put("unsethome", new UnsetHome());
         commandMap.put("help", new Help());
+        commandMap.put("disband", new Disband());
+        commandMap.put("accept", new Accept());
+        commandMap.put("deny", new Deny());
+        commandMap.put("leave", new Leave());
     }
 
     @Override
