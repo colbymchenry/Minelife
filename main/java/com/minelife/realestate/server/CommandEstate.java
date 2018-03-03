@@ -31,7 +31,7 @@ public class CommandEstate implements ICommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/e create\n/e modify\n/e buy|rent|purchase";
+        return "/e create\n/e modify\n/e buy|rent|purchase\n/e delete";
     }
 
     @Override

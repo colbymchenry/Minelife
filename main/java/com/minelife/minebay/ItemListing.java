@@ -30,7 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-
+// TODO: Does not have enough funds to buy 2 pieces of wood for $5 but has enough to buy 32 pieces of wood for $10??
 public class ItemListing extends Listing {
 
     public static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
