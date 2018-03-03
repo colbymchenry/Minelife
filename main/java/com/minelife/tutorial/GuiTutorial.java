@@ -1,37 +1,31 @@
 package com.minelife.tutorial;
 
-import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.StringHelper;
 import com.minelife.util.client.GuiUtil;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class GuiTutorial extends GuiScreen {
 
     private static ResourceLocation bookTexture = new ResourceLocation("minecraft", "textures/gui/book.png");
     private Color sectionHighlightColor = new Color(0xFFA219);
     private int xPosition, yPosition, bookWidth = 146, bookHeight = 180;
-    private File section, page;
-    private List<File> sections, pages;
+    private Set<Section> sections;
+    private Section section;
+    private int pageIndex;
 
-    public GuiTutorial() {
-        sections = Lists.newArrayList();
-        pages = Lists.newArrayList();
+    public GuiTutorial(Set<Section> sections) {
+        this.sections = sections;
     }
 
     @Override
@@ -40,46 +34,58 @@ public class GuiTutorial extends GuiScreen {
         mc.getTextureManager().bindTexture(bookTexture);
         drawTexturedModalRect(xPosition, yPosition, 20, 1, bookWidth, bookHeight);
 
-        if (sections.isEmpty() && pages.isEmpty()) {
+        // there is nothing to draw
+        // TODO: Pages is empty when opening a section.
+        if (sections.isEmpty() || (section != null && section.pages.isEmpty())) {
             fontRendererObj.drawString(EnumChatFormatting.BOLD + "Wow... Such empty!",
                     (this.width - fontRendererObj.getStringWidth(EnumChatFormatting.BOLD + "Wow... Such empty!")) / 2,
                     yPosition + ((bookHeight - fontRendererObj.FONT_HEIGHT) / 2), 0);
         } else {
-            if (section == null && page == null) {
+            // draw main menu
+            if (section == null) {
                 int sectionY = 0;
-                for (File file : sections) {
+                for (Section section : sections) {
                     if (mouseX >= xPosition + 20 && mouseY >= yPosition + 16 + sectionY &&
                             mouseX <= xPosition + 20 + bookWidth - 20 && mouseY <= yPosition + 16 + sectionY + fontRendererObj.FONT_HEIGHT) {
                         GuiUtil.drawDefaultBackground(xPosition + 15, yPosition + 12 + sectionY, bookWidth - 35, fontRendererObj.FONT_HEIGHT + 6, sectionHighlightColor);
                     }
 
-                    fontRendererObj.drawString(file.getName().replaceAll(".section", ""), xPosition + 20,
+                    fontRendererObj.drawString(section.name, xPosition + 20,
                             yPosition + 16 + sectionY, 0);
 
                     sectionY += 20;
                 }
             } else {
-                try {
-                    Scanner scanner = new Scanner(page);
-                    int yOffset = 0;
-                    while (scanner.hasNextLine()) {
-                        String line = scanner.nextLine();
-                        if(line.startsWith("@image")) {
-                            String[] data = line.replaceAll("\\(", "").replaceAll("\\)", "").split(",");
-                            int posX = NumberConversions.toInt(data[0].split("=")[1]);
-                            int posY = NumberConversions.toInt(data[1].split("=")[1]);
-                            int picWidth = NumberConversions.toInt(data[2].split("=")[1]);
-                            int picHeight = NumberConversions.toInt(data[3].split("=")[1]);
-                            String picPath = data[4].split("=")[1];
-                            mc.getTextureManager().bindTexture(new ResourceLocation(picPath));
-                            GuiUtil.drawImage(posX, posY, picWidth, picHeight);
-                        } else {
-                            fontRendererObj.drawString(StringHelper.ParseFormatting(line, '&'), xPosition, yPosition + yOffset, 0xFFFFFF);
-                        }
-                        yOffset += 14;
+                // draw page from .page file
+                int yOffset = 0;
+                for (String line : ((Page)section.pages.toArray()[pageIndex]).lines) {
+                    if (line.startsWith("@image")) {
+                        String[] data = line.replaceAll("\\(", "").replaceAll("\\)", "").split(",");
+                        int posX = NumberConversions.toInt(data[0].split("=")[1]);
+                        int posY = NumberConversions.toInt(data[1].split("=")[1]);
+                        int picWidth = NumberConversions.toInt(data[2].split("=")[1]);
+                        int picHeight = NumberConversions.toInt(data[3].split("=")[1]);
+                        String picPath = data[4].split("=")[1];
+                        mc.getTextureManager().bindTexture(new ResourceLocation(picPath));
+                        GuiUtil.drawImage(xPosition + posX, yPosition + posY, picWidth, picHeight);
+                    } else {
+                        fontRendererObj.drawSplitString(StringHelper.ParseFormatting(line, '&'), xPosition + 18, yPosition + yOffset + 13, bookWidth - 30, 0xFFFFFF);
+                        yOffset += (fontRendererObj.FONT_HEIGHT * fontRendererObj.listFormattedStringToWidth(StringHelper.ParseFormatting(line, '&'), bookWidth - 30).size());
                     }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                }
+
+                // draw arrows
+                GL11.glColor4f(1, 1, 1, 1);
+
+                if (pageIndex == 0 && pageIndex == section.pages.size() - 1) return;
+
+                if (pageIndex == 0) {
+                    drawArrow(true, mouseX, mouseY);
+                } else if (pageIndex == section.pages.size() - 1) {
+                    drawArrow(false, mouseX, mouseY);
+                } else if (pageIndex > 0 && pageIndex < section.pages.size()) {
+                    drawArrow(true, mouseX, mouseY);
+                    drawArrow(false, mouseX, mouseY);
                 }
             }
         }
@@ -92,19 +98,25 @@ public class GuiTutorial extends GuiScreen {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseBtn) {
-        if (section == null && page == null) {
+        if (section == null) {
             int sectionY = 0;
-            // TODO: Breaks here.
-            for (File file : sections) {
+            for (Section section : sections) {
                 if (mouseX >= xPosition + 20 && mouseY >= yPosition + 16 + sectionY &&
                         mouseX <= xPosition + 20 + bookWidth - 20 && mouseY <= yPosition + 16 + sectionY + fontRendererObj.FONT_HEIGHT) {
-                    section = file;
-                    sections.clear();
-                    sections.addAll(ModTutorial.getSections(section));
-                    pages.clear();
-                    pages.addAll(ModTutorial.getPages(section));
+                    this.section = section;
+                    pageIndex = 0;
+                    break;
                 }
                 sectionY += 20;
+            }
+        } else {
+            int arrowWidth = 18, arrowHeight = 10;
+            if (mouseX >= xPosition + bookWidth - arrowWidth - 25 && mouseX <= xPosition + bookWidth - 25 &&
+                    mouseY >= yPosition + bookHeight - arrowHeight - 15 && mouseY <= yPosition + bookHeight - 15) {
+                if (pageIndex + 1 < section.pages.size()) pageIndex++;
+            } else if (mouseX >= xPosition + arrowWidth && mouseX <= xPosition + arrowWidth + arrowWidth &&
+                    mouseY >= yPosition + bookHeight - arrowHeight - 15 && mouseY <= yPosition + bookHeight - arrowHeight - 15 + arrowHeight) {
+                if (pageIndex - 1 > -1) pageIndex--;
             }
         }
     }
@@ -114,12 +126,6 @@ public class GuiTutorial extends GuiScreen {
         super.initGui();
         this.xPosition = (this.width - bookWidth) / 2;
         this.yPosition = (this.height - bookHeight) / 2;
-
-        if (section == null || page == null) {
-            sections.addAll(ModTutorial.getSections(new File(Minelife.getConfigDirectory(), "tutorials")));
-            pages.addAll(ModTutorial.getSections(new File(Minelife.getConfigDirectory(), "tutorials")));
-        }
-
 //        final MediaPlayer oracleVid = new MediaPlayer(
 //                new Media("https://www.youtube.com/embed?v=cBi3m27a30w")
 //        );
@@ -134,25 +140,27 @@ public class GuiTutorial extends GuiScreen {
         super.updateScreen();
     }
 
-    public void drawArrow(boolean next, boolean enabled) {
+    public void drawArrow(boolean next, int mouseX, int mouseY) {
         int arrowWidth = 18, arrowHeight = 10;
 
         mc.getTextureManager().bindTexture(bookTexture);
         if (next) {
-            if (enabled) {
-                drawTexturedModalRect(xPosition + bookWidth - arrowWidth, yPosition + bookHeight - arrowHeight,
-                        26, 194, bookWidth, bookHeight);
+            if (mouseX >= xPosition + bookWidth - arrowWidth - 25 && mouseX <= xPosition + bookWidth - 25 &&
+                    mouseY >= yPosition + bookHeight - arrowHeight - 15 && mouseY <= yPosition + bookHeight - 15) {
+                drawTexturedModalRect(xPosition + bookWidth - arrowWidth - 25, yPosition + bookHeight - arrowHeight - 15,
+                        26, 194, arrowWidth, arrowHeight);
             } else {
-                drawTexturedModalRect(xPosition + bookWidth - arrowWidth, yPosition + bookHeight - arrowHeight,
-                        3, 194, bookWidth, bookHeight);
+                drawTexturedModalRect(xPosition + bookWidth - arrowWidth - 25, yPosition + bookHeight - arrowHeight - 15,
+                        3, 194, arrowWidth, arrowHeight);
             }
         } else {
-            if (enabled) {
-                drawTexturedModalRect(xPosition + arrowWidth, yPosition + bookHeight - arrowHeight,
-                        26, 207, bookWidth, bookHeight);
+            if (mouseX >= xPosition + arrowWidth && mouseX <= xPosition + arrowWidth + arrowWidth &&
+                    mouseY >= yPosition + bookHeight - arrowHeight - 15 && mouseY <= yPosition + bookHeight - arrowHeight - 15 + arrowHeight) {
+                drawTexturedModalRect(xPosition + arrowWidth, yPosition + bookHeight - arrowHeight - 15,
+                        26, 207, arrowWidth, arrowHeight);
             } else {
-                drawTexturedModalRect(xPosition + arrowWidth, yPosition + bookHeight - arrowHeight,
-                        3, 207, bookWidth, bookHeight);
+                drawTexturedModalRect(xPosition + arrowWidth, yPosition + bookHeight - arrowHeight - 15,
+                        3, 207, arrowWidth, arrowHeight);
             }
         }
     }

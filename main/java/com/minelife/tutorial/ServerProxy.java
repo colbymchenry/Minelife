@@ -6,7 +6,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 import java.io.File;
 
-public class ClientProxy extends MLProxy {
+public class ServerProxy extends MLProxy {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
