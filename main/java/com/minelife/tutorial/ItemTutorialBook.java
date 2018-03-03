@@ -38,6 +38,7 @@ public class ItemTutorialBook extends Item {
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
+                section.pages.add(page);
             }
 
             sectionSet.add(section);

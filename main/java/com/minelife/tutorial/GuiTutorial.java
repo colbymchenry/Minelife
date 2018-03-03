@@ -1,18 +1,15 @@
 package com.minelife.tutorial;
 
-import com.minelife.Minelife;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.StringHelper;
 import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 import java.util.Set;
 
 public class GuiTutorial extends GuiScreen {
@@ -35,7 +32,6 @@ public class GuiTutorial extends GuiScreen {
         drawTexturedModalRect(xPosition, yPosition, 20, 1, bookWidth, bookHeight);
 
         // there is nothing to draw
-        // TODO: Pages is empty when opening a section.
         if (sections.isEmpty() || (section != null && section.pages.isEmpty())) {
             fontRendererObj.drawString(EnumChatFormatting.BOLD + "Wow... Such empty!",
                     (this.width - fontRendererObj.getStringWidth(EnumChatFormatting.BOLD + "Wow... Such empty!")) / 2,
@@ -58,16 +54,30 @@ public class GuiTutorial extends GuiScreen {
             } else {
                 // draw page from .page file
                 int yOffset = 0;
-                for (String line : ((Page)section.pages.toArray()[pageIndex]).lines) {
+                for (String line : ((Page) section.pages.toArray()[pageIndex]).lines) {
                     if (line.startsWith("@image")) {
                         String[] data = line.replaceAll("\\(", "").replaceAll("\\)", "").split(",");
-                        int posX = NumberConversions.toInt(data[0].split("=")[1]);
-                        int posY = NumberConversions.toInt(data[1].split("=")[1]);
-                        int picWidth = NumberConversions.toInt(data[2].split("=")[1]);
-                        int picHeight = NumberConversions.toInt(data[3].split("=")[1]);
-                        String picPath = data[4].split("=")[1];
+                        int posX = 0, posY = 0, picWidth = 16, picHeight = 16;
+                        double scale = 1.0;
+                        String picPath = "minecraft:textures/item/apple.png";
+
+                        for (String d : data) {
+                            if(d.contains("x=")) posX = NumberConversions.toInt(d.split("=")[1]);
+                            if(d.contains("y=")) posY = NumberConversions.toInt(d.split("=")[1]);
+                            if(d.contains("width=")) picWidth = NumberConversions.toInt(d.split("=")[1]);
+                            if(d.contains("height=")) picHeight = NumberConversions.toInt(d.split("=")[1]);
+                            if(d.contains("scale=")) scale = NumberConversions.toDouble(d.split("=")[1]);
+                            if(d.contains("path=")) picPath = d.split("=")[1];
+                        }
+
                         mc.getTextureManager().bindTexture(new ResourceLocation(picPath));
-                        GuiUtil.drawImage(xPosition + posX, yPosition + posY, picWidth, picHeight);
+                        GL11.glPushMatrix();
+                        GL11.glTranslatef(xPosition + posX, yPosition + posY, zLevel);
+                        GL11.glTranslatef(picWidth / 2, picHeight / 2, zLevel);
+                        GL11.glScaled(scale, scale, scale);
+                        GL11.glTranslatef(-picWidth / 2, -picHeight / 2, zLevel);
+                        GuiUtil.drawImage(0, 0, picWidth, picHeight);
+                        GL11.glPopMatrix();
                     } else {
                         fontRendererObj.drawSplitString(StringHelper.ParseFormatting(line, '&'), xPosition + 18, yPosition + yOffset + 13, bookWidth - 30, 0xFFFFFF);
                         yOffset += (fontRendererObj.FONT_HEIGHT * fontRendererObj.listFormattedStringToWidth(StringHelper.ParseFormatting(line, '&'), bookWidth - 30).size());
@@ -93,7 +103,13 @@ public class GuiTutorial extends GuiScreen {
 
     @Override
     protected void keyTyped(char keyChar, int keyCode) {
-        super.keyTyped(keyChar, keyCode);
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            if (section == null) {
+                super.keyTyped(keyChar, keyCode);
+            } else {
+                section = null;
+            }
+        }
     }
 
     @Override
@@ -126,13 +142,6 @@ public class GuiTutorial extends GuiScreen {
         super.initGui();
         this.xPosition = (this.width - bookWidth) / 2;
         this.yPosition = (this.height - bookHeight) / 2;
-//        final MediaPlayer oracleVid = new MediaPlayer(
-//                new Media("https://www.youtube.com/embed?v=cBi3m27a30w")
-//        );
-//        Display.getParent().get.setScene(new Scene(new Group(new MediaView(oracleVid)), 640, 480));
-//        stage.show();
-//
-//        oracleVid.play();
     }
 
     @Override
@@ -142,8 +151,8 @@ public class GuiTutorial extends GuiScreen {
 
     public void drawArrow(boolean next, int mouseX, int mouseY) {
         int arrowWidth = 18, arrowHeight = 10;
-
         mc.getTextureManager().bindTexture(bookTexture);
+
         if (next) {
             if (mouseX >= xPosition + bookWidth - arrowWidth - 25 && mouseX <= xPosition + bookWidth - 25 &&
                     mouseY >= yPosition + bookHeight - arrowHeight - 15 && mouseY <= yPosition + bookHeight - 15) {
