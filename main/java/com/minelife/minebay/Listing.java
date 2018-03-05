@@ -7,14 +7,14 @@ import java.util.UUID;
 public abstract class Listing {
 
     protected UUID uuid, seller;
-    protected double price;
+    protected int price;
     protected String title, description;
 
     protected Listing()
     {
     }
 
-    public Listing(UUID uuid, UUID seller, double price, String title, String description)
+    public Listing(UUID uuid, UUID seller, int price, String title, String description)
     {
         this.uuid = uuid;
         this.seller = seller;
@@ -23,7 +23,7 @@ public abstract class Listing {
         this.description = description;
     }
 
-    public double price()
+    public int price()
     {
         return price;
     }

@@ -2,6 +2,7 @@ package com.minelife.shop.network;
 
 import com.minelife.economy.ModEconomy;
 import com.minelife.shop.TileEntityShopBlock;
+import com.minelife.util.NumberConversions;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -83,7 +84,7 @@ public class PacketSetShopBlock implements IMessage {
                 return null;
             }
 
-            if(!ModEconomy.isValidAmount(String.valueOf(message.price))) {
+            if(!NumberConversions.isInt(String.valueOf(message.price))) {
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Invalid price."));
                 return null;
             }

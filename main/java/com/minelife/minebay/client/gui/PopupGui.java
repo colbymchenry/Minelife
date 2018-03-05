@@ -26,7 +26,7 @@ public class PopupGui extends GuiScreen {
     {
         drawDefaultBackground();
         GuiUtil.drawDefaultBackground(this.left - 10, this.top - 8, bg_width + 10, this.bg_height + 10, new Color(0x8F008D));
-        fontRendererObj.drawSplitString(message, this.left, this.top, 100, 0xFFFFFF);
+        fontRendererObj.drawSplitString(message, this.left, this.top, bg_width - 5, 0xFFFFFF);
         this.ok_btn.drawButton(mc, mouse_x, mouse_y);
     }
 
@@ -44,7 +44,7 @@ public class PopupGui extends GuiScreen {
     {
         super.initGui();
 
-        this.bg_height = fontRendererObj.listFormattedStringToWidth(message, 100).size() * fontRendererObj.FONT_HEIGHT +30;
+        this.bg_height = fontRendererObj.listFormattedStringToWidth(message, bg_width - 5).size() * fontRendererObj.FONT_HEIGHT +30;
 
         for(String s : (List<String>) fontRendererObj.listFormattedStringToWidth(message, 100)) {
             if(fontRendererObj.getStringWidth(s) == bg_width) {

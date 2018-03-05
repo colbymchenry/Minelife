@@ -8,10 +8,10 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class ItemSoldNotification extends AbstractNotification {
 
-    public double price;
+    public int price;
     public ItemStack item_sold;
 
-    public ItemSoldNotification(double price, ItemStack item_sold) {
+    public ItemSoldNotification(int price, ItemStack item_sold) {
         this.price = price;
         this.item_sold = item_sold;
     }
@@ -19,14 +19,14 @@ public class ItemSoldNotification extends AbstractNotification {
     @Override
     public void writeToNBT(NBTTagCompound tagCompound)
     {
-        tagCompound.setDouble("price", price);
+        tagCompound.setInteger("price", price);
         tagCompound.setString("item_sold", ItemHelper.itemToString(item_sold));
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tagCompound)
     {
-        price = tagCompound.getDouble("price");
+        price = tagCompound.getInteger("price");
         item_sold = ItemHelper.itemFromString(tagCompound.getString("price"));
     }
 

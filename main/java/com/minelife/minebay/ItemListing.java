@@ -3,6 +3,7 @@ package com.minelife.minebay;
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
 import com.minelife.economy.MoneyHandler;
+import com.minelife.minebay.client.gui.MasterGui;
 import com.minelife.minebay.packet.PacketPopupMsg;
 import com.minelife.util.ItemHelper;
 import com.minelife.util.NumberConversions;
@@ -14,12 +15,17 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,23 +36,27 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
-// TODO: Does not have enough funds to buy 2 pieces of wood for $5 but has enough to buy 32 pieces of wood for $10??
 public class ItemListing extends Listing {
 
     public static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     protected ItemStack item_stack;
+    public int stack_size;
     protected Date date_published;
 
     @SideOnly(Side.CLIENT)
     private MLItemRenderer item_renderer;
 
     @SideOnly(Side.SERVER)
-    public ItemListing(UUID uuid, UUID seller, double price, ItemStack item_stack)
+    public ItemListing(UUID uuid, UUID seller, int price, int stack_size, ItemStack item_stack)
     {
         super(uuid, seller, price, item_stack.getDisplayName(), "");
         this.item_stack = item_stack;
-        this.date_published = Calendar.getInstance().getTime();
+        this.item_stack.stackSize = 1;
+        this.stack_size = stack_size;
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 7);
+        this.date_published = calendar.getTime();
     }
 
     @SideOnly(Side.SERVER)
@@ -56,10 +66,12 @@ public class ItemListing extends Listing {
         ResultSet result = Minelife.SQLITE.query("SELECT * FROM item_listings WHERE uuid='" + uuid.toString() + "'");
         if (result.next()) {
             seller = UUID.fromString(result.getString("seller"));
-            price = result.getDouble("price");
+            price = result.getInt("price");
             title = result.getString("title");
             description = NameFetcher.get(seller);
+            stack_size = result.getInt("stack_size");
             item_stack = ItemHelper.itemFromString(result.getString("item_stack"));
+            item_stack.stackSize = 1;
             date_published = df.parse(result.getString("date_published"));
         } else {
             throw new SQLException("ItemListing not found by that uuid.");
@@ -86,15 +98,25 @@ public class ItemListing extends Listing {
     public void draw(Minecraft mc, int mouse_x, int mouse_y, int width, int height)
     {
         if (item_renderer == null) item_renderer = new MLItemRenderer(mc);
-        item_renderer.attempt_gl_reset();
+        MLItemRenderer.attempt_gl_reset();
         int xOffset = 5;
         item_renderer.drawItemStack(item_stack, xOffset + 2, (height() - 16) / 2);
-//        item_renderer.renderToolTip(item_stack, mouse_x, mouse_y, width, height);
-        mc.fontRenderer.setUnicodeFlag(true);
-        mc.fontRenderer.drawString(title(), xOffset + 24, 2, 0xFFFFFF);
-        mc.fontRenderer.drawString(description(), xOffset + 24, mc.fontRenderer.FONT_HEIGHT + 1, 0xFFFFFF);
-        mc.fontRenderer.drawString("$" + NumberConversions.formatter.format(price()), xOffset + 24, mc.fontRenderer.FONT_HEIGHT * 2 + 1, 0xFFFFFF);
-        mc.fontRenderer.setUnicodeFlag(false);
+
+        int sectionWidth = (MasterGui.bg_width - (xOffset + 2 + 16)) / 5;
+        mc.fontRenderer.drawString(title(),
+                xOffset + 24, (height() - mc.fontRenderer.FONT_HEIGHT) / 2, 0xFFFFFF);
+        mc.fontRenderer.drawString(description(),
+                xOffset + 34 + (sectionWidth), (height() - mc.fontRenderer.FONT_HEIGHT) / 2, 0xFFFFFF);
+        mc.fontRenderer.drawString("$" + ModMinebay.format(price()),
+                xOffset + 24 + (sectionWidth * 3), (height() - mc.fontRenderer.FONT_HEIGHT) / 2, 0xFFFFFF);
+        mc.fontRenderer.drawString("x" + ModMinebay.format(stack_size),
+                xOffset + 24 + (sectionWidth * 4) - 10, (height() - mc.fontRenderer.FONT_HEIGHT) / 2, 0xFFFFFF);
+
+        if(mouse_x >= xOffset + 2 && mouse_x <= xOffset + 18 && mouse_y >= (height() - 16) / 2 &&
+                mouse_y <= ((height() - 16) / 2) + 16) {
+            item_renderer.renderToolTip(item_stack, mouse_x, mouse_y);
+            GL11.glDisable(GL11.GL_LIGHTING);
+        }
     }
 
     @Override
@@ -108,8 +130,7 @@ public class ItemListing extends Listing {
     {
         try {
             int amount = (int) objects[0];
-            int price_per_item = (int) (price() / item_stack().stackSize);
-            int price = price_per_item * amount;
+            int price = price() * amount;
 
             if (MoneyHandler.getBalanceVault(player.getUniqueID()) < price) {
                 PacketPopupMsg.send("Insufficient Funds. You need to create more cash piles within your estates.", (EntityPlayerMP) player);
@@ -117,10 +138,21 @@ public class ItemListing extends Listing {
             }
 
             ItemStack to_give = item_stack().copy();
-            to_give.stackSize = amount;
-            item_stack.stackSize -= amount;
-            EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
-            entity_item.delayBeforeCanPickup = 0;
+
+            for (int i = 0; i < amount / to_give.getMaxStackSize(); i++) {
+                ItemStack stack = to_give.copy();
+                stack.stackSize = stack.getMaxStackSize();
+                EntityItem entity_item = player.dropPlayerItemWithRandomChoice(stack, false);
+                entity_item.delayBeforeCanPickup = 0;
+            }
+
+            int leftOver = amount % to_give.getMaxStackSize();
+            if(leftOver > 0) {
+                ItemStack stack = to_give.copy();
+                stack.stackSize = leftOver;
+                EntityItem entity_item = player.dropPlayerItemWithRandomChoice(stack, false);
+                entity_item.delayBeforeCanPickup = 0;
+            }
 
             int leftOverTake = MoneyHandler.takeMoneyVault(player.getUniqueID(), price);
             int leftOverAdd = MoneyHandler.addMoneyVault(seller(), price);
@@ -132,7 +164,9 @@ public class ItemListing extends Listing {
                 player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "$" + NumberConversions.formatter.format(leftOverTake) + " was deposited to your checking account because there wasn't enough inventory space."));
 
 
-            if(item_stack.stackSize > 0) {
+            stack_size -= amount;
+
+            if(stack_size > 0) {
                 write_to_db();
             } else {
                 delete();
@@ -158,22 +192,24 @@ public class ItemListing extends Listing {
 
     public void to_bytes(ByteBuf buf)
     {
-        buf.writeDouble(price());
+        buf.writeInt(price());
         ByteBufUtils.writeUTF8String(buf, uuid().toString());
         ByteBufUtils.writeUTF8String(buf, title() == null ? " " : title());
         ByteBufUtils.writeUTF8String(buf, description() == null ? " " : description());
         ByteBufUtils.writeItemStack(buf, item_stack());
+        buf.writeInt(stack_size);
         ByteBufUtils.writeUTF8String(buf, df.format(date_published));
     }
 
     public static ItemListing from_bytes(ByteBuf buf)
     {
         ItemListing listing = new ItemListing();
-        listing.price = buf.readDouble();
+        listing.price = buf.readInt();
         listing.uuid = UUID.fromString(ByteBufUtils.readUTF8String(buf));
         listing.title = ByteBufUtils.readUTF8String(buf);
         listing.description = ByteBufUtils.readUTF8String(buf);
         listing.item_stack = ByteBufUtils.readItemStack(buf);
+        listing.stack_size = buf.readInt();
         try {
             listing.date_published = df.parse(ByteBufUtils.readUTF8String(buf));
         } catch (ParseException e) {
@@ -197,7 +233,7 @@ public class ItemListing extends Listing {
                         "description='" + description() + "'," +
                         "item_stack='" + ItemHelper.itemToString(item_stack()) + "'," +
                         "damage='" + item_stack().getItemDamage() + "'," +
-                        "stack_size='" + item_stack().stackSize + "'," +
+                        "stack_size='" + stack_size + "'," +
                         "date_published='" + df.format(date_published) + "'" +
                         "WHERE uuid='" + uuid().toString() + "'");
             } else {
@@ -209,7 +245,7 @@ public class ItemListing extends Listing {
                         "'" + description() + "'," +
                         "'" + ItemHelper.itemToString(item_stack()) + "'," +
                         "'" + item_stack().getItemDamage() + "'," +
-                        "'" + item_stack().stackSize + "'," +
+                        "'" + stack_size + "'," +
                         "'" + df.format(date_published) + "')");
             }
         } catch (SQLException e) {

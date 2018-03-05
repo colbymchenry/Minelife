@@ -10,7 +10,7 @@ import java.awt.*;
 public abstract class MasterGui extends GuiScreen {
 
     private static final ResourceLocation logo_texture = new ResourceLocation(Minelife.MOD_ID, "textures/gui/minebay/logo_lg.png");
-    protected final int bg_width = 308, bg_height = 169, logo_width = 354, logo_height = 104;
+    public static final int bg_width = 308, bg_height = 169, logo_width = 354, logo_height = 104;
     protected int left, top;
 
     @Override

@@ -17,11 +17,11 @@ import static net.minecraft.util.EnumChatFormatting.*;
 public class SoldNotification extends AbstractNotification {
 
     private ItemStack item_stack;
-    private double price;
+    private int price;
 
     public SoldNotification() {}
 
-    public SoldNotification(UUID player_uuid, ItemStack item_stack, double price) {
+    public SoldNotification(UUID player_uuid, ItemStack item_stack, int price) {
         super(player_uuid);
         this.item_stack = item_stack;
         this.price = price;
@@ -30,13 +30,13 @@ public class SoldNotification extends AbstractNotification {
     @Override
     public void writeToNBT(NBTTagCompound tagCompound) {
         tagCompound.setString("item_stack", ItemHelper.itemToString(item_stack));
-        tagCompound.setDouble("price", price);
+        tagCompound.setInteger("price", price);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         item_stack = ItemHelper.itemFromString(tagCompound.getString("item_stack"));
-        price = tagCompound.getDouble("price");
+        price = tagCompound.getInteger("price");
     }
 
     @Override

@@ -72,28 +72,13 @@ public class ModEconomy extends MLMod {
         return com.minelife.economy.server.ServerProxy.class;
     }
 
-    public static final String getMessage(String key)
+    public static String getMessage(String key)
     {
         return config.getString(key);
     }
 
-    public static boolean isValidAmount(String str) {
-        if(!NumberConversions.isDouble(str)) return false;
-        String[] data = String.valueOf(str + ".").split("\\.");
-        if(data[0].startsWith("0") && data[0].length() > 1) return false;
-        if(data.length > 1 && data[1].length() > 2) return false;
-        return true;
-    }
-
     public static boolean handleInput(String text, boolean isFocused, char key_char, int key_id) {
-        if (NumberConversions.isInt(String.valueOf(key_char)) || key_id == Keyboard.KEY_BACK) {
-            if (isFocused && NumberConversions.isDouble(text + key_char)) {
-                if (key_id == Keyboard.KEY_BACK || ModEconomy.isValidAmount(text + key_char))
-                    return true;
-            }
-        }
-
-        return false;
+        return key_id == Keyboard.KEY_BACK || isFocused && NumberConversions.isInt(text + key_char);
     }
 
 }
