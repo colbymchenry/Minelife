@@ -23,6 +23,7 @@ import static ic2.core.Ic2Items.ForgeHammer;
 
 public class ModGun extends MLMod {
 
+    // TODO: Add turret recipe
     public static final CreativeTabs tabGuns = new CreativeTabs("guns") {
         @Override
         public Item getTabIconItem() {
@@ -56,6 +57,9 @@ public class ModGun extends MLMod {
         GameRegistry.addShapedRecipe(new ItemStack(MLItems.reddotSight), " A ", " G ", "ABA", 'A', MLItems.gunmetal, 'G', Blocks.glass_pane, 'B', Ic2Items.electronicCircuit);
         GameRegistry.addShapedRecipe(new ItemStack(MLItems.twoXSight), "AAA", "GGG", "ABA", 'A', MLItems.gunmetal, 'G', Blocks.glass_pane, 'B', Ic2Items.electronicCircuit);
         GameRegistry.addShapedRecipe(new ItemStack(MLItems.acogSight), "AAA", "GGG", "ABA", 'A', MLItems.gunmetal, 'G', Blocks.glass_pane,'B', Ic2Items.advancedCircuit);
+        GameRegistry.addShapedRecipe(new ItemStack(MLBlocks.turret), "AAA", "AGA", "AAA", 'A', MLItems.gunmetal, 'G', Ic2Items.advancedCircuit);
+        // TODO: Make custom IRecipe class for 24 redstone makes 1 glowstone
+        FMLCommonHandler.instance().bus().register(new BulletHandler());
         FMLCommonHandler.instance().bus().register(new BulletHandler());
     }
 

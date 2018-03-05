@@ -43,7 +43,7 @@ public class GunClientBarrett extends ItemGunClient {
 
         if (type == IItemRenderer.ItemRenderType.INVENTORY) {
             GL11.glScalef(0.2f, 0.2f, 0.2f);
-            GL11.glTranslatef(0.5f, -1.25f, 0f);
+            GL11.glTranslatef(-2f, -2f, 2f);
             RenderHelper.enableStandardItemLighting();
         }
 
