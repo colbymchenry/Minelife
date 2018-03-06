@@ -29,7 +29,6 @@ public class MLItems {
     public static ItemAbstractDrug cannabis_buds;
     public static ItemCannabisSeeds cannabis_seeds;
     public static ItemAbstractDrug cannabis_shredded;
-    public static ItemAbstractDrug cocaine_sulfate;
     public static ItemCocaLeaf coca_leaf;
     public static ItemAbstractDrug coca_leaf_shredded;
     public static ItemAbstractDrug coca_paste;
@@ -105,7 +104,6 @@ public class MLItems {
         register_item(cannabis_buds = new ItemAbstractDrug("cannabis_buds"));
         register_item(cannabis_seeds = new ItemCannabisSeeds());
         register_item(cannabis_shredded = new ItemAbstractDrug("cannabis_shredded"));
-        register_item(cocaine_sulfate = new ItemAbstractDrug("cocaine_sulfate"));
         register_item(coca_leaf = new ItemCocaLeaf());
         register_item(coca_leaf_shredded = new ItemAbstractDrug("coca_leaf_shredded"));
         register_item(coca_paste = new ItemAbstractDrug("coca_paste"));

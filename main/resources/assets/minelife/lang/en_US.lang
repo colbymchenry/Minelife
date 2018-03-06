@@ -75,6 +75,9 @@ itemGroup.tab_drugs=Drugs
 potion.x_ray_effect=X-Ray Vision
 potion.marijuana_effect=Detectable Marijuana
 potion.cocaine_effect=Detectable Cocaine
+fluid.ammonia=Ammonia
+fluid.sulfuric_acid=Sulfuric Acid
+fluid.potassium_permanganate=Potassium Permanganate
 
 tile.redstone_lamp_on=Redstone Lamp (ON)
 item.cape.name=Cape

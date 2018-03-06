@@ -56,6 +56,7 @@ public class GuiTutorial extends GuiScreen {
                 int yOffset = 0;
                 for (String line : ((Page) section.pages.toArray()[pageIndex]).lines) {
                     if (line.startsWith("@image")) {
+                        GL11.glColor4f(1, 1, 1, 1);
                         String[] data = line.replaceAll("\\(", "").replaceAll("\\)", "").split(",");
                         int posX = 0, posY = 0, picWidth = 16, picHeight = 16;
                         double scale = 1.0;

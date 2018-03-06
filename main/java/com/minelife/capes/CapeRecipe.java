@@ -7,6 +7,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class CapeRecipe extends ShapedOreRecipe {
 
+    // TODO: Broken need to fix
     public CapeRecipe(ItemStack result, Object... recipe) {
         super(result, recipe);
     }

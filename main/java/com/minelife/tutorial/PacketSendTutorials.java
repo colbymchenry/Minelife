@@ -11,6 +11,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Set;
 
 public class PacketSendTutorials implements IMessage {

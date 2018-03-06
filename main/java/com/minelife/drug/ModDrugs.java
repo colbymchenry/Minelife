@@ -80,9 +80,9 @@ public class ModDrugs extends MLMod {
         GameRegistry.addShapelessRecipe(new ItemStack(MLItems.potassium_hydroxide_pyrolusite_mixture), MLItems.potassium_hydroxide, MLItems.pyrolusite);
 
         TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.waxy_cocaine), new ItemStack(MLItems.coca_leaf_shredded), new ItemStack(MLItems.lime), new ItemStack(MLItems.salt)).addLiquids(new FluidStack(BuildCraftEnergy.fluidFuel, 100)));
-        TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.cocaine_sulfate), new ItemStack(MLItems.pressed_cocaine)).addLiquids(new FluidStack(MLBlocks.sulfuric_acid.getFluid(), 100)));
+        TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.coca_paste), new ItemStack(MLItems.pressed_cocaine)).addLiquids(new FluidStack(MLBlocks.sulfuric_acid.getFluid(), 100)));
         TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.purple_cocaine), new ItemStack(MLItems.coca_paste)).addLiquids(new FluidStack(MLBlocks.potassium_permanganate.getFluid(), 100)));
-        TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.processed_cocaine), new ItemStack(MLItems.coca_paste)).addLiquids(new FluidStack(MLBlocks.ammonia.getFluid(), 100)));
+        TileEntityCementMixer.add_recipe(Recipe.build(new ItemStack(MLItems.processed_cocaine), new ItemStack(MLItems.purple_cocaine)).addLiquids(new FluidStack(MLBlocks.ammonia.getFluid(), 100)));
 
         GameRegistry.addShapedRecipe(new ItemStack(MLBlocks.leaf_mulcher), "AAA", "ABA", "ACA", 'A', Ic2Items.advancedAlloy, 'B', Ic2Items.elemotor, 'C', Ic2Items.ironblockcuttingblade);
         GameRegistry.addShapedRecipe(new ItemStack(MLBlocks.cement_mixer), "AAA", "ABA", "ACA", 'A', Ic2Items.advancedAlloy, 'B',  Ic2Items.elemotor, 'C', BuildCraftFactory.tankBlock);

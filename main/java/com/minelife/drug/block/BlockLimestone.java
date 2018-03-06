@@ -31,7 +31,7 @@ public class BlockLimestone extends Block {
         {
             // only over-world
             if (world.provider.dimensionId == 0) {
-                this.generate(MLBlocks.limestone, world, random, chunkX, chunkZ, 20, 50, 20, 60, Blocks.stone);
+                this.generate(MLBlocks.limestone, world, random, chunkX, chunkZ, 20, 50, 20, 250, Blocks.sand);
             }
         }
 

@@ -1,15 +1,18 @@
 package com.minelife.tutorial;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import io.netty.buffer.ByteBuf;
+import javafx.collections.transformation.SortedList;
 
 import java.util.List;
+import java.util.Set;
 
 public class Section implements Comparable<Section>{
 
     public String name;
-    public List<Page> pages = Lists.newArrayList();
+    public Set<Page> pages = Sets.newTreeSet();
 
     public Section(String name) {
         this.name = name;

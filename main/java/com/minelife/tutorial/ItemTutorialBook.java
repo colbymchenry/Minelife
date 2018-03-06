@@ -2,6 +2,7 @@ package com.minelife.tutorial;
 
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
+import com.minelife.util.NumberConversions;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.creativetab.CreativeTabs;
@@ -31,7 +32,7 @@ public class ItemTutorialBook extends Item {
         for (File sectionFile : ModTutorial.getSections(new File(Minelife.getConfigDirectory(), "tutorials"))) {
             Section section = new Section(sectionFile.getName().split("\\.")[0]);
             for (File pageFile : ModTutorial.getPages(sectionFile)) {
-                Page page = new Page();
+                Page page = new Page(NumberConversions.toInt(pageFile.getName().split("\\.")[0]));
                 try {
                     Scanner scanner = new Scanner(pageFile);
                     while(scanner.hasNextLine()) page.lines.add(scanner.nextLine());
