@@ -75,6 +75,7 @@ public class TileEntitySlotMachine extends TileEntity {
         for (String s : ModCasino.config.getStringList("SlotMachine.Combos")) {
 
         }
-        return total;
+        return 0;
+//        return total;
     }
 }
