@@ -14,6 +14,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.common.MinecraftForge;
 
+// TODO: Need to update all estates, need to allow raiding and anyone can access the cash blocks
 public class ModRealEstate extends MLMod {
 
     @Override

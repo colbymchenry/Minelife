@@ -1,0 +1,15 @@
+Cleanup crime scene so cops can't detect
+
+Dynamite and TNT to raid bases
+
+If raiding cops get notified
+
+Add drinks with different inputs, the different inputs have different effects. Can make mix 
+drinks that will have multiple effects.
+
+Add money for planting and digging up wheat
+
+Add locks that are harder to get into with lock picks based on chance
+
+Add bounty to where you can view the player model and their skin
+
