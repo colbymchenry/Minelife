@@ -13,3 +13,66 @@ Add locks that are harder to get into with lock picks based on chance
 
 Add bounty to where you can view the player model and their skin
 
+Milk gets rid of cocaine and marijuana traces, fix this
+
+Putting in loads of 9's cause ATM to crash
+
+Make BillPay say "You have no bills" if there are no bills
+
+When clicking remove with the gun when there is no sites it crashes
+
+Make weed vision last longer
+
+Can't click rent period on new estate
+
+Can make colored text in chat with &
+
+You can spam /g invite need to fix
+
+Ops  need to be able to modify any estate
+
+Make it to where you don't have to press UPDATE to update an estate
+
+Can break at minZ and minX in estates
+
+Money not being delivered in estates
+
+2000 disappeared when buying and renting for 10
+
+Faster reloading with skill with reloading more and more
+
+Add upgrading turrets
+
+Bought 1 piece of $1 wood and it showed $345
+
+When reloading slow down
+
+Allow editing of Minebay listings and taking them down
+
+Minebay purchase takes money from the cash pile, completely empties it
+:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: java.lang.NoSuchFieldException: maxStackSize
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at java.lang.Class.getDeclaredField(Class.java:2070)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.util.ItemHelper.getStacks(ItemHelper.java:30)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.economy.ItemMoney.getDrops(ItemMoney.java:130)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.economy.MoneyHandler.addMoney(MoneyHandler.java:271)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.economy.MoneyHandler.takeMoney(MoneyHandler.java:262)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.economy.MoneyHandler.takeMoneyVault(MoneyHandler.java:187)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.minebay.ItemListing.finalize(ItemListing.java:157)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.minebay.packet.PacketBuyItem$Handler.onMessage(PacketBuyItem.java:56)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.minebay.packet.PacketBuyItem$Handler.onMessage(PacketBuyItem.java:49)
+
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.DefaultChannelHandlerContext.invokeChannelRead(DefaultChannelHandlerContext.java:337)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.DefaultChannelHandlerContext.fireChannelRead(DefaultChannelHandlerContext.java:323)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:101)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.DefaultChannelHandlerContext.invokeChannelRead(DefaultChannelHandlerContext.java:337)
+[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.DefaultChannelHandlerContext.fireChannelRead(DefaultChannelHandlerContext.java:323)
+
+Welfare checks not working
+
+Make it cost money when buying an estate
+
+Player has to have money on them to heal medic
+
+Machine guns do not feel good at all
+
+Dynamite can only break blocks inside an estate

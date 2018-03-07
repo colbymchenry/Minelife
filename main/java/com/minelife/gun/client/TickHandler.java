@@ -20,14 +20,14 @@ public class TickHandler {
     public void onTick(TickEvent.ClientTickEvent event)
     {
         if (Minecraft.getMinecraft().thePlayer != null) {
-            SoundManager mng = ObfuscationReflectionHelper.getPrivateValue(SoundHandler.class,
-                    Minecraft.getMinecraft().getSoundHandler(), "sndManager");
-            Map playingSounds = ObfuscationReflectionHelper.getPrivateValue(SoundManager.class,
-                    mng, "playingSounds");
+            SoundManager mng = ReflectionHelper.getPrivateValue(SoundHandler.class,
+                    Minecraft.getMinecraft().getSoundHandler(), "field_147694_f", "sndManager");
+            Map playingSounds = ReflectionHelper.getPrivateValue(SoundManager.class,
+                    mng, "field_148629_h", "playingSounds");
             Iterator it = playingSounds.keySet().iterator();
             while (it.hasNext()) {
                 PositionedSound ps = (PositionedSound) playingSounds.get(it.next());
-                ResourceLocation reloc = ObfuscationReflectionHelper.getPrivateValue(PositionedSound.class,
+                ResourceLocation reloc = ReflectionHelper.getPrivateValue(PositionedSound.class,
                         ps, "field_147664_a");
 
                 if (reloc.getResourcePath().contains("guns.") && reloc.getResourcePath().contains(".reload")) {

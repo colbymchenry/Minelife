@@ -10,11 +10,13 @@ import com.minelife.util.PlayerHelper;
 import com.minelife.util.Vector;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -133,8 +135,7 @@ public class BulletHandler {
 
                         int damage = bullet.shooter == null ? 10 : ((ItemGun) bullet.shooter.getHeldItem().getItem()).getDamage();
 //                    e.attackEntityFrom(DamageSource.causeMobDamage(bullet.shooter), damage);
-                        Method damageEntity = EntityLivingBase.class.getDeclaredMethod("damageEntity", DamageSource.class, float.class);
-                        damageEntity.setAccessible(true);
+                        Method damageEntity = ReflectionHelper.findMethod(EntityLivingBase.class, e, new String[]{"func_70665_d", "damageEntity"}, DamageSource.class, float.class);
                         damageEntity.invoke(e, DamageSource.causeMobDamage(bullet.shooter), damage);
 
                         if (bullet.ammoType == ItemAmmo.AmmoType.EXPLOSIVE) {
