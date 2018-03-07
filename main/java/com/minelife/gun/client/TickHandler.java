@@ -1,6 +1,7 @@
 package com.minelife.gun.client;
 
 import com.minelife.gun.item.guns.ItemGun;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.ReflectionHelper;
@@ -19,14 +20,14 @@ public class TickHandler {
     public void onTick(TickEvent.ClientTickEvent event)
     {
         if (Minecraft.getMinecraft().thePlayer != null) {
-            SoundManager mng = ReflectionHelper.getPrivateValue(SoundHandler.class,
+            SoundManager mng = ObfuscationReflectionHelper.getPrivateValue(SoundHandler.class,
                     Minecraft.getMinecraft().getSoundHandler(), "sndManager");
-            Map playingSounds = ReflectionHelper.getPrivateValue(SoundManager.class,
+            Map playingSounds = ObfuscationReflectionHelper.getPrivateValue(SoundManager.class,
                     mng, "playingSounds");
             Iterator it = playingSounds.keySet().iterator();
             while (it.hasNext()) {
                 PositionedSound ps = (PositionedSound) playingSounds.get(it.next());
-                ResourceLocation reloc = ReflectionHelper.getPrivateValue(PositionedSound.class,
+                ResourceLocation reloc = ObfuscationReflectionHelper.getPrivateValue(PositionedSound.class,
                         ps, "field_147664_a");
 
                 if (reloc.getResourcePath().contains("guns.") && reloc.getResourcePath().contains(".reload")) {
