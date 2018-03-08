@@ -29,8 +29,10 @@ public class ServerProxy extends MLProxy {
         estatesDir.mkdir();
         EstateHandler.reloadEstates();
 
-        MinecraftForge.EVENT_BUS.register(new EstateListener());
-        FMLCommonHandler.instance().bus().register(new EstateListener());
+        EstateListener estateListener = new EstateListener();
+
+        MinecraftForge.EVENT_BUS.register(estateListener);
+//        FMLCommonHandler.instance().bus().register(new EstateListener());
     }
 
 }

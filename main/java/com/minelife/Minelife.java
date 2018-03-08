@@ -83,13 +83,13 @@ public class Minelife {
         MODS.add(new ModTracker());
         MODS.add(new ModNotifications());
         MODS.add(new ModEconomy());
-        MODS.add(new ModPolice());
+//        MODS.add(new ModPolice());
         MODS.add(new ModGun());
         MODS.add(new ModDrugs());
         MODS.add(new ModRealEstate());
         MODS.add(new ModMinebay());
         MODS.add(new ModShop());
-        MODS.add(new ModClothes());
+//        MODS.add(new ModClothes());
         MODS.add(new ModGangs());
         MODS.add(new ModCapes());
         MODS.add(new ModEssentials());

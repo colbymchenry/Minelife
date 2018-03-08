@@ -85,18 +85,33 @@ public class EstateHandler {
         return true;
     }
 
-    public static Estate getEstateAt(World world, Vec3 vec3)
+    public static Estate getEstateAt(World world, int x, int y, int z)
     {
-        TreeMap<Double, Estate> parentEstates = Maps.newTreeMap();
+//        TreeMap<Double, Estate> parentEstates = Maps.newTreeMap();
+//        Estate[] estateArray = loadedEstates.toArray(new Estate[loadedEstates.size()]);
+        Estate closestEstate = null;
+        double currentDistance = -1;
         for (Estate estate : loadedEstates) {
             if(estate.getWorld().getWorldInfo().getWorldName().equals(world.getWorldInfo().getWorldName())) {
-                if(estate.contains(world, vec3.xCoord, vec3.yCoord, vec3.zCoord)) {
+                if(estate.contains(world, x, y, z)) {
+//                    // TODO: Don't want to keep creating vector helper here
                     Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
-                    parentEstates.put(min.distanceTo(vec3), estate);
+                    double distance = min.squareDistanceTo(x, y, z);
+                    if(distance < currentDistance || currentDistance == -1) {
+                        closestEstate = estate;
+                        currentDistance = distance;
+                    }
+//                    parentEstates.put(min.squareDistanceTo(x, y, z), estate);
                 }
             }
         }
-        return parentEstates.isEmpty() ? null : parentEstates.firstEntry().getValue();
+        System.out.println("DONE");
+        return closestEstate;
+    }
+
+    public static Estate getEstateAt(World world, double x, double y, double z)
+    {
+        return getEstateAt(world, (int) x, (int) y, (int) z);
     }
 
     public static int getMaxEstateID() {

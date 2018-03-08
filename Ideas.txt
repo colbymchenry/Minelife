@@ -34,10 +34,14 @@ Can't click rent period on new estate
 Can make colored text in chat with &
 
 // FIXED
-You can spam /g invite need to fix
+You can spam /g invite
 
-// FIXED need permission estate.override.break|place|interact|enter
+// FIXED need permission estate.override.break|place|interact|enter|modify|delete
 Ops need to be able to modify any estate
+
+Remove countdown on teleport for OPs
+
+/home causing server to crash
 
 Make it to where you don't have to press UPDATE to update an estate
 

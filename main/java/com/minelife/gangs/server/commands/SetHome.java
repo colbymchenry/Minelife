@@ -29,7 +29,7 @@ public class SetHome implements ICommandHandler{
             return;
         }
 
-        Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(player.posX, player.posY, player.posZ));
+        Estate estate = EstateHandler.getEstateAt(player.worldObj,player.posX, player.posY, player.posZ);
 
         if(estate == null) {
             sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You must be within an estate to set the gang's home."));

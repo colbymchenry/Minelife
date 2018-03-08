@@ -14,6 +14,7 @@ public class EntityCleaner {
     public void OOBCatcher(EntityEvent.EnteringChunk event)
     {
 
+        // TODO: see if this is causing lag
         // EntityCleaner.log.logInfo("Chunk enter event detected.");
 
         int i = MathHelper.floor_double(event.entity.posX / 16.0D);

@@ -102,7 +102,7 @@ public class TileEntityTurret extends TileEntity implements IInventory {
 
         List<EntityLivingBase> toRemove = Lists.newArrayList();
 
-        Estate estate = EstateHandler.getEstateAt(worldObj, Vec3.createVectorHelper(xCoord, yCoord, zCoord));
+        Estate estate = EstateHandler.getEstateAt(worldObj, xCoord, yCoord, zCoord);
         Set<UUID> memberKeys = estate != null ? estate.getSurroundingMembers().keySet() : Sets.newTreeSet();
         Set<UUID> ownersKeys = estate != null ? estate.getSurroundingOwners() : Sets.newTreeSet();
 
@@ -393,7 +393,7 @@ public class TileEntityTurret extends TileEntity implements IInventory {
     }
 
     public boolean HasPermissionToModifySettings(EntityPlayerMP Player) {
-        Estate estate = EstateHandler.getEstateAt(worldObj, Vec3.createVectorHelper(xCoord, yCoord, zCoord));
+        Estate estate = EstateHandler.getEstateAt(worldObj, xCoord, yCoord, zCoord);
 
         if (estate != null) {
             if (estate.getOwner() != null && estate.getOwner().equals(Player.getUniqueID())) return true;

@@ -10,6 +10,7 @@ import com.minelife.realestate.network.PacketGuiCreateEstate;
 import com.minelife.realestate.network.PacketGuiModifyEstate;
 import com.minelife.realestate.network.PacketGuiPurchaseEstate;
 import com.minelife.util.PlayerHelper;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class CommandEstate implements ICommand {
+public class CommandEstate extends CommandBase {
 
     @Override
     public String getCommandName() {
@@ -45,7 +46,7 @@ public class CommandEstate implements ICommand {
         try {
             if (args.length == 0) throw new Exception(getCommandUsage(sender));
 
-            Estate estateAtLoc = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(player.posX, player.posY, player.posZ));
+            Estate estateAtLoc = EstateHandler.getEstateAt(player.worldObj, player.posX, player.posY, player.posZ);
 
             switch(args[0].toLowerCase()) {
                 case "create": {
@@ -90,7 +91,7 @@ public class CommandEstate implements ICommand {
                         return;
                     }
 
-                    if(Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
+                    if(ModPermission.hasPermission(player.getUniqueID(), "estate.override.modify") || Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
                             estateAtLoc.isAbsoluteOwner(player.getUniqueID()) || estateAtLoc.getMembers().containsKey(player.getUniqueID())) {
                         Minelife.NETWORK.sendTo(new PacketGuiModifyEstate(estateAtLoc, estateAtLoc.getPlayerPermissions(player.getUniqueID())), player);
                     } else {
@@ -104,7 +105,7 @@ public class CommandEstate implements ICommand {
                         return;
                     }
 
-                    if(Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
+                    if(ModPermission.hasPermission(player.getUniqueID(), "estate.override.delete") || Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
                             estateAtLoc.isAbsoluteOwner(player.getUniqueID()) || estateAtLoc.getMembers().containsKey(player.getUniqueID())) {
                         estateAtLoc.deleteEstate();
                         player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Estate deleted!"));
@@ -137,21 +138,6 @@ public class CommandEstate implements ICommand {
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
         return sender instanceof EntityPlayer;
-    }
-
-    @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args) {
-        return null;
-    }
-
-    @Override
-    public boolean isUsernameIndex(String[] args, int index) {
-        return false;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
     }
 
 }

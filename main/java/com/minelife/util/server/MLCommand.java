@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public abstract class MLCommand implements ICommand {
+public abstract class MLCommand extends CommandBase {
 
     private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
     protected static List<Runnable> scheduledTasks = Lists.newArrayList();
@@ -43,11 +43,6 @@ public abstract class MLCommand implements ICommand {
     protected String[] getPlayers()
     {
         return MinecraftServer.getServer().getAllUsernames();
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
     }
 
     public static class Ticker {

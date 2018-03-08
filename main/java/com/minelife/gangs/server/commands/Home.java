@@ -32,7 +32,7 @@ public class Home implements ICommandHandler {
         }
 
         Estate estate = EstateHandler.getEstateAt(gang.getHome().getEntityWorld(),
-                Vec3.createVectorHelper(gang.getHome().getX(), gang.getHome().getY(), gang.getHome().getZ()));
+                gang.getHome().getX(), gang.getHome().getY(), gang.getHome().getZ());
 
         if(estate == null) {
             sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Your gang's home must be within an estate."));

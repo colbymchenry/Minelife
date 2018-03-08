@@ -25,6 +25,7 @@ public class Estate implements Comparable<Estate> {
 
     private int id;
     private MLConfig config;
+    private AxisAlignedBB bounds;
 
     protected Estate() {
     }
@@ -145,11 +146,13 @@ public class Estate implements Comparable<Estate> {
     }
 
     public AxisAlignedBB getBounds() {
+        if(bounds != null) return bounds;
         Selection s = new Selection();
         s.setPos1(config.getInt("pos1.x"), config.getInt("pos1.y"), config.getInt("pos1.z"));
         s.setPos2(config.getInt("pos2.x"), config.getInt("pos2.y"), config.getInt("pos2.z"));
-        return AxisAlignedBB.getBoundingBox(s.getMin().xCoord, s.getMin().yCoord, s.getMin().zCoord,
+        bounds = AxisAlignedBB.getBoundingBox(s.getMin().xCoord, s.getMin().yCoord, s.getMin().zCoord,
                 s.getMax().xCoord, s.getMax().yCoord, s.getMax().zCoord);
+        return bounds;
     }
 
     public World getWorld() {
@@ -160,15 +163,16 @@ public class Estate implements Comparable<Estate> {
     public boolean contains(Estate estate) {
         AxisAlignedBB bounds = getBounds();
         AxisAlignedBB bounds1 = estate.getBounds();
-        Vec3 pos1 = Vec3.createVectorHelper(bounds1.minX, bounds1.minY, bounds1.minZ);
-        Vec3 pos2 = Vec3.createVectorHelper(bounds1.maxX, bounds1.maxY, bounds1.maxZ);
-        return bounds.isVecInside(pos1) && bounds.isVecInside(pos2) &&
-                estate.getWorld().getWorldInfo().getWorldName().equals(getWorld().getWorldInfo().getWorldName());
+        boolean posInside = bounds.minX <= bounds1.minX && bounds.minY <= bounds1.minY && bounds.minZ <= bounds1.minZ
+                && bounds.maxZ >= bounds1.maxX && bounds.maxY >= bounds1.maxY && bounds.maxZ >= bounds1.maxZ;
+
+        return posInside && estate.getWorld().getWorldInfo().getWorldName().equals(getWorld().getWorldInfo().getWorldName());
     }
 
     public boolean contains(World world, double x, double y, double z) {
         return getWorld().getWorldInfo().getWorldName().equals(world.getWorldInfo().getWorldName()) &&
-                getBounds().isVecInside(Vec3.createVectorHelper(x, y, z));
+                getBounds().minX <= x && getBounds().minY <= y && getBounds().minZ <= z && getBounds().maxX >= x
+                && getBounds().maxY >= y && getBounds().maxZ >= z;
     }
 
     public boolean contains(Selection selection) {
@@ -412,6 +416,7 @@ public class Estate implements Comparable<Estate> {
         config.set("pos2.y", bounds.maxY);
         config.set("pos2.z", bounds.maxZ);
         config.save();
+        this.bounds = bounds;
     }
 
     public void setWorld(World world) {
