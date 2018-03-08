@@ -207,9 +207,10 @@ public class MoneyHandler {
         int couldNotAdd = 0;
         for (TileEntityCash cashBlock : cashBlocks) {
             Map<Integer, ItemStack> moneyStacks = getMoneyStacks(cashBlock.getInventory());
-            moneyStacks.forEach((slot, stack) -> cashBlock.getInventory().setInventorySlotContents(slot, null));
             int toAdd = amount;
             for (ItemStack itemStack : moneyStacks.values()) toAdd += getAmount(itemStack);
+
+            moneyStacks.forEach((slot, stack) -> cashBlock.getInventory().setInventorySlotContents(slot, null));
 
             List<ItemStack> stacksToInsert = ItemMoney.getDrops(toAdd);
             for (ItemStack stack : stacksToInsert)

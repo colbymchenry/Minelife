@@ -17,7 +17,7 @@ public class GuiTransfer extends GuiDeposit {
     protected void actionPerformed(GuiButton button) {
         if (button.id < 10) {
             // make sure this isn't larger than a valid long
-            if (NumberConversions.isDouble(this.amount + button.displayString)) {
+            if (NumberConversions.isInt(this.amount + button.displayString)) {
                 this.amount += button.displayString;
             }
         }
@@ -28,7 +28,7 @@ public class GuiTransfer extends GuiDeposit {
 
         // hit the enter button
         if (button.id == 11)
-            Minecraft.getMinecraft().displayGuiScreen(new Stage2(Integer.parseInt(this.amount)));
+            Minecraft.getMinecraft().displayGuiScreen(new Stage2(NumberConversions.toInt(this.amount)));
     }
 
     private class Stage2 extends GuiATM {

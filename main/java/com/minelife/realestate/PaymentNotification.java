@@ -65,6 +65,7 @@ public class PaymentNotification extends AbstractNotification{
             fontRenderer.drawString(EnumChatFormatting.ITALIC + (notification.rent ? "Rent" : "Purchase"), 28, 9, 0xFFFFFF);
             fontRenderer.drawString("Estate: #" + notification.estateID, 5, 5 + 12 + 5 + 5, 0xFFFFFF);
             fontRenderer.drawString("Amount: $" + NumberConversions.formatter.format(notification.amount), 5, 5 + 12 + 12 + 5 + 5, 0xFFFFFF);
+            fontRenderer.drawString("Was deposited into your checking account.", 5, 5 + 12 + 12 + 5 + 5 + 10, 0xFFFFFF);
         }
 
         @Override
@@ -74,7 +75,7 @@ public class PaymentNotification extends AbstractNotification{
 
         @Override
         protected int getHeight() {
-            return 45;
+            return 55;
         }
 
         @Override

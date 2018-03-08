@@ -28,7 +28,7 @@ public class WelfareListener {
             if(!paid) {
                 paid = true;
                 try {
-                    ResultSet result = Minelife.SQLITE.query("SELECT * FROM players");
+                    ResultSet result = Minelife.SQLITE.query("SELECT * FROM economy");
                     while(result.next()) {
                         UUID playerUUID = UUID.fromString(result.getString("uuid"));
                         EntityPlayer player = PlayerHelper.getPlayer(playerUUID);
@@ -47,5 +47,7 @@ public class WelfareListener {
             paid = false;
         }
     }
+
+
 
 }

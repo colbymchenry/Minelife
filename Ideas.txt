@@ -15,29 +15,44 @@ Add bounty to where you can view the player model and their skin
 
 Milk gets rid of cocaine and marijuana traces, fix this
 
+// FIXED
 Putting in loads of 9's cause ATM to crash
 
+// FIXED
 Make BillPay say "You have no bills" if there are no bills
 
+// FIXED
 When clicking remove with the gun when there is no sites it crashes
 
+// FIXED
 Make weed vision last longer
 
+// FIXED
 Can't click rent period on new estate
 
+// FIXED must have chat.color permission
 Can make colored text in chat with &
 
+// FIXED
 You can spam /g invite need to fix
 
-Ops  need to be able to modify any estate
+// FIXED need permission estate.override.break|place|interact|enter
+Ops need to be able to modify any estate
 
 Make it to where you don't have to press UPDATE to update an estate
 
 Can break at minZ and minX in estates
 
-Money not being delivered in estates
+Money not being delivered in rental of estates
 
+// FIXED
 2000 disappeared when buying and renting for 10
+
+// FIXED
+Welfare not working
+
+// FIXED
+Money disappears when buying from Minebay
 
 Faster reloading with skill with reloading more and more
 
@@ -66,8 +81,6 @@ Minebay purchase takes money from the cash pile, completely empties it
 [22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:101)
 [22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.DefaultChannelHandlerContext.invokeChannelRead(DefaultChannelHandlerContext.java:337)
 [22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.DefaultChannelHandlerContext.fireChannelRead(DefaultChannelHandlerContext.java:323)
-
-Welfare checks not working
 
 Make it cost money when buying an estate
 

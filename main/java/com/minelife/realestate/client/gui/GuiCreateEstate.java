@@ -211,7 +211,7 @@ public class GuiCreateEstate extends GuiScreen {
 
             if (createBtn.mousePressed(mc, mouseX, mouseY)) {
                 Set<Permission> globalPerms = Sets.newTreeSet(), renterPerms = Sets.newTreeSet(),
-                        ownerPerms = Sets.newTreeSet(), estatePerms =Sets.newTreeSet(), allowedToChangePerms = Sets.newTreeSet();
+                        ownerPerms = Sets.newTreeSet(), estatePerms = Sets.newTreeSet(), allowedToChangePerms = Sets.newTreeSet();
                 globalPermissions.forEach((p, tB) -> {
                     if (tB.isChecked()) globalPerms.add(p);
                 });
@@ -228,7 +228,7 @@ public class GuiCreateEstate extends GuiScreen {
                     if (tB.isChecked()) allowedToChangePerms.add(p);
                 });
 
-                int purchasePrice = purchaseField.getText().isEmpty() ? -1: Integer.parseInt(purchaseField.getText());
+                int purchasePrice = purchaseField.getText().isEmpty() ? -1 : Integer.parseInt(purchaseField.getText());
                 int rentPrice = rentField.getText().isEmpty() ? -1 : Integer.parseInt(rentField.getText());
                 int rentPeriod = rentPeriodField.getText().isEmpty() ? -1 : Integer.parseInt(rentPeriodField.getText());
 
@@ -238,21 +238,17 @@ public class GuiCreateEstate extends GuiScreen {
         }
 
         @Override
-        public void keyTyped(char keycode, int keynum) {
-            super.keyTyped(keycode, keynum);
-            if ((NumberConversions.isInt(String.valueOf(keycode)) && keynum != Keyboard.KEY_BACK) || keynum == Keyboard.KEY_BACK) {
-                if (purchaseField.isFocused()) {
-                        purchaseField.textboxKeyTyped(keycode, keynum);
-                }
-                if (rentField.isFocused()) {
-                        rentField.textboxKeyTyped(keycode, keynum);
-                }
+        public void keyTyped(char keycode, int keyNum) {
+            super.keyTyped(keycode, keyNum);
 
-                if (keynum == Keyboard.KEY_BACK)
-                    rentPeriodField.textboxKeyTyped(keycode, keynum);
+            if ((NumberConversions.isInt(String.valueOf(keycode)) && keyNum != Keyboard.KEY_BACK) || keyNum == Keyboard.KEY_BACK) {
+                purchaseField.textboxKeyTyped(keycode, keyNum);
+                rentField.textboxKeyTyped(keycode, keyNum);
+                rentPeriodField.textboxKeyTyped(keycode, keyNum);
             }
-            introField.textboxKeyTyped(keycode, keynum);
-            outroField.textboxKeyTyped(keycode, keynum);
+
+            introField.textboxKeyTyped(keycode, keyNum);
+            outroField.textboxKeyTyped(keycode, keyNum);
         }
 
         @Override

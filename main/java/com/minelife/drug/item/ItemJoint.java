@@ -20,7 +20,7 @@ public class ItemJoint extends ItemAbstractDrug {
     @Override
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
         if(world.isRemote) return super.onItemRightClick(itemStack, world, player);
-        player.addPotionEffect(new PotionEffect(ModDrugs.x_ray_potion.id, 15 * 20, 0, false));
+        player.addPotionEffect(new PotionEffect(ModDrugs.x_ray_potion.id, 90 * 20, 0, false));
         player.addPotionEffect(new PotionEffect(Potion.nightVision.id, 60 * 20, 0, false));
         player.addPotionEffect(new PotionEffect(Potion.waterBreathing.id, 60 * 20, 0, false));
         player.addPotionEffect(new PotionEffect(Potion.hunger.id, 60 * 20, 1, false));

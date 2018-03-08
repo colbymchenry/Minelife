@@ -73,6 +73,8 @@ public class PacketInviteToGang implements IMessage {
                 return null;
             }
 
+            if(gangInvites.containsKey(playerReceiver.getUniqueID()) && gangInvites.get(playerReceiver.getUniqueID()).equals(senderGang)) return null;
+
             gangInvites.put(playerReceiver.getUniqueID(), senderGang);
             playerReceiver.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + playerSender.getDisplayName() + EnumChatFormatting.GOLD + " has invited you to join their gang. Type " + EnumChatFormatting.RED + "/g accept " + EnumChatFormatting.GOLD + "or " + EnumChatFormatting.RED + "/g deny"));
             return null;

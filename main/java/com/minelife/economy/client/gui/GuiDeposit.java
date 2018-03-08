@@ -28,7 +28,7 @@ public class GuiDeposit extends GuiATM {
     protected void actionPerformed(GuiButton button) {
         if (button.id < 10) {
             // make sure this isn't larger than a valid double
-            if (NumberConversions.isDouble(this.amount + button.displayString)) {
+            if (NumberConversions.isInt(this.amount + button.displayString)) {
                 this.amount += button.displayString;
             }
         }
@@ -39,7 +39,7 @@ public class GuiDeposit extends GuiATM {
 
         // hit the enter button
         if (button.id == 11)
-            Minelife.NETWORK.sendToServer(new PacketDeposit(Integer.parseInt(this.amount)));
+            Minelife.NETWORK.sendToServer(new PacketDeposit(NumberConversions.toInt(this.amount)));
     }
 
     @Override

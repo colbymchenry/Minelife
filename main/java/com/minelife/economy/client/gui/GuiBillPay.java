@@ -1,32 +1,18 @@
 package com.minelife.economy.client.gui;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.economy.Billing;
-import com.minelife.economy.ModEconomy;
-import com.minelife.economy.client.ClientProxy;
 import com.minelife.economy.packet.PacketRequestBills;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiLoadingAnimation;
 import com.minelife.util.client.GuiScrollableContent;
-import com.minelife.util.client.GuiTextField;
-import com.minelife.util.client.GuiTickBox;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.util.List;
-import java.util.Map;
 
 public class GuiBillPay extends GuiATM {
 
@@ -50,7 +36,13 @@ public class GuiBillPay extends GuiATM {
             return;
         }
 
-        content.draw(mouseX, mouseY, Mouse.getDWheel());
+        if(billList.isEmpty()) {
+            fontRendererObj.drawString("You have no bills...",
+                    (width - fontRendererObj.getStringWidth("You have no bills...")) / 2,
+                    (height - fontRendererObj.FONT_HEIGHT) / 2, 0xFFFFFF);
+        } else {
+            content.draw(mouseX, mouseY, Mouse.getDWheel());
+        }
     }
 
     @Override

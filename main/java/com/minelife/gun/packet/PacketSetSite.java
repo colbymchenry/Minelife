@@ -64,6 +64,7 @@ public class PacketSetSite implements IMessage {
 
             // Removing the sight
             if (message.slot == -2) {
+                if(ItemGun.getSight(heldItem) == null) return null;
                 ItemStack to_give = ItemGun.getSight(heldItem).copy();
                 EntityItem entity_item = player.dropPlayerItemWithRandomChoice(to_give, false);
                 entity_item.delayBeforeCanPickup = 0;
@@ -71,7 +72,6 @@ public class PacketSetSite implements IMessage {
                 return null;
             }
 
-            System.out.println(message.slot);
             ItemStack stackInSlot = player.inventory.getStackInSlot(message.slot);
             if (stackInSlot != null && stackInSlot.getItem() instanceof ItemSight) {
                 if (ItemGun.getSight(heldItem) != null) {

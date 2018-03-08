@@ -2,6 +2,7 @@ package com.minelife.realestate.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.minelife.permission.ModPermission;
 import com.minelife.realestate.*;
 import com.minelife.util.StringHelper;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -45,6 +46,8 @@ public class EstateListener {
     @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.player;
+
+
         Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(player.posX, player.posY, player.posZ));
 
         // leaving estate
@@ -58,6 +61,7 @@ public class EstateListener {
 
         if (estate != null && insideEstate.containsKey(player) && !insideEstate.get(player).equals(estate)) {
             if (!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.ENTER)) {
+                if (ModPermission.hasPermission(player.getUniqueID(), "estate.override.enter")) return;
                 handleEntrance(estate, player);
                 player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You do not have permission to enter this estate."));
                 return;
@@ -78,6 +82,7 @@ public class EstateListener {
         if (estate != null) {
             if (!insideEstate.containsKey(player)) {
                 if (!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.ENTER)) {
+                    if (ModPermission.hasPermission(player.getUniqueID(), "estate.override.enter")) return;
                     handleEntrance(estate, player);
                     player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "You do not have permission to enter this estate."));
                     return;
@@ -129,6 +134,8 @@ public class EstateListener {
         Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(event.x, event.y, event.z));
         if (estate == null) return;
 
+        if(ModPermission.hasPermission(player.getUniqueID(), "estate.override.break")) return;
+
         event.setCanceled(!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.BREAK));
     }
 
@@ -139,6 +146,8 @@ public class EstateListener {
 
         if (estate == null) return;
 
+        if(ModPermission.hasPermission(player.getUniqueID(), "estate.override.place")) return;
+
         event.setCanceled(!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.PLACE));
     }
 
@@ -147,7 +156,7 @@ public class EstateListener {
         EntityPlayerMP player = (EntityPlayerMP) event.entityPlayer;
         Estate estate = EstateHandler.getEstateAt(player.worldObj, Vec3.createVectorHelper(event.x, event.y, event.z));
         if (estate == null) return;
-
+        if(ModPermission.hasPermission(player.getUniqueID(), "estate.override.interact")) return;
         Block block = event.world.getBlock(event.x, event.y, event.z);
 
         if (((block instanceof BlockContainer) || ServerProxy.config.getIntegerList("black-listed-blocks").contains(Block.getIdFromBlock(block))) &&
@@ -171,6 +180,7 @@ public class EstateListener {
     public void onDamage(LivingHurtEvent event) {
         Estate estate = EstateHandler.getEstateAt(event.entity.worldObj, Vec3.createVectorHelper(event.entity.posX, event.entity.posY, event.entity.posZ));
         if (estate == null) return;
+
         if (event.entity instanceof EntityPlayer)
             event.setCanceled(!estate.getEstatePermissions().contains(Permission.PVP));
         else
@@ -224,19 +234,19 @@ public class EstateListener {
         event.getAffectedBlocks().removeAll(toRemove);
     }
 
-    @SubscribeEvent
-    public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        EstateHandler.loadedEstates.forEach(e -> {
-            if (e.getRenter() != null && e.getRenter().equals(event.player.getUniqueID())) {
-                if (e.getBill() != null) {
-                    long diff = e.getBill().getDueDate().getTime() - Calendar.getInstance().getTime().getTime();
-                    if (e.getBill().getAmountDue() > 0) {
-                        RentDueNotification notification = new RentDueNotification(event.player.getUniqueID(), (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS), e.getID(), e.getBill().getAmountDue());
-                        notification.sendTo((EntityPlayerMP) event.player);
-                    }
-                }
-            }
-        });
-    }
+//    @SubscribeEvent
+//    public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+//        EstateHandler.loadedEstates.forEach(e -> {
+//            if (e.getRenter() != null && e.getRenter().equals(event.player.getUniqueID())) {
+//                if (e.getBill() != null) {
+//                    long diff = e.getBill().getDueDate().getTime() - Calendar.getInstance().getTime().getTime();
+//                    if (e.getBill().getAmountDue() > 0) {
+//                        RentDueNotification notification = new RentDueNotification(event.player.getUniqueID(), (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS), e.getID(), e.getBill().getAmountDue());
+//                        notification.sendTo((EntityPlayerMP) event.player);
+//                    }
+//                }
+//            }
+//        });
+//    }
 
 }

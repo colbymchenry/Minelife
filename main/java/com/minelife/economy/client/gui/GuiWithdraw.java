@@ -12,7 +12,7 @@ public class GuiWithdraw extends GuiDeposit {
     protected void actionPerformed(GuiButton button) {
         if (button.id < 10) {
             // make sure this isn't larger than a valid long
-            if (NumberConversions.isDouble(this.amount + button.displayString)) {
+            if (NumberConversions.isInt(this.amount + button.displayString)) {
                 this.amount += button.displayString;
             }
         }
@@ -23,7 +23,7 @@ public class GuiWithdraw extends GuiDeposit {
 
         // hit the enter button
         if(button.id == 11)
-            Minelife.NETWORK.sendToServer(new PacketWithdraw(Integer.parseInt(this.amount)));
+            Minelife.NETWORK.sendToServer(new PacketWithdraw(NumberConversions.toInt(this.amount)));
     }
 
 

@@ -29,8 +29,9 @@ public class EventHandler {
         String displayName = groupPrefix.toString() + playerPrefix + event.username;
         String format = ModPermission.getConfig().getString("chat-format");
         format = format.replaceAll("\\{DISPLAYNAME}", displayName);
-        format = format.replaceAll("\\{MESSAGE}", groupSuffix + playerSuffix + event.message);
         format = format.replaceAll("&", String.valueOf('\u00a7'));
+        format = format.replaceAll("\\{MESSAGE}", groupSuffix + playerSuffix + event.message);
+        if(ModPermission.hasPermission(uuid, "chat.color")) format = format.replaceAll("&", String.valueOf('\u00a7'));
         ChatComponentText text = new ChatComponentText(format);
         event.setCanceled(true);
         event.player.getEntityWorld().playerEntities.forEach(player -> ((EntityPlayerMP) player).addChatComponentMessage(text));

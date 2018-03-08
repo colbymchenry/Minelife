@@ -20,6 +20,7 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
@@ -74,6 +75,7 @@ public abstract class ItemGun extends Item {
             if (stack.hasTagCompound() && stack.stackTagCompound.hasKey("reloadTime")) {
                 if (System.currentTimeMillis() > stack.stackTagCompound.getLong("reloadTime")) {
                     reload((EntityPlayer) entity, stack);
+                    ((EntityPlayer) entity).removePotionEffect(Potion.moveSlowdown.id);
                     stack.stackTagCompound.removeTag("reloadTime");
                 }
             }
