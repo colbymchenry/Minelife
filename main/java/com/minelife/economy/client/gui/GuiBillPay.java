@@ -37,9 +37,9 @@ public class GuiBillPay extends GuiATM {
         }
 
         if(billList.isEmpty()) {
-            fontRendererObj.drawString("You have no bills...",
-                    (width - fontRendererObj.getStringWidth("You have no bills...")) / 2,
-                    (height - fontRendererObj.FONT_HEIGHT) / 2, 0xFFFFFF);
+            fontRendererObj.drawString(EnumChatFormatting.BOLD + "You have no bills...",
+                    (width - fontRendererObj.getStringWidth(EnumChatFormatting.BOLD + "You have no bills...")) / 2,
+                    (height - fontRendererObj.FONT_HEIGHT) / 2, 0);
         } else {
             content.draw(mouseX, mouseY, Mouse.getDWheel());
         }

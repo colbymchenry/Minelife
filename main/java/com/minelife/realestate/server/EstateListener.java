@@ -131,13 +131,15 @@ public class EstateListener {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onBreak(BlockEvent.BreakEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
-        System.out.println(event.x + "," + event.y + "," + event.z);
+
+        long start = System.currentTimeMillis();
         Estate estate = EstateHandler.getEstateAt(player.worldObj, event.x, event.y, event.z);
+
         if (estate == null) return;
 
-//        if(ModPermission.hasPermission(player.getUniqueID(), "estate.override.break")) return;
-//
-//        event.setCanceled(!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.BREAK));
+        if(ModPermission.hasPermission(player.getUniqueID(), "estate.override.break")) return;
+
+        event.setCanceled(!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.BREAK));
     }
 
 //    @SubscribeEvent(priority = EventPriority.LOWEST)

@@ -186,15 +186,25 @@ public class Estate implements Comparable<Estate> {
         return getBounds().intersectsWith(AxisAlignedBB.getBoundingBox(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord));
     }
 
+    // TODO: Optimize this
     public Estate getParentEstate() {
-        TreeMap<Double, Estate> parentEstates = Maps.newTreeMap();
+        Estate closestEstate = null;
+        double currentDistance = -1;
         for (Estate estate : EstateHandler.loadedEstates) {
-            if (estate.contains(this)) {
-                Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
-                parentEstates.put(min.distanceTo(Vec3.createVectorHelper(getBounds().minX, getBounds().minY, getBounds().minZ)), estate);
+            if(estate.getWorld().getWorldInfo().getWorldName().equals(getWorld().getWorldInfo().getWorldName())) {
+                if(estate.contains(getWorld(), bounds.minX, bounds.minY, bounds.minZ)) {
+//                    // TODO: Don't want to keep creating vector helper here
+                    Vec3 min = Vec3.createVectorHelper(estate.getBounds().minX, estate.getBounds().minY, estate.getBounds().minZ);
+                    double distance = min.squareDistanceTo(bounds.minX, bounds.minY, bounds.minZ);
+                    if(distance < currentDistance || currentDistance == -1) {
+                        closestEstate = estate;
+                        currentDistance = distance;
+                    }
+//                    parentEstates.put(min.squareDistanceTo(x, y, z), estate);
+                }
             }
         }
-        return parentEstates.isEmpty() ? null : parentEstates.firstEntry().getValue();
+        return closestEstate == this ? null : closestEstate;
     }
 
     public List<Estate> getContainingEstates() {
@@ -232,12 +242,10 @@ public class Estate implements Comparable<Estate> {
     public Set<Permission> getPlayerPermissions(UUID player) {
         Set<Permission> permissions = Sets.newTreeSet();
         permissions.addAll(getActualGlobalPerms());
-
         if (getParentEstate() == null && Objects.equals(player, getOwner())) {
             permissions.addAll(toSet(Arrays.asList(Permission.values())));
             return permissions;
         }
-
         if(Objects.equals(player, getMasterEstate().getOwner())) {
             permissions.addAll(toSet(Arrays.asList(Permission.values())));
             return permissions;
@@ -252,21 +260,16 @@ public class Estate implements Comparable<Estate> {
         } else if (getMembers().containsKey(player)) {
             permissions.addAll(getActualMemberPerms(player));
         }
-
         return permissions;
     }
 
     public Set<Permission> getActualGlobalPerms() {
         Set<Permission> globalPermissions = getGlobalPermissions();
         Set<Permission> toRemove = Sets.newTreeSet();
-
         Estate parentEstate = getParentEstate();
-
         while (parentEstate != null) {
-
             for (Permission p : globalPermissions)
                 if (!parentEstate.getGlobalPermissions().contains(p) && !parentEstate.getPlayerPermissions(parentEstate.getOwner()).contains(p)) toRemove.add(p);
-
             parentEstate = parentEstate.getParentEstate();
         }
 

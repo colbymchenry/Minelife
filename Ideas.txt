@@ -36,6 +36,9 @@ Can make colored text in chat with &
 // FIXED
 You can spam /g invite
 
+// FIXED
+Lag every 40 seconds and overall lag from RealEstate
+
 // FIXED need permission estate.override.break|place|interact|enter|modify|delete
 Ops need to be able to modify any estate
 
@@ -45,6 +48,7 @@ Remove countdown on teleport for OPs
 
 Make it to where you don't have to press UPDATE to update an estate
 
+// FIXED
 Can break at minZ and minX in estates
 
 Money not being delivered in rental of estates

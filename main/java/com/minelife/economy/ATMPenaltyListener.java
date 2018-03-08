@@ -20,7 +20,7 @@ public class ATMPenaltyListener {
             if(!paid) {
                 paid = true;
                 try {
-                    ResultSet result = Minelife.SQLITE.query("SELECT * FROM players");
+                    ResultSet result = Minelife.SQLITE.query("SELECT * FROM economy");
                     while(result.next()) {
                         UUID playerUUID = UUID.fromString(result.getString("uuid"));
                         int balance = MoneyHandler.getBalanceATM(playerUUID);
