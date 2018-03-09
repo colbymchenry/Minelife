@@ -32,6 +32,11 @@ public class GunDesertEagle extends ItemGun {
     }
 
     @Override
+    public double getBulletSpeed() {
+        return 2.8;
+    }
+
+    @Override
     public int getReloadTime() {
         return 2400;
     }

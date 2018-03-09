@@ -200,6 +200,7 @@ public class MoneyHandler {
         return couldNotAdd;
     }
 
+    // TODO: Not working with Minebay still taking money
     @SideOnly(Side.SERVER)
     public static int addMoneyVault(UUID playerUUID, int amount) throws SQLException {
         List<TileEntityCash> cashBlocks = getCashBlocks(playerUUID);
@@ -213,8 +214,10 @@ public class MoneyHandler {
             moneyStacks.forEach((slot, stack) -> cashBlock.getInventory().setInventorySlotContents(slot, null));
 
             List<ItemStack> stacksToInsert = ItemMoney.getDrops(toAdd);
-            for (ItemStack stack : stacksToInsert)
+
+            for (ItemStack stack : stacksToInsert) {
                 couldNotAdd += InventoryUtils.insertItem(cashBlock.getInventory(), stack, false) * ((ItemMoney) stack.getItem()).amount;
+            }
 
             amount = couldNotAdd;
 

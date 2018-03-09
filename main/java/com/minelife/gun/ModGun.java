@@ -57,8 +57,7 @@ public class ModGun extends MLMod {
         GameRegistry.addShapedRecipe(new ItemStack(MLItems.twoXSight), "AAA", "GGG", "ABA", 'A', MLItems.gunmetal, 'G', Blocks.glass_pane, 'B', Ic2Items.electronicCircuit);
         GameRegistry.addShapedRecipe(new ItemStack(MLItems.acogSight), "AAA", "GGG", "ABA", 'A', MLItems.gunmetal, 'G', Blocks.glass_pane,'B', Ic2Items.advancedCircuit);
         GameRegistry.addShapedRecipe(new ItemStack(MLBlocks.turret), "AAA", "AGA", "AAA", 'A', MLItems.gunmetal, 'G', Ic2Items.advancedCircuit);
-        FMLCommonHandler.instance().bus().register(new BulletHandler());
-        FMLCommonHandler.instance().bus().register(new BulletHandler());
+        FMLCommonHandler.instance().bus().register(BulletHandler.instance);
     }
 
     @Override

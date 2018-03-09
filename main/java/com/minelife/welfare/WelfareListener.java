@@ -21,6 +21,7 @@ public class WelfareListener {
 
     private static boolean paid = false;
 
+    // TODO: Not working with new players
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
         World world = MinecraftServer.getServer().worldServers[0];

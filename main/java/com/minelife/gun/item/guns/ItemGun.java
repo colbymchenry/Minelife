@@ -108,7 +108,7 @@ public abstract class ItemGun extends Item {
         stackData.setInteger("ammo." + ammoType.name(), getCurrentClipHoldings(stack) - 1);
 
         stack.stackTagCompound = stackData;
-        Minelife.NETWORK.sendToAllAround(new PacketBullet(BulletHandler.addBullet(player, ammoType)), new NetworkRegistry.TargetPoint(player.worldObj.provider.dimensionId, player.posX, player.posY, player.posZ, MinecraftServer.getServer().getConfigurationManager().getEntityViewDistance()));
+        Minelife.NETWORK.sendToAllAround(new PacketBullet(BulletHandler.addBullet(player, ammoType, ((ItemGun) stack.getItem()).getBulletSpeed())), new NetworkRegistry.TargetPoint(player.worldObj.provider.dimensionId, player.posX, player.posY, player.posZ, MinecraftServer.getServer().getConfigurationManager().getEntityViewDistance()));
     }
 
     public abstract String getName();
@@ -118,6 +118,8 @@ public abstract class ItemGun extends Item {
     public abstract int getDamage();
 
     public abstract int getReloadTime();
+
+    public abstract double getBulletSpeed();
 
     public abstract int getClipSize();
 
@@ -129,6 +131,7 @@ public abstract class ItemGun extends Item {
     public abstract ItemGunClient getClientHandler();
 
     public abstract void registerRecipe();
+
 
     /**
      * ---------------------------- STATIC METHODS -----------------------------

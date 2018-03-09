@@ -33,6 +33,11 @@ public class GunAWP extends ItemGun {
     }
 
     @Override
+    public double getBulletSpeed() {
+        return 4.8;
+    }
+
+    @Override
     public int getReloadTime() {
         return 3100;
     }

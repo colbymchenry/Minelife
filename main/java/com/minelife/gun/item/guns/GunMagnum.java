@@ -32,6 +32,11 @@ public class GunMagnum extends ItemGun {
     }
 
     @Override
+    public double getBulletSpeed() {
+        return 2.8;
+    }
+
+    @Override
     public int getReloadTime() {
         return 20;
     }

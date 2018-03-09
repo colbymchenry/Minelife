@@ -34,6 +34,11 @@ public class GunBarrett extends ItemGun {
     }
 
     @Override
+    public double getBulletSpeed() {
+        return 3.8;
+    }
+
+    @Override
     public int getReloadTime() {
         return 20;
     }

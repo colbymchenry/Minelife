@@ -34,6 +34,11 @@ public class GunM4A4 extends ItemGun {
     }
 
     @Override
+    public double getBulletSpeed() {
+        return 2.8;
+    }
+
+    @Override
     public int getReloadTime() {
         return 1300;
     }

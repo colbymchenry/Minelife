@@ -10,6 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+
 public class AttachmentReddotSight extends Attachment {
 
     public AttachmentReddotSight() {
@@ -52,7 +54,11 @@ public class AttachmentReddotSight extends Attachment {
             Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getReddotSite().getTexture());
             Attachment.getReddotSite().getModel().renderAll();
 
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glBlendFunc (GL11.GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+            GL11.glTranslatef(0f, 0f, 4.0f);
             Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getReddotSite().getReticleTexture());
+            GL11.glEnable(GL11.GL_LIGHTING);
             RenderHelper.enableGUIStandardItemLighting();
             int[] colorArray = ItemSight.getSightColor(ItemGun.getSight(gun));
             GL11.glColor4f(colorArray[0] / 255f, colorArray[1] / 255f, colorArray[2] / 255f, 200f / 255f);
@@ -70,7 +76,10 @@ public class AttachmentReddotSight extends Attachment {
             Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getReddotSite().getTexture());
             Attachment.getReddotSite().getModel().renderAll();
 
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glBlendFunc (GL11.GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
             Minecraft.getMinecraft().getTextureManager().bindTexture(Attachment.getReddotSite().getReticleTexture());
+            GL11.glEnable(GL11.GL_LIGHTING);
             RenderHelper.enableGUIStandardItemLighting();
             int[] colorArray = ItemSight.getSightColor(ItemGun.getSight(gun));
             GL11.glColor4f(colorArray[0] / 255f, colorArray[1] / 255f, colorArray[2] / 255f, 200f / 255f);

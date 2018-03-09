@@ -56,10 +56,8 @@ Money not being delivered in rental of estates
 // FIXED
 2000 disappeared when buying and renting for 10
 
-// FIXED
 Welfare not working
 
-// FIXED
 Money disappears when buying from Minebay
 
 Faster reloading with skill with reloading more and more
@@ -97,3 +95,5 @@ Player has to have money on them to heal medic
 Machine guns do not feel good at all
 
 Dynamite can only break blocks inside an estate
+
+Make gang invite a notification

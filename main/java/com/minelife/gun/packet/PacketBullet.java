@@ -42,53 +42,56 @@ public class PacketBullet implements IMessage {
         bullet.toBytes(buf);
     }
 
+    // TODO: Need to fix the sound, too quite
     public static class Handler implements IMessageHandler<PacketBullet, IMessage> {
 
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketBullet message, MessageContext ctx) {
-            message.bullet.world.spawnParticle("smoke", message.bullet.target.xCoord, message.bullet.target.yCoord, message.bullet.target.zCoord, 0, 0, 0);
-            BulletHandler.bulletList.add(message.bullet);
-
             if (Minecraft.getMinecraft().thePlayer == null) return null;
 
-            if (message.bullet.shooter != null && Minecraft.getMinecraft().thePlayer != null) {
-                if (message.bullet.shooter.getEntityId() == Minecraft.getMinecraft().thePlayer.getEntityId()) {
-                    if (Minecraft.getMinecraft().currentScreen != null) return null;
+            message.bullet.world.spawnParticle("smoke", message.bullet.targetX, message.bullet.targetY, message.bullet.targetZ, 0, 0, 0);
+            BulletHandler.bulletList.add(message.bullet);
 
-                    ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
-
-                    if (heldItem == null || !(heldItem.getItem() instanceof ItemGun)) return null;
-
-                    if (ItemGun.getCurrentClipHoldings(heldItem) < 1) return null;
-                    ItemGunClient gunClient = ((ItemGun) heldItem.getItem()).getClientHandler();
-                    ((ItemGun) heldItem.getItem()).getClientHandler().shootBullet();
-                    if (!gunClient.shot) {
-                        gunClient.ogYaw = Minecraft.getMinecraft().thePlayer.rotationYaw;
-                        gunClient.ogPitch = Minecraft.getMinecraft().thePlayer.rotationPitch;
-                        gunClient.shot = true;
-                    }
-
-                    Minecraft.getMinecraft().thePlayer.setAngles(
-                            (float) MathHelper.getRandomDoubleInRange(gunClient.random, gunClient.yawSpread()[0],
-                                    gunClient.yawSpread()[1]) * getLeftOrRight(gunClient.random),
-                            (float) MathHelper.getRandomDoubleInRange(gunClient.random, gunClient.pitchSpread()[0],
-                                    gunClient.pitchSpread()[1]));
-                }
-
-                Vec3 shooterVec = Vec3.createVectorHelper(message.bullet.shooter.posX, message.bullet.shooter.posY, message.bullet.shooter.posZ);
-                Vec3 receiverVec = Vec3.createVectorHelper(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
-                float volume = (float) Math.min(1, 1 / receiverVec.distanceTo(shooterVec));
-                volume = volume > 1 ? 1 : volume;
-
-                Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":guns." + ((ItemGun) message.bullet.shooter.getHeldItem().getItem()).getName() + ".shot", volume, 1F);
-            } else if (message.bullet.shooter == null) {
-                Vec3 shooterVec = Vec3.createVectorHelper(message.bullet.origin.xCoord, message.bullet.origin.yCoord, message.bullet.origin.zCoord);
+            if (message.bullet.shooter == null) {
+                Vec3 shooterVec = Vec3.createVectorHelper(message.bullet.originX, message.bullet.originY, message.bullet.originZ);
                 Vec3 receiverVec = Vec3.createVectorHelper(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
                 float volume = (float) Math.min(1, 1 / receiverVec.distanceTo(shooterVec));
                 volume = volume > 1 ? 1 : volume;
 
                 Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":guns.turret_shot", volume, 1F);
+                return null;
             }
+
+            // This is all the recoil code
+            if (message.bullet.shooter.getEntityId() == Minecraft.getMinecraft().thePlayer.getEntityId()) {
+                if (Minecraft.getMinecraft().currentScreen != null) return null;
+
+                ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
+
+                if (heldItem == null || !(heldItem.getItem() instanceof ItemGun)) return null;
+
+                if (ItemGun.getCurrentClipHoldings(heldItem) < 1) return null;
+                ItemGunClient gunClient = ((ItemGun) heldItem.getItem()).getClientHandler();
+                ((ItemGun) heldItem.getItem()).getClientHandler().shootBullet();
+                if (!gunClient.shot) {
+                    gunClient.ogYaw = Minecraft.getMinecraft().thePlayer.rotationYaw;
+                    gunClient.ogPitch = Minecraft.getMinecraft().thePlayer.rotationPitch;
+                    gunClient.shot = true;
+                }
+
+                Minecraft.getMinecraft().thePlayer.setAngles(
+                        (float) MathHelper.getRandomDoubleInRange(ItemGunClient.random, gunClient.yawSpread()[0],
+                                gunClient.yawSpread()[1]) * getLeftOrRight(ItemGunClient.random),
+                        (float) MathHelper.getRandomDoubleInRange(ItemGunClient.random, gunClient.pitchSpread()[0],
+                                gunClient.pitchSpread()[1]));
+            }
+
+            Vec3 shooterVec = Vec3.createVectorHelper(message.bullet.shooter.posX, message.bullet.shooter.posY, message.bullet.shooter.posZ);
+            Vec3 receiverVec = Vec3.createVectorHelper(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY, Minecraft.getMinecraft().thePlayer.posZ);
+            float volume = (float) Math.min(1, 1 / receiverVec.distanceTo(shooterVec));
+            volume = volume > 1 ? 1 : volume;
+
+            Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":guns." + ((ItemGun) message.bullet.shooter.getHeldItem().getItem()).getName() + ".shot", volume, 1F);
 
             return null;
         }
