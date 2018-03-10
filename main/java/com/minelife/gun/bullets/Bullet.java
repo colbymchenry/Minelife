@@ -4,6 +4,7 @@ import com.minelife.MLBlocks;
 import com.minelife.gun.item.ammos.ItemAmmo;
 import com.minelife.gun.item.guns.ItemGun;
 import com.minelife.gun.server.BulletHitEvent;
+import com.sk89q.worldedit.Vector;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -22,6 +23,8 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
+import javax.vecmath.Vector3d;
+import java.awt.geom.Line2D;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -31,7 +34,7 @@ import java.util.List;
 public class Bullet {
 
     private static final List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(Blocks.tallgrass, Blocks.water,
-            Blocks.flowing_water, Blocks.double_plant, Blocks.red_flower, Blocks.yellow_flower, Blocks.stone));
+            Blocks.flowing_water, Blocks.double_plant, Blocks.red_flower, Blocks.yellow_flower));
 
     public static int range = 0;
 
@@ -168,8 +171,10 @@ public class Bullet {
         // Find an entity to hit
         for (EntityLivingBase e : nearbyTargets) {
             // if there was no collision
-            if (e != shooter && sweptAABB(e)) {
+
+            if (e != shooter && collisionTest(e)) {
                 // return true if client because they need not go further
+
                 if (world.isRemote) return true;
 
                 BulletHitEvent hitEvent = new BulletHitEvent(shooter, e, shooter == null ? null : shooter.getHeldItem());
@@ -208,70 +213,20 @@ public class Bullet {
         return distance > range;
     }
 
-    private boolean sweptAABB(EntityLivingBase e) {
-        double xInvEntry, yInvEntry, zInvEntry;
-        double xInvExit, yInvExit, zInvExit;
+    private boolean collisionTest(EntityLivingBase e) {
+        Vec3 lookVec = Vec3.createVectorHelper(lookX, lookY, lookZ);
+        Vec3 lookNormalized = lookVec.normalize();
 
-        // find the distance between the objects on the near and far sides for both x and y
-        if (lookX > 0.0f) {
-            xInvEntry = e.boundingBox.minX - targetX;
-            xInvExit = e.boundingBox.maxX - originX;
-        } else {
-            xInvEntry = e.boundingBox.maxX - originX;
-            xInvExit = e.boundingBox.minX - targetX;
+        for(double distance = 0; distance < bulletSpeed; distance += bulletSpeed / 100) {
+            Vec3 newVec = Vec3.createVectorHelper(lookNormalized.xCoord * distance + targetX,
+                    lookNormalized.yCoord * distance + targetY, lookNormalized.zCoord * distance + targetZ);
+
+            if(e.boundingBox.isVecInside(newVec)) {
+                return true;
+            }
         }
 
-        if (lookY > 0.0f) {
-            yInvEntry = e.boundingBox.minY - targetY;
-            yInvExit = e.boundingBox.maxY - originY;
-        } else {
-            yInvEntry = e.boundingBox.maxY - originY;
-            yInvExit = e.boundingBox.minY - targetY;
-        }
-
-        if (lookZ > 0.0f) {
-            zInvEntry = e.boundingBox.minZ - targetZ;
-            zInvExit = e.boundingBox.maxZ - originZ;
-        } else {
-            zInvEntry = e.boundingBox.maxZ - originZ;
-            zInvExit = e.boundingBox.minZ - targetZ;
-        }
-
-        double xEntry, yEntry, zEntry;
-        double xExit, yExit, zExit;
-
-        if (lookX == 0.0f) {
-            xEntry = Double.NEGATIVE_INFINITY;
-            xExit = Double.POSITIVE_INFINITY;
-        } else {
-            xEntry = xInvEntry / (lookX * bulletSpeed);
-            xExit = xInvExit / (lookX * bulletSpeed);
-        }
-
-        if (lookY == 0.0f) {
-            yEntry = Double.NEGATIVE_INFINITY;
-            yExit = Double.POSITIVE_INFINITY;
-        } else {
-            yEntry = yInvEntry / (lookY * bulletSpeed);
-            yExit = yInvExit / (lookY * bulletSpeed);
-        }
-
-        if (lookZ == 0.0f) {
-            zEntry = Double.NEGATIVE_INFINITY;
-            zExit = Double.POSITIVE_INFINITY;
-        } else {
-            zEntry = zInvEntry / (lookZ * bulletSpeed);
-            zExit = zInvExit / (lookZ * bulletSpeed);
-        }
-
-        // find the earliest/latest times of collision
-        double entryTime = Math.max(xEntry, yEntry);
-        double exitTime = Math.min(xExit, yExit);
-        entryTime = Math.max(entryTime, zEntry);
-        exitTime = Math.min(exitTime, zExit);
-
-        // if there was no collision
-        return entryTime <= exitTime && (xEntry >= 0.0f || yEntry >= 0.0f) && xEntry <= 1.0f && yEntry <= 1.0f;
+        return false;
     }
 
 }

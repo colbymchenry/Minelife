@@ -27,7 +27,7 @@ public class GuiModifyEstate extends GuiScreen {
     private EstateData estateData;
     private Set<Permission> playerPermissions;
     private GuiContent content;
-    private GuiButton membersBtn;
+    private GuiButton membersBtn, updateBtn;
 
     public GuiModifyEstate(EstateData estateData, Set<Permission> playerPermissions) {
         this.estateData = estateData;
@@ -40,6 +40,7 @@ public class GuiModifyEstate extends GuiScreen {
         GuiUtil.drawDefaultBackground(xPosition, yPosition, bgWidth, bgHeight);
         content.draw(x, y, Mouse.getDWheel());
         membersBtn.drawButton(mc, x, y);
+        updateBtn.drawButton(mc, x, y);
     }
 
     @Override
@@ -51,7 +52,44 @@ public class GuiModifyEstate extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseBtn) {
         if (membersBtn.mousePressed(mc, mouseX, mouseY)) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiMembers(estateData.getID()));
+            Minecraft.getMinecraft().displayGuiScreen(new GuiMembers(estateData.getID(), this));
+        }
+
+        if (updateBtn.mousePressed(mc, mouseX, mouseY)) {
+            Set<Permission> globalPerms = Sets.newTreeSet(), renterPerms = Sets.newTreeSet(),
+                    ownerPerms = Sets.newTreeSet(), estatePerms = Sets.newTreeSet(), globalAllowedToChangePerms = Sets.newTreeSet();
+            content.globalPerms.forEach((p, tB) -> {
+                if (tB.isChecked()) globalPerms.add(p);
+            });
+            content.renterPerms.forEach((p, tB) -> {
+                if (tB.isChecked()) renterPerms.add(p);
+            });
+            content.ownerPerms.forEach((p, tB) -> {
+                if (tB.isChecked()) ownerPerms.add(p);
+            });
+            content.estatePerms.forEach((p, tB) -> {
+                if (tB.isChecked()) estatePerms.add(p);
+            });
+            content.allowedToChangePerms.forEach((p, tB) -> {
+                if (tB.isChecked()) globalAllowedToChangePerms.add(p);
+            });
+
+            int purchasePrice = content.purchaseField.getText().isEmpty() ? -1 : Integer.parseInt(content.purchaseField.getText());
+            int rentPrice = content.rentField.getText().isEmpty() ? -1 : Integer.parseInt(content.rentField.getText());
+            int rentPeriod = content.periodField.getText().isEmpty() ? -1 : Integer.parseInt(content.periodField.getText());
+
+            estateData.setPurchasePrice(purchasePrice);
+            estateData.setRentPrice(rentPrice);
+            estateData.setRentPeriod(rentPeriod);
+            estateData.setIntro(content.introField.getText());
+            estateData.setOutro(content.outroField.getText());
+            estateData.setOwnerPermissions(ownerPerms);
+            estateData.setRenterPermissions(renterPerms);
+            estateData.setGlobalPermissions(globalPerms);
+            estateData.setPermissionsAllowedToChange(globalAllowedToChangePerms);
+            estateData.setEstatePermissions(estatePerms);
+
+            Minelife.NETWORK.sendToServer(new PacketUpdateEstate(estateData));
         }
     }
 
@@ -61,7 +99,8 @@ public class GuiModifyEstate extends GuiScreen {
         xPosition = (this.width - this.bgWidth) / 2;
         yPosition = (this.height - this.bgHeight) / 2;
         content = new GuiContent(mc, xPosition, yPosition + 4, bgWidth, bgHeight - 6);
-        membersBtn = new GuiButton(0, xPosition + bgWidth + 5, yPosition, 50, 20, "Members");
+        membersBtn = new GuiButton(0, xPosition + bgWidth + 2, yPosition, 50, 20, "Members");
+        updateBtn = new GuiButton(0, xPosition + bgWidth + 2, yPosition + 22, 50, 20, "Update");
     }
 
     @Override
@@ -92,7 +131,7 @@ public class GuiModifyEstate extends GuiScreen {
         private int totalHeight = 5;
         private GuiTextField purchaseField, rentField, periodField, introField, outroField;
         private Map<Permission, GuiTickBox> globalPerms, ownerPerms, renterPerms, allowedToChangePerms, estatePerms;
-        private GuiButton updateBtn;
+
 
         public GuiContent(Minecraft mc, int xPosition, int yPosition, int width, int height) {
             super(mc, xPosition, yPosition, width, height);
@@ -154,8 +193,6 @@ public class GuiModifyEstate extends GuiScreen {
                     estatePerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2) + 20, totalHeight += 20, estateData.getEstatePermissions().contains(p)));
             }
 
-            totalHeight += 40;
-            updateBtn = new GuiButton(0, (bgWidth - 50) / 2, totalHeight, 50, 20, "Update");
             totalHeight += 40;
         }
 
@@ -236,7 +273,6 @@ public class GuiModifyEstate extends GuiScreen {
                 });
             }
 
-            updateBtn.drawButton(mc, mouseX, mouseY);
         }
 
         @Override
@@ -256,43 +292,6 @@ public class GuiModifyEstate extends GuiScreen {
             ownerPerms.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
             allowedToChangePerms.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
             estatePerms.forEach((p, tB) -> tB.mouseClicked(mouseX, mouseY));
-
-            if (updateBtn.mousePressed(mc, mouseX, mouseY)) {
-                Set<Permission> globalPerms = Sets.newTreeSet(), renterPerms = Sets.newTreeSet(),
-                        ownerPerms = Sets.newTreeSet(), estatePerms = Sets.newTreeSet(), globalAllowedToChangePerms = Sets.newTreeSet();
-                this.globalPerms.forEach((p, tB) -> {
-                    if (tB.isChecked()) globalPerms.add(p);
-                });
-                this.renterPerms.forEach((p, tB) -> {
-                    if (tB.isChecked()) renterPerms.add(p);
-                });
-                this.ownerPerms.forEach((p, tB) -> {
-                    if (tB.isChecked()) ownerPerms.add(p);
-                });
-                this.estatePerms.forEach((p, tB) -> {
-                    if (tB.isChecked()) estatePerms.add(p);
-                });
-                this.allowedToChangePerms.forEach((p, tB) -> {
-                    if (tB.isChecked()) globalAllowedToChangePerms.add(p);
-                });
-
-                int purchasePrice = purchaseField.getText().isEmpty() ? -1 : Integer.parseInt(purchaseField.getText());
-                int rentPrice = rentField.getText().isEmpty() ? -1 : Integer.parseInt(rentField.getText());
-                int rentPeriod = periodField.getText().isEmpty() ? -1 : Integer.parseInt(periodField.getText());
-
-                estateData.setPurchasePrice(purchasePrice);
-                estateData.setRentPrice(rentPrice);
-                estateData.setRentPeriod(rentPeriod);
-                estateData.setIntro(introField.getText());
-                estateData.setOutro(outroField.getText());
-                estateData.setOwnerPermissions(ownerPerms);
-                estateData.setRenterPermissions(renterPerms);
-                estateData.setGlobalPermissions(globalPerms);
-                estateData.setPermissionsAllowedToChange(globalAllowedToChangePerms);
-                estateData.setEstatePermissions(estatePerms);
-
-                Minelife.NETWORK.sendToServer(new PacketUpdateEstate(estateData));
-            }
         }
 
         @Override

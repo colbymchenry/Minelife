@@ -1,6 +1,7 @@
 package com.minelife.util;
 
 import com.google.common.collect.Lists;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,17 +24,7 @@ public class ItemHelper {
 
     public static List<ItemStack> getStacks(Item item, int amount) {
         List<ItemStack> stacks = Lists.newArrayList();
-        int maxStackSize = 0;
-
-        // get item max stack size
-        try {
-            Field field = Item.class.getDeclaredField("maxStackSize");
-            field.setAccessible(true);
-            Object value = field.get(item);
-            maxStackSize = (int) value;
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+        int maxStackSize = ReflectionHelper.getPrivateValue(Item.class, item, "field_77777_bU", "maxStackSize");
 
         // return an empty array since we couldn't get the max stack size
         if(maxStackSize == 0) {

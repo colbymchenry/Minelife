@@ -25,7 +25,7 @@ public class GunM4A4 extends ItemGun {
 
     @Override
     public int getFireRate() {
-        return 40;
+        return 70;
     }
 
     @Override

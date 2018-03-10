@@ -15,6 +15,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -22,6 +23,7 @@ import java.util.*;
 
 public class GuiMembers extends GuiScreen implements INameReceiver {
 
+    public GuiModifyEstate parentScreen;
     private GuiContent content;
     private GuiLoadingAnimation loadingAnimation;
     private Set<Permission> playerPermissions;
@@ -32,18 +34,20 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
     private int xPosition, yPosition, bgWidth = 200, bgHeight = 200;
     private static ResourceLocation deleteTex = new ResourceLocation(Minelife.MOD_ID, "textures/gui/x.png");
 
-    public GuiMembers(int estateID) {
+    public GuiMembers(int estateID, GuiModifyEstate parentScreen) {
         Minelife.NETWORK.sendToServer(new PacketGetMembers(estateID));
         this.estateID = estateID;
+        this.parentScreen = parentScreen;
     }
 
-    public GuiMembers(Map<UUID, Set<Permission>> members, Set<Permission> playerPermissions, int estateID) {
+    public GuiMembers(Map<UUID, Set<Permission>> members, Set<Permission> playerPermissions, int estateID, GuiModifyEstate parentScreen) {
         this.members = members;
         this.members.remove(Minecraft.getMinecraft().thePlayer.getUniqueID());
         this.playerPermissions = playerPermissions;
         this.names = Maps.newHashMap();
         members.keySet().forEach(uuid -> this.names.put(uuid, NameFetcher.asyncFetchClient(uuid, this)));
         this.estateID = estateID;
+        this.parentScreen = parentScreen;
     }
 
     @Override
@@ -63,7 +67,7 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
 
     @Override
     protected void keyTyped(char keyChar, int keyCode) {
-        super.keyTyped(keyChar, keyCode);
+        if (keyCode == Keyboard.KEY_ESCAPE) Minecraft.getMinecraft().displayGuiScreen(parentScreen);
 
         if (members != null) content.keyTyped(keyChar, keyCode);
     }
@@ -143,7 +147,7 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
             ((List<GuiTickBox>) tickBoxMap.values().toArray()[index]).forEach(tB -> {
-                if(tB.mouseClicked(mouseX, mouseY)) {
+                if (tB.mouseClicked(mouseX, mouseY)) {
                     UUID memberUUID = (UUID) members.keySet().toArray()[index];
                     updatePlayer(memberUUID);
                 }
@@ -167,7 +171,7 @@ public class GuiMembers extends GuiScreen implements INameReceiver {
         private void updatePlayer(UUID player) {
             Set<Permission> permissions = Sets.newTreeSet();
             tickBoxMap.get(player).forEach(tB -> {
-                if(tB.isChecked()) permissions.add(Permission.valueOf(tB.key));
+                if (tB.isChecked()) permissions.add(Permission.valueOf(tB.key));
             });
             Minelife.NETWORK.sendToServer(new PacketModifyMember(estateID, player, permissions));
         }

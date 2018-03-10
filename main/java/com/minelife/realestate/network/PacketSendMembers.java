@@ -2,8 +2,10 @@ package com.minelife.realestate.network;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.minelife.gangs.client.gui.GuiMember;
 import com.minelife.realestate.Permission;
 import com.minelife.realestate.client.gui.GuiMembers;
+import com.minelife.realestate.client.gui.GuiModifyEstate;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -68,7 +70,13 @@ public class PacketSendMembers implements IMessage {
 
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketSendMembers message, MessageContext ctx) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiMembers(message.members, message.playerPermissions, message.estateID));
+            if (Minecraft.getMinecraft().currentScreen != null && Minecraft.getMinecraft().currentScreen instanceof GuiMembers) {
+                GuiMembers guiMembers = (GuiMembers) Minecraft.getMinecraft().currentScreen;
+                if (guiMembers.parentScreen != null) {
+                    Minecraft.getMinecraft().displayGuiScreen(new GuiMembers(message.members, message.playerPermissions,
+                            message.estateID, guiMembers.parentScreen));
+                }
+            }
             return null;
         }
     }

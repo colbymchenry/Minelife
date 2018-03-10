@@ -40,11 +40,8 @@ public class ItemMoney extends Item {
             ItemStack newStack = stack.copy();
             newStack.stackSize = newStackSize;
             player.inventory.setInventorySlotContents(player.inventory.currentItem, newStackSize <= 0 ? null : newStack);
-            System.out.println("CALLED");
             return true;
         }
-
-        System.out.println("CALLED1");
 
         switch (side) {
             case 0:
