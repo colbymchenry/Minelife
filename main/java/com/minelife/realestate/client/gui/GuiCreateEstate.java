@@ -178,9 +178,9 @@ public class GuiCreateEstate extends GuiScreen {
                     estateLabelY, 0xFFFFFF);
 
             if (estatePermissions.isEmpty()) {
-                fontRendererObj.drawString(bold + EnumChatFormatting.RED.toString() + "Must be OP to modify",
-                        (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Must be OP to modify")) / 2,
-                        estateLabelY + 10, 0xFFFFFF);
+                fontRendererObj.drawString(EnumChatFormatting.RED.toString() + bold + "Must be OP to modify",
+                        (bgWidth - fontRendererObj.getStringWidth(bold + "Must be OP to modify")) / 2,
+                        estateLabelY + 15, 0xFFFFFF);
             } else {
                 estatePermissions.forEach((p, tB) -> {
                     fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);

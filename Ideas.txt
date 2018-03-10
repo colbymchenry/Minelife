@@ -19,10 +19,9 @@ Remove countdown on teleport for OPs
 
 /home causing server to crash
 
-Make it to where you don't have to press UPDATE to update an estate
-
 Money not being delivered in rental of estates
 
+// FIXED
 Welfare not working
 
 Money disappears when buying from Minebay

@@ -22,7 +22,7 @@ public class ATMPenaltyListener {
                 try {
                     ResultSet result = Minelife.SQLITE.query("SELECT * FROM economy");
                     while(result.next()) {
-                        UUID playerUUID = UUID.fromString(result.getString("uuid"));
+                        UUID playerUUID = UUID.fromString(result.getString("player"));
                         int balance = MoneyHandler.getBalanceATM(playerUUID);
                         int newBalance = (int) (balance - (balance * ModEconomy.config.getDouble("atm_penalty")));
                         MoneyHandler.setATM(playerUUID, newBalance < 0 ? 0 : newBalance);

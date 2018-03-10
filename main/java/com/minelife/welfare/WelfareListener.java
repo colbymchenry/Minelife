@@ -29,11 +29,11 @@ public class WelfareListener {
             if(!paid) {
                 paid = true;
                 try {
-                    ResultSet result = Minelife.SQLITE.query("SELECT * FROM economy");
+                    ResultSet result = Minelife.SQLITE.query("SELECT * FROM tracker");
                     while(result.next()) {
-                        UUID playerUUID = UUID.fromString(result.getString("uuid"));
+                        UUID playerUUID = UUID.fromString(result.getString("playerUUID"));
                         EntityPlayer player = PlayerHelper.getPlayer(playerUUID);
-                        int payout = ModTracker.getHoursPlayed(playerUUID) * 60;
+                        int payout = (ModTracker.getHoursPlayed(playerUUID) * 60) + 60;
                         MoneyHandler.depositATM(playerUUID, payout);
                         if(player != null) {
                             new WelfareNotification(playerUUID, payout).sendTo((EntityPlayerMP) player);

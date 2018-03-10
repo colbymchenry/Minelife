@@ -60,11 +60,9 @@ public class ModTracker extends MLMod {
 
     public static Date getDateJoined(UUID playerUUID) {
         try {
-            ResultSet result = Minelife.SQLITE.query("SELECT * FROM tracker WHERE playerUUID='" + playerUUID.toString() + "'");
+            ResultSet result = Minelife.SQLITE.query("SELECT * FROM tracker WHERE playerUUID='" +  playerUUID.toString() + "'");
             if(result.next()) return ServerProxy.df.parse(result.getString("dateJoined"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

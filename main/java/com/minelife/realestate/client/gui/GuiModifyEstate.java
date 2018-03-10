@@ -165,32 +165,32 @@ public class GuiModifyEstate extends GuiScreen {
 
             for (Permission p : Permission.values()) {
                 if (!p.isEstatePermission() && playerPermissions.contains(p))
-                    globalPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2) + 20, totalHeight += 20, estateData.getGlobalPermissions().contains(p)));
+                    globalPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getGlobalPermissions().contains(p)));
             }
 
             totalHeight += 40;
             renterLabelY = totalHeight;
             for (Permission p : Permission.values()) {
                 if (!p.isEstatePermission() && playerPermissions.contains(p))
-                    renterPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2) + 20, totalHeight += 20, estateData.getRenterPermissions().contains(p)));
+                    renterPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getRenterPermissions().contains(p)));
             }
             totalHeight += 40;
             ownerLabelY = totalHeight;
             for (Permission p : Permission.values()) {
                 if (!p.isEstatePermission() && playerPermissions.contains(p))
-                    ownerPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2) + 20, totalHeight += 20, estateData.getOwnerPermissions().contains(p)));
+                    ownerPerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getOwnerPermissions().contains(p)));
             }
             totalHeight += 60;
             allowedToChangeLabelY = totalHeight;
             for (Permission p : Permission.values()) {
                 if (!p.isEstatePermission() && playerPermissions.contains(p))
-                    allowedToChangePerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2) + 20, totalHeight += 20, estateData.getGlobalPermissionsAllowedToChange().contains(p)));
+                    allowedToChangePerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, estateData.getGlobalPermissionsAllowedToChange().contains(p)));
             }
             totalHeight += 40;
             estateLabelY = totalHeight;
-            for (Permission p : Permission.values()) {
+            for (Permission p : playerPermissions) {
                 if (p.isEstatePermission())
-                    estatePerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2) + 20, totalHeight += 20, estateData.getEstatePermissions().contains(p)));
+                    estatePerms.put(p, new GuiTickBox(mc, (bgWidth / 2) + (((bgWidth / 2) - GuiTickBox.WIDTH) / 2), totalHeight += 20, true));
             }
 
             totalHeight += 40;
@@ -263,9 +263,9 @@ public class GuiModifyEstate extends GuiScreen {
                     estateLabelY, 0xFFFFFF);
 
             if (estatePerms.isEmpty()) {
-                fontRendererObj.drawString(bold + EnumChatFormatting.RED.toString() + "Must be OP to modify",
-                        (bgWidth - fontRendererObj.getStringWidth(bold + underline + "Must be OP to modify")) / 2,
-                        estateLabelY + 10, 0xFFFFFF);
+                fontRendererObj.drawString(EnumChatFormatting.RED.toString() + bold + "Must be OP to modify",
+                        (bgWidth - fontRendererObj.getStringWidth(bold + "Must be OP to modify")) / 2,
+                        estateLabelY + 15, 0xFFFFFF);
             } else {
                 estatePerms.forEach((p, tB) -> {
                     fontRendererObj.drawString(bold + p.name(), 5 + (((bgWidth + 40) / 2) - fontRendererObj.getStringWidth(bold + p.name())) / 2, tB.yPosition + 5, 0xFFFFFF);

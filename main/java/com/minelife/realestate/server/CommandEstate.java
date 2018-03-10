@@ -22,6 +22,7 @@ import net.minecraft.util.Vec3;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class CommandEstate extends CommandBase {
 
@@ -64,11 +65,18 @@ public class CommandEstate extends CommandBase {
                                 player.addChatComponentMessage(new ChatComponentText("You do not have permission to create an estate here."));
                                 return;
                             }
-                            List<Permission> perms = Lists.newArrayList();
-                            perms.addAll(estateAtLoc.getPlayerPermissions(player.getUniqueID()));
-                            if(!PlayerHelper.isOp(player)) perms.removeAll(Permission.getEstatePermissions());
+
                             permissions.addAll(estateAtLoc.getPlayerPermissions(player.getUniqueID()));
                         }
+
+                        if(!PlayerHelper.isOp(player)) permissions.removeAll(Permission.getEstatePermissions());
+
+                        for (Permission permission : Permission.values()) {
+                            if(!ModPermission.hasPermission(player.getUniqueID(), "estate." + permission.name().toLowerCase())) {
+                                permissions.remove(permission);
+                            }
+                        }
+
                         Minelife.NETWORK.sendTo(new PacketGuiCreateEstate(permissions), player);
                     }
                     break;
@@ -93,7 +101,18 @@ public class CommandEstate extends CommandBase {
 
                     if(ModPermission.hasPermission(player.getUniqueID(), "estate.override.modify") || Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
                             estateAtLoc.isAbsoluteOwner(player.getUniqueID()) || estateAtLoc.getMembers().containsKey(player.getUniqueID())) {
-                        Minelife.NETWORK.sendTo(new PacketGuiModifyEstate(estateAtLoc, estateAtLoc.getPlayerPermissions(player.getUniqueID())), player);
+
+                        Set<Permission> permissions = estateAtLoc.getPlayerPermissions(player.getUniqueID());
+
+                        for (Permission permission : Permission.values()) {
+                            if(!ModPermission.hasPermission(player.getUniqueID(), "estate." + permission.name().toLowerCase())) {
+                                permissions.remove(permission);
+                            }
+                        }
+
+                        if(!PlayerHelper.isOp(player)) permissions.removeAll(Permission.getEstatePermissions());
+
+                        Minelife.NETWORK.sendTo(new PacketGuiModifyEstate(estateAtLoc, permissions), player);
                     } else {
                         player.addChatComponentMessage(new ChatComponentText("You do not have permission to modify this estate."));
                     }
