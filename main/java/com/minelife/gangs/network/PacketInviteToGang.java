@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.ModGangs;
+import com.minelife.gangs.client.GangInviteNotification;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.PacketPopupMessage;
 import cpw.mods.fml.common.network.ByteBufUtils;
@@ -75,8 +76,10 @@ public class PacketInviteToGang implements IMessage {
 
             if(gangInvites.containsKey(playerReceiver.getUniqueID()) && gangInvites.get(playerReceiver.getUniqueID()).equals(senderGang)) return null;
 
+            GangInviteNotification inviteNotification = new GangInviteNotification(playerReceiver.getUniqueID(), senderGang.getName());
+            inviteNotification.sendTo(playerReceiver);
+
             gangInvites.put(playerReceiver.getUniqueID(), senderGang);
-            playerReceiver.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + playerSender.getDisplayName() + EnumChatFormatting.GOLD + " has invited you to join their gang. Type " + EnumChatFormatting.RED + "/g accept " + EnumChatFormatting.GOLD + "or " + EnumChatFormatting.RED + "/g deny"));
             return null;
         }
     }

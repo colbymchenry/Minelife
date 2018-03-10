@@ -33,29 +33,9 @@ Add upgrading turrets
 
 Bought 1 piece of $1 wood and it showed $345
 
-/g sethome not working even while owning estate
-
 When reloading slow down
 
 Allow editing of Minebay listings and taking them down
-
-Minebay purchase takes money from the cash pile, completely empties it
-:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: java.lang.NoSuchFieldException: maxStackSize
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at java.lang.Class.getDeclaredField(Class.java:2070)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.util.ItemHelper.getStacks(ItemHelper.java:30)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.economy.ItemMoney.getDrops(ItemMoney.java:130)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.economy.MoneyHandler.addMoney(MoneyHandler.java:271)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.economy.MoneyHandler.takeMoney(MoneyHandler.java:262)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.economy.MoneyHandler.takeMoneyVault(MoneyHandler.java:187)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.minebay.ItemListing.finalize(ItemListing.java:157)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.minebay.packet.PacketBuyItem$Handler.onMessage(PacketBuyItem.java:56)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at com.minelife.minebay.packet.PacketBuyItem$Handler.onMessage(PacketBuyItem.java:49)
-
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.DefaultChannelHandlerContext.invokeChannelRead(DefaultChannelHandlerContext.java:337)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.DefaultChannelHandlerContext.fireChannelRead(DefaultChannelHandlerContext.java:323)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:101)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.DefaultChannelHandlerContext.invokeChannelRead(DefaultChannelHandlerContext.java:337)
-[22:59:26] [Server thread/INFO] [STDERR]: [java.lang.Throwable$WrappedPrintStream:println:748]: at io.netty.channel.DefaultChannelHandlerContext.fireChannelRead(DefaultChannelHandlerContext.java:323)
 
 Make it cost money when buying an estate
 
@@ -65,4 +45,5 @@ Machine guns do not feel good at all
 
 Dynamite can only break blocks inside an estate
 
+// FIXED
 Make gang invite a notification
