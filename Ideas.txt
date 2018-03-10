@@ -19,6 +19,8 @@ Remove countdown on teleport for OPs
 
 /home causing server to crash
 
+Real estate rent notification going off screen
+
 Money not being delivered in rental of estates
 
 // FIXED
@@ -46,3 +48,41 @@ Dynamite can only break blocks inside an estate
 
 // FIXED
 Make gang invite a notification
+
+Place wallet correctly in hand
+
+Shop block not taking money from wallet
+
+Shop block allow purchase of more than set size
+
+SERVER STILL HANGING UP
+
+Don't spawn horses, have to buy them expensive, like cars
+
+CapeLoader:35 NullPointer
+
+Billboard Advertisements with the same mechanic as capes
+
+planes and helicopters in the future
+
+Jobs:
+    - Only one job from server, but can do anything else on your own or by another player.
+    - Farmer: Gather wheat from the city (NPC Farmer give to at ??? he gives money)
+    - Miner: Mine for the city (NPC Miner give to at the mine near the water he gives money)
+    - Bounty Hunter: Get bounties on players (Possibly make NPC Villagers a bounty if there are none for players)
+    - Fisherman: Gets fish (NPC Fisherman give to at port he gives money)
+    - Restaurant Worker:
+        - Gets a kitchen
+        - Starts with $10K
+        - Can order materials from server
+        - Can sell what they make to server
+        - Can put earnings into kitchen account or to bank account
+        - Make a bunch of kitchens somewhere for people to use
+
+Cops:
+    - Gives more than 6 failed drug tests they lose ability to be cop forever.
+    - Keep track of players kills in case someone calls 911
+    - To become a cop, must apply on forums, must pass cop test and pass specific scenario
+    - Play time, previous bans, previous complaints, etc is up to the admin/moderator to approve of.
+
+10.03 12:47:11 [Server] INFO java.lang.NullPointerException 10.03 12:47:11 [Server] INFO at com.minelife.shop.TileEntityShopBlock.doTransaction(TileEntityShopBlock.java:125) ~[TileEntityShopBlock.class:?] 10.03 12:47:11 [Server] INFO at com.minelife.shop.BlockShopBlock.func_149727_a(BlockShopBlock.java:59) ~[BlockShopBlock.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.management.ItemInWorldManager.func_73078_a(ItemInWorldManager.java:376) ~[mx.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.network.NetHandlerPlayServer.func_147346_a(NetHandlerPlayServer.java:556) ~[nh.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.network.play.client.C08PacketPlayerBlockPlacement.func_148833_a(SourceFile:60) ~[jo.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.network.play.client.C08PacketPlayerBlockPlacement.func_148833_a(SourceFile:9) ~[jo.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.network.NetworkManager.func_74428_b(NetworkManager.java:212) ~[ej.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.network.NetworkSystem.func_151269_c(NetworkSystem.java:165) [nc.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.MinecraftServer.func_71190_q(MinecraftServer.java:659) [MinecraftServer.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.dedicated.DedicatedServer.func_71190_q(DedicatedServer.java:334) [lt.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.MinecraftServer.func_71217_p(MinecraftServer.java:547) [MinecraftServer.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:427) [MinecraftServer.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.MinecraftServer$2.run(MinecraftServer.java:685) [li.class:?]

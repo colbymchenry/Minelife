@@ -13,6 +13,7 @@ import com.minelife.gun.item.ammos.*;
 import com.minelife.gun.item.attachments.ItemSight;
 import com.minelife.gun.item.guns.*;
 import com.minelife.gun.item.parts.*;
+import com.minelife.locks.ItemLockPick;
 import com.minelife.police.ItemHandcuffs;
 import com.minelife.police.ItemTicket;
 import com.minelife.tutorial.ItemTutorialBook;
@@ -95,6 +96,7 @@ public class MLItems {
     public static ItemWallet wallet;
     public static ItemBagOCash bagOCash;
     public static ItemTutorialBook tutorialBook;
+    public static ItemLockPick lockPick;
 
     protected static void init()
     {
@@ -170,6 +172,7 @@ public class MLItems {
         register_item(wallet = new ItemWallet());
         register_item(bagOCash = new ItemBagOCash());
         register_item(tutorialBook = new ItemTutorialBook());
+        register_item(lockPick = new ItemLockPick());
     }
 
     private static void register_item(Item item)

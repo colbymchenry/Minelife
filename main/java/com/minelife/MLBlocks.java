@@ -78,7 +78,6 @@ public class MLBlocks {
     {
         try {
             GameRegistry.registerBlock(block, block.getUnlocalizedName());
-            System.out.println(block.getUnlocalizedName() + " registered!");
         } catch (Exception e) {
             Minelife.getLogger().log(Level.SEVERE, "Failed to register block! " + block.getClass().getSimpleName() + "\nError Message: " + e.getMessage());
         }

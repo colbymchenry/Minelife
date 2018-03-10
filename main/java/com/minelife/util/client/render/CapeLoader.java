@@ -32,7 +32,7 @@ public class CapeLoader {
      * @param uuid
      */
     public static void loadCape(final UUID uuid) {
-        if(Minelife.NETTY_CONNECTION == null || !Minelife.NETTY_CONNECTION.getChannel().isActive()) return;
+        if(Minelife.NETTY_CONNECTION == null || Minelife.NETTY_CONNECTION.getChannel() == null || !Minelife.NETTY_CONNECTION.getChannel().isActive()) return;
 
         String url = "http:/" + Minelife.NETTY_CONNECTION.getChannel().localAddress().toString().split("\\:")[0] + "/capes/" + uuid.toString() + ".png";
         final ResourceLocation resourceLocation = new ResourceLocation(Minelife.MOD_ID,"textures/capes/" + uuid.toString() + ".png");
