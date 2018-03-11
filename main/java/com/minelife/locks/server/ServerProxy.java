@@ -1,4 +1,6 @@
 package com.minelife.locks.server;
 
-public class ServerProxy {
+import com.minelife.MLProxy;
+
+public class ServerProxy extends MLProxy {
 }

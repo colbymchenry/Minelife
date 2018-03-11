@@ -13,7 +13,9 @@ import com.minelife.gun.item.ammos.*;
 import com.minelife.gun.item.attachments.ItemSight;
 import com.minelife.gun.item.guns.*;
 import com.minelife.gun.item.parts.*;
+import com.minelife.locks.ItemLock;
 import com.minelife.locks.ItemLockPick;
+import com.minelife.locks.LockType;
 import com.minelife.police.ItemHandcuffs;
 import com.minelife.police.ItemTicket;
 import com.minelife.tutorial.ItemTutorialBook;
@@ -97,6 +99,7 @@ public class MLItems {
     public static ItemBagOCash bagOCash;
     public static ItemTutorialBook tutorialBook;
     public static ItemLockPick lockPick;
+    public static ItemLock ironLock, goldLock, diamondLock, obsidianLock;
 
     protected static void init()
     {
@@ -173,6 +176,10 @@ public class MLItems {
         register_item(bagOCash = new ItemBagOCash());
         register_item(tutorialBook = new ItemTutorialBook());
         register_item(lockPick = new ItemLockPick());
+        register_item(ironLock = new ItemLock(LockType.IRON));
+        register_item(goldLock = new ItemLock(LockType.GOLD));
+        register_item(diamondLock = new ItemLock(LockType.DIAMOND));
+        register_item(obsidianLock = new ItemLock(LockType.OBSIDIAN));
     }
 
     private static void register_item(Item item)

@@ -7,6 +7,8 @@ import com.minelife.economy.cash.BlockCash;
 import com.minelife.gangs.BlockVaultCreator;
 import com.minelife.gun.block.BlockZincOre;
 import com.minelife.gun.turrets.BlockTurret;
+import com.minelife.locks.BlockLock;
+import com.minelife.locks.LockType;
 import com.minelife.shop.BlockShopBlock;
 import com.minelife.util.blocks.BlockRedstoneLampOn;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -39,6 +41,7 @@ public class MLBlocks {
     public static BlockRedstoneLampOn redstoneLampOn;
     public static BlockTurret turret;
     public static BlockCash cash;
+    public static BlockLock ironLock, goldLock, diamondLock, obsidianLock;
 //    public static BlockVaultCreator vaultCreator;
 
     protected static void init()
@@ -71,6 +74,10 @@ public class MLBlocks {
         register_block(redstoneLampOn = new BlockRedstoneLampOn());
         register_block(turret = new BlockTurret());
         register_block(cash = new BlockCash());
+        register_block(ironLock = new BlockLock(LockType.IRON));
+        register_block(goldLock = new BlockLock(LockType.GOLD));
+        register_block(diamondLock = new BlockLock(LockType.DIAMOND));
+        register_block(obsidianLock = new BlockLock(LockType.OBSIDIAN));
 //        register_block(vaultCreator = new BlockVaultCreator());
     }
 
