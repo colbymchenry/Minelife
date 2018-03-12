@@ -27,7 +27,8 @@ public enum Permission {
     MONSTER_DEATH(true),
     FALL_DAMAGE(true),
     ADD_MEMBER(false),
-    REMOVE_MEMBER(false);
+    REMOVE_MEMBER(false),
+    LOCKS(false);
 
     private boolean isEstatePermission = false;
 

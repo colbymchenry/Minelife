@@ -7,6 +7,9 @@ import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.permission.ModPermission;
+import com.minelife.realestate.Estate;
+import com.minelife.realestate.EstateHandler;
+import com.minelife.realestate.Permission;
 import com.minelife.util.server.BlockBreakFix;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -57,6 +60,14 @@ public class ModLocks extends MLMod {
             event.world.getBlock(tileLock.protectX, tileLock.protectY, tileLock.protectZ).
                     onBlockActivated(event.world, tileLock.protectX, tileLock.protectY, tileLock.protectZ, event.entityPlayer, event.face, 0.5f, 0.5f, 0.5f);
             return;
+        }
+
+        if(!event.world.isRemote) {
+            Estate e = EstateHandler.getEstateAt(event.world, event.x, event.y, event.z);
+            if (e != null && e.getPlayerPermissions(event.entityPlayer.getUniqueID()).contains(Permission.LOCKS)) {
+                event.world.getBlock(tileLock.protectX, tileLock.protectY, tileLock.protectZ).
+                        onBlockActivated(event.world, tileLock.protectX, tileLock.protectY, tileLock.protectZ, event.entityPlayer, event.face, 0.5f, 0.5f, 0.5f);
+            }
         }
 
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.entityPlayer.getHeldItem() == null || event.entityPlayer.getHeldItem().getItem() != MLItems.lockPick) {

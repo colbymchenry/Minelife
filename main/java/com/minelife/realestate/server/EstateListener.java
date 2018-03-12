@@ -116,15 +116,15 @@ public class EstateListener {
 
         if (player.posX - 1 > estate.getBounds().minX && player.posX + 1 < estate.getBounds().maxX) {
             if (distanceMinZ < distanceMaxZ) {
-                player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY, estate.getBounds().minZ - 0.5, player.rotationYaw, player.rotationPitch);
+                player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY, estate.getBounds().minZ - 1, player.rotationYaw, player.rotationPitch);
             } else if (distanceMinZ > distanceMaxZ) {
-                player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY, estate.getBounds().maxZ + 0.5, player.rotationYaw, player.rotationPitch);
+                player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY, estate.getBounds().maxZ + 1, player.rotationYaw, player.rotationPitch);
             }
         } else if (player.posZ > estate.getBounds().minZ && player.posZ < estate.getBounds().maxZ) {
             if (distanceMinX < distanceMaxX) {
-                player.playerNetServerHandler.setPlayerLocation(estate.getBounds().minX - 0.5, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
+                player.playerNetServerHandler.setPlayerLocation(estate.getBounds().minX - 1, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
             } else if (distanceMinX > distanceMaxX) {
-                player.playerNetServerHandler.setPlayerLocation(estate.getBounds().maxX + 0.5, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
+                player.playerNetServerHandler.setPlayerLocation(estate.getBounds().maxX + 1, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
             }
         }
     }
@@ -156,7 +156,7 @@ public class EstateListener {
         event.setCanceled(!estate.getPlayerPermissions(player.getUniqueID()).contains(Permission.PLACE));
     }
 
-    // TODO: Implement cash blocks and locks
+    // TODO: Implement not needing interact as it is enabled for everything unless locked.
     @SubscribeEvent
     public void onInteract(PlayerInteractEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.entityPlayer;

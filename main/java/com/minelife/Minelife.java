@@ -8,6 +8,7 @@ import com.minelife.economy.ModEconomy;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.gangs.ModGangs;
 import com.minelife.gun.ModGun;
+import com.minelife.jobs.ModJobs;
 import com.minelife.locks.ModLocks;
 import com.minelife.minebay.ModMinebay;
 import com.minelife.notification.ModNotifications;
@@ -96,6 +97,7 @@ public class Minelife {
         MODS.add(new ModEssentials());
         MODS.add(new ModTutorial());
         MODS.add(new ModLocks());
+        MODS.add(new ModJobs());
         try {
             config = new MLConfig("configuration");
             config.addDefault("netty_ip", 0);

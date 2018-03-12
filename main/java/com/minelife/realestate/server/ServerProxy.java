@@ -32,7 +32,7 @@ public class ServerProxy extends MLProxy {
         EstateListener estateListener = new EstateListener();
 
         MinecraftForge.EVENT_BUS.register(estateListener);
-//        FMLCommonHandler.instance().bus().register(new EstateListener());
+        FMLCommonHandler.instance().bus().register(estateListener);
     }
 
 }

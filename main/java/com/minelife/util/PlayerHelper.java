@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.gun.client.ClientProxy;
 import com.minelife.util.server.PacketUpdatePlayerInventory;
+import com.mojang.authlib.GameProfile;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -167,6 +168,11 @@ public class PlayerHelper {
     @SideOnly(Side.SERVER)
     public static boolean isOp(EntityPlayerMP player) {
         return MinecraftServer.getServer().getConfigurationManager().func_152596_g(player.getGameProfile());
+    }
+
+    @SideOnly(Side.SERVER)
+    public static boolean isOp(UUID player) {
+        return MinecraftServer.getServer().getConfigurationManager().func_152596_g(new GameProfile(player, null));
     }
 
 

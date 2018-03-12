@@ -7,6 +7,7 @@ import com.minelife.economy.Billing;
 import com.minelife.realestate.server.EstateListener;
 import com.minelife.util.ArrayUtil;
 import com.minelife.util.MLConfig;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
@@ -242,11 +243,18 @@ public class Estate implements Comparable<Estate> {
     public Set<Permission> getPlayerPermissions(UUID player) {
         Set<Permission> permissions = Sets.newTreeSet();
         permissions.addAll(getActualGlobalPerms());
+
         if (getParentEstate() == null && Objects.equals(player, getOwner())) {
             permissions.addAll(toSet(Arrays.asList(Permission.values())));
             return permissions;
         }
+
         if(Objects.equals(player, getMasterEstate().getOwner())) {
+            permissions.addAll(toSet(Arrays.asList(Permission.values())));
+            return permissions;
+        }
+
+        if(PlayerHelper.isOp(player)) {
             permissions.addAll(toSet(Arrays.asList(Permission.values())));
             return permissions;
         }
