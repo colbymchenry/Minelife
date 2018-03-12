@@ -3,7 +3,9 @@ package com.minelife.locks.client;
 import com.minelife.Minelife;
 import com.minelife.locks.LockType;
 import com.minelife.locks.TileEntityLock;
+import net.minecraft.block.BlockDoor;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.ResourceLocation;
@@ -54,6 +56,22 @@ public class TileEntityLockRenderer extends TileEntitySpecialRenderer {
 
         GL11.glDisable(GL11.GL_CULL_FACE);
 
+        // TODO: Need to prevent levers from opening locked doors
+
+
+        // https://minecraft.gamepedia.com/Java_Edition_data_values#Door
+        boolean isDoor = tileLock.getWorldObj().getBlock(tileLock.protectX, tileLock.protectY, tileLock.protectZ) == Blocks.wooden_door;
+        boolean isTopDoor = (tileLock.getWorldObj().getBlockMetadata(tileLock.protectX, tileLock.protectY, tileLock.protectZ) & 0x8) != (byte) 0;
+        boolean isDoorOpen = false;
+
+        if(isDoor) {
+            if(isTopDoor) {
+                isDoorOpen = (tileLock.getWorldObj().getBlockMetadata(tileLock.protectX, tileLock.protectY - 1, tileLock.protectZ) & 0x4) == (byte) 4;
+            } else {
+                isDoorOpen = (tileLock.getWorldObj().getBlockMetadata(tileLock.protectX, tileLock.protectY, tileLock.protectZ) & 0x4) == (byte) 4;
+            }
+        }
+
         GL11.glPushMatrix();
         {
             GL11.glTranslated(x, y, z);
@@ -74,6 +92,10 @@ public class TileEntityLockRenderer extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();
 
         GL11.glEnable(GL11.GL_CULL_FACE);
+    }
+
+    public byte getBit(int meta, int position) {
+        return (byte) (((byte) meta >> position) & 1);
     }
 
 }
