@@ -9,16 +9,18 @@ import hats.common.core.CommonProxy;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class RenderEntityJobNPC extends RenderLiving {
+public class RenderEntityJobNPC extends RenderBiped {
 
     private ResourceLocation farmerTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/farmer.png");
 
@@ -38,8 +40,6 @@ public class RenderEntityJobNPC extends RenderLiving {
 
 
         // TODO: Render item in hand.
-
-
 
         GL11.glPushMatrix();
         {
@@ -61,48 +61,6 @@ public class RenderEntityJobNPC extends RenderLiving {
             case 0: return farmerTex;
         }
         return null;
-    }
-
-    private void renderItem(Entity entity, double x, double y, double z)
-    {
-        GL11.glPushMatrix();
-        {
-            GL11.glTranslated(x, y, z);
-            float f9 = entity.renderYawOffset + (entity.rotationYaw - entity.prevRotationYaw) * helper.renderTick - (entity.prevRenderYawOffset + (entity.renderYawOffset - entity.prevRenderYawOffset) *  helper.renderTick);
-            float f10 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) *  helper.renderTick;
-            GL11.glRotatef(f9, 0.0F, 1.0F, 0.0F);
-            GL11.glRotatef(f10, 1.0F, 0.0F, 0.0F);
-
-            ItemStack itemstack1 = entity.getHeldItem();
-            int k;
-            float f12;
-            float f3;
-            float f4;
-
-            if (itemstack1.getItem().requiresMultipleRenderPasses())
-            {
-                for (k = 0; k < itemstack1.getItem().getRenderPasses(itemstack1.getItemDamage()); ++k)
-                {
-                    int i = itemstack1.getItem().getColorFromItemStack(itemstack1, k);
-                    f12 = (float)(i >> 16 & 255) / 255.0F;
-                    f3 = (float)(i >> 8 & 255) / 255.0F;
-                    f4 = (float)(i & 255) / 255.0F;
-                    GL11.glColor4f(f12, f3, f4, 1.0F);
-                    this.renderManager.itemRenderer.renderItem(entity, itemstack1, k);
-                }
-            }
-            else
-            {
-                k = itemstack1.getItem().getColorFromItemStack(itemstack1, 0);
-                float f11 = (float)(k >> 16 & 255) / 255.0F;
-                f12 = (float)(k >> 8 & 255) / 255.0F;
-                f3 = (float)(k & 255) / 255.0F;
-                GL11.glColor4f(f11, f12, f3, 1.0F);
-                this.renderManager.itemRenderer.renderItem(entity, itemstack1, 0);
-            }
-
-        }
-        GL11.glPopMatrix();
     }
 
     private void renderNameTag(Entity p_147906_1_, String p_147906_2_, double p_147906_3_, double p_147906_5_, double p_147906_7_, int p_147906_9_)

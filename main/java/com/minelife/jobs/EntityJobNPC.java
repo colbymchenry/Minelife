@@ -31,6 +31,16 @@ public class EntityJobNPC extends EntityCreature {
     }
 
     @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBeCollidedWith() {
+        return false;
+    }
+
+    @Override
     protected void collideWithNearbyEntities() {
     }
 
