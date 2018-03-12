@@ -7,7 +7,11 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
+import java.util.Random;
+
 public class TileEntityLock extends TileEntity {
+
+    private static final Random r = new Random();
 
     public LockType lockType;
     public int protectX, protectY, protectZ;
@@ -59,5 +63,10 @@ public class TileEntityLock extends TileEntity {
     public void Sync() {
         this.getWorldObj().markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
         this.markDirty();
+    }
+
+    public boolean attemptUnlock() {
+        int n = r.nextInt(1000);
+        return n >= lockType.min && n <= lockType.max;
     }
 }

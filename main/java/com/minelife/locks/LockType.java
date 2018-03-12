@@ -2,7 +2,7 @@ package com.minelife.locks;
 
 public enum LockType {
 
-    IRON(90, 100), GOLD(95, 100), DIAMOND(98, 100), OBSIDIAN(99, 100);
+    IRON(990, 1000), GOLD(992, 1000), DIAMOND(998, 1000), OBSIDIAN(995, 1000);
 
     public int min, max;
 

@@ -5,6 +5,7 @@ import com.minelife.locks.LockType;
 import com.minelife.locks.TileEntityLock;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
@@ -25,11 +26,12 @@ public class TileEntityLockRenderer extends TileEntitySpecialRenderer {
         model = AdvancedModelLoader.loadModel(objModelLocation);
     }
 
+    // TODO: Rotate with a door?
     @Override
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float timeSinceLastTick) {
         TileEntityLock tileLock = (TileEntityLock) tileEntity;
 
-        if(tileLock.lockType != null) {
+        if (tileLock.lockType != null) {
             switch (tileLock.lockType) {
                 case IRON: {
                     bindTexture(texIron);
@@ -55,6 +57,18 @@ public class TileEntityLockRenderer extends TileEntitySpecialRenderer {
         GL11.glPushMatrix();
         {
             GL11.glTranslated(x, y, z);
+            if (tileLock.protectZ == tileLock.zCoord - 1) {
+                GL11.glRotatef(-90f, 0f, 1f, 0f);
+                GL11.glTranslatef(-0.5f, 0f, -1f);
+            } else if (tileLock.protectX == tileLock.xCoord - 1) {
+                GL11.glTranslatef(-0.5f, 0f, 0f);
+            } else if (tileLock.protectZ == tileLock.zCoord + 1) {
+                GL11.glRotatef(90f, 0f, 1f, 0f);
+                GL11.glTranslatef(-1.5f, 0f, 0f);
+            } else if (tileLock.protectX == tileLock.xCoord + 1) {
+                GL11.glRotatef(180f, 0f, 1f, 0f);
+                GL11.glTranslatef(-1.5f, 0f, -1f);
+            }
             model.renderAll();
         }
         GL11.glPopMatrix();

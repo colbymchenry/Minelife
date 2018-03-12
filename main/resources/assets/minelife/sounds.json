@@ -94,5 +94,13 @@
   "text_message": {
     "category": "neutral",
     "sounds": ["minelife:text_message"]
+  },
+  "lock_pick_use": {
+    "category": "neutral",
+    "sounds": ["minelife:lock_pick_use"]
+  },
+  "lock_unlocked": {
+    "category": "neutral",
+    "sounds": ["minelife:lock_unlocked"]
   }
 }
