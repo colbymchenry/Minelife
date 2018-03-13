@@ -70,7 +70,7 @@ Jobs:
     - Farmer: Gather wheat from the city (NPC Farmer give to at ??? he gives money)
     - Miner: Mine for the city (NPC Miner give to at the mine near the water he gives money)
     - Bounty Hunter: Get bounties on players (Possibly make NPC Villagers a bounty if there are none for players)
-    - Fisherman: Gets fish (NPC Fisherman give to at port he gives money)
+    - Fisherman: Gets fish (NPC Fisherman give to at port he gives money) ( ALL FISH HAVE 25% chance SEA WEED has 10% CHANCE)
     - Restaurant Worker:
         - Gets a kitchen
         - Starts with $10K

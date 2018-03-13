@@ -1,12 +1,22 @@
 package com.minelife.jobs.server;
 
-import com.minelife.jobs.EntityJobNPC;
+import com.google.common.collect.Maps;
+import com.minelife.jobs.job.farmer.CommandFarmer;
+import com.minelife.jobs.server.commands.CommandNPC;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+
+import java.util.Map;
 
 public class CommandJob extends CommandBase {
+
+    private static Map<String, CommandBase> subCommands = Maps.newHashMap();
+
+    static {
+        subCommands.put("npc", new CommandNPC());
+        subCommands.put("farmer", new CommandFarmer());
+    }
 
     @Override
     public String getCommandName() {
@@ -22,11 +32,12 @@ public class CommandJob extends CommandBase {
     public void processCommand(ICommandSender sender, String[] args) {
         if(!(sender instanceof EntityPlayer)) return;
 
-        EntityPlayerMP player = (EntityPlayerMP) sender;
+        if(args.length == 0) return;
 
-        EntityJobNPC jobNPC = new EntityJobNPC(player.worldObj);
-        jobNPC.setPosition(player.posX, player.posY, player.posZ);
+        if(!subCommands.containsKey(args[0].toLowerCase())) {
+            return;
+        }
 
-        player.worldObj.spawnEntityInWorld(jobNPC);
+        subCommands.get(args[0].toLowerCase()).processCommand(sender, args);
     }
 }

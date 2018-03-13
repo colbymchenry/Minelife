@@ -23,6 +23,12 @@ import org.lwjgl.opengl.GL11;
 public class RenderEntityJobNPC extends RenderBiped {
 
     private ResourceLocation farmerTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/farmer.png");
+    private ResourceLocation fishermanTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/fisherman.png");
+    private ResourceLocation bountyHunterTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/bountyHunter.png");
+    private ResourceLocation chefTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/chef.png");
+    private ResourceLocation lumberjackTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/lumberjack.png");
+    private ResourceLocation minerTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/miner.png");
+    private ResourceLocation policeTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/police.png");
 
     public RenderEntityJobNPC() {
         super(new ModelPlayer(), 0.5F);
@@ -38,27 +44,57 @@ public class RenderEntityJobNPC extends RenderBiped {
 
         this.renderNameTag(entity, entity.getCustomNameTag(), x, y, z, 64);
 
+        String hat = null;
 
-        // TODO: Render item in hand.
-
-        GL11.glPushMatrix();
-        {
-            GL11.glTranslated(x, y, z);
-
-            HatRendererHelper.renderHat(new HatInfoClient("straw hat", 255, 255, 255, 255), 255, scale, scale, scale, scale, helper.getRenderYaw(entity), helper.getRotationYaw(entity), helper.getRotationPitch(entity), helper.getRotationRoll(entity),
-                    helper.getRotatePointVert(entity), helper.getOffsetPointHori(entity), helper.getRotatePointSide(entity), helper.getOffsetPointVert(entity), helper.getOffsetPointHori(entity),
-                    helper.getOffsetPointSide(entity), true, true, helper.renderTick);
+        switch(((EntityJobNPC) entity).getProfession()) {
+            case 0:
+                hat = "straw hat";
+                break;
+            case 1:
+                hat = null;
+                break;
+            case 2:
+                hat = "pickaxe in head";
+                break;
+            case 3:
+                hat = null;
+                break;
+            case 4:
+                hat = null;
+                break;
+            case 5:
+                hat = "woodhat";
+                break;
+            case 6:
+                hat = null;
+                break;
         }
-        GL11.glPopMatrix();
 
+        if(hat != null) {
+            GL11.glPushMatrix();
+            {
+                GL11.glTranslated(x, y, z);
+
+                HatRendererHelper.renderHat(new HatInfoClient(hat, 255, 255, 255, 255), 255, scale, scale, scale, scale, helper.getRenderYaw(entity), helper.getRotationYaw(entity), helper.getRotationPitch(entity), helper.getRotationRoll(entity),
+                        helper.getRotatePointVert(entity), helper.getOffsetPointHori(entity), helper.getRotatePointSide(entity), helper.getOffsetPointVert(entity), helper.getOffsetPointHori(entity),
+                        helper.getOffsetPointSide(entity), true, true, helper.renderTick);
+            }
+            GL11.glPopMatrix();
+        }
 
     }
 
     @Override
     protected ResourceLocation getEntityTexture(Entity entity) {
         EntityJobNPC jobNPC = (EntityJobNPC) entity;
-        switch(jobNPC.npcType) {
+        switch(jobNPC.getProfession()) {
             case 0: return farmerTex;
+            case 1: return fishermanTex;
+            case 2: return minerTex;
+            case 3: return bountyHunterTex;
+            case 4: return chefTex;
+            case 5: return lumberjackTex;
+            case 6: return policeTex;
         }
         return null;
     }

@@ -58,7 +58,7 @@ public class PlayerHelper {
         Minelife.NETWORK.sendTo(new PacketUpdatePlayerInventory(player), player);
     }
 
-    public static TargetResult getTrget(EntityPlayer player, int range, String effect) {
+    public static TargetResult getTarget(EntityPlayer player, int range) {
         TargetResult result = new TargetResult();
 
         List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(Blocks.tallgrass, Blocks.water,
@@ -73,22 +73,7 @@ public class PlayerHelper {
         Block block;
 
         for (int i = 0; i < range; i++) {
-
-            if (i == 1 && player.worldObj.isRemote) {
-                origin = currentPosVec;
-            }
-
             currentPosVec = currentPosVec.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
-
-            if (i == 1 && player.worldObj.isRemote) {
-                target = currentPosVec;
-//                ClientProxy.renderBulletLine.shot(origin, target, lookVec);
-            }
-
-            if (i < 10 && effect != null && !effect.isEmpty())
-                player.worldObj.spawnParticle(effect, currentPosVec.xCoord, currentPosVec.yCoord - 0.2f, currentPosVec.zCoord, 0.0F, 0.0F, 0.0F);
-
-            // may have to move the yCoord down by 0.2f for everything to make it work right, we'll see
 
             int x = MathHelper.floor_double(currentPosVec.xCoord);
             int y = MathHelper.floor_double(currentPosVec.yCoord);
