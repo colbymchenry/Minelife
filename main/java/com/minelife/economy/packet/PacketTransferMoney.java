@@ -4,9 +4,8 @@ import com.minelife.CustomMessageException;
 import com.minelife.Minelife;
 import com.minelife.economy.MoneyHandler;
 import com.minelife.util.PacketPlaySound;
-import com.minelife.util.server.Callback;
+import com.minelife.util.server.NameUUIDCallback;
 import com.minelife.util.server.UUIDFetcher;
-import com.minelife.economy.ModEconomy;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -41,33 +40,30 @@ public class PacketTransferMoney implements IMessage {
         buf.writeInt(this.amount);
     }
 
-    public static class Handler implements IMessageHandler<PacketTransferMoney, IMessage>, Callback {
+    public static class Handler implements IMessageHandler<PacketTransferMoney, IMessage>, NameUUIDCallback {
 
         @Override
         public IMessage onMessage(PacketTransferMoney message, MessageContext ctx) {
-            UUIDFetcher.asyncFetchServer(message.player, this, message, ctx);
+            UUIDFetcher.get(message.player, this, message, ctx);
             return null;
         }
 
         @Override
-        public void callback(Object... objects) {
-            UUID playerUUID = (UUID) objects[0];
-            String name = (String) objects[1];
-            Object[] objects1 = (Object[]) objects[2];
-            PacketTransferMoney message = (PacketTransferMoney) objects1[0];
-            MessageContext ctx = (MessageContext) objects1[1];
+        public void callback(UUID id, String name, Object... objects) {
+            PacketTransferMoney message = (PacketTransferMoney) objects[0];
+            MessageContext ctx = (MessageContext) objects[1];
             EntityPlayerMP sender = ctx.getServerHandler().playerEntity;
 
             try {
-                if (playerUUID == null) throw new CustomMessageException("Player not found.");
-                if (!MoneyHandler.hasATM(playerUUID)) throw new CustomMessageException("Player not found.");
+                if (id == null) throw new CustomMessageException("Player not found.");
+                if (!MoneyHandler.hasATM(id)) throw new CustomMessageException("Player not found.");
 
                 boolean insufficientFunds = MoneyHandler.getBalanceATM(sender.getUniqueID()) < message.amount;
 
                 if (insufficientFunds) throw new CustomMessageException("Insufficient funds.");
 
                 MoneyHandler.withdrawATM(sender.getUniqueID(), message.amount);
-                MoneyHandler.depositATM(playerUUID, message.amount);
+                MoneyHandler.depositATM(id, message.amount);
 
                 Minelife.NETWORK.sendTo(new PacketUpdateATMGui("Success."), sender);
             } catch (CustomMessageException e) {

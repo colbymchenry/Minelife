@@ -2,11 +2,8 @@ package com.minelife.drug.item;
 
 import com.minelife.Minelife;
 import com.minelife.drug.ModDrugs;
-import com.minelife.util.server.Callback;
-import com.minelife.util.server.NameFetcher;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

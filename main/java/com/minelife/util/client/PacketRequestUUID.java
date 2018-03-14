@@ -1,10 +1,9 @@
 package com.minelife.util.client;
 
 import com.minelife.Minelife;
-import com.minelife.util.server.Callback;
-import com.minelife.util.server.FetchNameThread;
-import com.minelife.util.server.FetchUUIDThread;
+import com.minelife.util.server.NameUUIDCallback;
 import com.minelife.util.server.PacketResponseUUID;
+import com.minelife.util.server.UUIDFetcher;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -40,21 +39,19 @@ public class PacketRequestUUID implements IMessage {
         ByteBufUtils.writeUTF8String(buf, receiver);
     }
 
-    public static class Handler implements IMessageHandler<PacketRequestUUID, IMessage>, Callback {
+    public static class Handler implements IMessageHandler<PacketRequestUUID, IMessage>, NameUUIDCallback {
 
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketRequestUUID message, MessageContext ctx) {
-            FetchUUIDThread.instance.fetchUUID(message, ctx, this);
+            UUIDFetcher.get(message.playerName, this, message, ctx);
             return null;
         }
 
         @Override
-        public void callback(Object... objects) {
-            UUID playerUUID = (UUID) objects[0];
-            String playerName = (String) objects[1];
-            PacketRequestUUID message = (PacketRequestUUID) objects[2];
-            MessageContext ctx = (MessageContext) objects[3];
-            Minelife.NETWORK.sendTo(new PacketResponseUUID(playerUUID, playerName, message.receiver), ctx.getServerHandler().playerEntity);
+        public void callback(UUID id, String name, Object... objects) {
+            PacketRequestUUID message = (PacketRequestUUID) objects[0];
+            MessageContext ctx = (MessageContext) objects[1];
+            Minelife.NETWORK.sendTo(new PacketResponseUUID(id, name, message.receiver), ctx.getServerHandler().playerEntity);
         }
     }
 

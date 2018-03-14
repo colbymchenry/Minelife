@@ -9,10 +9,22 @@ import org.json.simple.parser.JSONParser;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class NameFetcher  {
+
+    public static String get(UUID id, NameUUIDCallback callback, Object... objects) {
+        UUIDFetcher.pool.submit(new Runnable() {
+            @Override
+            public void run() {
+                callback.callback(id, get(id), objects);
+            }
+        });
+
+        return "Fetching...";
+    }
 
     public static final String get(UUID id) {
         try {
@@ -32,11 +44,6 @@ public final class NameFetcher  {
         }
 
         return UUIDFetcher.CACHE.get(id);
-    }
-
-    public static String asyncFetchServer(UUID uuid, Callback callback, Object... objects) {
-        FetchNameThread.instance.fetchName(uuid, callback, objects);
-        return "Fetching...";
     }
 
     public static String asyncFetchClient(UUID uuid, INameReceiver receiver) {

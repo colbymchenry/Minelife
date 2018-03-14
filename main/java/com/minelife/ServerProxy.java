@@ -23,8 +23,6 @@ public class ServerProxy extends MLProxy {
     public void preInit(FMLPreInitializationEvent event) {
         FMLCommonHandler.instance().bus().register(new UUIDFetcher());
         FMLCommonHandler.instance().bus().register(new MLCommand.Ticker());
-        new Thread(FetchNameThread.instance = new FetchNameThread()).start();
-        new Thread(FetchUUIDThread.instance = new FetchUUIDThread()).start();
 
         try {
             Minelife.NETTY_CONNECTION = new ChatClient(Minelife.config.getString("netty_ip"), Minelife.config.getInt("netty_port"));
@@ -33,11 +31,9 @@ public class ServerProxy extends MLProxy {
             e.printStackTrace();
         }
 
-        MinecraftForge.EVENT_BUS.register(new EntityCleaner());
         FMLCommonHandler.instance().bus().register(new ConnectionRetryHandler());
         FMLCommonHandler.instance().bus().register(new WelfareListener());
         FMLCommonHandler.instance().bus().register(new SoundTrack());
-
 
         initSQLite();
         Minelife.MODS.forEach(mod -> {

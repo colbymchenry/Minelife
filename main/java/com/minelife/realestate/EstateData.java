@@ -1,6 +1,5 @@
 package com.minelife.realestate;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
@@ -8,14 +7,13 @@ import com.minelife.economy.Billing;
 import com.minelife.util.MLConfig;
 import com.minelife.util.client.INameReceiver;
 import com.minelife.util.configuration.InvalidConfigurationException;
-import com.minelife.util.server.Callback;
 import com.minelife.util.server.NameFetcher;
+import com.minelife.util.server.NameUUIDCallback;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -26,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class EstateData extends Estate implements INameReceiver, Callback {
+public class EstateData extends Estate implements INameReceiver, NameUUIDCallback {
 
     private UUID owner, renter;
     private int id, rentPeriod;
@@ -48,8 +46,8 @@ public class EstateData extends Estate implements INameReceiver, Callback {
             this.ownerName = owner == null ? "NULL" : NameFetcher.asyncFetchClient(owner, this);
             this.renterName = renter == null ? "NULL" : NameFetcher.asyncFetchClient(renter, this);
         } else {
-            this.ownerName = owner == null ? "NULL" : NameFetcher.asyncFetchServer(owner, this);
-            this.renterName = renter == null ? "NULL" : NameFetcher.asyncFetchServer(renter, this);
+            this.ownerName = owner == null ? "NULL" : NameFetcher.get(owner, this);
+            this.renterName = renter == null ? "NULL" : NameFetcher.get(renter, this);
         }
         this.intro = intro;
         this.outro = outro;
@@ -70,8 +68,8 @@ public class EstateData extends Estate implements INameReceiver, Callback {
         this.rentPeriod = estate.getRentPeriod();
         this.purchasePrice = estate.getPurchasePrice();
         this.rentPrice = estate.getRentPrice();
-        this.ownerName = owner == null ? "NULL" : NameFetcher.asyncFetchServer(owner, this);
-        this.renterName = renter == null ? "NULL" : NameFetcher.asyncFetchServer(renter, this);
+        this.ownerName = owner == null ? "NULL" : NameFetcher.get(owner, this);
+        this.renterName = renter == null ? "NULL" : NameFetcher.get(renter, this);
         this.intro = estate.getIntro();
         this.outro = estate.getOutro();
         this.globalPermissionList = estate.getGlobalPermissions();
@@ -405,7 +403,8 @@ public class EstateData extends Estate implements INameReceiver, Callback {
     }
 
     @Override
-    public void callback(Object... objects) {
-
+    public void callback(UUID id, String name, Object... objects) {
+        if (id.equals(owner)) ownerName = name;
+        else if (id.equals(renter)) renterName = name;
     }
 }

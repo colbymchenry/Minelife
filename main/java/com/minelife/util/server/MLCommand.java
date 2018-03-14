@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 public abstract class MLCommand extends CommandBase {
 
-    private final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    private static final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
     protected static List<Runnable> scheduledTasks = Lists.newArrayList();
 
     @Override

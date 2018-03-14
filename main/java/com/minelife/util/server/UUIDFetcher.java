@@ -4,11 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.util.client.IUUIDReceiver;
-import com.minelife.util.client.PacketRequestName;
 import com.minelife.util.client.PacketRequestUUID;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
-import cpw.mods.fml.relauncher.Side;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -18,8 +16,22 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class UUIDFetcher {
+
+    protected static final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+
+    public static void get(String player, NameUUIDCallback callback, Object... objects) {
+        pool.submit(new Runnable() {
+            @Override
+            public void run() {
+                UUID playerUUID = get(player);
+                callback.callback(playerUUID, NameFetcher.get(playerUUID), objects);
+            }
+        });
+    }
 
     protected static final Map<UUID, String> CACHE = Maps.newHashMap();
     protected static final List<String> NULL_NAMES = Lists.newArrayList();
@@ -66,10 +78,6 @@ public final class UUIDFetcher {
     @SubscribeEvent
     public void onJoin(PlayerEvent.PlayerLoggedInEvent event) {
         CACHE.put(event.player.getUniqueID(), event.player.getDisplayName());
-    }
-
-    public static void asyncFetchServer(String name, Callback callback, Object... objects) {
-        FetchUUIDThread.instance.fetchUUID(name, callback, objects);
     }
 
     public static UUID asyncFetchClient(String name, IUUIDReceiver receiver) {

@@ -10,6 +10,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.util.UUID;
 
@@ -38,20 +39,19 @@ public class PacketRequestName implements IMessage {
         ByteBufUtils.writeUTF8String(buf, receiver);
     }
 
-    public static class Handler implements IMessageHandler<PacketRequestName, IMessage>, Callback {
+    public static class Handler implements IMessageHandler<PacketRequestName, IMessage>, NameUUIDCallback {
 
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketRequestName message, MessageContext ctx) {
-            FetchNameThread.instance.fetchName(message, ctx, this);
+            NameFetcher.get(message.playerUUID, this, ctx.getServerHandler().playerEntity, message.receiver);
             return null;
         }
 
         @Override
-        public void callback(Object... objects) {
-            String name = (String) objects[0];
-            PacketRequestName message = (PacketRequestName) objects[1];
-            MessageContext ctx = (MessageContext) objects[2];
-            Minelife.NETWORK.sendTo(new PacketResponseName(message.playerUUID, name, message.receiver), ctx.getServerHandler().playerEntity);
+        public void callback(UUID id, String name, Object... objects) {
+            EntityPlayerMP player = (EntityPlayerMP) objects[0];
+            String receiver = (String) objects[1];
+            Minelife.NETWORK.sendTo(new PacketResponseName(id, name, receiver), player);
         }
     }
 

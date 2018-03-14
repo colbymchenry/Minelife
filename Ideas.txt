@@ -23,6 +23,18 @@ Real estate rent notification going off screen
 
 Money not being delivered in rental of estates
 
+Gang Leader /g sethome for rented land too not just purchased
+
+Can't lock buildcraft and IC2 blocks
+
+Lower turret sound
+
+Turn down lock pick sound
+
+Wallet not in hand in 3rd person
+
+Can't leave gang when in gang
+
 // FIXED
 Welfare not working
 
@@ -84,5 +96,19 @@ Cops:
     - Keep track of players kills in case someone calls 911
     - To become a cop, must apply on forums, must pass cop test and pass specific scenario
     - Play time, previous bans, previous complaints, etc is up to the admin/moderator to approve of.
+
+    Turret Light doesn't turn green for others and Minebay item listed for $400 took $700
+    Turret range too far
+    Turret missing some
+
+    Dynamite break 1 block not 4
+
+    Shopblock still taking item if insufficient funds
+
+    Don't have permission to make another player a leader while leader, but actually they are the new leader
+
+    can't add locks to doors and levers
+
+    Make way to view bounds of estate
 
 10.03 12:47:11 [Server] INFO java.lang.NullPointerException 10.03 12:47:11 [Server] INFO at com.minelife.shop.TileEntityShopBlock.doTransaction(TileEntityShopBlock.java:125) ~[TileEntityShopBlock.class:?] 10.03 12:47:11 [Server] INFO at com.minelife.shop.BlockShopBlock.func_149727_a(BlockShopBlock.java:59) ~[BlockShopBlock.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.management.ItemInWorldManager.func_73078_a(ItemInWorldManager.java:376) ~[mx.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.network.NetHandlerPlayServer.func_147346_a(NetHandlerPlayServer.java:556) ~[nh.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.network.play.client.C08PacketPlayerBlockPlacement.func_148833_a(SourceFile:60) ~[jo.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.network.play.client.C08PacketPlayerBlockPlacement.func_148833_a(SourceFile:9) ~[jo.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.network.NetworkManager.func_74428_b(NetworkManager.java:212) ~[ej.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.network.NetworkSystem.func_151269_c(NetworkSystem.java:165) [nc.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.MinecraftServer.func_71190_q(MinecraftServer.java:659) [MinecraftServer.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.dedicated.DedicatedServer.func_71190_q(DedicatedServer.java:334) [lt.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.MinecraftServer.func_71217_p(MinecraftServer.java:547) [MinecraftServer.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:427) [MinecraftServer.class:?] 10.03 12:47:11 [Server] INFO at net.minecraft.server.MinecraftServer$2.run(MinecraftServer.java:685) [li.class:?]
