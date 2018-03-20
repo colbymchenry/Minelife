@@ -1,5 +1,6 @@
 package com.minelife.realestate;
 
+import com.google.common.collect.Sets;
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.realestate.network.*;
@@ -13,6 +14,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -71,6 +73,15 @@ public class ModRealEstate extends MLMod {
 
     public static Estate getEstate(UUID uniqueID) {
         return getLoadedEstates().stream().filter(estate -> estate.getUniqueID().equals(uniqueID)).findFirst().orElse(null);
+    }
+
+    public static Set<Estate> getEstates(UUID playerID) {
+        Set<Estate> estates = Sets.newTreeSet();
+        getLoadedEstates().forEach(estate -> {
+            if(Objects.equals(playerID, estate.getOwnerID()) || Objects.equals(playerID, estate.getRenterID()))
+                estates.add(estate);
+        });
+        return estates;
     }
 
 }

@@ -41,7 +41,7 @@ public class BlockCash extends BlockContainer {
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
         super.onBlockAdded(worldIn, pos, state);
         try {
-            ModEconomy.getDatabase().query("INSERT INTO cashBlocks (dimension, x, y, z) VALUES ('" + worldIn.provider.getDimension() + "', " +
+            ModEconomy.getDatabase().query("INSERT INTO cashpiles (dimension, x, y, z) VALUES ('" + worldIn.provider.getDimension() + "', " +
                     "'" + pos.getX() + "', '" + pos.getY() + "', '" + pos.getZ() + "')");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -86,7 +86,7 @@ public class BlockCash extends BlockContainer {
 
         if(!worldIn.isRemote) {
             try {
-                ModEconomy.getDatabase().query("DELETE FROM cashBlocks WHERE dimension='" + worldIn.provider.getDimension() + "' " +
+                ModEconomy.getDatabase().query("DELETE FROM cashpiles WHERE dimension='" + worldIn.provider.getDimension() + "' " +
                         "AND x='" + pos.getX() + "' AND y='" + pos.getY() + "' AND z='" + pos.getZ() + "'");
             } catch (SQLException e) {
                 e.printStackTrace();
