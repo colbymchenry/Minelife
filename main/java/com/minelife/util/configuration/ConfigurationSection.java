@@ -1,7 +1,5 @@
 package com.minelife.util.configuration;
 
-import com.minelife.util.Vector;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.List;
@@ -466,8 +464,6 @@ public interface ConfigurationSection {
 
     public UUID getUUID(String path, UUID def);
     public boolean isUUID(String path);
-    public Vector getVector(String path, Vector def);
-    public boolean isVector(String path);
 
     /**
      * Gets the requested List of Boolean by path.

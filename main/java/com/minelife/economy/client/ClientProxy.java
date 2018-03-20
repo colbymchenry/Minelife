@@ -1,29 +1,21 @@
 package com.minelife.economy.client;
 
-import com.minelife.MLItems;
 import com.minelife.MLProxy;
-import com.minelife.MLBlocks;
-import com.minelife.economy.TileEntityATM;
-import com.minelife.economy.cash.RenderCashBlockItem;
-import com.minelife.economy.cash.TileEntityCash;
-import com.minelife.economy.cash.TileEntityCashRenderer;
-import com.minelife.economy.client.wallet.ItemWalletRenderer;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import net.minecraft.item.Item;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.MinecraftForge;
+import com.minelife.economy.ModEconomy;
+import com.minelife.economy.client.render.*;
+import com.minelife.economy.tileentity.TileEntityATM;
+import com.minelife.economy.tileentity.TileEntityCash;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ClientProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityATM.class, new RenderATMBlock());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCash.class, new TileEntityCashRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(MLBlocks.atm), new RenderATMItem());
-        MinecraftForgeClient.registerItemRenderer(MLItems.wallet, new ItemWalletRenderer());
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(MLBlocks.cash), new RenderCashBlockItem());
+        registerItemRenderer(ModEconomy.itemATM, 0, "minelife:atm", new RenderATMItem());
+        registerItemRenderer(ModEconomy.itemCashBlock, 0, "minelife:cashBlock", new RenderCashItem());
+        registerBlockRenderer(TileEntityATM.class, new RenderATMBlock());
+        registerBlockRenderer(TileEntityCash.class, new RenderCashBlock());
+        ModEconomy.itemCash.registerModels();
+        ModEconomy.itemWallet.registerModels();
     }
 }

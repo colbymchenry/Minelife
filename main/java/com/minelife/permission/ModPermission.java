@@ -6,14 +6,17 @@ import com.minelife.MLMod;
 import com.minelife.util.MLConfig;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.configuration.InvalidConfigurationException;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.relauncher.Side;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class ModPermission extends MLMod {
 
@@ -185,9 +188,9 @@ public class ModPermission extends MLMod {
         config.addDefault("groups.default.default", true);
         config.addDefault("groups.default.permissions", Arrays.asList("estate.pvp"));
         config.addDefault("groups.moderator.inheritance", Arrays.asList("default"));
-        config.addDefault("groups.moderator.prefix", EnumChatFormatting.DARK_BLUE.toString() + "[Moderator]" + EnumChatFormatting.RESET.toString());
+        config.addDefault("groups.moderator.prefix", TextFormatting.DARK_BLUE.toString() + "[Moderator]" + TextFormatting.RESET.toString());
         config.addDefault("groups.admin.inheritance", Arrays.asList("moderator"));
-        config.addDefault("groups.admin.prefix", EnumChatFormatting.DARK_RED.toString() + "[Admin]" + EnumChatFormatting.RESET.toString());
+        config.addDefault("groups.admin.prefix", TextFormatting.DARK_RED.toString() + "[Admin]" + TextFormatting.RESET.toString());
         config.addDefault("users", Lists.newArrayList());
         config.addDefault("chat-format", "&7{DISPLAYNAME}&7: &7{MESSAGE}");
         config.save();

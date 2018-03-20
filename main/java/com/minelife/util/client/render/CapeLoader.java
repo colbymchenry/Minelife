@@ -1,10 +1,10 @@
 package com.minelife.util.client.render;
 
 import com.minelife.Minelife;
+import com.minelife.netty.ModNetty;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IImageBuffer;
 import net.minecraft.client.renderer.ThreadDownloadImageData;
-
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 
@@ -32,9 +32,9 @@ public class CapeLoader {
      * @param uuid
      */
     public static void loadCape(final UUID uuid) {
-        if(Minelife.NETTY_CONNECTION == null || Minelife.NETTY_CONNECTION.getChannel() == null || !Minelife.NETTY_CONNECTION.getChannel().isActive()) return;
+        if(ModNetty.getNettyConnection() == null || ModNetty.getNettyConnection().getChannel() == null || !ModNetty.getNettyConnection().getChannel().isActive()) return;
 
-        String url = "http:/" + Minelife.NETTY_CONNECTION.getChannel().localAddress().toString().split("\\:")[0] + "/capes/" + uuid.toString() + ".png";
+        String url = "http:/" + ModNetty.getNettyConnection().getChannel().localAddress().toString().split("\\:")[0] + "/capes/" + uuid.toString() + ".png";
         final ResourceLocation resourceLocation = new ResourceLocation(Minelife.MOD_ID,"textures/capes/" + uuid.toString() + ".png");
         TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 
@@ -47,7 +47,7 @@ public class CapeLoader {
 
             // skinAvailable
             @Override
-            public void func_152634_a() {
+            public void skinAvailable() {
                 capes.put(uuid, resourceLocation);
             }
         };

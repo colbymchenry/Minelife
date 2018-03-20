@@ -9,12 +9,11 @@ public class DateHelper {
 
     private static final DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
-
-    public static String DateToString(Date date) {
+    public static String dateToString(Date date) {
         return df.format(date);
     }
 
-    public static Date StringToDate(String str) {
+    public static Date stringToDate(String str) {
         try {
             return df.parse(str);
         } catch (ParseException e) {

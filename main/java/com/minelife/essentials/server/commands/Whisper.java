@@ -1,57 +1,53 @@
 package com.minelife.essentials.server.commands;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.minelife.essentials.NotificationPM;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.PlayerHelper;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.minecraft.command.ICommand;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTUtil;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class Whisper implements ICommand {
+public class Whisper extends CommandBase {
 
     private static Map<UUID, UUID> MessagePairs = Maps.newHashMap();
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "whisper";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
+    public String getUsage(ICommandSender sender) {
         return "/whisper <player> <msg>";
     }
 
     @Override
-    public List getCommandAliases() {
+    public List<String> getAliases() {
         return Arrays.asList("pm", "tell", "t");
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         if(args.length < 2) {
-            sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
+            sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }
 
         EntityPlayerMP Receiver = PlayerHelper.getPlayer(args[0]);
 
         if(Receiver == null) {
-            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Player not found."));
+            sender.sendMessage(new TextComponentString(TextFormatting.RED + "Player not found."));
             return;
         }
 
@@ -61,40 +57,31 @@ public class Whisper implements ICommand {
             msg += args[i] + " ";
         }
 
-        GameProfile gameprofile = MinecraftServer.getServer().func_152358_ax().func_152655_a(((EntityPlayerMP) sender).getCommandSenderName());
+        GameProfile gameprofile = server.getPlayerProfileCache().getGameProfileForUsername(sender.getName());
 
         if (gameprofile != null) {
             Property property = (Property) Iterables.getFirst(gameprofile.getProperties().get("textures"), (Object) null);
 
             if (property == null) {
-                gameprofile = MinecraftServer.getServer().func_147130_as().fillProfileProperties(gameprofile, true);
+                gameprofile = server.getMinecraftSessionService().fillProfileProperties(gameprofile, true);
             }
         }
 
-        NotificationPM notificationPM = new NotificationPM(Receiver.getUniqueID(), msg, gameprofile);
-        notificationPM.sendTo(Receiver);
+        // TODO
+//        NotificationPM notificationPM = new NotificationPM(Receiver.getUniqueID(), msg, gameprofile);
+//        notificationPM.sendTo(Receiver);
 
         MessagePairs.put(Receiver.getUniqueID(), ((EntityPlayerMP) sender).getUniqueID());
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         return sender instanceof EntityPlayerMP && ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "whisper");
     }
 
     @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args) {
-        return Lists.newArrayList();
-    }
-
-    @Override
     public boolean isUsernameIndex(String[] args, int index) {
-        return false;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
+        return index == 1;
     }
 
     public static UUID GetLastSender(UUID PlayerUUID) {

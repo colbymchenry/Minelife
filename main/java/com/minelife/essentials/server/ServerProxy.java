@@ -2,57 +2,57 @@ package com.minelife.essentials.server;
 
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
-import com.minelife.economy.ModEconomy;
-import com.minelife.economy.MoneyHandler;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.essentials.TeleportHandler;
-import com.minelife.essentials.server.commands.Spawn;
-import com.minelife.util.Location;
 import com.minelife.util.MLConfig;
 import com.minelife.util.StringHelper;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
+import lib.PatPeter.SQLibrary.Database;
 import lib.PatPeter.SQLibrary.SQLite;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class ServerProxy extends MLProxy {
 
+    public static MLConfig CONFIG;
+    public static Database DB;
+
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
-        ModEssentials.config = new MLConfig("essentials");
-        ModEssentials.config.addDefault("teleport_warmup", 5);
-        ModEssentials.config.addDefault("teleport_cooldown", 10);
-        ModEssentials.config.save();
+        CONFIG = new MLConfig("essentials");
+        ModEssentials.getConfig().addDefault("teleport_warmup", 5);
+        ModEssentials.getConfig().addDefault("teleport_cooldown", 10);
+        ModEssentials.getConfig().save();
 
-        FMLCommonHandler.instance().bus().register(new TeleportHandler());
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(new TeleportHandler());
+        MinecraftForge.EVENT_BUS.register(this);
 
         String prefix = "[MinelifeEssentials]";
-        String directory = Minelife.getConfigDirectory().getAbsolutePath() + File.separator + "essentials";
-        String dbName = "storage";
-        ModEssentials.db = new SQLite(Minelife.getLogger(), prefix, directory, dbName);
-        ModEssentials.db.open();
+        String dbName = "essentials";
+        DB = new SQLite(Logger.getLogger("Minecraft"), prefix, Minelife.getDirectory().getAbsolutePath(), dbName);
+        DB.open();
     }
 
 
-    private static final File fileMOTD = new File(Minelife.getConfigDirectory(), "motd.txt");
+    private static final File fileMOTD = new File(Minelife.getDirectory(), "motd.txt");
 
     @SubscribeEvent
     public void onJoin(PlayerEvent.PlayerLoggedInEvent event) throws SQLException, IOException {
-        if(!MoneyHandler.hasATM(event.player.getUniqueID())) {
-            if(Spawn.GetSpawn() != null) {
-                Location spawn = Spawn.GetSpawn();
-                ((EntityPlayerMP) event.player).playerNetServerHandler.setPlayerLocation(spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
-            }
-        }
+        // TODO: Need better way of doing this
+//        if(!MoneyHandler.hasATM(event.player.getUniqueID())) {
+//            if(Spawn.GetSpawn() != null) {
+//                Location spawn = Spawn.GetSpawn();
+//                ((EntityPlayerMP) event.player).connection.setPlayerLocation(spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
+//            }
+//        }
 
         if(!fileMOTD.exists()) {
             fileMOTD.createNewFile();
@@ -60,7 +60,7 @@ public class ServerProxy extends MLProxy {
 
         Scanner scanner = new Scanner(fileMOTD);
         while(scanner.hasNextLine()) {
-            event.player.addChatMessage(new ChatComponentText(StringHelper.ParseFormatting(scanner.nextLine(), '&')));
+            event.player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(scanner.nextLine(), '&')));
         }
     }
 }

@@ -59,7 +59,7 @@ public class GuiLoadingAnimation extends Gui {
             GL11.glRotatef(rotation+=speed, 0, 0, 1);
             GL11.glTranslatef(-(width / 2), -(height / 2), 0);
             Minecraft.getMinecraft().getTextureManager().bindTexture(image);
-            GuiUtil.drawImage(0, 0, width, height);
+            drawTexturedModalRect(0, 0, 0, 0, width, height);
             GL11.glColor4f(1, 1, 1, 1);
         }
         GL11.glPopMatrix();

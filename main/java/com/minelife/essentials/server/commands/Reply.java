@@ -2,45 +2,43 @@ package com.minelife.essentials.server.commands;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.minelife.essentials.NotificationPM;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.PlayerHelper;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import net.minecraft.command.ICommand;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class Reply implements ICommand {
+public class Reply extends CommandBase {
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "reply";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
+    public String getUsage(ICommandSender sender) {
         return "/reply <msg>";
     }
 
     @Override
-    public List getCommandAliases() {
+    public List<String> getAliases() {
         List alias = Lists.newArrayList();
         alias.add("r");
         return alias;
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         if(args.length == 0) {
-            sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
+            sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }
 
@@ -49,14 +47,14 @@ public class Reply implements ICommand {
         UUID ResponderUUID = Whisper.GetLastSender(Player.getUniqueID());
 
         if(ResponderUUID == null) {
-            Player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You have not received a message."));
+            Player.sendMessage(new TextComponentString(TextFormatting.RED + "You have not received a message."));
             return;
         }
 
         EntityPlayerMP Receiver = PlayerHelper.getPlayer(ResponderUUID);
 
         if(Receiver == null) {
-            Player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Player could not be found or is not online anymore."));
+            Player.sendMessage(new TextComponentString(TextFormatting.RED + "Player could not be found or is not online anymore."));
             return;
         }
 
@@ -66,40 +64,27 @@ public class Reply implements ICommand {
             msg += args[i] + " ";
         }
 
-        GameProfile gameprofile = MinecraftServer.getServer().func_152358_ax().func_152655_a(((EntityPlayerMP) sender).getCommandSenderName());
+        GameProfile gameprofile = server.getPlayerProfileCache().getGameProfileForUsername(sender.getName());
 
         if (gameprofile != null) {
             Property property = (Property) Iterables.getFirst(gameprofile.getProperties().get("textures"), (Object) null);
 
             if (property == null) {
-                gameprofile = MinecraftServer.getServer().func_147130_as().fillProfileProperties(gameprofile, true);
+                gameprofile = server.getMinecraftSessionService().fillProfileProperties(gameprofile, true);
             }
         }
 
-        NotificationPM notificationPM = new NotificationPM(Receiver.getUniqueID(), msg, gameprofile);
-        notificationPM.sendTo(Receiver);
+        //TODO
+//        NotificationPM notificationPM = new NotificationPM(Receiver.getUniqueID(), msg, gameprofile);
+//        notificationPM.sendTo(Receiver);
 
         Whisper.PutLastSender(Receiver.getUniqueID(), ((EntityPlayerMP) sender).getUniqueID());
 
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         return sender instanceof EntityPlayerMP && ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "whisper");
     }
 
-    @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args) {
-        return Lists.newArrayList();
-    }
-
-    @Override
-    public boolean isUsernameIndex(String[] args, int index) {
-        return false;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
 }

@@ -1,8 +1,7 @@
 package com.minelife.util.client.render;
 
-import com.minelife.util.Vector;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -96,9 +95,9 @@ public class LineRenderer {
 
     public static void drawRect(Minecraft minecraft, Vector topLeft, Vector bottomLeft, Vector bottomRight, Vector topRight, float partialTickTime, Color color, boolean depth_test_faces, boolean depth_test_borders) {
 
-        double playerX = minecraft.thePlayer.lastTickPosX + (minecraft.thePlayer.posX - minecraft.thePlayer.lastTickPosX) * partialTickTime;
-        double playerY = minecraft.thePlayer.lastTickPosY + (minecraft.thePlayer.posY - minecraft.thePlayer.lastTickPosY) * partialTickTime;
-        double playerZ = minecraft.thePlayer.lastTickPosZ + (minecraft.thePlayer.posZ - minecraft.thePlayer.lastTickPosZ) * partialTickTime;
+        double playerX = minecraft.player.lastTickPosX + (minecraft.player.posX - minecraft.player.lastTickPosX) * partialTickTime;
+        double playerY = minecraft.player.lastTickPosY + (minecraft.player.posY - minecraft.player.lastTickPosY) * partialTickTime;
+        double playerZ = minecraft.player.lastTickPosZ + (minecraft.player.posZ - minecraft.player.lastTickPosZ) * partialTickTime;
 
         double dx = topLeft.getX() - playerX;
         double dy = topLeft.getY() - playerY;

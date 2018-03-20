@@ -1,164 +1,117 @@
 package com.minelife.realestate.network;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.minelife.Minelife;
-import com.minelife.realestate.*;
-import com.minelife.realestate.server.SelectionHandler;
-import com.minelife.util.PlayerHelper;
-import com.minelife.util.client.PacketPopupMessage;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import com.minelife.realestate.Estate;
+import com.minelife.realestate.EstateProperty;
+import com.minelife.realestate.ModRealEstate;
+import com.minelife.realestate.PlayerPermission;
+import com.minelife.realestate.server.CommandEstate;
+import com.minelife.realestate.server.SelectionListener;
+import com.minelife.util.client.PacketPopup;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.Vec3;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
-import java.util.List;
+import java.sql.SQLException;
 import java.util.Set;
+import java.util.UUID;
 
 public class PacketCreateEstate implements IMessage {
 
-    private Set<Permission> globalPermissions, ownerPermissions, renterPermissions, estatePermissions, globalAllowedToChangePerms;
-    private int purchasePrice, rentPrice;
-    private int rentPeriod;
-    private String intro, outro;
-
-    public PacketCreateEstate(Set<Permission> globalPermissions, Set<Permission> ownerPermissions, Set<Permission> renterPermissions, Set<Permission> estatePermissions, Set<Permission> globalAllowedToChangePerms, int purchasePrice, int rentPrice, int rentPeriod, String intro, String outro) {
-        this.globalPermissions = globalPermissions;
-        this.ownerPermissions = ownerPermissions;
-        this.renterPermissions = renterPermissions;
-        this.estatePermissions = estatePermissions;
-        this.globalAllowedToChangePerms = globalAllowedToChangePerms;
-        this.purchasePrice = purchasePrice;
-        this.rentPrice = rentPrice;
-        this.rentPeriod = rentPeriod;
-        this.intro = intro;
-        this.outro = outro;
-    }
+    private Estate estate;
 
     public PacketCreateEstate() {
     }
 
+    public PacketCreateEstate(Estate estate) {
+        this.estate = estate;
+    }
+
     @Override
     public void fromBytes(ByteBuf buf) {
-        globalPermissions = Sets.newTreeSet();
-        ownerPermissions = Sets.newTreeSet();
-        renterPermissions = Sets.newTreeSet();
-        estatePermissions = Sets.newTreeSet();
-        globalAllowedToChangePerms = Sets.newTreeSet();
-        purchasePrice = buf.readInt();
-        rentPrice = buf.readInt();
-        rentPeriod = buf.readInt();
-        intro = ByteBufUtils.readUTF8String(buf);
-        outro = ByteBufUtils.readUTF8String(buf);
-        int globalPermsSize = buf.readInt();
-        int ownerPermsSize = buf.readInt();
-        int renterPermsSize = buf.readInt();
-        int estatePermsSize = buf.readInt();
-        int allowedToChangePermsSize = buf.readInt();
-        for (int i = 0; i < globalPermsSize; i++)
-            globalPermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
-        for (int i = 0; i < ownerPermsSize; i++)
-            ownerPermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
-        for (int i = 0; i < renterPermsSize; i++)
-            renterPermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
-        for (int i = 0; i < estatePermsSize; i++)
-            estatePermissions.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
-        for (int i = 0; i < allowedToChangePermsSize; i++)
-            globalAllowedToChangePerms.add(Permission.valueOf(ByteBufUtils.readUTF8String(buf)));
+        UUID id = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+        NBTTagCompound tagCompound = ByteBufUtils.readTag(buf);
+        this.estate = new Estate(id, tagCompound);
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(purchasePrice);
-        buf.writeInt(rentPrice);
-        buf.writeInt(rentPeriod);
-        ByteBufUtils.writeUTF8String(buf, intro);
-        ByteBufUtils.writeUTF8String(buf, outro);
-        buf.writeInt(globalPermissions.size());
-        buf.writeInt(ownerPermissions.size());
-        buf.writeInt(renterPermissions.size());
-        buf.writeInt(estatePermissions.size());
-        buf.writeInt(globalAllowedToChangePerms.size());
-        globalPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
-        ownerPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
-        renterPermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
-        estatePermissions.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
-        globalAllowedToChangePerms.forEach(p -> ByteBufUtils.writeUTF8String(buf, p.name()));
+        ByteBufUtils.writeUTF8String(buf, this.estate.getUniqueID().toString());
+        ByteBufUtils.writeTag(buf, this.estate.getTagCompound());
     }
 
     public static class Handler implements IMessageHandler<PacketCreateEstate, IMessage> {
 
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketCreateEstate message, MessageContext ctx) {
-            EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-            Estate estate = null;
+            FMLServerHandler.instance().getServer().addScheduledTask(() -> {
+                EntityPlayerMP player = ctx.getServerHandler().player;
 
-            if(message.rentPrice == 0) {
-                Minelife.NETWORK.sendTo(new PacketPopupMessage("Rent price cannot be 0.", 0xC6C6C6), player);
-                return null;
-            }
+                if (!CommandEstate.creationCheck(player, false, true)) return;
 
-            if(message.purchasePrice == 0) {
-                Minelife.NETWORK.sendTo(new PacketPopupMessage("Purchase price cannot be 0.", 0xC6C6C6), player);
-                return null;
-            }
-
-            if(message.rentPrice > 0 && message.rentPeriod < 1) {
-                Minelife.NETWORK.sendTo(new PacketPopupMessage("Rent period must be greater than 0.", 0xC6C6C6), player);
-                return null;
-            }
-
-            try {
-                Selection selection = SelectionHandler.getSelection(player);
-
-                if (!selection.isComplete()) {
-                    player.addChatComponentMessage(new ChatComponentText("Please make a full selection."));
-                    return null;
+                if (message.estate.getRentPrice() > 0 && message.estate.getRentPeriod() < 1) {
+                    PacketPopup.sendPopup("Rent period must be greater than 1 if rent price is greater than 1.", player);
+                    return;
                 }
 
-                Vec3 min = selection.getMin();
-                min.zCoord -= 1;
-                min.xCoord -= 1;
-                min.yCoord -= 1;
-                Vec3 max = selection.getMax();
-                max.xCoord += 1;
-                max.zCoord += 1;
-                max.yCoord += 1;
-                selection.setPos1((int) min.xCoord, (int) min.yCoord, (int) min.zCoord);
-                selection.setPos2((int) max.xCoord, (int) max.yCoord, (int) max.zCoord);
-                estate = EstateHandler.createEstate(player, selection);
+                if(ModRealEstate.getEstate(message.estate.getUniqueID()) != null) {
+                    PacketPopup.sendPopup("An estate with that unique ID already exists.", player);
+                    return;
+                }
+
+                if (message.estate.getIntro().trim().isEmpty()) message.estate.setIntro(null);
+                if (message.estate.getOutro().trim().isEmpty()) message.estate.setOutro(null);
+                message.estate.setOwnerID(player.getUniqueID());
+                message.estate.setMinimum(SelectionListener.getMinimum(player));
+                message.estate.setMaximum(SelectionListener.getMaximum(player));
+                message.estate.setWorld(player.getEntityWorld());
+
+                // check properties
+                Set<EstateProperty> properties = message.estate.getProperties();
+                for (EstateProperty property : EstateProperty.values()) {
+                    if(!CommandEstate.getEstateProperties(player.getUniqueID()).contains(property))
+                        properties.remove(property);
+                }
+                message.estate.setProperties(properties);
+
+                // check permissions
+                Set<PlayerPermission> globalPermissions = message.estate.getGlobalPermissions();
+                Set<PlayerPermission> renterPermissions = message.estate.getRenterPermissions();
+                for (PlayerPermission playerPermission : PlayerPermission.values()) {
+                    if(!CommandEstate.getPlayerPermissions(player.getUniqueID()).contains(playerPermission)) {
+                        globalPermissions.remove(playerPermission);
+                        renterPermissions.remove(playerPermission);
+                    }
+                }
+                message.estate.setGlobalPermissions(globalPermissions);
+                message.estate.setRenterPermissions(renterPermissions);
+
+                try {
+                    message.estate.save();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    PacketPopup.sendPopup("Error writing to database.", player);
+                    return;
+                }
+
+                ModRealEstate.getLoadedEstates().add(message.estate);
                 player.closeScreen();
-            } catch (Exception e) {
-                e.printStackTrace();
-                player.addChatComponentMessage(new ChatComponentText(e.getMessage().length() > 100 ? e.getMessage().substring(100) : e.getMessage()));
-            }
-
-            if (estate != null) {
-                estate.setPurchasePrice(message.purchasePrice);
-                estate.setRentPrice(message.rentPrice);
-                estate.setRentPeriod(message.rentPeriod);
-                estate.setIntro(message.intro);
-                estate.setOutro(message.outro);
-                estate.setGlobalPermissions(message.globalPermissions);
-                estate.setOwnerPermissions(message.ownerPermissions);
-                estate.setRenterPermissions(message.renterPermissions);
-                estate.setPermissionsAllowedToChange(message.globalAllowedToChangePerms);
-                if (PlayerHelper.isOp(player))
-                    estate.setEstatePermissions(message.estatePermissions);
-                else if (estate.getParentEstate() == null)
-                    estate.setEstatePermissions(Permission.getEstatePermissions());
-            }
-
-            player.addChatComponentMessage(new ChatComponentText(ModRealEstate.getServerProxy().config.getString("messages.estate_create", "Please set estate creation message in the config.")));
-            Minelife.NETWORK.sendTo(new PacketSendSelection(null), player);
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " Estate created!"));
+                SelectionListener.removeSelection(player);
+                Minelife.getNetwork().sendTo(new PacketSelection(null, null), player);
+            });
             return null;
         }
+
     }
 
 }

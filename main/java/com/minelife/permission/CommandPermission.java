@@ -5,7 +5,8 @@ import com.minelife.util.server.MLCommand;
 import com.minelife.util.server.UUIDFetcher;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,41 +14,36 @@ import java.util.UUID;
 public class CommandPermission extends MLCommand {
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "p";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
-        sender.addChatMessage(new ChatComponentText("/p reload"));
-        sender.addChatMessage(new ChatComponentText("/p user <user> prefix <prefix>"));
-        sender.addChatMessage(new ChatComponentText("/p user <user> suffix <suffix>"));
-        sender.addChatMessage(new ChatComponentText("/p user <user> add <permission> [world]"));
-        sender.addChatMessage(new ChatComponentText("/p user <user> remove <permission> [world]"));
-        sender.addChatMessage(new ChatComponentText("/p user <user> group list"));
-        sender.addChatMessage(new ChatComponentText("/p user <user> group add <group> [world]"));
-        sender.addChatMessage(new ChatComponentText("/p user <user> group set <group> [world]"));
-        sender.addChatMessage(new ChatComponentText("/p user <user> group remove <group> [world]"));
-        sender.addChatMessage(new ChatComponentText("/p group <group> prefix <prefix>"));
-        sender.addChatMessage(new ChatComponentText("/p group <group> suffix <suffix>"));
-        sender.addChatMessage(new ChatComponentText("/p group <group> add <permission> [world]"));
-        sender.addChatMessage(new ChatComponentText("/p group <group> remove <permission> [world]"));
+    public String getUsage(ICommandSender sender) {
+        sender.sendMessage(new TextComponentString("/p reload"));
+        sender.sendMessage(new TextComponentString("/p user <user> prefix <prefix>"));
+        sender.sendMessage(new TextComponentString("/p user <user> suffix <suffix>"));
+        sender.sendMessage(new TextComponentString("/p user <user> add <permission> [world]"));
+        sender.sendMessage(new TextComponentString("/p user <user> remove <permission> [world]"));
+        sender.sendMessage(new TextComponentString("/p user <user> group list"));
+        sender.sendMessage(new TextComponentString("/p user <user> group add <group> [world]"));
+        sender.sendMessage(new TextComponentString("/p user <user> group set <group> [world]"));
+        sender.sendMessage(new TextComponentString("/p user <user> group remove <group> [world]"));
+        sender.sendMessage(new TextComponentString("/p group <group> prefix <prefix>"));
+        sender.sendMessage(new TextComponentString("/p group <group> suffix <suffix>"));
+        sender.sendMessage(new TextComponentString("/p group <group> add <permission> [world]"));
+        sender.sendMessage(new TextComponentString("/p group <group> remove <permission> [world]"));
         return null;
     }
 
     @Override
-    public List getCommandAliases() {
+    public List<String> getAliases() {
         return Lists.newArrayList();
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         return !(sender instanceof EntityPlayerMP) || ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "permissions");
-    }
-
-    @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args) {
-        return Lists.newArrayList();
     }
 
     @Override
@@ -56,18 +52,18 @@ public class CommandPermission extends MLCommand {
     }
 
     @Override
-    public synchronized void execute(ICommandSender sender, String[] args) throws Exception {
+    public synchronized void runAsync(MinecraftServer server, ICommandSender sender, String[] args) throws Exception {
         if(args.length == 1) {
             if(args[0].equalsIgnoreCase("reload")) {
                 ModPermission.getConfig().reload();
-                sender.addChatMessage(new ChatComponentText("permissions.yml reloaded!"));
+                sender.sendMessage(new TextComponentString("permissions.yml reloaded!"));
                 return;
             }
-            getCommandUsage(sender);
+            getUsage(sender);
         }
 
         if (args.length < 3) {
-            getCommandUsage(sender);
+            getUsage(sender);
             return;
         }
         switch (args[0].toLowerCase()) {
@@ -92,7 +88,7 @@ public class CommandPermission extends MLCommand {
                     }
                     case "group": {
                         if (args.length < 5) {
-                            getCommandUsage(sender);
+                            getUsage(sender);
                             return;
                         }
                         switch (args[3].toLowerCase()) {
@@ -109,14 +105,14 @@ public class CommandPermission extends MLCommand {
                                 break;
                             }
                             default: {
-                                getCommandUsage(sender);
+                                getUsage(sender);
                                 break;
                             }
                         }
                         break;
                     }
                     default: {
-                        getCommandUsage(sender);
+                        getUsage(sender);
                         break;
                     }
                 }
@@ -142,7 +138,7 @@ public class CommandPermission extends MLCommand {
                         break;
                     }
                     default: {
-                        getCommandUsage(sender);
+                        getUsage(sender);
                         break;
                     }
                 }

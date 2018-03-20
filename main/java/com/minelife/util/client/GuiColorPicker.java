@@ -1,6 +1,5 @@
 package com.minelife.util.client;
 
-import com.minelife.util.client.GuiUtil;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -29,23 +28,23 @@ public class GuiColorPicker extends Gui {
 
         // Draw tracks
         GL11.glColor4d(1, 1, 1, 1);
-        GuiUtil.drawImage(xPosition + 10, yPosition + height - 60, width - 20, 10);
-        GuiUtil.drawImage(xPosition + 10, yPosition + height - 40, width - 20, 10);
-        GuiUtil.drawImage(xPosition + 10, yPosition + height - 20, width - 20, 10);
+        GuiHelper.drawImage(xPosition + 10, yPosition + height - 60, width - 20, 10);
+        GuiHelper.drawImage(xPosition + 10, yPosition + height - 40, width - 20, 10);
+        GuiHelper.drawImage(xPosition + 10, yPosition + height - 20, width - 20, 10);
 
         // Draw grips
-        double red_x = xPosition + 10 + (red * (width - 40) / 255);
-        double green_x = xPosition + 10 + (green * (width - 40) / 255);
-        double blue_x = xPosition + 10 + (blue * (width - 40) / 255);
-        double red_y = yPosition + height - 60;
-        double green_y = yPosition + height - 40;
-        double blue_y = yPosition + height - 20;
+        int red_x = xPosition + 10 + (red * (width - 40) / 255);
+        int green_x = xPosition + 10 + (green * (width - 40) / 255);
+        int blue_x = xPosition + 10 + (blue * (width - 40) / 255);
+        int red_y = yPosition + height - 60;
+        int green_y = yPosition + height - 40;
+        int blue_y = yPosition + height - 20;
         GL11.glColor4d(1, 0, 0, 1);
-        GuiUtil.drawImage((float) red_x, (float) red_y, 20, 10);
+        GuiHelper.drawImage(red_x, red_y, 20, 10);
         GL11.glColor4d(0, 1, 0, 1);
-        GuiUtil.drawImage((float) green_x, (float) green_y, 20, 10);
+        GuiHelper.drawImage(green_x, green_y, 20, 10);
         GL11.glColor4d(0, 0, 1, 1);
-        GuiUtil.drawImage((float) blue_x, (float) blue_y, 20, 10);
+        GuiHelper.drawImage( blue_x, blue_y, 20, 10);
 
 
 

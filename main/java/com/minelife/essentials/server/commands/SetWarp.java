@@ -1,47 +1,36 @@
 package com.minelife.essentials.server.commands;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.minelife.essentials.ModEssentials;
+import com.minelife.essentials.Location;
 import com.minelife.permission.ModPermission;
-import com.minelife.util.Location;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.PlayerHelper;
-import net.minecraft.command.ICommand;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
-public class SetWarp implements ICommand {
+public class SetWarp extends CommandBase {
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "setwarp";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
+    public String getUsage(ICommandSender sender) {
         return "/setwarp <name>";
     }
 
     @Override
-    public List getCommandAliases() {
-        return Lists.newArrayList();
-    }
-
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         if(args.length == 0) {
-            sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
+            sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }
 
@@ -62,12 +51,12 @@ public class SetWarp implements ICommand {
         try {
             Map<String, Location> Warps = Warp.GetWarps(Player.getUniqueID());
             if(Warps.size() + 1 > MaxWarps) {
-                Player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You are only allowed to have " + MaxWarps + " warps."));
+                Player.sendMessage(new TextComponentString(TextFormatting.RED + "You are only allowed to have " + MaxWarps + " warps."));
                 return;
             }
 
             if(Warps.containsKey(args[0].toLowerCase())) {
-                Player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You already have a warp with that name."));
+                Player.sendMessage(new TextComponentString(TextFormatting.RED + "You already have a warp with that name."));
                 return;
             }
 
@@ -75,32 +64,16 @@ public class SetWarp implements ICommand {
             Location.setYaw(Player.rotationYaw);
             Location.setPitch(Player.rotationPitch);
             Warp.CreateWarp(args[0].toLowerCase(), Location, Player.getUniqueID());
-            Player.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Warp created!"));
+            Player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Warp created!"));
         } catch (SQLException e) {
             e.printStackTrace();
-            Player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "An error occurred."));
+            Player.sendMessage(new TextComponentString(TextFormatting.RED + "An error occurred."));
         }
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         return sender instanceof EntityPlayerMP && ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "setwarp");
     }
-
-    @Override
-    public List addTabCompletionOptions(ICommandSender p_71516_1_, String[] p_71516_2_) {
-        return Lists.newArrayList();
-    }
-
-    @Override
-    public boolean isUsernameIndex(String[] p_82358_1_, int p_82358_2_) {
-        return false;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
-
 
 }

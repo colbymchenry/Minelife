@@ -178,11 +178,8 @@ public class YamlConfiguration extends FileConfiguration {
 
         try {
             config.load(file);
-        } catch (FileNotFoundException ex) {
-        } catch (IOException ex) {
-            Minelife.getLogger().log(Level.SEVERE, "Cannot load " + file, ex);
-        } catch (InvalidConfigurationException ex) {
-            Minelife.getLogger().log(Level.SEVERE, "Cannot load " + file , ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         return config;
@@ -198,9 +195,9 @@ public class YamlConfiguration extends FileConfiguration {
      * @param stream Input stream
      * @return Resulting configuration
      * @throws IllegalArgumentException Thrown if stream is null
-     * @deprecated does not properly consider encoding
      * @see #load(InputStream)
      * @see #loadConfiguration(Reader)
+     * @deprecated does not properly consider encoding
      */
     @Deprecated
     public static YamlConfiguration loadConfiguration(InputStream stream) {
@@ -210,10 +207,8 @@ public class YamlConfiguration extends FileConfiguration {
 
         try {
             config.load(stream);
-        } catch (IOException ex) {
-            Minelife.getLogger().log(Level.SEVERE, "Cannot load configuration from stream", ex);
-        } catch (InvalidConfigurationException ex) {
-            Minelife.getLogger().log(Level.SEVERE, "Cannot load configuration from stream", ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         return config;
@@ -238,10 +233,8 @@ public class YamlConfiguration extends FileConfiguration {
 
         try {
             config.load(reader);
-        } catch (IOException ex) {
-            Minelife.getLogger().log(Level.SEVERE, "Cannot load configuration from stream", ex);
-        } catch (InvalidConfigurationException ex) {
-            Minelife.getLogger().log(Level.SEVERE, "Cannot load configuration from stream", ex);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         return config;

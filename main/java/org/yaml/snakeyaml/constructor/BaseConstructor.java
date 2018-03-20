@@ -236,7 +236,7 @@ public abstract class BaseConstructor {
     protected List<? extends Object> constructSequence(SequenceNode node) {
         List<Object> result;
         if (List.class.isAssignableFrom(node.getType()) && !node.getType().isInterface()) {
-            // the root class may be defined (Vector for instance)
+            // the root class may be defined (BlockPos for instance)
             try {
                 result = (List<Object>) node.getType().newInstance();
             } catch (Exception e) {

@@ -1,10 +1,8 @@
 package com.minelife.util.client;
 
-import net.minecraft.util.Vec3;
+import com.google.common.collect.Lists;
+import com.sun.javafx.geom.Vec3f;
 
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector3f;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Animation {
@@ -15,7 +13,7 @@ public class Animation {
     private int stage = 0;
 
     public Animation(float startX, float startY, float startZ) {
-        actions = new ArrayList();
+        actions = Lists.newArrayList();
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;
@@ -275,7 +273,7 @@ public class Animation {
     private class ComplexTranslation {
         private float x, y, z, increment;
         private boolean done = false;
-        private Vector3f v1, v2, v1v2;
+        private Vec3f v1, v2, v1v2;
 
         private boolean isLessX = false, isLessY = false, isLessZ = false;
         private boolean started = false;
@@ -292,10 +290,10 @@ public class Animation {
             if (!started) {
                 started = true;
 
-                v1 = new Vector3f(posX(), posX(), posZ());
-                v2 = new Vector3f(x, y, z);
+                v1 = new Vec3f(posX(), posX(), posZ());
+                v2 = new Vec3f(x, y, z);
 
-                v1v2 = new Vector3f(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
+                v1v2 = new Vec3f(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
 
                 if (x < posX()) {
                     isLessX = true;

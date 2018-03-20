@@ -1,12 +1,10 @@
 package com.minelife.util;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class ItemHelper {
@@ -19,12 +17,12 @@ public class ItemHelper {
 
     public static ItemStack itemFromString(String s)
     {
-        return ItemStack.loadItemStackFromNBT(NBTUtil.fromString(s));
+        return new ItemStack(NBTHelper.fromString(s));
     }
 
     public static List<ItemStack> getStacks(Item item, int amount) {
         List<ItemStack> stacks = Lists.newArrayList();
-        int maxStackSize = ReflectionHelper.getPrivateValue(Item.class, item, "field_77777_bU", "maxStackSize");
+        int maxStackSize = new ItemStack(item).getMaxStackSize();
 
         // return an empty array since we couldn't get the max stack size
         if(maxStackSize == 0) {

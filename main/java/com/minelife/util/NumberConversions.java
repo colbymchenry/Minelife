@@ -1,8 +1,6 @@
 package com.minelife.util;
 
 
-import scala.Char;
-
 import java.text.DecimalFormat;
 
 /**
@@ -13,9 +11,11 @@ public final class NumberConversions {
     {
     }
 
-    public static DecimalFormat formatter = new DecimalFormat("#,###.##");
+    private static DecimalFormat formatter = new DecimalFormat("#,###.##");
 
-
+    public static String format(int num) {
+        return formatter.format(num);
+    }
 
     public static int floor(double num)
     {

@@ -1,12 +1,18 @@
 package com.minelife.util;
 
-import com.minelife.Minelife;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PacketPlaySound implements IMessage {
 
@@ -38,13 +44,10 @@ public class PacketPlaySound implements IMessage {
 
     public static class Handler implements IMessageHandler<PacketPlaySound, IMessage> {
 
-        @Override
+        @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketPlaySound message, MessageContext ctx) {
-            if(message.sound.split("\\:")[0].equals("minecraft")) {
-                Minecraft.getMinecraft().thePlayer.playSound(message.sound, message.volume, message.pitch);
-            } else {
-                Minecraft.getMinecraft().thePlayer.playSound(Minelife.MOD_ID + ":" + message.sound, message.volume, message.pitch);
-            }
+            EntityPlayer player = Minecraft.getMinecraft().player;
+            Minecraft.getMinecraft().addScheduledTask(() -> player.getEntityWorld().playSound(player, player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation(message.sound)), SoundCategory.MASTER, message.volume, message.pitch));
             return null;
         }
     }

@@ -2,63 +2,21 @@ package com.minelife.economy.server;
 
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
-import com.minelife.economy.ATMPenaltyListener;
-import com.minelife.economy.Billing;
-import com.minelife.economy.ModEconomy;
-import com.minelife.economy.MoneyHandler;
-import com.minelife.economy.packet.PacketBalanceResult;
-import com.minelife.util.MLConfig;
-import com.minelife.util.configuration.InvalidConfigurationException;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import lib.PatPeter.SQLibrary.Database;
+import lib.PatPeter.SQLibrary.SQLite;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerProxy extends MLProxy {
 
+    public static Database DB;
+
     @Override
-    public void preInit(FMLPreInitializationEvent event) throws SQLException, IOException, InvalidConfigurationException {
-
-        /**
-         * This creates the SQL table that will store all the player's balances
-         */
-        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS economy (player VARCHAR(36) NOT NULL, amount INT)");
-        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS Economy_Bills (uuid VARCHAR(36) NOT NULL, dueDate VARCHAR(36) NOT NULL, days INT, amount INT, amountDue INT, player VARCHAR(36) NOT NULL, memo TEXT, autoPay BOOLEAN, handler TEXT, tagCompound TEXT)");
-        Minelife.SQLITE.query("CREATE TABLE IF NOT EXISTS cash_blocks (x INT, y INT, z INT, dimension INT)");
-
-        ModEconomy.config = new MLConfig("economy");
-        ModEconomy.config.addDefault("messages.balance", EnumChatFormatting.GOLD + "Balance: " + EnumChatFormatting.RED + "$%b");
-        ModEconomy.config.addDefault("messages.set", EnumChatFormatting.GOLD + "%p's %w has been set to " + EnumChatFormatting.RED + "$%b");
-        ModEconomy.config.addDefault("messages.deposit", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " deposited into %p's %w.");
-        ModEconomy.config.addDefault("messages.withdraw", EnumChatFormatting.RED + "$%b" + EnumChatFormatting.GOLD + " withdrawn from %p's %w.");
-        ModEconomy.config.addDefault("atm_penalty", 0.20);
-        ModEconomy.config.save();
-
-        FMLCommonHandler.instance().bus().register(this);
-        FMLCommonHandler.instance().bus().register(new Billing.TickHandler());
-        FMLCommonHandler.instance().bus().register(new ATMPenaltyListener());
+    public void preInit(FMLPreInitializationEvent event) throws Exception {
+        DB = new SQLite(Logger.getLogger("Minecraft"), "[Economy]", Minelife.getDirectory().getAbsolutePath(), "economy");
+        DB.open();
+        DB.query("CREATE TABLE IF NOT EXISTS bills (uuid VARCHAR(36), player VARCHAR(36), memo TEXT, amountDue INT, dueDate VARCHAR(36), tagCompound TEXT)");
+        DB.query("CREATE TABLE IF NOT EXISTS cashBlocks (dimension INT, x INT, y INT, z INT)");
     }
-
-    @SubscribeEvent
-    public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        try {
-            ResultSet result = Minelife.SQLITE.query("SELECT * FROM economy WHERE player='" + event.player.getUniqueID().toString() + "'");
-            if (!result.next())
-                Minelife.SQLITE.query("INSERT INTO economy (player, amount) VALUES ('" + event.player.getUniqueID().toString() + "', '0')");
-
-            Minelife.NETWORK.sendTo(new PacketBalanceResult(MoneyHandler.getBalanceATM(event.player.getUniqueID())), (EntityPlayerMP) event.player);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Minelife.getLogger().log(Level.SEVERE, "", e);
-        }
-    }
-
 }

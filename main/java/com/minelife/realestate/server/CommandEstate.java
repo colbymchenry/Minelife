@@ -1,162 +1,173 @@
 package com.minelife.realestate.server;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.permission.ModPermission;
 import com.minelife.realestate.Estate;
-import com.minelife.realestate.EstateHandler;
-import com.minelife.realestate.Permission;
-import com.minelife.realestate.network.PacketGuiCreateEstate;
-import com.minelife.realestate.network.PacketGuiModifyEstate;
-import com.minelife.realestate.network.PacketGuiPurchaseEstate;
-import com.minelife.util.PlayerHelper;
+import com.minelife.realestate.EstateProperty;
+import com.minelife.realestate.ModRealEstate;
+import com.minelife.realestate.PlayerPermission;
+import com.minelife.realestate.network.PacketCreateGui;
+import com.minelife.realestate.network.PacketModifyGui;
+import com.minelife.util.client.PacketPopup;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommand;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.Vec3;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
-import java.util.Arrays;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 public class CommandEstate extends CommandBase {
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "estate";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
-        return "/e create\n/e modify\n/e buy|rent|purchase\n/e delete";
+    public List<String> getAliases() {
+        return Lists.newArrayList("e");
     }
 
     @Override
-    public List getCommandAliases() {
-        return Arrays.asList("e");
+    public String getUsage(ICommandSender sender) {
+        sender.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Estate]" + TextFormatting.GOLD + " /e create"));
+        sender.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Estate]" + TextFormatting.GOLD + " /e delete"));
+        return null;
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+        if (!(sender instanceof EntityPlayer)) return;
+
+        if (args.length != 1) {
+            getUsage(sender);
+            return;
+        }
+
         EntityPlayerMP player = (EntityPlayerMP) sender;
-        try {
-            if (args.length == 0) throw new Exception(getCommandUsage(sender));
+        Estate estateAtPos = ModRealEstate.getEstateAt(player.getEntityWorld(), player.getPosition());
 
-            Estate estateAtLoc = EstateHandler.getEstateAt(player.worldObj, player.posX, player.posY, player.posZ);
+        Set<PlayerPermission> basePermissions = getPlayerPermissions(player.getUniqueID());
+        Set<EstateProperty> baseProperties = getEstateProperties(player.getUniqueID());
 
-            switch(args[0].toLowerCase()) {
-                case "create": {
-                    if(!ModPermission.hasPermission(player.getUniqueID(), "estate.create")) {
-                        player.addChatComponentMessage(new ChatComponentText("You do not have permission to create estates."));
-                        return;
-                    }
-
-                    if(EstateHandler.canCreateEstate(player, SelectionHandler.getSelection(player))) {
-                        List<Permission> permissions = Lists.newArrayList();
-                        if(estateAtLoc == null)
-                            permissions.addAll(Arrays.asList(Permission.values()));
-                        else {
-                            if(!estateAtLoc.getPlayerPermissions(player.getUniqueID()).contains(Permission.ESTATE_CREATION)) {
-                                player.addChatComponentMessage(new ChatComponentText("You do not have permission to create an estate here."));
-                                return;
-                            }
-
-                            permissions.addAll(estateAtLoc.getPlayerPermissions(player.getUniqueID()));
-                        }
-
-                        if(!PlayerHelper.isOp(player)) permissions.removeAll(Permission.getEstatePermissions());
-
-                        for (Permission permission : Permission.values()) {
-                            if(!ModPermission.hasPermission(player.getUniqueID(), "estate." + permission.name().toLowerCase())) {
-                                permissions.remove(permission);
-                            }
-                        }
-
-                        Minelife.NETWORK.sendTo(new PacketGuiCreateEstate(permissions), player);
-                    }
-                    break;
-                }
-                case "purchase": {
-                    doPurchase(estateAtLoc, player);
-                    break;
-                }
-                case "buy": {
-                    doPurchase(estateAtLoc, player);
-                    break;
-                }
-                case "rent": {
-                    doPurchase(estateAtLoc, player);
-                    break;
-                }
-                case "modify": {
-                    if(estateAtLoc == null) {
-                        player.addChatComponentMessage(new ChatComponentText("There is no estate at your location."));
-                        return;
-                    }
-
-                    if(ModPermission.hasPermission(player.getUniqueID(), "estate.override.modify") || Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
-                            estateAtLoc.isAbsoluteOwner(player.getUniqueID()) || estateAtLoc.getMembers().containsKey(player.getUniqueID())) {
-
-                        Set<Permission> permissions = estateAtLoc.getPlayerPermissions(player.getUniqueID());
-
-                        for (Permission permission : Permission.values()) {
-                            if(!ModPermission.hasPermission(player.getUniqueID(), "estate." + permission.name().toLowerCase())) {
-                                permissions.remove(permission);
-                            }
-                        }
-
-                        if(!PlayerHelper.isOp(player)) permissions.removeAll(Permission.getEstatePermissions());
-
-                        Minelife.NETWORK.sendTo(new PacketGuiModifyEstate(estateAtLoc, permissions), player);
-                    } else {
-                        player.addChatComponentMessage(new ChatComponentText("You do not have permission to modify this estate."));
-                    }
-                    break;
-                }
-                case "delete": {
-                    if(estateAtLoc == null) {
-                        player.addChatComponentMessage(new ChatComponentText("There is no estate at your location."));
-                        return;
-                    }
-
-                    if(ModPermission.hasPermission(player.getUniqueID(), "estate.override.delete") || Objects.equals(estateAtLoc.getOwner(), player.getUniqueID()) || Objects.equals(estateAtLoc.getRenter(), player.getUniqueID()) ||
-                            estateAtLoc.isAbsoluteOwner(player.getUniqueID()) || estateAtLoc.getMembers().containsKey(player.getUniqueID())) {
-                        estateAtLoc.deleteEstate();
-                        player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Estate deleted!"));
-                    } else {
-                        player.addChatComponentMessage(new ChatComponentText("You do not have permission to modify this estate."));
-                    }
-                    break;
-                }
-                default: throw new Exception(getCommandUsage(sender));
+        if (args[0].equalsIgnoreCase("create")) {
+            if (creationCheck(player, true, false))
+                Minelife.getNetwork().sendTo(new PacketCreateGui(basePermissions, baseProperties), player);
+        } else if (args[0].equalsIgnoreCase("delete")) {
+            if(estateAtPos == null) {
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "There is no estate at your location."));
+                return;
             }
-        } catch (Exception e) {
-            player.addChatComponentMessage(new ChatComponentText(e.getMessage()));
+
+            if(!Objects.equals(estateAtPos.getOwnerID(),player.getUniqueID())) {
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "You are not the owner of this estate."));
+                return;
+            }
+
+            try {
+                estateAtPos.delete();
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.GOLD + "Estate deleted."));
+            } catch (SQLException e) {
+                e.printStackTrace();
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "An error occurred while attempting to delete the estate."));
+            }
+        } else if(args[0].equalsIgnoreCase("modify")) {
+            if(estateAtPos == null) {
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "There is no estate at your location."));
+                return;
+            }
+
+            if(!Objects.equals(estateAtPos.getOwnerID(), player.getUniqueID()) && !Objects.equals(estateAtPos.getRenterID(), player.getUniqueID())) {
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "You are not authorized to modify this estate."));
+                return;
+            }
+
+            Minelife.getNetwork().sendTo(new PacketModifyGui(estateAtPos, basePermissions, baseProperties), player);
         }
     }
 
-    private void doPurchase(Estate estateAtLoc, EntityPlayerMP player) {
-        if(estateAtLoc == null) {
-            player.addChatComponentMessage(new ChatComponentText("There is no estate at your location."));
-            return;
+    public static Set<PlayerPermission> getPlayerPermissions(UUID playerID) {
+        Set<PlayerPermission> permissions = Sets.newTreeSet();
+        for (PlayerPermission playerPermission : PlayerPermission.values()) {
+            if (ModPermission.hasPermission(playerID, "estate." + playerPermission.name().toLowerCase())) {
+                permissions.add(playerPermission);
+            }
         }
-
-        if(!estateAtLoc.isPurchasable() && !estateAtLoc.isForRent()) {
-            player.addChatComponentMessage(new ChatComponentText("This estate is not for sale."));
-            return;
-        }
-
-        Minelife.NETWORK.sendTo(new PacketGuiPurchaseEstate(estateAtLoc), player);
+        return permissions;
     }
 
-    @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return sender instanceof EntityPlayer;
+    public static Set<EstateProperty> getEstateProperties(UUID playerID) {
+        Set<EstateProperty> properties = Sets.newTreeSet();
+        for (EstateProperty estateProperty : EstateProperty.values()) {
+            if (ModPermission.hasPermission(playerID, "estate." + estateProperty.name().toLowerCase())) {
+                properties.add(estateProperty);
+            }
+        }
+        return properties;
+    }
+
+    // TODO: need to make sure can't create estate that encapsulates an estate they do not own
+    public static boolean creationCheck(EntityPlayerMP player, boolean sendMessages, boolean sendPopups) {
+        if (!SelectionListener.hasFullSelection(player)) {
+            if (sendMessages)
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.RED + " Please make a full selection first with a golden hoe."));
+            else if (sendPopups)
+                PacketPopup.sendPopup("Invalid selection.", player);
+            return false;
+        }
+
+        BlockPos min = SelectionListener.getMinimum(player), max = SelectionListener.getMaximum(player);
+        int width = Math.abs(max.getX() - min.getX());
+        int length = Math.abs(max.getZ() - min.getZ());
+        int height = Math.abs(max.getY() - min.getY());
+
+        if ((width * length * height) < 125) {
+            if (sendMessages)
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.RED + " Selection is not big enough. Must be at least 5x5x5."));
+            else if (sendPopups)
+                PacketPopup.sendPopup("Selection is not big enough. Must be at least 5x5x5.", player);
+            return false;
+        }
+
+        Estate parentEstate = null;
+
+        for (Estate estate : ModRealEstate.getLoadedEstates()) {
+            if (estate.getWorld().equals(player.getEntityWorld()) && !estate.isInside(min, max) && estate.intersects(min, max)) {
+                if (sendMessages)
+                    player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.RED + " Selection is intersecting another estate."));
+                else if (sendPopups)
+                    PacketPopup.sendPopup("Selection is intersecting another estate.", player);
+                return false;
+            }
+            if (estate.getWorld().provider.getDimension() == player.getEntityWorld().provider.getDimension() &&
+                    estate.contains(min) && estate.contains(max)) {
+                parentEstate = estate;
+                break;
+            }
+        }
+
+        if (parentEstate != null) {
+            if (!parentEstate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.CREATE_ESTATES)) {
+                if (sendMessages)
+                    player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.RED + " You do not have permission to create estates here."));
+                else if (sendPopups)
+                    PacketPopup.sendPopup("You do not have permission to create estates here.", player);
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

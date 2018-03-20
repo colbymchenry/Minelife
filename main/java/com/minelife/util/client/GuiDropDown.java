@@ -43,7 +43,7 @@ public class GuiDropDown extends Gui {
             GL11.glTranslatef(4, 4, 4);
             GL11.glRotatef(drop_down_active ? 180 : 0, 0, 0, 1);
             GL11.glTranslatef(-4, -4, -4);
-            GuiUtil.drawImage(0, 0, 8, 8);
+            GuiHelper.drawImage(0, 0, 8, 8);
         }
         GL11.glPopMatrix();
 

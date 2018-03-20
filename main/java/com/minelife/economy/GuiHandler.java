@@ -1,39 +1,48 @@
 package com.minelife.economy;
 
 import com.minelife.AbstractGuiHandler;
-import com.minelife.MLItems;
-import com.minelife.economy.cash.ContainerBlockCash;
-import com.minelife.economy.cash.GuiBlockCash;
-import com.minelife.economy.cash.TileEntityCash;
-import com.minelife.economy.client.wallet.ContainerWallet;
-import com.minelife.economy.client.wallet.GuiWallet;
-import com.minelife.economy.client.wallet.InventoryWallet;
+import com.minelife.economy.client.gui.cash.ContainerCashBlock;
+import com.minelife.economy.client.gui.cash.GuiCashBlock;
+import com.minelife.economy.client.gui.wallet.ContainerWallet;
+import com.minelife.economy.client.gui.wallet.GuiWallet;
+import com.minelife.economy.client.gui.wallet.InventoryWallet;
+import com.minelife.economy.tileentity.TileEntityCash;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 public class GuiHandler extends AbstractGuiHandler {
 
+    public static int CASH_BLOCK_ID = 9876;
+    public static int WALLET_ID = 9877;
 
+    @Nullable
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        if (ID == 80098) {
-            return new ContainerWallet(player.inventory, new InventoryWallet(player.getHeldItem()));
+        if (ID == CASH_BLOCK_ID && world.getTileEntity(new BlockPos(x, y, z)) instanceof TileEntityCash) {
+            TileEntityCash tile = (TileEntityCash) world.getTileEntity(new BlockPos(x, y, z));
+            return new ContainerCashBlock(player.inventory, tile.getInventory());
         }
-        if (ID == 80099) {
-            if (world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileEntityCash)
-                return new ContainerBlockCash(player.inventory, (TileEntityCash) world.getTileEntity(x, y, z));
+        if (ID == WALLET_ID && player.getHeldItem(EnumHand.MAIN_HAND) != null &&
+                player.getHeldItem(EnumHand.MAIN_HAND).getItem() == ModEconomy.itemWallet) {
+            return new ContainerWallet(player.inventory,  new InventoryWallet(player.getHeldItem(EnumHand.MAIN_HAND)));
         }
-        return null;
+            return null;
     }
 
+    @Nullable
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        if (ID == 80098) {
-            return new GuiWallet(player.inventory, new InventoryWallet(player.getHeldItem()));
+        if (ID == CASH_BLOCK_ID && world.getTileEntity(new BlockPos(x, y, z)) instanceof TileEntityCash) {
+            TileEntityCash tile = (TileEntityCash) world.getTileEntity(new BlockPos(x, y, z));
+            return new GuiCashBlock(player.inventory, tile.getInventory());
         }
-        if (ID == 80099) {
-            if (world.getTileEntity(x, y, z) != null && world.getTileEntity(x, y, z) instanceof TileEntityCash)
-                return new GuiBlockCash(player.inventory, (TileEntityCash) world.getTileEntity(x, y, z));
+        if (ID == WALLET_ID && player.getHeldItem(EnumHand.MAIN_HAND) != null &&
+                player.getHeldItem(EnumHand.MAIN_HAND).getItem() == ModEconomy.itemWallet) {
+            return new GuiWallet(player.inventory, new InventoryWallet(player.getHeldItem(EnumHand.MAIN_HAND)));
         }
         return null;
     }

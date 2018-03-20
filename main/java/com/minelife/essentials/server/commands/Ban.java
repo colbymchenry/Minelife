@@ -1,113 +1,101 @@
 package com.minelife.essentials.server.commands;
 
-import com.google.common.collect.Lists;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.DateHelper;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.server.MLCommand;
 import com.minelife.util.server.UUIDFetcher;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 public class Ban extends MLCommand {
 
     public Ban() throws SQLException {
-        ModEssentials.db.query("CREATE TABLE IF NOT EXISTS banned_uuids (uuid VARCHAR(36), unbanDate VARCHAR(100))");
-        FMLCommonHandler.instance().bus().register(this);
+        ModEssentials.getDB().query("CREATE TABLE IF NOT EXISTS banned_uuids (uuid VARCHAR(36), unbanDate VARCHAR(100))");
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "ban";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
+    public String getUsage(ICommandSender sender) {
         return "/ban <player>";
     }
 
     @Override
-    public List getCommandAliases() {
-        return Lists.newArrayList();
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return !(sender instanceof EntityPlayer) || ModPermission.hasPermission(((EntityPlayer) sender).getUniqueID(), "ban");
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return !(sender instanceof EntityPlayer) ? true : ModPermission.hasPermission(((EntityPlayer) sender).getUniqueID(), "ban");
-    }
-
-    @Override
-    public List addTabCompletionOptions(ICommandSender p_71516_1_, String[] p_71516_2_) {
-        return Lists.newArrayList();
-    }
-
-    @Override
-    public boolean isUsernameIndex(String[] p_82358_1_, int p_82358_2_) {
+    public boolean isUsernameIndex(String[] args, int index) {
         return false;
     }
 
     @Override
-    public synchronized void execute(ICommandSender sender, String[] args) throws Exception {
+    public synchronized void runAsync(MinecraftServer server, ICommandSender sender, String[] args) throws Exception {
         if (args.length == 0) {
-            sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
+            sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }
 
-        sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Fetching player's UUID..."));
+        sender.sendMessage(new TextComponentString(TextFormatting.GREEN + "Fetching player's UUID..."));
         UUID playerUUID = UUIDFetcher.get(args[0]);
 
         if (playerUUID == null) {
-            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Player not found."));
+            sender.sendMessage(new TextComponentString(TextFormatting.RED + "Player not found."));
             return;
         }
 
         BanPlayer(playerUUID, 0);
 
         if (PlayerHelper.getPlayer(playerUUID) != null) {
-            PlayerHelper.getPlayer(playerUUID).playerNetServerHandler.kickPlayerFromServer("You are banished from this server.");
+            PlayerHelper.getPlayer(playerUUID).connection.disconnect(new TextComponentString("You are banished from this server."));
         }
 
-        sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Player banned."));
+        sender.sendMessage(new TextComponentString(TextFormatting.GREEN + "Player banned."));
     }
 
     public static void BanPlayer(UUID playerUUID, int seconds) throws SQLException {
         UnBanPlayer(playerUUID);
 
         if (seconds == 0) {
-            ModEssentials.db.query("INSERT INTO banned_uuids (uuid, unbanDate) VALUES ('" + playerUUID.toString() + "', '0')");
+            ModEssentials.getDB().query("INSERT INTO banned_uuids (uuid, unbanDate) VALUES ('" + playerUUID.toString() + "', '0')");
         } else {
             Calendar now = Calendar.getInstance();
             now.add(Calendar.SECOND, seconds);
-            ModEssentials.db.query("INSERT INTO banned_uuids (uuid, unbanDate) VALUES ('" + playerUUID.toString() + "', '" + DateHelper.DateToString(now.getTime()) + "')");
+            ModEssentials.getDB().query("INSERT INTO banned_uuids (uuid, unbanDate) VALUES ('" + playerUUID.toString() + "', '" + DateHelper.dateToString(now.getTime()) + "')");
         }
     }
 
     public static void UnBanPlayer(UUID PlayerUUID) throws SQLException {
-        ModEssentials.db.query("DELETE FROM banned_uuids WHERE uuid='" + PlayerUUID.toString() + "'");
+        ModEssentials.getDB().query("DELETE FROM banned_uuids WHERE uuid='" + PlayerUUID.toString() + "'");
     }
 
     public static boolean IsPlayerBanned(UUID PlayerUUID) {
         try {
-            ResultSet result = ModEssentials.db.query("SELECT * FROM banned_uuids WHERE uuid='" + PlayerUUID.toString() + "'");
+            ResultSet result = ModEssentials.getDB().query("SELECT * FROM banned_uuids WHERE uuid='" + PlayerUUID.toString() + "'");
             if (result.next()) {
                 if (result.getString("unbanDate").equals("0")) return true;
-                Date date = DateHelper.StringToDate(result.getString("unbanDate"));
+                Date date = DateHelper.stringToDate(result.getString("unbanDate"));
                 return date.after(Calendar.getInstance().getTime());
             } else {
                 return false;
@@ -121,10 +109,10 @@ public class Ban extends MLCommand {
 
     public static Date GetUnbanDate(UUID PlayerUUID) {
         try {
-            ResultSet result = ModEssentials.db.query("SELECT * FROM banned_uuids WHERE uuid='" + PlayerUUID.toString() + "'");
+            ResultSet result = ModEssentials.getDB().query("SELECT * FROM banned_uuids WHERE uuid='" + PlayerUUID.toString() + "'");
             if (result.next()) {
                 if (result.getString("unbanDate").equals("0")) return null;
-                Date date = DateHelper.StringToDate(result.getString("unbanDate"));
+                Date date = DateHelper.stringToDate(result.getString("unbanDate"));
                 return date;
             }
         } catch (SQLException e) {
@@ -141,7 +129,7 @@ public class Ban extends MLCommand {
             Date endDate = GetUnbanDate(event.player.getUniqueID());
 
             if (endDate == null) {
-                ((EntityPlayerMP) event.player).playerNetServerHandler.kickPlayerFromServer("You are banished from this server.");
+                ((EntityPlayerMP) event.player).connection.disconnect(new TextComponentString("You are banished from this server."));
                 return;
             }
 
@@ -163,7 +151,7 @@ public class Ban extends MLCommand {
 
             long elapsedSeconds = different / secondsInMilli;
 
-            ((EntityPlayerMP) event.player).playerNetServerHandler.kickPlayerFromServer("You are banned for " + elapsedHours + " hours, " + elapsedMinutes + " minutes, and " + elapsedSeconds + " second(s).");
+            ((EntityPlayerMP) event.player).connection.disconnect(new TextComponentString("You are banned for " + elapsedHours + " hours, " + elapsedMinutes + " minutes, and " + elapsedSeconds + " second(s)."));
         } else UnBanPlayer(event.player.getUniqueID());
     }
 }

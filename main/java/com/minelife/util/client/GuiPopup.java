@@ -3,57 +3,64 @@ package com.minelife.util.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.input.Keyboard;
 
-import java.awt.Color;
-import java.util.List;
+import java.io.IOException;
 
 public class GuiPopup extends GuiScreen {
 
-    private String message;
-    private int color, width = 100, height, xPosition, yPosition;
+    private int guiLeft, guiTop, xSize = 120, ySize;
     private GuiScreen previousScreen;
-    private Color bgColor;
-    private List<String> formattedList;
+    private String message;
+    private int bgColor, txtColor;
 
-    public GuiPopup(String message, int color, GuiScreen previousScreen) {
-        this.message = message;
-        this.color = color;
-        this.width = width;
-        this.height = height;
+    public GuiPopup(GuiScreen previousScreen, String message, int bgColor, int txtColor) {
         this.previousScreen = previousScreen;
-        this.bgColor = new Color(color);
+        this.message = message;
+        this.bgColor = bgColor;
+        this.txtColor = txtColor;
     }
 
     @Override
-    public void drawScreen(int x, int y, float f) {
-        super.drawDefaultBackground();
-        GuiUtil.drawDefaultBackground(xPosition, yPosition, width, height, bgColor);
-        fontRendererObj.setUnicodeFlag(true);
-        int lineY = yPosition - 3;
-        for (String line : formattedList) {
-            drawCenteredString(fontRendererObj, line, xPosition + (width / 2), lineY += fontRendererObj.FONT_HEIGHT, 0xFFFFFF);
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        drawDefaultBackground();
+        GuiHelper.drawDefaultBackground(this.guiLeft, this.guiTop, this.xSize, this.ySize, this.bgColor);
+        GlStateManager.disableLighting();
+        this.fontRenderer.drawSplitString(this.message, this.guiLeft + 5, this.guiTop + 5, this.xSize - 10, this.txtColor);
+        super.drawScreen(mouseX, mouseY, partialTicks);
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException {
+        super.actionPerformed(button);
+        if(previousScreen != null) {
+            previousScreen.initGui();
+            Minecraft.getMinecraft().displayGuiScreen(previousScreen);
+        } else {
+            Minecraft.getMinecraft().player.closeScreen();
         }
-        fontRendererObj.setUnicodeFlag(false);
-        super.drawScreen(x, y, f);
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) {
-        Minecraft.getMinecraft().displayGuiScreen(previousScreen);
+    protected void keyTyped(char typedChar, int keyCode) {
+        if(keyCode == Keyboard.KEY_ESCAPE) {
+            if (previousScreen != null) {
+                previousScreen.initGui();
+                Minecraft.getMinecraft().displayGuiScreen(previousScreen);
+            } else {
+                Minecraft.getMinecraft().player.closeScreen();
+            }
+        }
     }
 
     @Override
     public void initGui() {
-        fontRendererObj.setUnicodeFlag(true);
-        formattedList = fontRendererObj.listFormattedStringToWidth(message, width);
-        height = formattedList.size() * fontRendererObj.FONT_HEIGHT;
-        height += 35;
-        width = 100;
-        width += 5;
-        fontRendererObj.setUnicodeFlag(false);
-        xPosition = (super.width - width) / 2;
-        yPosition = (super.height - height) / 2;
-        buttonList.clear();
-        buttonList.add(new GuiButton(0, xPosition + ((width - 30) / 2), yPosition + height - 25, 30, 20, "Ok"));
+        super.initGui();
+        this.ySize = 40 + this.fontRenderer.listFormattedStringToWidth(message, xSize - 10).size() * this.fontRenderer.FONT_HEIGHT;
+        this.guiLeft = (this.width - this.xSize) / 2;
+        this.guiTop = (this.height - this.ySize) / 2;
+        this.buttonList.clear();
+        this.buttonList.add(new GuiButton(0, (this.width - 30) / 2, this.guiTop + this.ySize - 25, 30, 20, "OK"));
     }
 }

@@ -1,76 +1,55 @@
 package com.minelife.essentials.server.commands;
 
-import com.google.common.collect.Lists;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.PlayerHelper;
-import net.minecraft.command.ICommand;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
-import java.util.List;
-
-public class TeleportAskHere implements ICommand {
+public class TeleportAskHere extends CommandBase {
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "tpahere";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
+    public String getUsage(ICommandSender sender) {
         return "/tpahere <player>";
     }
 
     @Override
-    public List getCommandAliases() {
-        return Lists.newArrayList();
-    }
-
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         EntityPlayerMP Player = (EntityPlayerMP) sender;
 
         if(args.length == 0) {
-            Player.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
+            Player.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }
 
         EntityPlayerMP Receiver = PlayerHelper.getPlayer(args[0]);
 
         if(Receiver == null) {
-            Player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Player not found."));
+            Player.sendMessage(new TextComponentString(TextFormatting.RED + "Player not found."));
             return;
         }
 
         TeleportAsk.SubmitRequest(Player, Receiver);
         Receiver.getEntityData().setBoolean("tpahere", true);
-        Receiver.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN +
-                "Player " + EnumChatFormatting.BLUE + Player.getCommandSenderName() + EnumChatFormatting.GREEN +
-                " has requested for you to teleport to them. Type " + EnumChatFormatting.BLUE + "/tpaccept" + EnumChatFormatting.GREEN + " to accept."));
+        Receiver.sendMessage(new TextComponentString(TextFormatting.GREEN +
+                "Player " + TextFormatting.BLUE + Player.getName() + TextFormatting.GREEN +
+                " has requested for you to teleport to them. Type " + TextFormatting.BLUE + "/tpaccept" + TextFormatting.GREEN + " to accept."));
 
-        Player.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Teleport request sent to " + EnumChatFormatting.BLUE + Receiver.getCommandSenderName()));
+        Player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Teleport request sent to " + TextFormatting.BLUE + Receiver.getName()));
 
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         return sender instanceof EntityPlayerMP && ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "tpahere");
     }
 
-    @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args) {
-        return Lists.newArrayList();
-    }
-
-    @Override
-    public boolean isUsernameIndex(String[] args, int index) {
-        return index == 1;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
 }

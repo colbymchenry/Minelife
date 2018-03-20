@@ -3,6 +3,7 @@ package com.minelife.util;
 import com.minelife.Minelife;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import com.minelife.util.configuration.file.YamlConfiguration;
+import net.minecraft.util.math.BlockPos;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +16,7 @@ public class MLConfig extends YamlConfiguration {
     public MLConfig(String name) throws IOException, InvalidConfigurationException
     {
         name = name.contains(".yml") ? name.replaceAll(".yml", "") : name;
-        this.file = new File(Minelife.getConfigDirectory(), name + ".yml");
+        this.file = new File(Minelife.getDirectory(), name + ".yml");
         if(!this.file.exists()) {
             this.file.getParentFile().mkdirs();
             this.file.createNewFile();
@@ -44,10 +45,6 @@ public class MLConfig extends YamlConfiguration {
 
     public void set(String path, UUID uuid) {
         this.set(path, uuid == null ? "" : uuid.toString());
-    }
-
-    public void set(String path, Vector vector) {
-        this.set(path, vector.serialize());
     }
 
     public void removeSection(String path) {

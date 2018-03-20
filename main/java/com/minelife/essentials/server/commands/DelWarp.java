@@ -1,39 +1,37 @@
 package com.minelife.essentials.server.commands;
 
 import com.google.common.collect.Lists;
+import com.minelife.essentials.Location;
 import com.minelife.permission.ModPermission;
-import com.minelife.util.Location;
-import net.minecraft.command.ICommand;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
+import javax.annotation.Nullable;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-public class DelWarp implements ICommand {
+public class DelWarp extends CommandBase {
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "delwarp";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
+    public String getUsage(ICommandSender sender) {
         return "/delwarp <name>";
     }
 
     @Override
-    public List getCommandAliases() {
-        return Lists.newArrayList();
-    }
-
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         if(args.length == 0) {
-            sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
+            sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }
 
@@ -43,25 +41,25 @@ public class DelWarp implements ICommand {
         try {
             Map<String, Location> Warps = Warp.GetWarps(Player.getUniqueID());
             if(!Warps.containsKey(WarpName)) {
-                Player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Warp not found."));
+                Player.sendMessage(new TextComponentString(TextFormatting.RED + "Warp not found."));
                 return;
             }
 
             Warp.DeleteWarp(WarpName, Player.getUniqueID());
-            Player.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Warp deleted!"));
+            Player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Warp deleted!"));
         } catch (SQLException e) {
             e.printStackTrace();
-            Player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "An error occurred."));
+            Player.sendMessage(new TextComponentString(TextFormatting.RED + "An error occurred."));
         }
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         return sender instanceof EntityPlayerMP && ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "delwarp");
     }
 
     @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args) {
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         if(!(sender instanceof EntityPlayerMP)) return Lists.newArrayList();
 
         EntityPlayerMP Player = (EntityPlayerMP) sender;
@@ -78,16 +76,7 @@ public class DelWarp implements ICommand {
             }
         }
 
-        return Lists.newArrayList();
+        return null;
     }
 
-    @Override
-    public boolean isUsernameIndex(String[] args, int index) {
-        return false;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
 }

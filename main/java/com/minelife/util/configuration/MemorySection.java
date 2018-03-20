@@ -4,7 +4,6 @@ import static com.minelife.util.NumberConversions.*;
 
 import java.util.*;
 
-import com.minelife.util.Vector;
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -451,19 +450,6 @@ public class MemorySection implements ConfigurationSection {
     public boolean isUUID(String path)
     {
         return isString(path) && !getString(path).trim().isEmpty() && UUID.fromString(getString(path)) != null;
-    }
-
-    @Override
-    public Vector getVector(String path, Vector def)
-    {
-        Vector vector = Vector.deserialize((Map<String, Object>) getMapList(path));
-        return vector == null ? def : vector;
-    }
-
-    @Override
-    public boolean isVector(String path)
-    {
-        return getMapList(path) != null && Vector.deserialize((Map<String, Object>) getMapList(path)) != null;
     }
 
     public List<Boolean> getBooleanList(String path)

@@ -2,8 +2,11 @@ package com.minelife.util;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
@@ -65,9 +68,9 @@ public class SoundTrack {
                 if((soundTrack.startTime + part.duration <= System.currentTimeMillis()) && !part.played) {
                     part.played = true;
                     if(soundTrack.player != null) {
-                        Minelife.NETWORK.sendTo(new PacketPlaySound(part.id, part.volume, part.pitch), (EntityPlayerMP) soundTrack.player);
+                        Minelife.getNetwork().sendTo(new PacketPlaySound(part.id, part.volume, part.pitch), (EntityPlayerMP) soundTrack.player);
                     } else if(soundTrack.world != null) {
-                        soundTrack.world.playSoundEffect(soundTrack.x, soundTrack.y, soundTrack.z, part.id, part.volume, part.pitch);
+                        soundTrack.world.playSound(null, soundTrack.x, soundTrack.y, soundTrack.z, new SoundEvent(new ResourceLocation(part.id)), SoundCategory.NEUTRAL, part.volume, part.pitch);
                     }
                 }
             }

@@ -1,131 +1,67 @@
 package com.minelife;
 
 import com.google.common.collect.Lists;
-import com.minelife.capes.ModCapes;
-import com.minelife.clothing.ModClothes;
-import com.minelife.drug.ModDrugs;
+import com.minelife.chestshop.ModChestShop;
 import com.minelife.economy.ModEconomy;
 import com.minelife.essentials.ModEssentials;
-import com.minelife.gangs.ModGangs;
-import com.minelife.gun.ModGun;
-import com.minelife.jobs.ModJobs;
-import com.minelife.locks.ModLocks;
-import com.minelife.minebay.ModMinebay;
-import com.minelife.notification.ModNotifications;
+import com.minelife.netty.ModNetty;
 import com.minelife.permission.ModPermission;
-import com.minelife.police.ModPolice;
 import com.minelife.realestate.ModRealEstate;
-import com.minelife.shop.ModShop;
-import com.minelife.tracker.ModTracker;
-import com.minelife.tutorial.ModTutorial;
-import com.minelife.util.MLConfig;
 import com.minelife.util.PacketPlaySound;
-import com.minelife.util.client.PacketPopupMessage;
+import com.minelife.util.client.PacketPopup;
 import com.minelife.util.client.PacketRequestName;
 import com.minelife.util.client.PacketRequestUUID;
-import com.minelife.util.client.netty.ChatClient;
-import com.minelife.util.client.netty.NettyPlayerListener;
-import com.minelife.util.client.netty.PacketSendNettyServer;
-import com.minelife.util.configuration.InvalidConfigurationException;
 import com.minelife.util.server.PacketResponseName;
 import com.minelife.util.server.PacketResponseUUID;
-import com.minelife.util.server.PacketUpdatePlayerInventory;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.*;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import lib.PatPeter.SQLibrary.Database;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies="required-after:BuildCraft|Transport;required-after:BuildCraft|Energy;required-after:BuildCraft|Core;required-after:BuildCraft|Factory;required-after:IC2;after:WorldEdit;required-after:ComputerCraft")
+@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION)
 public class Minelife {
 
-    public static MLConfig config;
-
-    public static ChatClient NETTY_CONNECTION;
-
-    private static Side side;
-
-    // TODO: Make tutorials that pay players for completing them
-
-    public static final String MOD_ID = "minelife", VERSION = "2017.1", NAME = "Minelife";
+    public static final String MOD_ID = "minelife", VERSION = "3.0", NAME = "Minelife";
 
     @SidedProxy(clientSide = "com.minelife.ClientProxy", serverSide = "com.minelife.ServerProxy")
-    public static MLProxy PROXY;
+    private static MLProxy PROXY;
 
     @Mod.Instance
-    public static Minelife instance;
+    private static Minelife INSTANCE;
 
-    public static SimpleNetworkWrapper NETWORK;
-
-    public static Database SQLITE;
-
-    public static final List<MLMod> MODS = Lists.newArrayList();
-
-    public static String default_error_message = EnumChatFormatting.RED + "Sorry, something went wrong. Notify a staff member.";
+    private static SimpleNetworkWrapper NETWORK;
+    private static List<MLMod> MODS = Lists.newArrayList();
 
     public Minelife() {
+        MODS.add(new ModNetty());
         MODS.add(new ModPermission());
-        MODS.add(new ModTracker());
-        MODS.add(new ModNotifications());
-        MODS.add(new ModEconomy());
-//        MODS.add(new ModPolice());
-        MODS.add(new ModGun());
-        MODS.add(new ModDrugs());
-        MODS.add(new ModRealEstate());
-        MODS.add(new ModMinebay());
-        MODS.add(new ModShop());
-//        MODS.add(new ModClothes());
-        MODS.add(new ModGangs());
-        MODS.add(new ModCapes());
         MODS.add(new ModEssentials());
-        MODS.add(new ModTutorial());
-        MODS.add(new ModLocks());
-        MODS.add(new ModJobs());
-        try {
-            config = new MLConfig("configuration");
-            config.addDefault("netty_ip", 0);
-            config.addDefault("netty_port", 0);
-            config.save();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        MODS.add(new ModEconomy());
+        MODS.add(new ModChestShop());
+        MODS.add(new ModRealEstate());
     }
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        side = event.getSide();
         NETWORK = new SimpleNetworkWrapper(MOD_ID);
 
-        MLBlocks.init();
-        MLItems.init();
-        MinecraftForge.EVENT_BUS.register(this);
         MLMod.registerPacket(PacketPlaySound.Handler.class, PacketPlaySound.class, Side.CLIENT);
-        MLMod.registerPacket(PacketUpdatePlayerInventory.Handler.class, PacketUpdatePlayerInventory.class, Side.CLIENT);
-        MLMod.registerPacket(PacketPopupMessage.Handler.class, PacketPopupMessage.class, Side.CLIENT);
         MLMod.registerPacket(PacketRequestName.Handler.class, PacketRequestName.class, Side.SERVER);
         MLMod.registerPacket(PacketResponseName.Handler.class, PacketResponseName.class, Side.CLIENT);
         MLMod.registerPacket(PacketRequestUUID.Handler.class, PacketRequestUUID.class, Side.SERVER);
         MLMod.registerPacket(PacketResponseUUID.Handler.class, PacketResponseUUID.class, Side.CLIENT);
-        MLMod.registerPacket(PacketSendNettyServer.Handler.class, PacketSendNettyServer.class, Side.CLIENT);
+        MLMod.registerPacket(PacketPopup.Handler.class, PacketPopup.class, Side.CLIENT);
 
-        FMLCommonHandler.instance().bus().register(new NettyPlayerListener());
+        MinecraftForge.EVENT_BUS.register(this);
 
         MODS.forEach(mod -> mod.preInit(event));
         try {
@@ -167,37 +103,23 @@ public class Minelife {
         MODS.forEach(mod -> mod.textureHook(event));
     }
 
-    public static File getConfigDirectory() {
+    public static File getDirectory() {
         return new File(System.getProperty("user.dir") + File.separator + "config", MOD_ID);
     }
 
-    public static Logger getLogger() {
-        return Logger.getLogger("Minecraft");
+    public static MLProxy getProxy() {
+        return PROXY;
     }
 
-    public static void log(Exception e) {
-        e.printStackTrace();
-        getLogger().log(Level.SEVERE, "", e);
+    public static Minelife getInstance() {
+        return INSTANCE;
     }
 
-    public static void handle_exception(Exception e, ICommandSender player) {
-        if(player instanceof EntityPlayer) {
-            ((EntityPlayer) player).closeScreen();
-        }
-        if(e instanceof CustomMessageException) {
-            player.addChatMessage(new ChatComponentText(e.getMessage()));
-        } else {
-            Minelife.log(e);
-            player.addChatMessage(new ChatComponentText(Minelife.default_error_message));
-        }
+    public static SimpleNetworkWrapper getNetwork() {
+        return NETWORK;
     }
 
-    public static MLMod getModInstance(Class<? extends MLMod> modClass) {
-        return MODS.stream().filter(m -> m.getClass().equals(modClass)).findFirst().orElse(null);
+    public static List<MLMod> getModList() {
+        return MODS;
     }
-
-    public static Side getSide() {
-        return side;
-    }
-
 }

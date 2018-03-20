@@ -1,86 +1,62 @@
 package com.minelife.essentials.server.commands;
 
-import com.google.common.collect.Lists;
-import com.minelife.essentials.ModEssentials;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.server.MLCommand;
 import com.minelife.util.server.UUIDFetcher;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.UUID;
 
 public class UnBan extends MLCommand {
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "unban";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
+    public String getUsage(ICommandSender sender) {
         return "/unban <player>";
     }
 
     @Override
-    public List getCommandAliases() {
-        return Lists.newArrayList();
-    }
-
-    @Override
-    public synchronized void execute(ICommandSender sender, String[] args) throws Exception {
+    public synchronized void runAsync(MinecraftServer server, ICommandSender sender, String[] args) throws Exception {
         if(args.length == 0) {
-            sender.addChatMessage(new ChatComponentText(getCommandUsage(sender)));
+            sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }
 
-        sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN +"Fetching player's UUID..."));
+        sender.sendMessage(new TextComponentString(TextFormatting.GREEN +"Fetching player's UUID..."));
         UUID playerUUID = UUIDFetcher.get(args[0]);
 
         if (playerUUID == null) {
-            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Player not found."));
+            sender.sendMessage(new TextComponentString(TextFormatting.RED + "Player not found."));
             return;
         }
 
         if(!Ban.IsPlayerBanned(playerUUID)) {
-            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Player is not banned."));
+            sender.sendMessage(new TextComponentString(TextFormatting.RED + "Player is not banned."));
             return;
         }
 
         try {
             Ban.UnBanPlayer(playerUUID);
-            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Player unbanned!"));
+            sender.sendMessage(new TextComponentString(TextFormatting.GREEN + "Player unbanned!"));
         }catch (SQLException e) {
-            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "An error occurred."));
+            sender.sendMessage(new TextComponentString(TextFormatting.RED + "An error occurred."));
             e.printStackTrace();
         }
 
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return !(sender instanceof EntityPlayerMP) ? true : ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "unban");
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return !(sender instanceof EntityPlayerMP) || ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "unban");
     }
-
-    @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args) {
-        return Lists.newArrayList();
-    }
-
-    @Override
-    public boolean isUsernameIndex(String[] p_82358_1_, int p_82358_2_) {
-        return false;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
-
 
 }

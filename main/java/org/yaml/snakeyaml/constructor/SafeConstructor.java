@@ -432,7 +432,7 @@ public class SafeConstructor extends BaseConstructor {
                 if (mnode.getValue().size() != 1) {
                     throw new ConstructorException("while constructing an ordered map",
                             node.getStartMark(), "expected a single mapping item, but found "
-                                    + mnode.getValue().size() + " items",
+                                    + mnode.getValue().size() + " item",
                             mnode.getStartMark());
                 }
                 Node keyNode = mnode.getValue().get(0).getKeyNode();
@@ -466,7 +466,7 @@ public class SafeConstructor extends BaseConstructor {
                 if (mnode.getValue().size() != 1) {
                     throw new ConstructorException("while constructing pairs", node.getStartMark(),
                             "expected a single mapping item, but found " + mnode.getValue().size()
-                                    + " items",
+                                    + " item",
                             mnode.getStartMark());
                 }
                 Node keyNode = mnode.getValue().get(0).getKeyNode();

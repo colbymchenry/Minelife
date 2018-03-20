@@ -1,38 +1,51 @@
 package com.minelife.realestate.server;
 
+import com.google.common.collect.Sets;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
-import com.minelife.realestate.EstateHandler;
+import com.minelife.realestate.Estate;
 import com.minelife.util.MLConfig;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
+import com.minelife.util.NBTHelper;
+import lib.PatPeter.SQLibrary.Database;
+import lib.PatPeter.SQLibrary.SQLite;
+import net.minecraft.init.Blocks;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-import java.io.File;
-import java.util.Arrays;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 public class ServerProxy extends MLProxy {
 
-    public static MLConfig config;
-    public File estatesDir = new File(Minelife.getConfigDirectory(), "estates");
+    public static MLConfig CONFIG;
+    public static Set<Estate> ESTATES = Sets.newTreeSet();
+    public static Database DB;
 
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
-        config = new MLConfig("realestate");
-        config.addDefault("selection_tool", Item.getIdFromItem(Items.golden_hoe));
-        config.addDefault("messages.estate_create", "Estate created!");
-        config.addDefault("black-listed-blocks", Arrays.asList(64, 69, 96, 77, 143));
-        config.save();
+        DB = new SQLite(Logger.getLogger("Minecraft"), "[RealEstate]", Minelife.getDirectory().getAbsolutePath(), "realestate");
+        DB.open();
+        DB.query("CREATE TABLE IF NOT EXISTS estates (uuid VARCHAR(36), tagCompound TEXT)");
+        loadEstates();
 
-        estatesDir.mkdir();
-        EstateHandler.reloadEstates();
+        CONFIG = new MLConfig("realestate");
 
-        EstateListener estateListener = new EstateListener();
+        Blocks.IRON_BLOCK.setResistance(55);
+        Blocks.DIAMOND_BLOCK.setResistance(100);
+        Blocks.OBSIDIAN.setResistance(80);
+        Blocks.STONEBRICK.setResistance(40);
 
-        MinecraftForge.EVENT_BUS.register(estateListener);
-        FMLCommonHandler.instance().bus().register(estateListener);
+        MinecraftForge.EVENT_BUS.register(new SelectionListener());
+        MinecraftForge.EVENT_BUS.register(new EstateListener());
     }
 
+    private void loadEstates() throws SQLException {
+        ESTATES.clear();
+        ResultSet result = DB.query("SELECT * FROM estates");
+        while(result.next())
+            ESTATES.add(new Estate(UUID.fromString(result.getString("uuid")), NBTHelper.fromString(result.getString("tagCompound"))));
+    }
 }

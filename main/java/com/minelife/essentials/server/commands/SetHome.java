@@ -1,64 +1,44 @@
 package com.minelife.essentials.server.commands;
 
-import com.google.common.collect.Lists;
+import com.minelife.essentials.Location;
 import com.minelife.permission.ModPermission;
-import com.minelife.util.Location;
-import net.minecraft.command.ICommand;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 import java.sql.SQLException;
-import java.util.List;
 
-public class SetHome implements ICommand {
+public class SetHome extends CommandBase {
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "sethome";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
+    public String getUsage(ICommandSender sender) {
         return "/sethome";
     }
 
     @Override
-    public List getCommandAliases() {
-        return Lists.newArrayList();
-    }
-
-    @Override
-    public void processCommand(ICommandSender sender, String[] args) {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         EntityPlayerMP Player = (EntityPlayerMP) sender;
 
         try {
             Home.SetHome(Player.getUniqueID(), new Location(Player.getEntityWorld().getWorldInfo().getWorldName(), Player.posX, Player.posY, Player.posZ, Player.rotationYaw, Player.rotationPitch));
-            Player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Home set!"));
+            Player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Home set!"));
         } catch (SQLException e) {
             e.printStackTrace();
-            Player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "An error occurred."));
+            Player.sendMessage(new TextComponentString(TextFormatting.RED + "An error occurred."));
         }
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         return sender instanceof EntityPlayerMP && ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "sethome");
     }
 
-    @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args) {
-        return Lists.newArrayList();
-    }
-
-    @Override
-    public boolean isUsernameIndex(String[] args, int i) {
-        return false;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
-    }
 }

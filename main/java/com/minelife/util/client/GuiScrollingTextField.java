@@ -35,11 +35,11 @@ public class GuiScrollingTextField extends GuiScrollableContent {
     public void drawObject(int index, int mouseX, int mouseY, boolean isHovering)
     {
         GL11.glPushMatrix();
-        GL11.glTranslatef(-xPosition, -yPosition, 0);
+        GL11.glTranslatef(-x, -y, 0);
         textField.drawTextBox();
         GL11.glPopMatrix();
-        textField.xPosition = xPosition;
-        textField.yPosition = yPosition;
+        textField.xPosition = x;
+        textField.yPosition = y;
         textField.width = width;
         textField.height = getObjectHeight(0);
     }
@@ -63,8 +63,8 @@ public class GuiScrollingTextField extends GuiScrollableContent {
     @Override
     public void drawBackground()
     {
-        drawRect(xPosition - 2, yPosition - 2, xPosition + width + 2, yPosition + height + 2, -6250336);
-        drawRect(xPosition - 1, yPosition - 1, xPosition + width + 1, yPosition + height + 1, -16777216);
+        drawRect(x - 2, y - 2, x + width + 2, y + height + 2, -6250336);
+        drawRect(x - 1, y - 1, x + width + 1, y + height + 1, -16777216);
     }
     @Override
     public void keyTyped(char keycode, int keynum)
@@ -79,7 +79,7 @@ public class GuiScrollingTextField extends GuiScrollableContent {
     public void mouseClicked(int mouseX, int mouseY)
     {
         textField.setFocused(textField.contains(mouseX, mouseY));
-        if (mouseY >= yPosition && mouseY <= yPosition + height && mouseX >= textField.xPosition &&
+        if (mouseY >= y && mouseY <= y + height && mouseX >= textField.xPosition &&
                 mouseX <= textField.xPosition + textField.width) {
             int y = (mouseY + (int) (getScrollY()));
             textField.mouseClicked(mouseX, y);

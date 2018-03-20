@@ -1,229 +1,105 @@
 package com.minelife.realestate.network;
 
-import com.google.common.collect.Sets;
-import com.minelife.Minelife;
-import com.minelife.economy.Billing;
-import com.minelife.permission.ModPermission;
-import com.minelife.realestate.*;
-import com.minelife.util.client.PacketPopupMessage;
-import com.minelife.util.configuration.InvalidConfigurationException;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import com.minelife.realestate.Estate;
+import com.minelife.realestate.EstateProperty;
+import com.minelife.realestate.ModRealEstate;
+import com.minelife.realestate.PlayerPermission;
+import com.minelife.realestate.server.CommandEstate;
+import com.minelife.realestate.server.SelectionListener;
+import com.minelife.util.client.PacketPopup;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import java.sql.SQLException;
 import java.util.Set;
+import java.util.UUID;
 
 public class PacketUpdateEstate implements IMessage {
 
-    private EstateData estateData;
+    private Estate estate;
 
     public PacketUpdateEstate() {
     }
 
-    public PacketUpdateEstate(EstateData estateData) {
-        this.estateData = estateData;
+    public PacketUpdateEstate(Estate estate) {
+        this.estate = estate;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        try {
-            estateData = EstateData.fromBytes(buf);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
+        UUID id = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+        NBTTagCompound tagCompound = ByteBufUtils.readTag(buf);
+        this.estate = new Estate(id, tagCompound);
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        estateData.toBytes(buf);
+        ByteBufUtils.writeUTF8String(buf, estate.getUniqueID().toString());
+        ByteBufUtils.writeTag(buf, estate.getTagCompound());
     }
 
     public static class Handler implements IMessageHandler<PacketUpdateEstate, IMessage> {
 
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketUpdateEstate message, MessageContext ctx) {
-            /*
-             * Check every value from the estatedata with the estate in the server and update according to the
-             * player's permissions on whether or not they can do so.
-             */
+            FMLServerHandler.instance().getServer().addScheduledTask(() -> {
+                EntityPlayerMP player = ctx.getServerHandler().player;
 
-            Estate estate = EstateHandler.getEstate(message.estateData.getID());
-            EstateData estateData = message.estateData;
-            EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-            Set<Permission> playerPermissions = estate.getPlayerPermissions(player.getUniqueID());
-
-            // if player has permission to sell, then set the purchase price
-            if (Objects.equals(estate.getOwner(), player.getUniqueID())) {
-                estate.setPurchasePrice(estateData.getPurchasePrice());
-            }
-
-            // if player has permission to rent the estate, set the rent price
-            if (Objects.equals(estate.getOwner(), player.getUniqueID())) {
-                estate.setRentPrice(estateData.getRentPrice());
-
-                // remove renter
-                if(estate.getRentPrice() < 1) {
-                    if(estate.getRenter() != null) {
-                        List<Billing.Bill> bills = Billing.getBillsForPlayer(estate.getRenter());
-                        for (Billing.Bill bill : bills) {
-                            if(bill.getBillHandler() instanceof RentBillHandler) {
-                                RentBillHandler rentBillHandler = (RentBillHandler) bill.getBillHandler();
-                                if(rentBillHandler.estateID == estate.getID()) rentBillHandler.bill.delete();
-                            }
-                        }
-                    }
-                    estate.setRenter(null);
+                if (message.estate.getRentPrice() > 0 && message.estate.getRentPeriod() < 1) {
+                    PacketPopup.sendPopup("Rent period must be greater than 1 if rent price is greater than 1.", player);
+                    return;
                 }
 
-            }
+                if (message.estate.getIntro().trim().isEmpty()) message.estate.setIntro(null);
+                if (message.estate.getOutro().trim().isEmpty()) message.estate.setOutro(null);
 
-            // if player has permission to modify the rent period, set the rent period
-            if (Objects.equals(estate.getOwner(), player.getUniqueID())) {
-                estate.setRentPeriod(estateData.getRentPeriod());
-            }
+                // check properties
+                Set<EstateProperty> properties = message.estate.getProperties();
+                for (EstateProperty property : EstateProperty.values()) {
+                    if(!CommandEstate.getEstateProperties(player.getUniqueID()).contains(property))
+                        properties.remove(property);
+                }
+                message.estate.setProperties(properties);
 
-            // if player has permission to set the intro update the intro
-            if (playerPermissions.contains(Permission.MODIFY_INTRO)) {
-                estate.setIntro(estateData.getIntro());
-            }
+                // check permissions
+                Set<PlayerPermission> globalPermissions = message.estate.getGlobalPermissions();
+                Set<PlayerPermission> renterPermissions = message.estate.getRenterPermissions();
+                for (PlayerPermission playerPermission : PlayerPermission.values()) {
+                    if(!CommandEstate.getPlayerPermissions(player.getUniqueID()).contains(playerPermission)) {
+                        globalPermissions.remove(playerPermission);
+                        renterPermissions.remove(playerPermission);
+                    }
+                }
+                message.estate.setGlobalPermissions(globalPermissions);
+                message.estate.setRenterPermissions(renterPermissions);
 
-            // if player has permission to set the outro update the outro
-            if (playerPermissions.contains(Permission.MODIFY_OUTRO)) {
-                estate.setOutro(estateData.getOutro());
-            }
+                Estate loadedEstate = ModRealEstate.getEstate(message.estate.getUniqueID());
 
-            /*
-             *
-             *
-             *
-             *
-             *
-             *
-             */
-
-            boolean isOwner = Objects.equals(estate.getOwner(), player.getUniqueID());
-            boolean isAbsoluteOwner = estate.isAbsoluteOwner(player.getUniqueID());
-            boolean isRenter = Objects.equals(estate.getRenter(), player.getUniqueID());
-            Set<Permission> permissions = Sets.newTreeSet();
-
-            /*
-             * Set global permissions
-             */
-            if (isOwner || isRenter || isAbsoluteOwner) {
-                Set<Permission> toRemove = Sets.newTreeSet();
-
-                if(!isAbsoluteOwner) {
-                    permissions.addAll(estate.getGlobalPermissions());
-                    estateData.getGlobalPermissions().forEach(p -> {
-                        if (!estate.getGlobalPermissions().contains(p) && estate.getActualPermsAllowedToChange().contains(p)) {
-                            permissions.add(p);
-                        }
-                    });
-
-                    estate.getActualPermsAllowedToChange().forEach(p -> {
-                        System.out.println(p.name());
-                    });
-
-                    estate.getGlobalPermissions().forEach(p -> {
-                        if (!estateData.getGlobalPermissions().contains(p) && estate.getActualPermsAllowedToChange().contains(p)) {
-                            toRemove.add(p);
-                        }
-                    });
-                } else {
-                    permissions.addAll(estateData.getGlobalPermissions());
+                try {
+                    message.estate.save();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    PacketPopup.sendPopup("Error writing to database.", player);
+                    return;
                 }
 
-                permissions.removeAll(toRemove);
-                estate.setGlobalPermissions(permissions);
-            }
-
-            permissions.clear();
-
-            /*
-             * Set owner permissions
-             */
-            if (isAbsoluteOwner) {
-                permissions.addAll(estateData.getOwnerPermissions());
-                Set<Permission> toRemove = Sets.newTreeSet();
-                permissions.forEach(p -> {
-                    if (!playerPermissions.contains(p)) toRemove.add(p);
-                });
-                permissions.removeAll(toRemove);
-                estate.setOwnerPermissions(permissions);
-            }
-            permissions.clear();
-
-            /*
-             * Set renter permissions
-             */
-            if (isAbsoluteOwner || isOwner) {
-                permissions.addAll(estateData.getRenterPermissions());
-                Set<Permission> toRemove = Sets.newTreeSet();
-                permissions.forEach(p -> {
-                    if (!playerPermissions.contains(p)) toRemove.add(p);
-                });
-                permissions.removeAll(toRemove);
-                estate.setRenterPermissions(permissions);
-            }
-            permissions.clear();
-
-            /*
-             * Set permissions allowed to change
-             */
-            if (isAbsoluteOwner) {
-                permissions.addAll(estateData.getGlobalPermissionsAllowedToChange());
-                Set<Permission> toRemove = Sets.newTreeSet();
-                permissions.forEach(p -> {
-                    if (!playerPermissions.contains(p)) toRemove.add(p);
-                });
-                permissions.removeAll(toRemove);
-                estate.setPermissionsAllowedToChange(permissions);
-            }
-
-            permissions.clear();
-
-            /*
-             * Set estate permissions
-             */
-            if (isAbsoluteOwner || isOwner) {
-                permissions.addAll(estate.getEstatePermissions());
-
-                Set<Permission> toRemove = Sets.newTreeSet();
-                permissions.forEach(p -> {
-                    if (!playerPermissions.contains(p)) {
-                        toRemove.add(p);
-                    }
-                    if (!ModPermission.hasPermission(player.getUniqueID(), "estate." + p.name().toLowerCase())) {
-                        toRemove.add(p);
-                    }
-                });
-
-                Permission.getEstatePermissions().forEach(p -> {
-                    if(!toRemove.contains(p)) {
-                        if(!permissions.contains(p) && estateData.getEstatePermissions().contains(p)) {
-                            // turn on
-                            permissions.add(p);
-                        } else if (permissions.contains(p) && !estateData.getEstatePermissions().contains(p)) {
-                            // turn off
-                            permissions.remove(p);
-                        }
-                    }
-                });
-
-                estate.setEstatePermissions(permissions);
-            }
-
-            Minelife.NETWORK.sendTo(new PacketPopupMessage("Estate updated!"), player);
+                ModRealEstate.getLoadedEstates().remove(loadedEstate);
+                ModRealEstate.getLoadedEstates().add(message.estate);
+                player.closeScreen();
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " Estate updated!"));
+            });
             return null;
         }
-
     }
 
 }

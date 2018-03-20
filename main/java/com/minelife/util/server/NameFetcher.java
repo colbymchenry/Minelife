@@ -1,7 +1,6 @@
 package com.minelife.util.server;
 
 import com.minelife.Minelife;
-import com.minelife.util.client.INameReceiver;
 import com.minelife.util.client.PacketRequestName;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -10,23 +9,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public final class NameFetcher  {
 
     public static String get(UUID id, NameUUIDCallback callback, Object... objects) {
-        UUIDFetcher.pool.submit(new Runnable() {
-            @Override
-            public void run() {
-                callback.callback(id, get(id), objects);
-            }
-        });
+        UUIDFetcher.pool.submit(() -> callback.callback(id, get(id), objects));
 
         return "Fetching...";
     }
 
-    public static final String get(UUID id) {
+    public static String get(UUID id) {
         try {
             // Return cached name if it exists
             String cachedName = UUIDFetcher.CACHE.get(id);
@@ -46,8 +38,9 @@ public final class NameFetcher  {
         return UUIDFetcher.CACHE.get(id);
     }
 
-    public static String asyncFetchClient(UUID uuid, INameReceiver receiver) {
-        Minelife.NETWORK.sendToServer(new PacketRequestName(uuid, receiver.getClass().getName()));
+    public static String asyncFetchClient(UUID uuid) {
+        if(UUIDFetcher.CACHE.containsKey(uuid)) return UUIDFetcher.CACHE.get(uuid);
+        Minelife.getNetwork().sendToServer(new PacketRequestName(uuid));
         return "Fetching...";
     }
 

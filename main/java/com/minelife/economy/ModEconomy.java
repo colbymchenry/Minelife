@@ -1,84 +1,92 @@
 package com.minelife.economy;
 
-import com.minelife.*;
-import com.minelife.economy.client.gui.GuiBillPay;
-import com.minelife.economy.server.CommandEconomy;
-import com.minelife.util.MLConfig;
-import com.minelife.util.NumberConversions;
-import com.minelife.util.PlayerHelper;
-import com.minelife.economy.packet.*;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import com.google.common.collect.Sets;
+import com.minelife.AbstractGuiHandler;
+import com.minelife.MLMod;
+import com.minelife.MLProxy;
+import com.minelife.Minelife;
+import com.minelife.economy.block.BlockATMBottom;
+import com.minelife.economy.block.BlockATMTop;
+import com.minelife.economy.block.BlockCash;
+import com.minelife.economy.item.ItemATM;
+import com.minelife.economy.item.ItemCash;
+import com.minelife.economy.item.ItemCashBlock;
+import com.minelife.economy.item.ItemWallet;
+import com.minelife.economy.server.ServerProxy;
+import com.minelife.economy.tileentity.TileEntityATM;
+import com.minelife.economy.tileentity.TileEntityCash;
+import lib.PatPeter.SQLibrary.Database;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Set;
 import java.util.UUID;
 
 public class ModEconomy extends MLMod {
 
-    @SideOnly(Side.SERVER)
-    public static MLConfig config;
-
-    public static int BALANCE_BANK_CLIENT = 0;
+    public static BlockATMTop blockATMTop;
+    public static BlockATMBottom blockATMBottom;
+    public static ItemATM itemATM;
+    public static BlockCash blockCash;
+    public static ItemCash itemCash;
+    public static ItemCashBlock itemCashBlock;
+    public static ItemWallet itemWallet;
 
     @Override
-    public void preInit(FMLPreInitializationEvent event)
-    {
-        GameRegistry.registerTileEntity(TileEntityATM.class, "tileATM");
-
-        registerPacket(PacketUpdateATMGui.Handler.class, PacketUpdateATMGui.class, Side.CLIENT);
-        registerPacket(PacketUnlockATM.Handler.class, PacketUnlockATM.class, Side.CLIENT);
-        registerPacket(PacketBalanceQuery.Handler.class, PacketBalanceQuery.class, Side.SERVER);
-        registerPacket(PacketBalanceResult.Handler.class, PacketBalanceResult.class, Side.CLIENT);
-        registerPacket(PacketDeposit.Handler.class, PacketDeposit.class, Side.SERVER);
-        registerPacket(PacketWithdraw.Handler.class, PacketWithdraw.class, Side.SERVER);
-        registerPacket(PacketTransferMoney.Handler.class, PacketTransferMoney.class, Side.SERVER);
-        registerPacket(PacketRequestBills.Handler.class, PacketRequestBills.class, Side.SERVER);
-        registerPacket(PacketResponseBills.Handler.class, PacketResponseBills.class, Side.CLIENT);
-        registerPacket(Billing.PacketModifyBill.Handler.class, Billing.PacketModifyBill.class, Side.SERVER);
-        registerPacket(Billing.PacketPayBill.Handler.class, Billing.PacketPayBill.class, Side.SERVER);
-
-        ItemWallet.registerRecipes();
-
-        GameRegistry.addShapedRecipe(new ItemStack(MLBlocks.cash), "SSS", 'S', Items.stick);
+    public void preInit(FMLPreInitializationEvent event) {
+        registerBlock(blockATMTop = new BlockATMTop());
+        registerBlock(blockATMBottom = new BlockATMBottom());
+        registerBlock(blockCash = new BlockCash());
+        registerItem(itemATM = new ItemATM(blockATMBottom));
+        registerItem(itemCash = new ItemCash());
+        registerItem(itemCashBlock = new ItemCashBlock(blockCash));
+        registerItem(itemWallet = new ItemWallet());
+        registerTileEntity(TileEntityATM.class);
+        registerTileEntity(TileEntityCash.class);
+        ResourceLocation name  = new ResourceLocation(Minelife.MOD_ID + ":cashBlock");
+        ResourceLocation group = null;
+        GameRegistry.addShapedRecipe(name, group, new ItemStack(blockCash), "###", '#', new ItemStack(Item.getItemFromBlock(Blocks.WOODEN_PRESSURE_PLATE)));
+        itemWallet.registerRecipes();
     }
 
     @Override
-    public AbstractGuiHandler gui_handler() {
-        return new GuiHandler();
-    }
-
-    @Override
-    public void serverStarting(FMLServerStartingEvent event)
-    {
-        event.registerServerCommand(new CommandEconomy());
-    }
-
-    @Override
-    public Class<? extends MLProxy> getClientProxyClass()
-    {
+    public Class<? extends MLProxy> getClientProxyClass() {
         return com.minelife.economy.client.ClientProxy.class;
     }
 
     @Override
-    public Class<? extends MLProxy> getServerProxyClass()
-    {
+    public Class<? extends MLProxy> getServerProxyClass() {
         return com.minelife.economy.server.ServerProxy.class;
     }
 
-    public static String getMessage(String key)
-    {
-        return config.getString(key);
+    @Override
+    public AbstractGuiHandler getGuiHandler() {
+        return new GuiHandler();
     }
 
-    public static boolean handleInput(String text, boolean isFocused, char key_char, int key_id) {
-        return key_id == Keyboard.KEY_BACK || isFocused && NumberConversions.isInt(text + key_char);
+    public static Database getDatabase() {
+        return ServerProxy.DB;
     }
+
+    public static Set<Bill> getBills(UUID player) throws Exception {
+        Set<Bill> bills = Sets.newTreeSet();
+        ResultSet result = getDatabase().query("SELECT * FROM bills WHERE player='" + player.toString() + "'");
+        while (result.next()) bills.add(new Bill(UUID.fromString(result.getString("uuid"))));
+        return bills;
+    }
+
+    // TODO: Getting cash blocks in players estates
 
 }

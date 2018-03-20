@@ -81,11 +81,6 @@ fluid.potassium_permanganate=Potassium Permanganate
 
 tile.redstone_lamp_on=Redstone Lamp (ON)
 item.cape.name=Cape
-item.wallet.name=Wallet
-item.money_1.name=$1
-item.money_5.name=$5
-item.money_10.name=$10
-
 tile.cash.name=Cash Pile
 tile.shopBlock.name=Shop Block
 item.handcuffs.name=Handcuffs

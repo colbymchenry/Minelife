@@ -38,7 +38,7 @@ public class GuiPixelArt extends Gui {
                 int green = (rgb >> 8) & 0x000000FF;
                 int blue = (rgb) & 0x000000FF;
                 GL11.glColor4f(red / 255f, green / 255f, blue / 255f, 1f);
-                GuiUtil.drawImage(p.x, p.y, 1, 1);
+                GuiHelper.drawImage(p.x, p.y, 1, 1);
             }
         }
         GL11.glPopMatrix();
@@ -49,16 +49,16 @@ public class GuiPixelArt extends Gui {
 
 
         if (erasing) {
-            eraseBtn.drawButton(mc, eraseBtn.xPosition + 2, eraseBtn.yPosition + 2);
+            eraseBtn.drawButton(mc, eraseBtn.x + 2, eraseBtn.y + 2, 0);
             mc.getTextureManager().bindTexture(eraser);
             GL11.glColor4f(1, 1, 1, 1);
-            GuiUtil.drawImage(eraseBtn.xPosition + 2, eraseBtn.yPosition + 2, 16, 16);
-            GuiUtil.drawImage(mouseX, mouseY, 16, 16);
+            GuiHelper.drawImage(eraseBtn.x + 2, eraseBtn.y + 2, 16, 16);
+            GuiHelper.drawImage(mouseX, mouseY, 16, 16);
         } else {
-            eraseBtn.drawButton(mc, mouseX, mouseY);
+            eraseBtn.drawButton(mc, mouseX, mouseY, 0);
             GL11.glColor4f(1, 1, 1, 1);
             mc.getTextureManager().bindTexture(eraser);
-            GuiUtil.drawImage(eraseBtn.xPosition + 2, eraseBtn.yPosition + 2, 16, 16);
+            GuiHelper.drawImage(eraseBtn.x + 2, eraseBtn.y + 2, 16, 16);
         }
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -66,7 +66,7 @@ public class GuiPixelArt extends Gui {
         int g = (colorPicker.getColor()>>8)&0xFF;
         int b = (colorPicker.getColor()>>0)&0xFF;
         GL11.glColor4f(r / 255f, g / 255f, b / 255f, 1f);
-        GuiUtil.drawImage(colorPicker.xPosition, colorPicker.yPosition, colorPicker.width, 10);
+        GuiHelper.drawImage(colorPicker.xPosition, colorPicker.yPosition, colorPicker.width, 10);
     }
 
     public void mouseClicked(int mouseX, int mouseY) {

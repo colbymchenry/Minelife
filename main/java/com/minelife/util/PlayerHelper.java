@@ -1,26 +1,20 @@
 package com.minelife.util;
 
-import com.google.common.collect.Lists;
-import com.minelife.Minelife;
-import com.minelife.gun.client.ClientProxy;
-import com.minelife.util.server.PacketUpdatePlayerInventory;
-import com.mojang.authlib.GameProfile;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,9 +24,9 @@ public class PlayerHelper {
 
     @SideOnly(Side.SERVER)
     public static EntityPlayerMP getPlayer(UUID playerUUID) {
-        for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
-            if (worldServer.func_152378_a(playerUUID) != null)
-                return (EntityPlayerMP) worldServer.func_152378_a(playerUUID);
+        for (WorldServer worldServer : FMLServerHandler.instance().getServer().worlds) {
+            if (worldServer.getPlayerEntityByUUID(playerUUID) != null)
+                return (EntityPlayerMP) worldServer.getPlayerEntityByUUID(playerUUID);
         }
 
         return null;
@@ -40,11 +34,11 @@ public class PlayerHelper {
 
     @SideOnly(Side.SERVER)
     public static EntityPlayerMP getPlayer(String player) {
-        for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+        for (WorldServer worldServer : FMLServerHandler.instance().getServer().worlds) {
             for (int i = 0; i < worldServer.playerEntities.size(); ++i) {
                 EntityPlayerMP entityPlayer = (EntityPlayerMP) worldServer.playerEntities.get(i);
 
-                if (player.equalsIgnoreCase(entityPlayer.getCommandSenderName())) {
+                if (player.equalsIgnoreCase(entityPlayer.getName())) {
                     return entityPlayer;
                 }
             }
@@ -53,41 +47,33 @@ public class PlayerHelper {
         return null;
     }
 
-    @SideOnly(Side.SERVER)
-    public static void updatePlayerInventory(EntityPlayerMP player) {
-        Minelife.NETWORK.sendTo(new PacketUpdatePlayerInventory(player), player);
-    }
-
     public static TargetResult getTarget(EntityPlayer player, int range) {
         TargetResult result = new TargetResult();
 
-        List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(Blocks.tallgrass, Blocks.water,
-                Blocks.flowing_water, Blocks.double_plant, Blocks.red_flower, Blocks.yellow_flower));
+        List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(Blocks.TALLGRASS, Blocks.WATER,
+                Blocks.FLOWING_WATER, Blocks.DOUBLE_PLANT, Blocks.RED_FLOWER, Blocks.YELLOW_FLOWER));
 
-        AxisAlignedBB surrounding_check = AxisAlignedBB.getBoundingBox(player.posX - range, player.posY - range, player.posZ - range, player.posX + range, player.posY + range, player.posZ + range);
-        List<EntityLivingBase> surrounding_entities = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check);
-        Vec3 lookVec = player.getLookVec();
-        Vec3 currentPosVec = Vec3.createVectorHelper(player.posX, player.posY + player.eyeHeight, player.posZ);
+        AxisAlignedBB surrounding_check = new AxisAlignedBB(player.posX - range, player.posY - range, player.posZ - range, player.posX + range, player.posY + range, player.posZ + range);
+        List<EntityLivingBase> surrounding_entities = player.getEntityWorld().getEntitiesWithinAABB(EntityLivingBase.class, surrounding_check);
+        Vec3d lookVec = player.getLookVec();
+        Vec3d currentPosVec = new Vec3d(player.posX, player.posY + player.eyeHeight, player.posZ);
 
-        Vec3 origin = null, target = null;
-        Block block;
+        IBlockState block;
+        BlockPos pos;
 
         for (int i = 0; i < range; i++) {
-            currentPosVec = currentPosVec.addVector(lookVec.xCoord, lookVec.yCoord, lookVec.zCoord);
+            currentPosVec = currentPosVec.add(lookVec);
 
-            int x = MathHelper.floor_double(currentPosVec.xCoord);
-            int y = MathHelper.floor_double(currentPosVec.yCoord);
-            int z = MathHelper.floor_double(currentPosVec.zCoord);
-            block = player.worldObj.getBlock(x, y, z);
+            pos = new BlockPos(MathHelper.floor(currentPosVec.x), MathHelper.floor(currentPosVec.y), MathHelper.floor(currentPosVec.z));
+            block = player.getEntityWorld().getBlockState(pos);
 
-            if (block != null && block != Blocks.air) {
-                block.setBlockBoundsBasedOnState(player.worldObj, x, y, z);
-                AxisAlignedBB axisalignedbb = block.getCollisionBoundingBoxFromPool(player.worldObj, x, y, z);
+            if (block != null && block.getBlock() != Blocks.AIR) {
+                AxisAlignedBB axisalignedbb = block.getBoundingBox(player.getEntityWorld(), pos);
 
-                if (axisalignedbb != null && axisalignedbb.isVecInside(Vec3.createVectorHelper(currentPosVec.xCoord, currentPosVec.yCoord, currentPosVec.zCoord))) {
-                    if (blackListedBlocks.contains(block)) return result;
+                if (axisalignedbb != null && axisalignedbb.contains(currentPosVec)) {
+                    if (blackListedBlocks.contains(block.getBlock())) return result;
                     else {
-                        result.blockVector = new BlockVector(currentPosVec.xCoord, currentPosVec.yCoord, currentPosVec.zCoord);
+                        result.blockPos = pos;
                         result.block = block;
                         return result;
                     }
@@ -95,7 +81,7 @@ public class PlayerHelper {
             }
 
             for (EntityLivingBase e : surrounding_entities) {
-                if (e != player && e.boundingBox.expand(0.3F, 0.3F, 0.3F).isVecInside(currentPosVec)) {
+                if (e != player && e.getEntityBoundingBox().expand(0.3F, 0.3F, 0.3F).contains(currentPosVec)) {
                     result.entity = e;
                     return result;
                 }
@@ -105,60 +91,27 @@ public class PlayerHelper {
         return result;
     }
 
-//    public static TargetResult getTrget(EntityPlayer player, int range) {
-//        return getTarget(player, range, null);
-//    }
-
-    @SideOnly(Side.CLIENT)
-    public static final void zoom(double amount) {
-
-        if (amount < 1) amount = 1;
-
-        EntityRenderer entRenderer = Minecraft.getMinecraft().entityRenderer;
-        try {
-            Class<?> c = entRenderer.getClass();
-            Field f = c.getDeclaredField("cameraZoom");
-            f.setAccessible(true);
-            // f.setAccessible(true); // solution
-            f.setDouble(entRenderer, amount); // IllegalAccessException
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static class TargetResult {
-        protected Block block;
-        protected BlockVector blockVector;
+        protected IBlockState block;
+        protected BlockPos blockPos;
         protected EntityLivingBase entity;
 
         public EntityLivingBase getEntity() {
             return entity;
         }
 
-        public BlockVector getBlockVector() {
-            return blockVector;
+        public BlockPos getBlockPos() {
+            return blockPos;
         }
 
-        public Block getBlock() {
+        public IBlockState getBlock() {
             return block;
         }
     }
 
     @SideOnly(Side.SERVER)
     public static boolean isOp(EntityPlayerMP player) {
-        return MinecraftServer.getServer().getConfigurationManager().func_152596_g(player.getGameProfile());
+        return Arrays.asList(FMLServerHandler.instance().getServer().getPlayerList().getOppedPlayerNames()).contains(player.getName());
     }
-
-    @SideOnly(Side.SERVER)
-    public static boolean isOp(UUID player) {
-        return MinecraftServer.getServer().getConfigurationManager().func_152596_g(new GameProfile(player, null));
-    }
-
 
 }
