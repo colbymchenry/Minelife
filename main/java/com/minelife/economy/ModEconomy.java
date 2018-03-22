@@ -17,6 +17,7 @@ import com.minelife.economy.item.ItemCash;
 import com.minelife.economy.item.ItemCashBlock;
 import com.minelife.economy.item.ItemWallet;
 import com.minelife.economy.network.PacketOpenATM;
+import com.minelife.economy.network.PacketSendMoneyATM;
 import com.minelife.economy.network.PacketWithdrawATM;
 import com.minelife.economy.server.CommandEconomy;
 import com.minelife.economy.server.ServerProxy;
@@ -71,6 +72,7 @@ public class ModEconomy extends MLMod {
 
         registerPacket(PacketOpenATM.Handler.class, PacketOpenATM.class, Side.CLIENT);
         registerPacket(PacketWithdrawATM.Handler.class, PacketWithdrawATM.class, Side.SERVER);
+        registerPacket(PacketSendMoneyATM.Handler.class, PacketSendMoneyATM.class, Side.SERVER);
     }
 
     @Override
@@ -283,8 +285,13 @@ public class ModEconomy extends MLMod {
             if (itemStack.getItem() == ModEconomy.itemCash) {
                 amount -= ItemCash.getAmount(itemStack);
                 emptySlots.add(i);
-                cashItems.add(itemStack);
-                if (amount < 1) break;
+                // TODO: Test
+                if (amount < 1) {
+                    cashItems.addAll(ItemCash.getStacks(Math.abs(amount)));
+                    break;
+                } else {
+                    cashItems.add(itemStack);
+                }
             }
         }
 

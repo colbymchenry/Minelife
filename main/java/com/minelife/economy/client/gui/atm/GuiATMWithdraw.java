@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class GuiATMWithdraw extends GuiATMBase {
 
-    private int amount = 0;
+    protected int amount = 0;
 
     public GuiATMWithdraw(int balance) {
         super(balance);
@@ -29,15 +29,28 @@ public class GuiATMWithdraw extends GuiATMBase {
         super.actionPerformed(button);
         if (NumberConversions.isInt(button.displayString)) {
             if (NumberConversions.isInt(String.valueOf(amount) + button.displayString)) {
-                if (NumberConversions.toInt(String.valueOf(amount) + button.displayString) <= balance)
+                if (NumberConversions.toInt(String.valueOf(amount) + button.displayString) <= balance) {
                     amount = NumberConversions.toInt(String.valueOf(amount) + button.displayString);
+                } else {
+                    playErrorSound();
+                    submitMessage("Insufficient Funds", 3);
+                }
+            } else {
+                playErrorSound();
+                submitMessage("Amount too large", 3);
             }
         } else if (button.displayString.equals("<")) {
             if (amount > 0)
                 amount = NumberConversions.toInt(String.valueOf(amount).substring(0, String.valueOf(amount).length() - 1));
+            else
+                playErrorSound();
         } else {
             if (amount > 0 && amount <= balance)
                 Minelife.getNetwork().sendToServer(new PacketWithdrawATM(NumberConversions.toInt(amount)));
+            else {
+                playErrorSound();
+                submitMessage("Insufficient Funds", 3);
+            }
         }
     }
 
@@ -45,6 +58,8 @@ public class GuiATMWithdraw extends GuiATMBase {
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         if (keyCode == Keyboard.KEY_ESCAPE)
             Minecraft.getMinecraft().displayGuiScreen(new GuiATMMenu(this.balance));
+
+        playKeyTypeSound();
     }
 
     @Override

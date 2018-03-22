@@ -11,6 +11,10 @@
     "category": "neutral",
     "sounds": ["minelife:atm/error"]
   },
+  "gui.atm.key_stroke": {
+    "category": "neutral",
+    "sounds": ["minelife:atm/key_stroke"]
+  },
   "guns.M4A4.shot": {
     "category": "neutral",
     "sounds": ["minelife:guns/M4A4"]
@@ -86,10 +90,6 @@
   "handcuff": {
     "category": "neutral",
     "sounds": ["minelife:handcuff"]
-  },
-  "key_stroke": {
-    "category": "neutral",
-    "sounds": ["minelife:key_stroke"]
   },
   "text_message": {
     "category": "neutral",

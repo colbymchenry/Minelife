@@ -13,6 +13,9 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiATMBase extends GuiScreen {
 
+    private long messageTime;
+    private String message;
+
     protected int block = 0;
 
     public int guiLeft, guiTop, xSize = 176, ySize = 186;
@@ -29,6 +32,8 @@ public class GuiATMBase extends GuiScreen {
 
         this.drawLabel(TextFormatting.BOLD + "A T M", this.width - 70, this.block / 2, 3.0, 0, true);
 
+        if(System.currentTimeMillis() < messageTime) this.drawLabel(message, 5, 5, 2.0, 0xFFFFFF, false);
+
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -39,6 +44,11 @@ public class GuiATMBase extends GuiScreen {
         this.guiTop = (this.height - this.ySize) / 2;
         this.buttonList.clear();
         this.block = this.height / 8;
+    }
+
+    protected void submitMessage(String message, int seconds) {
+        this.messageTime = System.currentTimeMillis() + (seconds * 1000L);
+        this.message = message;
     }
 
     /**
@@ -63,6 +73,15 @@ public class GuiATMBase extends GuiScreen {
         }
         GL11.glPopMatrix();
     }
+
+    protected void playKeyTypeSound() {
+        mc.player.playSound(new SoundEvent(new ResourceLocation(Minelife.MOD_ID, "gui.atm.key_stroke")), 0.5F, 1.0F);
+    }
+
+    protected void playErrorSound() {
+        mc.player.playSound(new SoundEvent(new ResourceLocation(Minelife.MOD_ID, "gui.atm.error")), 0.5F, 1.0F);
+    }
+
 
     protected class ButtonATM extends GuiButton {
 
