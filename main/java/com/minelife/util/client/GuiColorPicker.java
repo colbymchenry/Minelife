@@ -28,9 +28,9 @@ public class GuiColorPicker extends Gui {
 
         // Draw tracks
         GL11.glColor4d(1, 1, 1, 1);
-        GuiHelper.drawImage(xPosition + 10, yPosition + height - 60, width - 20, 10);
-        GuiHelper.drawImage(xPosition + 10, yPosition + height - 40, width - 20, 10);
-        GuiHelper.drawImage(xPosition + 10, yPosition + height - 20, width - 20, 10);
+        GuiHelper.drawRect(xPosition + 10, yPosition + height - 60, width - 20, 10);
+        GuiHelper.drawRect(xPosition + 10, yPosition + height - 40, width - 20, 10);
+        GuiHelper.drawRect(xPosition + 10, yPosition + height - 20, width - 20, 10);
 
         // Draw grips
         int red_x = xPosition + 10 + (red * (width - 40) / 255);
@@ -40,11 +40,11 @@ public class GuiColorPicker extends Gui {
         int green_y = yPosition + height - 40;
         int blue_y = yPosition + height - 20;
         GL11.glColor4d(1, 0, 0, 1);
-        GuiHelper.drawImage(red_x, red_y, 20, 10);
+        GuiHelper.drawRect(red_x, red_y, 20, 10);
         GL11.glColor4d(0, 1, 0, 1);
-        GuiHelper.drawImage(green_x, green_y, 20, 10);
+        GuiHelper.drawRect(green_x, green_y, 20, 10);
         GL11.glColor4d(0, 0, 1, 1);
-        GuiHelper.drawImage( blue_x, blue_y, 20, 10);
+        GuiHelper.drawRect( blue_x, blue_y, 20, 10);
 
 
 

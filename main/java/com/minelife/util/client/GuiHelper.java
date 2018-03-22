@@ -8,8 +8,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.opengl.GL11;
@@ -24,9 +22,8 @@ public class GuiHelper {
         }
     };
 
-    // TODO: Doesn't work
-    public static void drawImage(int x, int y, int width, int height) {
-        helperScreen.drawTexturedModalRect(x, y, 0, 0, width, height);
+    public static void drawRect(int x, int y, int width, int height) {
+//        helperScreen.drawTexturedModalRect(x, y, 0, 0, width, height);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
@@ -54,33 +51,33 @@ public class GuiHelper {
         GlStateManager.translate(x, y, 0f);
 
         GlStateManager.color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
-        drawImage(2, 1, width - 4, 1);
-        drawImage(1, 2, width - 2, 1);
-        drawImage(1, 3, width - 1, height - 5);
-        drawImage(2, height - 2, width - 2, 1);
-        drawImage(3, height - 1, width - 4, 1);
+        drawRect(2, 1, width - 4, 1);
+        drawRect(1, 2, width - 2, 1);
+        drawRect(1, 3, width - 1, height - 5);
+        drawRect(2, height - 2, width - 2, 1);
+        drawRect(3, height - 1, width - 4, 1);
 
         GlStateManager.color(border.getRed() / 255f, border.getGreen() / 255f, border.getBlue() / 255f, border.getAlpha() / 255f);
-        drawImage(2, 0, width - 4, 1);
-        drawImage(3, height, width - 4, 1);
-        drawImage(0, 2, 1, height - 3);
-        drawImage(width, 3, 1, height - 4);
-        drawImage(1, 1, 1, 1);
-        drawImage(1, height - 2, 1, 1);
-        drawImage(2, height - 1, 1, 1);
-        drawImage(width - 2, 1, 1, 1);
-        drawImage(width - 1, 2, 1, 1);
-        drawImage(width - 1, height - 1, 1, 1);
+        drawRect(2, 0, width - 4, 1);
+        drawRect(3, height, width - 4, 1);
+        drawRect(0, 2, 1, height - 3);
+        drawRect(width, 3, 1, height - 4);
+        drawRect(1, 1, 1, 1);
+        drawRect(1, height - 2, 1, 1);
+        drawRect(2, height - 1, 1, 1);
+        drawRect(width - 2, 1, 1, 1);
+        drawRect(width - 1, 2, 1, 1);
+        drawRect(width - 1, height - 1, 1, 1);
 
         GlStateManager.color(topColor.getRed() / 255f, topColor.getGreen() / 255f, topColor.getBlue() / 255f, topColor.getAlpha() / 255f);
-        drawImage(2, 1, width - 4, 2);
-        drawImage(1, 2, 2, height - 4);
-        drawImage(3, 3, 1, 1);
+        drawRect(2, 1, width - 4, 2);
+        drawRect(1, 2, 2, height - 4);
+        drawRect(3, 3, 1, 1);
 
         GlStateManager.color(bottomBorder.getRed() / 255f, bottomBorder.getGreen() / 255f, bottomBorder.getBlue() / 255f, bottomBorder.getAlpha() / 255f);
-        drawImage(3, height - 2, width - 4, 2);
-        drawImage(width - 2, 3, 2, height - 4);
-        drawImage(width - 3, height - 3, 1, 1);
+        drawRect(3, height - 2, width - 4, 2);
+        drawRect(width - 2, 3, 2, height - 4);
+        drawRect(width - 3, height - 3, 1, 1);
 
         GlStateManager.popMatrix();
 

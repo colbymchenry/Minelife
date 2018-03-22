@@ -38,7 +38,7 @@ public class GuiSetupShop extends GuiScreen {
         GlStateManager.disableTexture2D();
         GlStateManager.disableLighting();
         GlStateManager.color(139f / 255f, 139f / 255f, 139f / 255f);
-        GuiHelper.drawImage(this.guiLeft + 10, this.guiTop + 10, this.xSize - 100, 70);
+        GuiHelper.drawRect(this.guiLeft + 10, this.guiTop + 10, this.xSize - 100, 70);
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.enableLighting();
         GlStateManager.enableTexture2D();

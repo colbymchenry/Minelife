@@ -6,9 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
@@ -16,8 +14,6 @@ import net.minecraft.item.ItemStack;
 
 import java.awt.*;
 import java.util.Map;
-
-import static com.minelife.util.client.GuiHelper.drawImage;
 
 public class GuiFakeInventory extends Gui {
 
@@ -130,17 +126,17 @@ public class GuiFakeInventory extends Gui {
         GlStateManager.translate(x, y, 0f);
 
         GlStateManager.color(border.getRed() / 255f, border.getGreen() / 255f, border.getBlue() / 255f, 1f);
-        drawImage(0, 0, width, 1);
-        drawImage(0, 0, 1, height);
+        GuiHelper.drawRect(0, 0, width, 1);
+        GuiHelper.drawRect(0, 0, 1, height);
 
         GlStateManager.color(topColor.getRed() / 255f, topColor.getGreen() / 255f, topColor.getBlue() / 255f, 1f);
-        drawImage(1, height, width, 1);
-        drawImage(width, 1, 1, height - 1);
+        GuiHelper.drawRect(1, height, width, 1);
+        GuiHelper.drawRect(width, 1, 1, height - 1);
 
         GlStateManager.color(bottomBorder.getRed() / 255f, bottomBorder.getGreen() / 255f, bottomBorder.getBlue() / 255f, 1f);
-        drawImage(width, 0, 1, 1);
-        drawImage(0, height, 1, 1);
-        drawImage(1, 1, width - 1, height - 1);
+        GuiHelper.drawRect(width, 0, 1, 1);
+        GuiHelper.drawRect(0, height, 1, 1);
+        GuiHelper.drawRect(1, 1, width - 1, height - 1);
 
         GlStateManager.popMatrix();
         GlStateManager.enableTexture2D();
@@ -162,6 +158,5 @@ public class GuiFakeInventory extends Gui {
             GlStateManager.enableDepth();
         }
     }
-
 
 }
