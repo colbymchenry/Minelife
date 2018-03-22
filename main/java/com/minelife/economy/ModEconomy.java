@@ -1,5 +1,7 @@
 package com.minelife.economy;
 
+import codechicken.lib.inventory.InventoryRange;
+import codechicken.lib.inventory.InventoryUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.minelife.AbstractGuiHandler;
@@ -20,25 +22,17 @@ import com.minelife.economy.server.CommandEconomy;
 import com.minelife.economy.server.ServerProxy;
 import com.minelife.economy.tileentity.TileEntityATM;
 import com.minelife.economy.tileentity.TileEntityCash;
-import com.minelife.realestate.Estate;
-import com.minelife.realestate.ModRealEstate;
+import com.minelife.util.NumberConversions;
 import lib.PatPeter.SQLibrary.Database;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -110,22 +104,22 @@ public class ModEconomy extends MLMod {
         return bills;
     }
 
-    // TODO: Getting cash blocks in players estates
     public static int depositCashPiles(UUID playerID, int amount) {
-        int totalCouldNotFit = 0;
         for (TileEntityCash tileCash : TileEntityCash.getCashPiles(playerID)) {
-            totalCouldNotFit += tileCash.deposit(amount);
+            amount = tileCash.deposit(amount);
             tileCash.sendUpdates();
+            if (amount <= 0) break;
         }
-        System.out.println(totalCouldNotFit);
-        return totalCouldNotFit;
+        return amount;
     }
 
     public static void depositATM(UUID playerID, int amount) {
+        if (!NumberConversions.isInt(String.valueOf(getBalanceATM(playerID) + amount))) return;
+
         int balance = getBalanceATM(playerID) + amount;
         try {
             ResultSet result = getDatabase().query("SELECT * FROM atm WHERE player='" + playerID.toString() + "'");
-            if(result.next()) {
+            if (result.next()) {
                 getDatabase().query("UPDATE atm SET balance='" + balance + "' WHERE player='" + playerID.toString() + "'");
             } else {
                 getDatabase().query("INSERT INTO atm (player, balance) VALUES ('" + playerID.toString() + "', '" + balance + "')");
@@ -136,37 +130,37 @@ public class ModEconomy extends MLMod {
     }
 
     public static int depositInventory(EntityPlayerMP player, int amount) {
-        int totalCouldNotFit = ItemWallet.deposit(player, amount);
+        amount = ItemWallet.depositPlayer(player, amount);
 
-        if(totalCouldNotFit == 0) return 0;
-
-        amount = totalCouldNotFit;
+        if (amount <= 0) return 0;
 
         Map<Integer, ItemStack> wallets = ItemWallet.getWallets(player);
         for (Integer integer : wallets.keySet()) {
             InventoryWallet inventoryWallet = new InventoryWallet(wallets.get(integer));
-            totalCouldNotFit += inventoryWallet.deposit(amount);
+            amount = inventoryWallet.deposit(amount);
             inventoryWallet.writeToNBT();
             player.inventory.setInventorySlotContents(integer, inventoryWallet.getWalletStack());
-            amount = totalCouldNotFit;
-            if(amount <= 0) break;
+            if (amount <= 0) break;
         }
 
-        return totalCouldNotFit;
+        return amount;
     }
 
     public static void withdrawCashPiles(UUID playerID, int amount) {
         for (TileEntityCash tileCash : TileEntityCash.getCashPiles(playerID)) {
-            List<ItemStack> cashBack = tileCash.withdraw(amount);
+            WithdrawlResult result = tileCash.withdraw(amount);
             tileCash.sendUpdates();
+            amount -= ItemCash.getAmount(result.stacksTaken);
+            if (amount <= 0) break;
         }
     }
 
     public static void withdrawATM(UUID playerID, int amount) {
         int balance = getBalanceATM(playerID) - amount;
+        balance = balance < 0 ? 0 : balance;
         try {
             ResultSet result = getDatabase().query("SELECT * FROM atm WHERE player='" + playerID.toString() + "'");
-            if(result.next()) {
+            if (result.next()) {
                 getDatabase().query("UPDATE atm SET balance='" + balance + "' WHERE player='" + playerID.toString() + "'");
             } else {
                 getDatabase().query("INSERT INTO atm (player, balance) VALUES ('" + playerID.toString() + "', '" + balance + "')");
@@ -176,18 +170,21 @@ public class ModEconomy extends MLMod {
         }
     }
 
-    public static void withdrawInventory(EntityPlayerMP player, int amount) {
-        List<ItemStack> stacks = ItemWallet.withdrawPlayer(player, amount);
-        amount -= ItemCash.getAmount(stacks);
+    public static int withdrawInventory(EntityPlayerMP player, int amount) {
+        WithdrawlResult result = ItemWallet.withdrawPlayer(player, amount);
+        amount -= ItemCash.getAmount(result.stacksTaken);
 
-        if(amount <= 0) return;
+        if (amount <= 0) {
+            System.out.println("CALLED " + result.changeThatDidNotFit);
+            return result.changeThatDidNotFit;
+        }
 
         Map<Integer, ItemStack> wallets = ItemWallet.getWallets(player);
         for (Integer integer : wallets.keySet()) {
             InventoryWallet inventoryWallet = new InventoryWallet(wallets.get(integer));
-            stacks = inventoryWallet.withdraw(amount);
-            amount -= ItemCash.getAmount(stacks);
-            if(amount <= 0) {
+            result = inventoryWallet.withdraw(amount);
+            amount -= ItemCash.getAmount(result.stacksTaken);
+            if (amount <= 0) {
                 inventoryWallet.writeToNBT();
                 player.inventory.setInventorySlotContents(integer, inventoryWallet.getWalletStack());
                 break;
@@ -196,6 +193,8 @@ public class ModEconomy extends MLMod {
                 player.inventory.setInventorySlotContents(integer, inventoryWallet.getWalletStack());
             }
         }
+
+        return result.changeThatDidNotFit;
     }
 
     public static int getBalanceCashPiles(UUID playerID) {
@@ -225,6 +224,80 @@ public class ModEconomy extends MLMod {
                 total += ItemWallet.getHoldings(stack);
         }
         return total;
+    }
+
+    public static int deposit(InventoryRange inventoryRange, int amount) {
+        int hundreds = amount / 100;
+        if (hundreds > 0) {
+            amount -= 100 * hundreds;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, hundreds, 5), false);
+            amount += 100 * didNotFit;
+        }
+
+        int fifties = amount / 50;
+        if (fifties > 0) {
+            amount -= 50 * fifties;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, fifties, 4), false);
+            amount += 50 * didNotFit;
+        }
+
+        int twenties = amount / 20;
+        if (twenties > 0) {
+            amount -= 20 * twenties;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, twenties, 3), false);
+            amount += 20 * didNotFit;
+        }
+
+        int tens = amount / 10;
+        if (tens > 0) {
+            amount -= 10 * tens;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, tens, 2), false);
+            amount += 10 * didNotFit;
+        }
+
+        int fives = amount / 5;
+        if (fives > 0) {
+            amount -= 5 * fives;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, fives, 1), false);
+            amount += 5 * didNotFit;
+        }
+
+        int ones = (amount);
+        if (ones > 0) {
+            amount -= ones;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, ones, 0), false);
+            amount += didNotFit;
+        }
+
+        return amount;
+    }
+
+    // TODO: Cash Items need to be exact amount. Withdrawl $50 from 3 $20s you get $60 not $50
+    public static WithdrawlResult withdraw(InventoryRange inventory, int amount) {
+        List<ItemStack> cashItems = Lists.newArrayList();
+        List<Integer> emptySlots = Lists.newArrayList();
+
+
+        for (int i = 0; i < inventory.inv.getSizeInventory(); i++) {
+            ItemStack itemStack = inventory.inv.getStackInSlot(i);
+            if (itemStack.getItem() == ModEconomy.itemCash) {
+                amount -= ItemCash.getAmount(itemStack);
+                emptySlots.add(i);
+                cashItems.add(itemStack);
+                if (amount < 1) break;
+            }
+        }
+
+        for (Integer emptySlot : emptySlots) inventory.inv.setInventorySlotContents(emptySlot, ItemStack.EMPTY);
+
+        int changeDidNotFit = 0;
+
+        if (amount < 0) {
+            int addBack = Math.abs(amount);
+            changeDidNotFit = deposit(inventory, addBack);
+        }
+
+        return new WithdrawlResult(cashItems, changeDidNotFit);
     }
 
 }

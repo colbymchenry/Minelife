@@ -1,13 +1,13 @@
 package com.minelife.economy.item;
 
 import codechicken.lib.inventory.InventoryRange;
-import codechicken.lib.inventory.InventoryUtils;
 import codechicken.lib.model.ModelRegistryHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.economy.GuiHandler;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.WithdrawlResult;
 import com.minelife.economy.client.gui.wallet.InventoryWallet;
 import com.minelife.economy.client.render.RenderWalletItem;
 import com.minelife.util.NumberConversions;
@@ -150,114 +150,12 @@ public class ItemWallet extends Item {
         return map;
     }
 
-    public static List<ItemStack> withdrawPlayer(EntityPlayer player, int amount) {
-        List<ItemStack> cashItems = Lists.newArrayList();
-        List<Integer> emptySlots = Lists.newArrayList();
-
-
-        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            ItemStack itemStack = player.inventory.getStackInSlot(i);
-            if (itemStack.getItem() == ModEconomy.itemCash) {
-                amount -= ItemCash.getAmount(itemStack);
-                emptySlots.add(i);
-                cashItems.add(itemStack);
-                if (amount < 1) break;
-            }
-        }
-
-        for (Integer emptySlot : emptySlots) player.inventory.setInventorySlotContents(emptySlot, ItemStack.EMPTY);
-
-        InventoryRange inventoryRange = new InventoryRange(player.inventory, 0, 35);
-
-        if (amount < 0) {
-            int addBack = Math.abs(amount);
-
-            int hundreds = addBack / 100;
-            if (hundreds > 0) {
-                addBack -= 100 * hundreds;
-                InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, hundreds, 5), false);
-            }
-
-            int fifties = addBack / 50;
-            if (fifties > 0) {
-                addBack -= 50 * fifties;
-                InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, fifties, 4), false);
-            }
-
-            int twenties = addBack / 20;
-            if (twenties > 0) {
-                addBack -= 20 * twenties;
-                InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, twenties, 3), false);
-            }
-
-            int tens = addBack / 10;
-            if (tens > 0) {
-                addBack -= 10 * tens;
-                InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, tens, 2), false);
-            }
-
-            int fives = addBack / 5;
-            if (fives > 0) {
-                addBack -= 5 * fives;
-                InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, fives, 1), false);
-            }
-
-            int ones = addBack;
-            if (ones > 0) {
-                addBack -= ones;
-                InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, ones, 0), false);
-            }
-        }
-
-        return cashItems;
+    public static WithdrawlResult withdrawPlayer(EntityPlayer player, int amount) {
+        return ModEconomy.withdraw(new InventoryRange(player.inventory, 0, 36), amount);
     }
 
-    public static int deposit(EntityPlayer player, int amount) {
-        InventoryRange inventoryRange = new InventoryRange(player.inventory, 0, 35);
-
-        int hundreds =amount / 100;
-        if (hundreds > 0) {
-            amount -= 100 * hundreds;
-            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, hundreds, 5), false);
-            amount += 100 * didNotFit;
-        }
-
-        int fifties =amount / 50;
-        if (fifties > 0) {
-            amount -= 50 * fifties;
-            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, fifties, 4), false);
-            amount += 50 * didNotFit;
-        }
-
-        int twenties =amount / 20;
-        if (twenties > 0) {
-            amount -= 20 * twenties;
-            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, twenties, 3), false);
-            amount += 20 * didNotFit;
-        }
-
-        int tens =amount / 10;
-        if (tens > 0) {
-            amount -= 10 * tens;
-            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, tens, 2), false);
-            amount += 10 * didNotFit;
-        }
-
-        int fives =amount / 5;
-        if (fives > 0) {
-            amount -= 5 * fives;
-            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, fives, 1), false);
-            amount += 5 * didNotFit;
-        }
-
-        int ones = (amount);
-        if (ones > 0) {
-            amount -= ones;
-            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, ones, 0), false);
-            amount += didNotFit;
-        }
-
-        return amount;
+    public static int depositPlayer(EntityPlayer player, int amount) {
+        return ModEconomy.deposit(new InventoryRange(player.inventory, 0, 36), amount);
     }
 
 }

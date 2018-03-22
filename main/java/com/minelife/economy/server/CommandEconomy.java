@@ -34,7 +34,7 @@ public class CommandEconomy extends MLCommand {
     @Override
     public String getUsage(ICommandSender sender) {
         sendMessage(sender, "/eco withdraw <atm|cash|inventory> <player> <amount>");
-        sendMessage(sender, "/eco deposit <atm|cash|inventory> <player> <amount>");
+        sendMessage(sender, "/eco depositPlayer <atm|cash|inventory> <player> <amount>");
         sendMessage(sender, "/eco set <atm|cash|inventory> <player> <amount>");
         sendMessage(sender, "/eco balance <atm|cash|inventory> <player>");
         return null;
@@ -78,23 +78,38 @@ public class CommandEconomy extends MLCommand {
                             sendMessage(sender, "Player is not online.");
                             return;
                         }
-                        ModEconomy.withdrawInventory(player, NumberConversions.toInt(args[3]));
+                        int couldNotFit =  ModEconomy.withdrawInventory(player, NumberConversions.toInt(args[3]));
+                        System.out.println(couldNotFit);
+                        if(couldNotFit > 0) {
+                            sendMessage(sender, TextFormatting.RED + "$" + NumberConversions.format(couldNotFit) + TextFormatting.GOLD + " could not fit and was deposited into the player's ATM account.");
+                            ModEconomy.depositATM(playerUUID, couldNotFit);
+                        }
                     }
                     break;
-                case "deposit":
+                case "depositPlayer":
                     if (args.length < 4 || !NumberConversions.isInt(args[3])) {
                         sendMessage(sender, "Amount must be a whole number.");
                         return;
                     }
                     if (atm) ModEconomy.depositATM(playerUUID, NumberConversions.toInt(args[3]));
-                    else if (cash) ModEconomy.depositCashPiles(playerUUID, NumberConversions.toInt(args[3]));
+                    else if (cash) {
+                        int couldNotFit = ModEconomy.depositCashPiles(playerUUID, NumberConversions.toInt(args[3]));
+                        if(couldNotFit > 0) {
+                            sendMessage(sender, TextFormatting.RED + "$" + NumberConversions.format(couldNotFit) + TextFormatting.GOLD + " could not fit and was deposited into the player's ATM account.");
+                            ModEconomy.depositATM(playerUUID, couldNotFit);
+                        }
+                    }
                     else if(inventory) {
                         EntityPlayerMP player = PlayerHelper.getPlayer(playerUUID);
                         if(player == null) {
                             sendMessage(sender, "Player is not online.");
                             return;
                         }
-                        ModEconomy.depositInventory(player, NumberConversions.toInt(args[3]));
+                        int couldNotFit = ModEconomy.depositInventory(player, NumberConversions.toInt(args[3]));
+                        if(couldNotFit > 0) {
+                            sendMessage(sender, TextFormatting.RED + "$" + NumberConversions.format(couldNotFit) + TextFormatting.GOLD + " could not fit and was deposited into the player's ATM account.");
+                            ModEconomy.depositATM(playerUUID, couldNotFit);
+                        }
                     }
                     break;
                 case "set":
