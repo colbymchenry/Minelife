@@ -20,7 +20,7 @@ public class ItemHelper {
         return new ItemStack(NBTHelper.fromString(s));
     }
 
-    public static List<ItemStack> getStacks(Item item, int amount) {
+    public static List<ItemStack> getStacks(Item item, int amount, int meta) {
         List<ItemStack> stacks = Lists.newArrayList();
         int maxStackSize = new ItemStack(item).getMaxStackSize();
 
@@ -32,8 +32,8 @@ public class ItemHelper {
         int completeStacks = (int) Math.floor(amount / maxStackSize);
         int leftOver = amount - (completeStacks * maxStackSize);
 
-        for (int i = 0; i < completeStacks; i++) stacks.add(new ItemStack(item, maxStackSize));
-        stacks.add(new ItemStack(item, leftOver));
+        for (int i = 0; i < completeStacks; i++) stacks.add(new ItemStack(item, maxStackSize, meta));
+        stacks.add(new ItemStack(item, leftOver, meta));
         return stacks;
     }
 

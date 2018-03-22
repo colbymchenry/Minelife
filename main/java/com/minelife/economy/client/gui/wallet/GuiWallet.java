@@ -45,7 +45,7 @@ public class GuiWallet extends GuiContainer {
 
     @Override
     protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
-        if(ItemStack.areItemStacksEqual(slotIn.getStack(), inventoryWallet.getWalletStack()))
+        if(slotIn == null || slotIn.getStack() == null || inventoryWallet.getWalletStack() == null || ItemStack.areItemStacksEqual(slotIn.getStack(), inventoryWallet.getWalletStack()))
             return;
         super.handleMouseClick(slotIn, slotId, mouseButton, type);
     }

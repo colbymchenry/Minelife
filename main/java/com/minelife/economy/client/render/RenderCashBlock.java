@@ -1,6 +1,5 @@
 package com.minelife.economy.client.render;
 
-import com.minelife.economy.ModEconomy;
 import com.minelife.economy.tileentity.TileEntityCash;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -25,30 +24,49 @@ public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
         renderItem(Minecraft.getMinecraft(), new ItemStack(Blocks.WOODEN_PRESSURE_PLATE));
         GlStateManager.popMatrix();
 
+        ItemStack lastStack = null;
+        int hitMaxY = 0, hitMaxZ = 0;
         double xOffset = 0, yOffset = 0, zOffset = 0;
         for (int i = 0; i < te.getInventory().getSizeInventory(); i++) {
             if (te.getInventory().getStackInSlot(i).getItem() != Items.AIR) {
-                GlStateManager.pushMatrix();
-
-                GlStateManager.translate(x + 0.5 + xOffset, y + yOffset + 0.08, z + 0.28 + zOffset);
-                GlStateManager.scale(0.8, 0.4, 0.8);
-
-                GlStateManager.rotate(90, 1, 0, 0);
-
-
                 yOffset += 0.032;
                 if (yOffset >= 0.85) {
                     yOffset = 0;
                     zOffset += 0.45;
-                    if (zOffset >= 0.7) {
-                        zOffset = 0;
-                        xOffset -= 0.45;
-                    }
+                    hitMaxY++;
+
                 }
 
-                renderItem(Minecraft.getMinecraft(), te.getInventory().getStackInSlot(i));
-                GlStateManager.popMatrix();
+                if (zOffset >= 0.45) {
+                    zOffset = 0;
+                    xOffset -= 0.45;
+                    hitMaxZ++;
+                }
+
+                lastStack = te.getInventory().getStackInSlot(i);
             }
+        }
+
+        if (lastStack == null) return;
+
+        GlStateManager.pushMatrix();
+
+        GlStateManager.translate(x + 0.5, y + 0.08, z + 0.28);
+        GlStateManager.scale(0.8, (hitMaxY > 0 ? 28 : 0)+ 0.4+ (hitMaxZ > 0 ? 0 : (yOffset * 28)), 0.8);
+        GlStateManager.rotate(90, 1, 0, 0);
+
+        renderItem(Minecraft.getMinecraft(), lastStack);
+
+
+        GlStateManager.popMatrix();
+
+        if(hitMaxZ > 0) {
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(x + 0.5, y + 0.08, z + 0.28 + 0.44);
+            GlStateManager.scale(0.8, (hitMaxY > 1 ? 28 : 0) + 0.4 + (yOffset * 28), 0.8);
+            GlStateManager.rotate(90, 1, 0, 0);
+            renderItem(Minecraft.getMinecraft(), lastStack);
+            GlStateManager.popMatrix();
         }
     }
 

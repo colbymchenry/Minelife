@@ -1,5 +1,6 @@
 package com.minelife.economy.tileentity;
 
+import codechicken.lib.inventory.InventoryRange;
 import codechicken.lib.inventory.InventoryUtils;
 import com.google.common.collect.Lists;
 import com.minelife.economy.ModEconomy;
@@ -42,6 +43,54 @@ public class TileEntityCash extends MLTileEntity {
         return InventoryUtils.insertItem(this.getInventory(), stack, false);
     }
 
+    public int deposit(int amount) {
+        InventoryRange inventoryRange = new InventoryRange(this.inventory, 0, this.inventory.getSizeInventory());
+
+        int hundreds = amount / 100;
+        if (hundreds > 0) {
+            amount -= 100 * hundreds;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, hundreds, 5), false);
+            amount += 100 * didNotFit;
+        }
+
+        int fifties = amount / 50;
+        if (fifties > 0) {
+            amount -= 50 * fifties;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, fifties, 4), false);
+            amount += 50 * didNotFit;
+        }
+
+        int twenties = amount / 20;
+        if (twenties > 0) {
+            amount -= 20 * twenties;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, twenties, 3), false);
+            amount += 20 * didNotFit;
+        }
+
+        int tens = amount / 10;
+        if (tens > 0) {
+            amount -= 10 * tens;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, tens, 2), false);
+            amount += 10 * didNotFit;
+        }
+
+        int fives = amount / 5;
+        if (fives > 0) {
+            amount -= 5 * fives;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, fives, 1), false);
+            amount += 5 * didNotFit;
+        }
+
+        int ones = (amount);
+        if (ones > 0) {
+            amount -= ones;
+            int didNotFit = InventoryUtils.insertItem(inventoryRange, new ItemStack(ModEconomy.itemCash, ones, 0), false);
+            amount += didNotFit;
+        }
+
+        return amount;
+    }
+
     public List<ItemStack> withdraw(int amount) {
         List<ItemStack> cashItems = Lists.newArrayList();
         List<Integer> emptySlots = Lists.newArrayList();
@@ -50,8 +99,8 @@ public class TileEntityCash extends MLTileEntity {
             ItemStack itemStack = this.inventory.getStackInSlot(i);
             if (itemStack.getItem() == ModEconomy.itemCash) {
                 amount -= ItemCash.getAmount(itemStack);
-                cashItems.add(itemStack);
                 emptySlots.add(i);
+                cashItems.add(itemStack);
                 if (amount < 1) break;
             }
         }
@@ -60,11 +109,6 @@ public class TileEntityCash extends MLTileEntity {
 
         if (amount < 0) {
             int addBack = Math.abs(amount);
-
-            // TODO: Make sure to fix left over. So need 45, takes out 20, 20, 20, need to add 15 back
-            ItemStack lastStack = cashItems.get(cashItems.size() - 1);
-            cashItems.remove(lastStack);
-
 
             int hundreds = addBack / 100;
             if (hundreds > 0) {
@@ -103,6 +147,7 @@ public class TileEntityCash extends MLTileEntity {
             }
         }
 
+        return cashItems;
     }
 
     public int getBalance() {
@@ -119,7 +164,7 @@ public class TileEntityCash extends MLTileEntity {
         ResultSet result;
         for (Estate estate : ModRealEstate.getEstates(playerID)) {
             try {
-                result = ModRealEstate.getDatabase().query("SELECT * FROM cashpiles WHERE dimension='" + estate.getWorld().provider.getDimension() + "' " +
+                result = ModEconomy.getDatabase().query("SELECT * FROM cashpiles WHERE dimension='" + estate.getWorld().provider.getDimension() + "' " +
                         "AND x >= '" + estate.getMinimum().getX() + "' AND y >= '" + estate.getMinimum().getY() + "' " +
                         "AND z >= '" + estate.getMinimum().getZ() + "' AND x <= '" + estate.getMaximum().getX() + "' " +
                         "AND y <= '" + estate.getMaximum().getY() + "' AND z <= '" + estate.getMaximum().getZ() + "'");
@@ -131,7 +176,7 @@ public class TileEntityCash extends MLTileEntity {
                     if (tile != null && tile instanceof TileEntityCash) {
                         list.add((TileEntityCash) tile);
                     } else {
-                        ModRealEstate.getDatabase().query("DELETE FROM cashpiles WHERE dimension='" + result.getInt("dimension") + "' " +
+                        ModEconomy.getDatabase().query("DELETE FROM cashpiles WHERE dimension='" + result.getInt("dimension") + "' " +
                                 "AND x='" + result.getInt("x") + "' AND y='" + result.getInt("y") + "' " +
                                 "AND z='" + result.getInt("z") + "'");
                     }

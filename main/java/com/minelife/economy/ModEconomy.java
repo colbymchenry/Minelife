@@ -9,10 +9,14 @@ import com.minelife.Minelife;
 import com.minelife.economy.block.BlockATMBottom;
 import com.minelife.economy.block.BlockATMTop;
 import com.minelife.economy.block.BlockCash;
+import com.minelife.economy.client.gui.wallet.InventoryWallet;
 import com.minelife.economy.item.ItemATM;
 import com.minelife.economy.item.ItemCash;
 import com.minelife.economy.item.ItemCashBlock;
 import com.minelife.economy.item.ItemWallet;
+import com.minelife.economy.network.PacketOpenATM;
+import com.minelife.economy.network.PacketWithdrawATM;
+import com.minelife.economy.server.CommandEconomy;
 import com.minelife.economy.server.ServerProxy;
 import com.minelife.economy.tileentity.TileEntityATM;
 import com.minelife.economy.tileentity.TileEntityCash;
@@ -33,12 +37,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -67,6 +74,14 @@ public class ModEconomy extends MLMod {
         ResourceLocation group = null;
         GameRegistry.addShapedRecipe(name, group, new ItemStack(blockCash), "###", '#', new ItemStack(Item.getItemFromBlock(Blocks.WOODEN_PRESSURE_PLATE)));
         itemWallet.registerRecipes();
+
+        registerPacket(PacketOpenATM.Handler.class, PacketOpenATM.class, Side.CLIENT);
+        registerPacket(PacketWithdrawATM.Handler.class, PacketWithdrawATM.class, Side.SERVER);
+    }
+
+    @Override
+    public void serverStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CommandEconomy());
     }
 
     @Override
@@ -97,27 +112,90 @@ public class ModEconomy extends MLMod {
 
     // TODO: Getting cash blocks in players estates
     public static int depositCashPiles(UUID playerID, int amount) {
-
+        int totalCouldNotFit = 0;
+        for (TileEntityCash tileCash : TileEntityCash.getCashPiles(playerID)) {
+            totalCouldNotFit += tileCash.deposit(amount);
+            tileCash.sendUpdates();
+        }
+        System.out.println(totalCouldNotFit);
+        return totalCouldNotFit;
     }
 
-    public static int depositATM(UUID playerID, int amount) {
-
+    public static void depositATM(UUID playerID, int amount) {
+        int balance = getBalanceATM(playerID) + amount;
+        try {
+            ResultSet result = getDatabase().query("SELECT * FROM atm WHERE player='" + playerID.toString() + "'");
+            if(result.next()) {
+                getDatabase().query("UPDATE atm SET balance='" + balance + "' WHERE player='" + playerID.toString() + "'");
+            } else {
+                getDatabase().query("INSERT INTO atm (player, balance) VALUES ('" + playerID.toString() + "', '" + balance + "')");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static int depositInventory(EntityPlayerMP player, int amount) {
+        int totalCouldNotFit = ItemWallet.deposit(player, amount);
 
+        if(totalCouldNotFit == 0) return 0;
+
+        amount = totalCouldNotFit;
+
+        Map<Integer, ItemStack> wallets = ItemWallet.getWallets(player);
+        for (Integer integer : wallets.keySet()) {
+            InventoryWallet inventoryWallet = new InventoryWallet(wallets.get(integer));
+            totalCouldNotFit += inventoryWallet.deposit(amount);
+            inventoryWallet.writeToNBT();
+            player.inventory.setInventorySlotContents(integer, inventoryWallet.getWalletStack());
+            amount = totalCouldNotFit;
+            if(amount <= 0) break;
+        }
+
+        return totalCouldNotFit;
     }
 
     public static void withdrawCashPiles(UUID playerID, int amount) {
-
+        for (TileEntityCash tileCash : TileEntityCash.getCashPiles(playerID)) {
+            List<ItemStack> cashBack = tileCash.withdraw(amount);
+            tileCash.sendUpdates();
+        }
     }
 
     public static void withdrawATM(UUID playerID, int amount) {
-
+        int balance = getBalanceATM(playerID) - amount;
+        try {
+            ResultSet result = getDatabase().query("SELECT * FROM atm WHERE player='" + playerID.toString() + "'");
+            if(result.next()) {
+                getDatabase().query("UPDATE atm SET balance='" + balance + "' WHERE player='" + playerID.toString() + "'");
+            } else {
+                getDatabase().query("INSERT INTO atm (player, balance) VALUES ('" + playerID.toString() + "', '" + balance + "')");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void withdrawInventory(EntityPlayerMP player, int amount) {
+        List<ItemStack> stacks = ItemWallet.withdrawPlayer(player, amount);
+        amount -= ItemCash.getAmount(stacks);
 
+        if(amount <= 0) return;
+
+        Map<Integer, ItemStack> wallets = ItemWallet.getWallets(player);
+        for (Integer integer : wallets.keySet()) {
+            InventoryWallet inventoryWallet = new InventoryWallet(wallets.get(integer));
+            stacks = inventoryWallet.withdraw(amount);
+            amount -= ItemCash.getAmount(stacks);
+            if(amount <= 0) {
+                inventoryWallet.writeToNBT();
+                player.inventory.setInventorySlotContents(integer, inventoryWallet.getWalletStack());
+                break;
+            } else {
+                inventoryWallet.writeToNBT();
+                player.inventory.setInventorySlotContents(integer, inventoryWallet.getWalletStack());
+            }
+        }
     }
 
     public static int getBalanceCashPiles(UUID playerID) {

@@ -1,9 +1,13 @@
 package com.minelife.economy.network;
 
+import com.minelife.economy.client.gui.atm.GuiATMMenu;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PacketOpenATM implements IMessage {
 
@@ -28,8 +32,9 @@ public class PacketOpenATM implements IMessage {
 
     public static class Handler implements IMessageHandler<PacketOpenATM, IMessage> {
 
-        @Override
+        @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketOpenATM message, MessageContext ctx) {
+            Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiATMMenu(message.balance)));
             return null;
         }
     }
