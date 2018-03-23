@@ -22,7 +22,7 @@ public class PacketGetItemListings implements IMessage {
 
     private static final ExecutorService pool = Executors.newFixedThreadPool(1);
 
-    public static String[] options = new String[]{"Price", "Date", "Damage", "Stack Size"};
+    public static String[] options = new String[]{"Price", "Date", "Metadata", "Stack Size"};
     private int page;
     private String criteria;
     private int orderBy;
@@ -65,20 +65,20 @@ public class PacketGetItemListings implements IMessage {
             String query = "";
 
             if (!message.criteria.trim().isEmpty())
-                query += "WHERE title LIKE '%" + message.criteria + "%' ";
+                query += "WHERE title LIKE '%" + message.criteria.replace("'", "''") + "%' ";
 
             switch (message.orderBy) {
                 case 0:
                     query += "ORDER BY price";
                     break;
                 case 1:
-                    query += "ORDER BY datetime(date_published)";
+                    query += "ORDER BY datetime(datepublished)";
                     break;
                 case 2:
-                    query += "ORDER BY damage";
+                    query += "ORDER BY meta";
                     break;
                 case 3:
-                    query += "ORDER BY stack_size";
+                    query += "ORDER BY stacksize";
                     break;
             }
 
@@ -88,7 +88,7 @@ public class PacketGetItemListings implements IMessage {
             final String query_final = query;
             pool.submit(() -> {
                 try {
-                    getListings(ModMinebay.getDatabase().query("SELECT * FROM item_listings " + query_final), ModMinebay.getDatabase().query("SELECT COUNT(*) AS count FROM item_listings " + query_count), ctx.getServerHandler().player);
+                    getListings(ModMinebay.getDatabase().query("SELECT * FROM items " + query_final), ModMinebay.getDatabase().query("SELECT COUNT(*) AS count FROM items " + query_count), ctx.getServerHandler().player);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

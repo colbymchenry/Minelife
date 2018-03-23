@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 import java.awt.*;
@@ -19,7 +20,7 @@ public class GuiFakeInventory extends Gui {
 
     private GuiScreen parentScreen;
 
-    public int x, y;
+    public int x, y, slotColor = 0x8B8B8B;
     private int slotWidth, slotHeight;
     private Map<Integer, Vec2d> slots;
 
@@ -51,7 +52,7 @@ public class GuiFakeInventory extends Gui {
 
     public void drawInventory(Minecraft mc, int mouseX, int mouseY) {
         slots.forEach((slot, pos) -> {
-            drawSlot(x + (int) pos.x - 1, y + (int) pos.y - 1, slotWidth - 1, slotHeight - 1, 0x8B8B8B);
+            drawSlot(x + (int) pos.x - 1, y + (int) pos.y - 1, slotWidth - 1, slotHeight - 1, slotColor);
             if (mc.player.inventory.getStackInSlot(slot) != null && mc.player.inventory.getStackInSlot(slot).getItem() != Items.AIR)
                 renderItemInventory(mc.player.inventory.getStackInSlot(slot), x + (int) pos.x, y + (int) pos.y, true);
             drawSlotHover(x + (int) pos.x - 1, y + (int) pos.y - 1, slotWidth - 1, slotHeight - 1, mouseX, mouseY);

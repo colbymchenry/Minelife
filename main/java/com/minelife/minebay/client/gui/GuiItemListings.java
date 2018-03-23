@@ -1,12 +1,21 @@
 package com.minelife.minebay.client.gui;
 
+import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.minebay.ItemListing;
 import com.minelife.minebay.network.PacketGetItemListings;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiDropDown;
+import com.minelife.util.client.GuiHelper;
 import com.minelife.util.client.GuiLoadingAnimation;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.io.IOException;
@@ -19,16 +28,19 @@ public class GuiItemListings extends GuiMinebay {
     private GuiScrollableListing guiListings;
     private GuiLoadingAnimation guiLoading;
     private GuiDropDown guiSort, guiPage;
-    private GuiTextField searchField;
-    private boolean ascend = true;
+    private static GuiTextField searchField;
+    private static boolean ascend = true;
     private List<ItemListing> itemListings;
     private int pageCount = 0;
+    private GuiMinebayBtn sellBtn;
+    private Rectangle sortRec;
 
     public GuiItemListings() {
         Minelife.getNetwork().sendToServer(new PacketGetItemListings(0, " ", 0, ascend));
         if (guiPage != null) guiPage.selected = 0;
         if (guiSort != null) guiSort.selected = 0;
         if (searchField != null) searchField.setText("");
+        ascend = true;
     }
 
     public GuiItemListings(List<ItemListing> itemListings, int pageCount) {
@@ -39,20 +51,107 @@ public class GuiItemListings extends GuiMinebay {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        if (this.itemListings == null) {
-            this.guiLoading.drawLoadingAnimation();
+
+        if (guiListings == null) {
+            guiLoading.drawLoadingAnimation();
             return;
         }
+
+        Color color = new Color(72, 0, 70, 200);
+        this.drawGradientRect(guiLeft - 2, guiTop - 2, guiLeft + xSize, guiTop + 25, color.hashCode(), color.hashCode());
+
+
+        this.sellBtn.drawButton(mc, mouseX, mouseY, partialTicks);
+
+        boolean hovering = sortRec.contains(mouseX, mouseY);
+        GuiHelper.drawDefaultBackground(sortRec.x, sortRec.y, sortRec.width, sortRec.height, hovering ? 0xe600e4 : 0xcb00cb);
+
+        mc.getTextureManager().bindTexture(texSort);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(sortRec.x + (!ascend ? 1.5f : 3f), sortRec.y + 2.5f, 0);
+        GlStateManager.translate(8, 8, 0);
+        GlStateManager.rotate(ascend ? 180 : 0, 0, 0, 1);
+        GlStateManager.translate(-8, -8, 0);
+        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, 16, 16, 16, 16);
+        GlStateManager.popMatrix();
+
+        if (this.itemListings.isEmpty()) {
+            String msg = TextFormatting.BOLD + "Uh-Oh! No item were found :'(";
+            int msg_width = mc.fontRenderer.getStringWidth(msg);
+            mc.fontRenderer.drawStringWithShadow(msg, (this.width - msg_width) / 2, guiTop + ((ySize - mc.fontRenderer.FONT_HEIGHT) / 2), 0xFFFFFF);
+            return;
+        }
+
+        this.guiListings.draw(mouseX, mouseY, Mouse.getDWheel());
+
+        GlStateManager.disableLighting();
+        guiSort.draw(mc, mouseX, mouseY);
+        guiPage.draw(mc, mouseX, mouseY);
+        this.mc.getTextureManager().bindTexture(texSearch);
+        Gui.drawModalRectWithCustomSizedTexture(guiLeft + searchField.getWidth() + 13, searchField.y + 3, 0, 0, 16, 16, 16, 16);
+        searchField.drawTextBox();
+
+        if (this.guiListings.getHoveringStack() != null) renderToolTip(this.guiListings.getHoveringStack(), mouseX, mouseY);
     }
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
+
+        if (guiListings != null)
+            this.guiListings.keyTyped(typedChar, keyCode);
+
+        if (searchField != null) {
+            if (searchField.isFocused() && keyCode == Keyboard.KEY_RETURN) {
+                guiSort.selected = 0;
+                guiPage.selected = 0;
+                Minelife.getNetwork().sendToServer(new PacketGetItemListings(NumberConversions.toInt(guiPage.options[guiPage.selected]) - 1, searchField.getText(), guiSort.selected, ascend));
+            }
+            searchField.textboxKeyTyped(typedChar, keyCode);
+        }
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+        if (guiSort != null) {
+            int selected = guiSort.selected;
+            if (guiSort.mouseClicked(mc, mouseX, mouseY)) {
+                if (selected != guiSort.selected) {
+                    Minelife.getNetwork().sendToServer(new PacketGetItemListings(NumberConversions.toInt(guiPage.options[guiPage.selected]) - 1,
+                            searchField.getText(), guiSort.selected, ascend));
+                }
+                return;
+            }
+        }
+
+        if (guiPage != null) {
+            int selected = guiPage.selected;
+            if (guiPage.mouseClicked(mc, mouseX, mouseY)) {
+                if (selected != guiPage.selected) {
+                    Minelife.getNetwork().sendToServer(new PacketGetItemListings(NumberConversions.toInt(guiPage.options[guiPage.selected]) - 1,
+                            searchField.getText(), guiSort.selected, ascend));
+                }
+                return;
+            }
+        }
+
+        if (searchField != null) searchField.mouseClicked(mouseX, mouseY, mouseButton);
+
+        if (this.sellBtn != null)
+            if (this.sellBtn.mousePressed(mc, mouseX, mouseY))
+                Minecraft.getMinecraft().displayGuiScreen(new GuiSellItem());
+
+        if (mouseX >= guiLeft + searchField.getWidth() + 13 && mouseX <= guiLeft + searchField.getWidth() + 13 + 16) {
+            if (mouseY >= searchField.y + 3 && mouseY <= searchField.y + 3 + 16) {
+                guiPage.selected = 0;
+                Minelife.getNetwork().sendToServer(new PacketGetItemListings(NumberConversions.toInt(guiPage.options[guiPage.selected]) - 1, searchField.getText(), guiSort.selected, ascend));
+            }
+        }
+
+        if (sortRec.contains(mouseX, mouseY)) {
+            ascend = !ascend;
+            Minelife.getNetwork().sendToServer(new PacketGetItemListings(NumberConversions.toInt(guiPage.options[guiPage.selected]) - 1, searchField.getText(), guiSort.selected, ascend));
+        }
     }
 
     @Override
@@ -65,43 +164,48 @@ public class GuiItemListings extends GuiMinebay {
         }
 
         this.guiListings = new GuiScrollableListing(mc, this.guiLeft, this.guiTop + 26, this.xSize, this.ySize - 30, itemListings);
-        this.searchField = new GuiTextField(0, mc.fontRenderer, this.guiLeft + 1, this.guiTop + 1, (xSize / 2) - 27, 20);
 
-        this.sell_btn = new CustomButton(0, this.left + this.bg_width - 35, this.top + 1, "Sell", fontRendererObj);
-
-        if (dropdown_sort == null)
-            dropdown_sort = new GuiDropDown(search_field.xPosition + search_field.width + 30, search_field.yPosition + 3, 60, 13, PacketListings.options);
+        if (searchField == null)
+            searchField = new GuiTextField(0, mc.fontRenderer, this.guiLeft + 1, this.guiTop + 1, (xSize / 2) - 27, 20);
         else {
-            dropdown_sort.xPosition = search_field.xPosition + search_field.width + 30;
-            dropdown_sort.yPosition = search_field.yPosition + 3;
+            searchField.x = this.guiLeft + 1;
+            searchField.y = this.guiTop + 1;
+            searchField.width = (xSize / 2) - 27;
         }
-        dropdown_sort.color_bg = new Color(206, 0, 204);
-        dropdown_sort.color_highlight = dropdown_sort.color_bg.darker().darker();
 
-        this.sort_x = dropdown_sort.xPosition + dropdown_sort.width + 5;
-        this.sort_y = dropdown_sort.yPosition - 3;
-        this.sort_width = 20;
-        this.sort_height = 20;
 
-        List<String> page_list = Lists.newArrayList();
-        for (int i = 1; i < pages + 1; i++) page_list.add("" + i);
+        this.sellBtn = new GuiMinebayBtn(0, this.guiLeft + this.xSize - 35, this.guiTop + 1, "Sell", fontRenderer);
 
-        if (pages == 0) page_list.add("1");
-
-        if (dropdown_page == null)
-            dropdown_page = new GuiDropDown(this.sort_x + this.sort_width + 6, dropdown_sort.yPosition, 20, 13, page_list.toArray(new String[page_list.size()]));
+        if (guiSort == null)
+            guiSort = new GuiDropDown(searchField.x + searchField.width + 30, searchField.y + 3, 60, 13, PacketGetItemListings.options);
         else {
-            dropdown_page.xPosition = this.sort_x + this.sort_width + 6;
-            dropdown_page.yPosition = dropdown_sort.yPosition;
-            dropdown_page.options = page_list.toArray(new String[page_list.size()]);
+            guiSort.x = searchField.x + searchField.width + 30;
+            guiSort.y = searchField.y + 3;
         }
-        dropdown_page.color_bg = new Color(206, 0, 204);
-        dropdown_page.color_highlight = dropdown_page.color_bg.darker().darker();
+        guiSort.colorBG = new Color(206, 0, 204);
+        guiSort.colorHighlight = guiSort.colorBG.darker().darker();
+
+        sortRec = new Rectangle(guiSort.x + guiSort.width + 5, guiSort.y - 3, 20, 20);
+
+        List<String> pageList = Lists.newArrayList();
+        for (int i = 1; i < this.pageCount + 1; i++) pageList.add("" + i);
+
+        if (this.pageCount == 0) pageList.add("1");
+
+        if (guiPage == null)
+            guiPage = new GuiDropDown(this.sortRec.x + this.sortRec.width + 6, guiSort.y, 20, 13, pageList.toArray(new String[pageList.size()]));
+        else {
+            guiPage.x = this.sortRec.x + this.sortRec.width + 6;
+            guiPage.y = guiSort.y;
+            guiPage.options = pageList.toArray(new String[pageList.size()]);
+        }
+        guiPage.colorBG = new Color(206, 0, 204);
+        guiPage.colorHighlight = guiPage.colorBG.darker().darker();
     }
 
     @Override
     public void updateScreen() {
-        if (this.searchField != null) this.searchField.updateCursorCounter();
+        if (searchField != null) searchField.updateCursorCounter();
     }
 
 }

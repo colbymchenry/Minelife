@@ -23,7 +23,7 @@ public class GuiHelper {
     };
 
     public static void drawRect(int x, int y, int width, int height) {
-//        helperScreen.drawTexturedModalRect(x, y, 0, 0, width, height);
+        helperScreen.drawTexturedModalRect(x, y, 0, 0, width, height);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
@@ -81,7 +81,6 @@ public class GuiHelper {
 
         GlStateManager.popMatrix();
 
-        GlStateManager.enableLighting();
         GlStateManager.enableTexture2D();
         GlStateManager.color(1, 1, 1, 1);
     }

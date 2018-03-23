@@ -1,6 +1,7 @@
 package com.minelife.minebay;
 
 import com.minelife.util.DateHelper;
+import com.minelife.util.ItemHelper;
 import com.minelife.util.NBTHelper;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiFakeInventory;
@@ -11,6 +12,8 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,21 +36,21 @@ public class ItemListing extends Listing {
 
     public ItemListing(ResultSet result) throws SQLException {
         super(UUID.fromString(result.getString("uuid")), UUID.fromString(result.getString("seller")), result.getInt("price"), result.getString("title"), result.getString("description"));
-        this.datePublished = DateHelper.stringToDate(result.getString("datePublished"));
-        this.stack = new ItemStack(Objects.requireNonNull(NBTHelper.fromString(result.getString("item"))));
+        this.datePublished = DateHelper.stringToDate(result.getString("datepublished"));
+        this.stack = new ItemStack(Objects.requireNonNull(NBTHelper.fromString(result.getString("itemstack"))));
         this.storage = result.getInt("storage");
     }
 
     @Override
     public int getHeight() {
-        return 20;
+        return 25;
     }
 
     @Override
     public void draw(int mouse_x, int mouse_y) {
         GlStateManager.color(1, 1, 1, 1);
-        GuiHelper.renderItem(stack, ItemCameraTransforms.TransformType.GUI);
-        getFontRenderer().drawStringWithShadow("$" + NumberConversions.format(this.getPrice()), 20, 10, 0xFFFFFF);
+        GuiFakeInventory.renderItemInventory(stack, 5, 5, true);
+        getFontRenderer().drawStringWithShadow("$" + NumberConversions.format(this.getPrice()), 30, 9, 0xFFFFFF);
     }
 
     @Override
@@ -93,6 +96,42 @@ public class ItemListing extends Listing {
         Date datePublished = DateHelper.stringToDate(ByteBufUtils.readUTF8String(buf));
         int storage = buf.readInt();
         return new ItemListing(uniqueID, sellerID, price, title, description, datePublished, itemStack, storage);
+    }
+
+    public void save()
+    {
+        try {
+
+            ResultSet result =  ModMinebay.getDatabase().query("SELECT * FROM items WHERE uuid='" + getUniqueID().toString() + "'");
+
+            if(result.next()) {
+                ModMinebay.getDatabase().query("UPDATE items SET " +
+                        "seller='" + getSellerID().toString() + "'," +
+                        "price='" + getPrice() + "'," +
+                        "title='" + getTitle() + "'," +
+                        "description='" + getDescription() + "'," +
+                        "itemstack='" + ItemHelper.itemToString(getItemStack()) + "'," +
+                        "meta='" + getItemStack().getMetadata() + "'," +
+                        "stacksize='" + getItemStack().getCount() + "'," +
+                        "datepublished='" + DateHelper.dateToString(datePublished) + "'" +
+                        "storage='" + storage + "'" +
+                        "WHERE uuid='" + getUniqueID().toString() + "'");
+            } else {
+                ModMinebay.getDatabase().query("INSERT INTO items (uuid, seller, price, title, description, itemstack, meta, stacksize, datepublished, storage) VALUES (" +
+                        "'" + getUniqueID().toString() + "'," +
+                        "'" + getSellerID().toString() + "'," +
+                        "'" + getPrice() + "'," +
+                        "'" + getTitle().replace("'", "''") + "'," +
+                        "'" + getDescription().replace("'", "''") + "'," +
+                        "'" + ItemHelper.itemToString(getItemStack()) + "'," +
+                        "'" + getItemStack().getMetadata() + "'," +
+                        "'" + getItemStack().getCount() + "'," +
+                        "'" + DateHelper.dateToString(datePublished) + "'," +
+                        "'" + getAmountStored() + "')");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

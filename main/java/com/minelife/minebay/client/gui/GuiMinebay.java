@@ -5,6 +5,7 @@ import com.minelife.util.client.GuiHelper;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class GuiMinebay extends GuiScreen {
         this.drawDefaultBackground();
         GuiHelper.drawDefaultBackground(this.guiLeft - 5, this.guiTop - 5, this.xSize + 7, this.ySize + 7, 0x8F008D);
         this.mc.getTextureManager().bindTexture(texLogo);
-        Gui.drawModalRectWithCustomSizedTexture(this.guiLeft + (this.xSize - (this.logoWidth / 2)) / 2, this.guiTop - (this.logoHeight / 2) - 3, 0, 0, this.logoWidth / 2, this.logoHeight / 2, this.logoWidth, this.logoHeight);
+        Gui.drawModalRectWithCustomSizedTexture(this.guiLeft + (this.xSize - (this.logoWidth / 2)) / 2, this.guiTop - (this.logoHeight / 2) - 3, 0, 0, this.logoWidth / 2, this.logoHeight / 2, this.logoWidth / 2, this.logoHeight / 2);
     }
 
     @Override

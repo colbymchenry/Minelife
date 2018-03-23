@@ -2,7 +2,9 @@ package com.minelife.minebay.network;
 
 import com.google.common.collect.Lists;
 import com.minelife.minebay.ItemListing;
+import com.minelife.minebay.client.gui.GuiItemListings;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -43,6 +45,9 @@ public class PacketSendItemListings implements IMessage {
 
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketSendItemListings message, MessageContext ctx) {
+            Minecraft.getMinecraft().addScheduledTask(() ->
+                    Minecraft.getMinecraft().displayGuiScreen(new GuiItemListings(message.listings, message.pages))
+            );
             return null;
         }
     }
