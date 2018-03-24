@@ -5,18 +5,16 @@ import com.minelife.util.ItemHelper;
 import com.minelife.util.NBTHelper;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiFakeInventory;
-import com.minelife.util.client.GuiHelper;
+import com.minelife.util.server.NameFetcher;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
@@ -50,7 +48,9 @@ public class ItemListing extends Listing {
     public void draw(int mouse_x, int mouse_y) {
         GlStateManager.color(1, 1, 1, 1);
         GuiFakeInventory.renderItemInventory(stack, 5, 5, true);
-        getFontRenderer().drawStringWithShadow("$" + NumberConversions.format(this.getPrice()), 30, 9, 0xFFFFFF);
+        getFontRenderer().drawStringWithShadow("$" + NumberConversions.format(getPrice()), 30, 9, 0xFFFFFF);
+        getFontRenderer().drawStringWithShadow(NameFetcher.get(getSellerID()), 110, 9, 0xFFFFFF);
+        getFontRenderer().drawStringWithShadow(DateHelper.getDiffHours(Calendar.getInstance().getTime(), datePublished) + " Hours Left", 225, 9, 0xFFFFFF);
     }
 
     @Override
@@ -73,6 +73,7 @@ public class ItemListing extends Listing {
 
     public void setAmountStored(int amount) {
         this.storage = amount;
+        this.save();
     }
 
     public void toBytes(ByteBuf buf) {
@@ -108,12 +109,12 @@ public class ItemListing extends Listing {
                 ModMinebay.getDatabase().query("UPDATE items SET " +
                         "seller='" + getSellerID().toString() + "'," +
                         "price='" + getPrice() + "'," +
-                        "title='" + getTitle() + "'," +
-                        "description='" + getDescription() + "'," +
+                        "title='" + getTitle().replace("'", "''") + "'," +
+                        "description='" + getDescription().replace("'", "''") + "'," +
                         "itemstack='" + ItemHelper.itemToString(getItemStack()) + "'," +
                         "meta='" + getItemStack().getMetadata() + "'," +
                         "stacksize='" + getItemStack().getCount() + "'," +
-                        "datepublished='" + DateHelper.dateToString(datePublished) + "'" +
+                        "datepublished='" + DateHelper.dateToString(datePublished) + "'," +
                         "storage='" + storage + "'" +
                         "WHERE uuid='" + getUniqueID().toString() + "'");
             } else {
@@ -132,6 +133,15 @@ public class ItemListing extends Listing {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setStorage(int amount) {
+        this.storage = amount;
+        save();
+    }
+
+    public void delete() throws SQLException {
+        ModMinebay.getDatabase().query("DELETE FROM items WHERE uuid='" + getUniqueID().toString() + "'");
     }
 
 }

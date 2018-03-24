@@ -38,7 +38,7 @@ public class EstateListener {
 
         if (estate == null) {
             if (PLAYERS_ESTATE.containsKey(player)) {
-                if (PLAYERS_ESTATE.get(player).getOutro() != null)
+                if (PLAYERS_ESTATE.get(player).getOutro() != null && !PLAYERS_ESTATE.get(player).getOutro().trim().isEmpty())
                     player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(PLAYERS_ESTATE.get(player).getOutro(), '&')));
                 PLAYERS_ESTATE.remove(player);
             }
@@ -46,16 +46,16 @@ public class EstateListener {
         }
 
         if (!PLAYERS_ESTATE.containsKey(player)) {
-            if (estate.getIntro() != null)
+            if (estate.getIntro() != null && !estate.getIntro().trim().isEmpty())
                 player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(estate.getIntro(), '&')));
             PLAYERS_ESTATE.put(player, estate);
             return;
         }
 
         if (PLAYERS_ESTATE.get(player) != estate) {
-            if (PLAYERS_ESTATE.get(player).getOutro() != null)
+            if (PLAYERS_ESTATE.get(player).getOutro() != null && !PLAYERS_ESTATE.get(player).getOutro().trim().isEmpty())
                 player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(PLAYERS_ESTATE.get(player).getOutro(), '&')));
-            if (estate.getIntro() != null)
+            if (estate.getIntro() != null && !estate.getIntro().trim().isEmpty())
                 player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(estate.getIntro(), '&')));
             PLAYERS_ESTATE.put(player, estate);
         }

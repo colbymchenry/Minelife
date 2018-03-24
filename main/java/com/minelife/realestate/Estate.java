@@ -178,27 +178,29 @@ public class Estate implements Comparable<Estate> {
     }
 
     public String getIntro() {
-        return this.tagCompound.hasKey("Intro") ? this.tagCompound.getString("Intro") : "";
+        return this.tagCompound.hasKey("Intro") ? this.tagCompound.getString("Intro") : null;
     }
 
     public String getOutro() {
-        return this.tagCompound.hasKey("Outro") ? this.tagCompound.getString("Outro") : "";
+        return this.tagCompound.hasKey("Outro") ? this.tagCompound.getString("Outro") : null;
     }
 
     public void setIntro(String msg) {
+        if(msg == null) return;
         this.tagCompound.setString("Intro", msg);
     }
 
     public void setOutro(String msg) {
+        if(msg == null) return;
         this.tagCompound.setString("Outro", msg);
     }
 
     public void save() throws SQLException {
         ResultSet result = ModRealEstate.getDatabase().query("SELECT * FROM estates WHERE uuid='" + this.getUniqueID().toString() + "'");
         if (result.next())
-            ModRealEstate.getDatabase().query("UPDATE estates SET tagCompound='" + this.tagCompound.toString() + "' WHERE uuid='" + getUniqueID().toString() + "'");
+            ModRealEstate.getDatabase().query("UPDATE estates SET tagCompound='" + this.tagCompound.toString().replace("'", "''") + "' WHERE uuid='" + getUniqueID().toString() + "'");
         else
-            ModRealEstate.getDatabase().query("INSERT INTO estates (uuid, tagCompound) VALUES ('" + this.getUniqueID().toString() + "', '" + this.tagCompound.toString() + "')");
+            ModRealEstate.getDatabase().query("INSERT INTO estates (uuid, tagCompound) VALUES ('" + this.getUniqueID().toString() + "', '" + this.tagCompound.toString().replace("'", "''") + "')");
     }
 
     public void delete() throws SQLException {

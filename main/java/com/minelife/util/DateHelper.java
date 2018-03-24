@@ -23,4 +23,29 @@ public class DateHelper {
         return null;
     }
 
+    public static long getDiffSeconds(Date startDate, Date endDate) {
+        long diffInMilliSec = endDate.getTime() - startDate.getTime();
+        return (diffInMilliSec / 1000) % 60;
+    }
+
+    public static long getDiffMinutes(Date startDate, Date endDate) {
+        long diffInMilliSec = endDate.getTime() - startDate.getTime();
+        return (diffInMilliSec / (1000 * 60)) % 60;
+    }
+
+    public static long getDiffHours(Date startDate, Date endDate) {
+        long diffInMilliSec = endDate.getTime() - startDate.getTime();
+        return (diffInMilliSec / (1000 * 60 * 60)) % 24;
+    }
+
+    public static long getDiffDays(Date startDate, Date endDate) {
+        long diffInMilliSec = endDate.getTime() - startDate.getTime();
+        return (diffInMilliSec / (1000 * 60 * 60 * 24)) % 365;
+    }
+
+    public static long getDiffYears(Date startDate, Date endDate) {
+        long diffInMilliSec = endDate.getTime() - startDate.getTime();
+        return (diffInMilliSec / (1000l * 60 * 60 * 24 * 365));
+    }
+
 }

@@ -28,7 +28,7 @@ public class GuiDropDown extends Gui {
         this.width = width;
         this.height = height;
         this.options = options;
-        this.colorHighlight = this.colorHighlight.darker();
+        this.colorHighlight = this.color.darker();
     }
 
     public void draw(Minecraft mc, int mouse_x, int mouse_y) {

@@ -72,15 +72,14 @@ public class CommandEconomy extends MLCommand {
                     }
                     if (atm) ModEconomy.withdrawATM(playerUUID, NumberConversions.toInt(args[3]));
                     else if (cash) ModEconomy.withdrawCashPiles(playerUUID, NumberConversions.toInt(args[3]));
-                    else if(inventory) {
+                    else if (inventory) {
                         EntityPlayerMP player = PlayerHelper.getPlayer(playerUUID);
-                        if(player == null) {
+                        if (player == null) {
                             sendMessage(sender, "Player is not online.");
                             return;
                         }
-                        int couldNotFit =  ModEconomy.withdrawInventory(player, NumberConversions.toInt(args[3]));
-                        System.out.println(couldNotFit);
-                        if(couldNotFit > 0) {
+                        int couldNotFit = ModEconomy.withdrawInventory(player, NumberConversions.toInt(args[3]));
+                        if (couldNotFit > 0) {
                             sendMessage(sender, TextFormatting.RED + "$" + NumberConversions.format(couldNotFit) + TextFormatting.GOLD + " could not fit and was deposited into the player's ATM account.");
                             ModEconomy.depositATM(playerUUID, couldNotFit);
                         }
@@ -94,19 +93,18 @@ public class CommandEconomy extends MLCommand {
                     if (atm) ModEconomy.depositATM(playerUUID, NumberConversions.toInt(args[3]));
                     else if (cash) {
                         int couldNotFit = ModEconomy.depositCashPiles(playerUUID, NumberConversions.toInt(args[3]));
-                        if(couldNotFit > 0) {
+                        if (couldNotFit > 0) {
                             sendMessage(sender, TextFormatting.RED + "$" + NumberConversions.format(couldNotFit) + TextFormatting.GOLD + " could not fit and was deposited into the player's ATM account.");
                             ModEconomy.depositATM(playerUUID, couldNotFit);
                         }
-                    }
-                    else if(inventory) {
+                    } else if (inventory) {
                         EntityPlayerMP player = PlayerHelper.getPlayer(playerUUID);
-                        if(player == null) {
+                        if (player == null) {
                             sendMessage(sender, "Player is not online.");
                             return;
                         }
                         int couldNotFit = ModEconomy.depositInventory(player, NumberConversions.toInt(args[3]));
-                        if(couldNotFit > 0) {
+                        if (couldNotFit > 0) {
                             sendMessage(sender, TextFormatting.RED + "$" + NumberConversions.format(couldNotFit) + TextFormatting.GOLD + " could not fit and was deposited into the player's ATM account.");
                             ModEconomy.depositATM(playerUUID, couldNotFit);
                         }
@@ -119,7 +117,17 @@ public class CommandEconomy extends MLCommand {
                     }
                     break;
                 case "balance":
-
+                    if (atm) sendMessage(sender, "$" + NumberConversions.format(ModEconomy.getBalanceATM(playerUUID)));
+                    else if (cash)
+                        sendMessage(sender, "$" + NumberConversions.format(ModEconomy.getBalanceCashPiles(playerUUID)));
+                    else if (inventory) {
+                        EntityPlayerMP player = PlayerHelper.getPlayer(playerUUID);
+                        if (player == null) {
+                            sendMessage(sender, "Player is not online.");
+                            return;
+                        }
+                        sendMessage(sender, "$" + NumberConversions.format(ModEconomy.getBalanceInventory(player)));
+                    }
                     break;
                 default:
                     getUsage(sender);

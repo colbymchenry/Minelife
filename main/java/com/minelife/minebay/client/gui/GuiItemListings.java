@@ -91,7 +91,8 @@ public class GuiItemListings extends GuiMinebay {
         Gui.drawModalRectWithCustomSizedTexture(guiLeft + searchField.getWidth() + 13, searchField.y + 3, 0, 0, 16, 16, 16, 16);
         searchField.drawTextBox();
 
-        if (this.guiListings.getHoveringStack() != null) renderToolTip(this.guiListings.getHoveringStack(), mouseX, mouseY);
+        if (this.guiListings.getHoveringStack() != null)
+            renderToolTip(this.guiListings.getHoveringStack(), mouseX, mouseY);
     }
 
     @Override
@@ -182,6 +183,7 @@ public class GuiItemListings extends GuiMinebay {
             guiSort.x = searchField.x + searchField.width + 30;
             guiSort.y = searchField.y + 3;
         }
+
         guiSort.colorBG = new Color(206, 0, 204);
         guiSort.colorHighlight = guiSort.colorBG.darker().darker();
 

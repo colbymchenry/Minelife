@@ -2,6 +2,7 @@ package com.minelife.minebay;
 
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
+import com.minelife.minebay.network.PacketBuyItem;
 import com.minelife.minebay.network.PacketGetItemListings;
 import com.minelife.minebay.network.PacketSellItem;
 import com.minelife.minebay.network.PacketSendItemListings;
@@ -17,6 +18,7 @@ public class ModMinebay extends MLMod {
         registerPacket(PacketGetItemListings.Handler.class, PacketGetItemListings.class, Side.SERVER);
         registerPacket(PacketSendItemListings.Handler.class, PacketSendItemListings.class, Side.CLIENT);
         registerPacket(PacketSellItem.Handler.class, PacketSellItem.class, Side.SERVER);
+        registerPacket(PacketBuyItem.Handler.class, PacketBuyItem.class, Side.SERVER);
     }
 
     @Override

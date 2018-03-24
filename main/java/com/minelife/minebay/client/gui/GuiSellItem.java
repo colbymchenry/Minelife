@@ -6,6 +6,7 @@ import com.minelife.minebay.network.PacketSellItem;
 import com.minelife.util.ItemHelper;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiFakeInventory;
+import com.minelife.util.client.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
@@ -45,25 +46,26 @@ public class GuiSellItem extends GuiMinebay {
     @Override
     public void drawScreen(int mouse_x, int mouse_y, float f) {
         super.drawScreen(mouse_x, mouse_y, f);
-        fakeInventory.drawInventory(mc, mouse_x, mouse_y);
-
-        RenderHelper.enableGUIStandardItemLighting();
 
         int middle = xSize / 2;
         int item_render_width = 60;
         int item_render_x = guiLeft + ((middle - item_render_width) / 2);
-        // draw item rendering background
-        Color color = new Color(64, 0, 62, 200);
-        this.drawGradientRect(item_render_x, guiTop + 10, item_render_x + item_render_width, guiTop + 10 + 60, color.hashCode(), color.hashCode());
+
+        GlStateManager.disableTexture2D();
+        GlStateManager.color(64 / 255f, 0, 62 / 255f, 188f/255f);
+        GuiHelper.drawRect(item_render_x, guiTop + 10, 60, 60);
+        GlStateManager.enableTexture2D();
+
+        fakeInventory.drawInventory(mc, mouse_x, mouse_y);
 
         // render selected item
         if (itemToSale != null) {
             GlStateManager.pushMatrix();
-            GlStateManager.translate(this.guiLeft + 54, this.guiTop + 17, this.zLevel - 200);
+            GlStateManager.translate(this.guiLeft + 54, this.guiTop + 16, this.zLevel - 200);
             GlStateManager.translate(0.5, 0.5, 0.5);
             GlStateManager.scale(3, 3, 3);
             GlStateManager.translate(-0.5, -0.5, -0.5);
-            GuiFakeInventory.renderItemInventory(this.itemToSale, 0, 0, false);
+            GuiFakeInventory.renderItemInventory(this.itemToSale, 0, 0, true);
             GlStateManager.popMatrix();
         }
 
@@ -73,11 +75,10 @@ public class GuiSellItem extends GuiMinebay {
         storageField.drawTextBox();
         priceField.drawTextBox();
         stackSizeField.drawTextBox();
-        fontRenderer.drawString("Price per Item: ", priceField.x, priceField.y - 10, 0xFFFFFF);
+        fontRenderer.drawString("Price: ", priceField.x, priceField.y - 10, 0xFFFFFF);
         fontRenderer.drawString("Amount to Store: ", storageField.x, storageField.y - 10, 0xFFFFFF);
         fontRenderer.drawString("Stack Size: ", stackSizeField.x, stackSizeField.y - 10, 0xFFFFFF);
 
-        RenderHelper.enableGUIStandardItemLighting();
         sellBtn.drawButton(mc, mouse_x, mouse_y, f);
 
         if (itemToSale != null) {
@@ -146,8 +147,15 @@ public class GuiSellItem extends GuiMinebay {
 
         if ((key_id == Keyboard.KEY_BACK || NumberConversions.isInt(String.valueOf(key_char))) &&
                 NumberConversions.toInt(stackSizeField.getText() + String.valueOf(key_char)) <= itemToSale.getMaxStackSize() &&
-                NumberConversions.toInt(stackSizeField.getText() + String.valueOf(key_char)) <= NumberConversions.toInt(storageField.getText()))
+                NumberConversions.toInt(stackSizeField.getText() + String.valueOf(key_char)) <= NumberConversions.toInt(storageField.getText())) {
             stackSizeField.textboxKeyTyped(key_char, key_id);
+            if (itemToSale != null) {
+                if (NumberConversions.toInt(stackSizeField.getText()) <= 0)
+                    itemToSale.setCount(1);
+                else
+                    itemToSale.setCount(NumberConversions.toInt(stackSizeField.getText()));
+            }
+        }
     }
 
     private void populateStacksList() {
