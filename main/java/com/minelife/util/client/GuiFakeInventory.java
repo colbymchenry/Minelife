@@ -79,6 +79,10 @@ public class GuiFakeInventory extends Gui {
 
     private static final RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
 
+    public static void renderItem(Minecraft mc, ItemStack item, ItemCameraTransforms.TransformType transformType) {
+        mc.getItemRenderer().renderItem(mc.player, item, transformType);
+    }
+
     public static void renderItem3D(ItemStack itemStack) {
         GlStateManager.pushMatrix();
         GlStateManager.scale(0.5f, 0.5f, 0.5f);

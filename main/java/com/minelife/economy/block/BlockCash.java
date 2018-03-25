@@ -50,6 +50,8 @@ public class BlockCash extends BlockContainer {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if(hand != EnumHand.MAIN_HAND) return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+
         if(!worldIn.isRemote && playerIn.isSneaking())
             playerIn.openGui(Minelife.getInstance(), GuiHandler.CASH_BLOCK_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);

@@ -135,7 +135,8 @@ public class GuiSellItem extends GuiMinebay {
 
         super.keyTyped(key_char, key_id);
 
-        if (key_id == Keyboard.KEY_BACK || priceField.isFocused() && NumberConversions.isInt(priceField.getText() + key_char))
+        if (key_id == Keyboard.KEY_BACK || priceField.isFocused() && NumberConversions.isInt(priceField.getText() + key_char)
+                && NumberConversions.toInt(priceField.getText() + key_char) > 0)
             priceField.textboxKeyTyped(key_char, key_id);
 
         if (itemToSale == null) return;

@@ -13,7 +13,7 @@ public final class NumberConversions {
 
     private static DecimalFormat formatter = new DecimalFormat("#,###.##");
 
-    public static String format(int num) {
+    public static String format(long num) {
         return formatter.format(num);
     }
 

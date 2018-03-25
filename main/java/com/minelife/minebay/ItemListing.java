@@ -50,7 +50,11 @@ public class ItemListing extends Listing {
         GuiFakeInventory.renderItemInventory(stack, 5, 5, true);
         getFontRenderer().drawStringWithShadow("$" + NumberConversions.format(getPrice()), 30, 9, 0xFFFFFF);
         getFontRenderer().drawStringWithShadow(NameFetcher.get(getSellerID()), 110, 9, 0xFFFFFF);
-        getFontRenderer().drawStringWithShadow(DateHelper.getDiffHours(Calendar.getInstance().getTime(), datePublished) + " Hours Left", 225, 9, 0xFFFFFF);
+        long diffHours = DateHelper.getDiffHours(Calendar.getInstance().getTime(), datePublished);
+        long diffDays = DateHelper.getDiffDays(Calendar.getInstance().getTime(), datePublished);
+        String displayString = diffHours + " Hours Left";
+        if (diffDays > 0) displayString = diffDays + " Days Left";
+        getFontRenderer().drawStringWithShadow(displayString, 225, 9, 0xFFFFFF);
     }
 
     @Override
@@ -78,8 +82,8 @@ public class ItemListing extends Listing {
 
     public void toBytes(ByteBuf buf) {
         buf.writeInt(getPrice());
-        ByteBufUtils.writeUTF8String(buf,getUniqueID().toString());
-        ByteBufUtils.writeUTF8String(buf,getSellerID().toString());
+        ByteBufUtils.writeUTF8String(buf, getUniqueID().toString());
+        ByteBufUtils.writeUTF8String(buf, getSellerID().toString());
         ByteBufUtils.writeUTF8String(buf, getTitle() == null ? " " : getTitle());
         ByteBufUtils.writeUTF8String(buf, getDescription() == null ? " " : getDescription());
         ByteBufUtils.writeItemStack(buf, getItemStack());
@@ -99,13 +103,12 @@ public class ItemListing extends Listing {
         return new ItemListing(uniqueID, sellerID, price, title, description, datePublished, itemStack, storage);
     }
 
-    public void save()
-    {
+    public void save() {
         try {
 
-            ResultSet result =  ModMinebay.getDatabase().query("SELECT * FROM items WHERE uuid='" + getUniqueID().toString() + "'");
+            ResultSet result = ModMinebay.getDatabase().query("SELECT * FROM items WHERE uuid='" + getUniqueID().toString() + "'");
 
-            if(result.next()) {
+            if (result.next()) {
                 ModMinebay.getDatabase().query("UPDATE items SET " +
                         "seller='" + getSellerID().toString() + "'," +
                         "price='" + getPrice() + "'," +

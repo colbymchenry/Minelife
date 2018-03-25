@@ -12,6 +12,7 @@ import codechicken.lib.vec.Translation;
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -31,6 +32,7 @@ import java.util.Map;
 
 public class RenderATMItem implements IItemRenderer {
 
+    private static ResourceLocation texture = new ResourceLocation("minelife:textures/block/atm.png");
     private static CCModel model;
 
     public RenderATMItem() {
@@ -49,7 +51,7 @@ public class RenderATMItem implements IItemRenderer {
         GlStateManager.disableCull();
         RenderHelper.enableGUIStandardItemLighting();
         CCRenderState ccrs = CCRenderState.instance();
-        TextureUtils.changeTexture("minelife:textures/block/atm.png");
+        Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
         model.render(ccrs);
         ccrs.draw();

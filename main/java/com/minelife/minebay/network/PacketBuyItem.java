@@ -56,28 +56,33 @@ public class PacketBuyItem implements IMessage {
                 try {
                     EntityPlayerMP player = ctx.getServerHandler().player;
                     ResultSet result = ModMinebay.getDatabase().query("SELECT * FROM items WHERE uuid='" + message.listingID.toString() + "'");
-                    if(!result.next()) {
+                    if (!result.next()) {
                         player.closeScreen();
                         PacketPopup.sendPopup("Listing is no longer available.", 0xcb00cb, 0xFFFFFF, player);
                         return;
                     }
 
                     ItemListing listing = new ItemListing(result);
-                    if(listing == null) {
+                    if (listing == null) {
                         player.closeScreen();
                         PacketPopup.sendPopup("Listing is no longer available.", 0xcb00cb, 0xFFFFFF, player);
+                        return;
+                    }
+
+                    if (listing.getSellerID().equals(player.getUniqueID())) {
+                        PacketPopup.sendPopup("You cannot buy from yourself.", 0xcb00cb, 0xFFFFFF, player);
                         return;
                     }
 
                     int totalCost = message.amount * listing.getPrice();
                     int totalToBuy = message.amount * listing.getItemStack().getCount();
 
-                    if(totalToBuy > listing.getAmountStored()) {
+                    if (totalToBuy > listing.getAmountStored()) {
                         PacketPopup.sendPopup("There is not enough in storage.", 0xcb00cb, 0xFFFFFF, player);
                         return;
                     }
 
-                    if(totalCost > ModEconomy.getBalanceCashPiles(player.getUniqueID())) {
+                    if (totalCost > ModEconomy.getBalanceCashPiles(player.getUniqueID())) {
                         PacketPopup.sendPopup("Insufficient funds in cash piles.", 0xcb00cb, 0xFFFFFF, player);
                         return;
                     }
@@ -93,7 +98,7 @@ public class PacketBuyItem implements IMessage {
                         toDrop.add(stack);
                     }
 
-                    if(leftOver > 0) {
+                    if (leftOver > 0) {
                         ItemStack leftOverStack = listing.getItemStack().copy();
                         leftOverStack.setCount(leftOver);
                         toDrop.add(leftOverStack);
@@ -105,10 +110,14 @@ public class PacketBuyItem implements IMessage {
                         player.dropItemAndGetStack(entityItem);
                     }
 
-                    ModEconomy.withdrawCashPiles(player.getUniqueID(), totalCost);
-                    ModEconomy.depositCashPiles(listing.getSellerID(), totalCost);
+                    // TODO: Some may not fit into inventory, need to make sure we deposit into ATM
+                    int didNotFitWithdraw = ModEconomy.withdrawCashPiles(player.getUniqueID(), totalCost);
+                    int didNotFitDeposit = ModEconomy.depositCashPiles(listing.getSellerID(), totalCost);
 
-                    if(listing.getAmountStored() - totalToBuy < 1) {
+                    if (didNotFitDeposit > 0) ModEconomy.depositATM(listing.getSellerID(), didNotFitDeposit);
+                    if (didNotFitWithdraw > 0) ModEconomy.depositATM(player.getUniqueID(), didNotFitWithdraw);
+
+                    if (listing.getAmountStored() - totalToBuy < 1) {
                         listing.delete();
                     } else {
                         listing.setAmountStored(listing.getAmountStored() - totalToBuy);

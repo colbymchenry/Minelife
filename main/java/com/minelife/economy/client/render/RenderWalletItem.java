@@ -38,7 +38,6 @@ public class RenderWalletItem extends WrappedItemModel implements IItemRenderer 
 
     }
 
-
     @Override
     public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType transformType) {
         GlStateManager.pushMatrix();

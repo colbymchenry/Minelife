@@ -13,7 +13,7 @@ public class GuiATMWithdraw extends GuiATMBase {
 
     protected int amount = 0;
 
-    public GuiATMWithdraw(int balance) {
+    public GuiATMWithdraw(long balance) {
         super(balance);
     }
 
@@ -29,7 +29,8 @@ public class GuiATMWithdraw extends GuiATMBase {
         super.actionPerformed(button);
         if (NumberConversions.isInt(button.displayString)) {
             if (NumberConversions.isInt(String.valueOf(amount) + button.displayString)) {
-                if (NumberConversions.toInt(String.valueOf(amount) + button.displayString) <= balance) {
+                if (NumberConversions.toInt(String.valueOf(amount) + button.displayString) <= balance
+                        && NumberConversions.toInt(String.valueOf(amount) + button.displayString) > 0) {
                     amount = NumberConversions.toInt(String.valueOf(amount) + button.displayString);
                 } else {
                     playErrorSound();

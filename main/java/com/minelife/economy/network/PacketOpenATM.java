@@ -11,23 +11,23 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PacketOpenATM implements IMessage {
 
-    private int balance;
+    private long balance;
 
     public PacketOpenATM() {
     }
 
-    public PacketOpenATM(int balance) {
+    public PacketOpenATM(long balance) {
         this.balance = balance;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        this.balance = buf.readInt();
+        this.balance = buf.readLong();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(this.balance);
+        buf.writeLong(this.balance);
     }
 
     public static class Handler implements IMessageHandler<PacketOpenATM, IMessage> {

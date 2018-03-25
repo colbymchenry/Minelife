@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.minebay.ItemListing;
 import com.minelife.minebay.network.PacketGetItemListings;
+import com.minelife.minebay.network.PacketGetPlayerListings;
 import com.minelife.util.NumberConversions;
+import com.minelife.util.StringHelper;
 import com.minelife.util.client.GuiDropDown;
 import com.minelife.util.client.GuiHelper;
 import com.minelife.util.client.GuiLoadingAnimation;
@@ -23,6 +25,7 @@ import java.util.List;
 
 public class GuiItemListings extends GuiMinebay {
 
+    private static ResourceLocation texProfile = new ResourceLocation(Minelife.MOD_ID, "textures/gui/minebay/profile.png");
     private static ResourceLocation texSearch = new ResourceLocation(Minelife.MOD_ID, "textures/gui/magnify.png");
     private static ResourceLocation texSort = new ResourceLocation(Minelife.MOD_ID, "textures/gui/arrow.png");
     private GuiScrollableListing guiListings;
@@ -32,7 +35,7 @@ public class GuiItemListings extends GuiMinebay {
     private static boolean ascend = true;
     private List<ItemListing> itemListings;
     private int pageCount = 0;
-    private GuiMinebayBtn sellBtn;
+    private GuiMinebayBtn sellBtn, myListingsBtn;
     private Rectangle sortRec;
 
     public GuiItemListings() {
@@ -62,6 +65,11 @@ public class GuiItemListings extends GuiMinebay {
 
 
         this.sellBtn.drawButton(mc, mouseX, mouseY, partialTicks);
+        this.myListingsBtn.drawButton(mc, mouseX, mouseY, partialTicks);
+
+        GlStateManager.enableBlend();
+        mc.getTextureManager().bindTexture(texProfile);
+        Gui.drawModalRectWithCustomSizedTexture(this.myListingsBtn.x + 7, this.myListingsBtn.y + 4, 0, 0, 12, 12, 12, 12);
 
         boolean hovering = sortRec.contains(mouseX, mouseY);
         GuiHelper.drawDefaultBackground(sortRec.x, sortRec.y, sortRec.width, sortRec.height, hovering ? 0xe600e4 : 0xcb00cb);
@@ -75,6 +83,14 @@ public class GuiItemListings extends GuiMinebay {
         Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, 16, 16, 16, 16);
         GlStateManager.popMatrix();
 
+        GlStateManager.disableLighting();
+        guiSort.draw(mc, mouseX, mouseY);
+        guiPage.draw(mc, mouseX, mouseY);
+        GlStateManager.color(1, 1, 1, 1);
+        this.mc.getTextureManager().bindTexture(texSearch);
+        Gui.drawModalRectWithCustomSizedTexture(guiLeft + searchField.getWidth() + 13, searchField.y + 3, 0, 0, 16, 16, 16, 16);
+        searchField.drawTextBox();
+
         if (this.itemListings.isEmpty()) {
             String msg = TextFormatting.BOLD + "Uh-Oh! No item were found :'(";
             int msg_width = mc.fontRenderer.getStringWidth(msg);
@@ -83,13 +99,6 @@ public class GuiItemListings extends GuiMinebay {
         }
 
         this.guiListings.draw(mouseX, mouseY, Mouse.getDWheel());
-
-        GlStateManager.disableLighting();
-        guiSort.draw(mc, mouseX, mouseY);
-        guiPage.draw(mc, mouseX, mouseY);
-        this.mc.getTextureManager().bindTexture(texSearch);
-        Gui.drawModalRectWithCustomSizedTexture(guiLeft + searchField.getWidth() + 13, searchField.y + 3, 0, 0, 16, 16, 16, 16);
-        searchField.drawTextBox();
 
         if (this.guiListings.getHoveringStack() != null)
             renderToolTip(this.guiListings.getHoveringStack(), mouseX, mouseY);
@@ -153,6 +162,11 @@ public class GuiItemListings extends GuiMinebay {
             ascend = !ascend;
             Minelife.getNetwork().sendToServer(new PacketGetItemListings(NumberConversions.toInt(guiPage.options[guiPage.selected]) - 1, searchField.getText(), guiSort.selected, ascend));
         }
+
+        if(this.myListingsBtn.mousePressed(mc, mouseX, mouseY)) {
+            System.out.println("CALLED");
+            Minelife.getNetwork().sendToServer(new PacketGetPlayerListings());
+        }
     }
 
     @Override
@@ -167,15 +181,12 @@ public class GuiItemListings extends GuiMinebay {
         this.guiListings = new GuiScrollableListing(mc, this.guiLeft, this.guiTop + 26, this.xSize, this.ySize - 30, itemListings);
 
         if (searchField == null)
-            searchField = new GuiTextField(0, mc.fontRenderer, this.guiLeft + 1, this.guiTop + 1, (xSize / 2) - 27, 20);
+            searchField = new GuiTextField(0, mc.fontRenderer, this.guiLeft + 1, this.guiTop + 1, (xSize / 2) - 60, 20);
         else {
             searchField.x = this.guiLeft + 1;
             searchField.y = this.guiTop + 1;
-            searchField.width = (xSize / 2) - 27;
+            searchField.width = (xSize / 2) - 60;
         }
-
-
-        this.sellBtn = new GuiMinebayBtn(0, this.guiLeft + this.xSize - 35, this.guiTop + 1, "Sell", fontRenderer);
 
         if (guiSort == null)
             guiSort = new GuiDropDown(searchField.x + searchField.width + 30, searchField.y + 3, 60, 13, PacketGetItemListings.options);
@@ -203,6 +214,10 @@ public class GuiItemListings extends GuiMinebay {
         }
         guiPage.colorBG = new Color(206, 0, 204);
         guiPage.colorHighlight = guiPage.colorBG.darker().darker();
+
+
+        this.sellBtn = new GuiMinebayBtn(0, this.guiPage.x + 25, this.guiTop + 1, "Sell", fontRenderer);
+        this.myListingsBtn = new GuiMinebayBtn(1, this.sellBtn.x + 37, this.guiTop + 1, "   ", fontRenderer);
     }
 
     @Override

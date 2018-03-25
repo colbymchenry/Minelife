@@ -48,6 +48,8 @@ public class BlockATMBottom extends BlockContainer {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if(hand != EnumHand.MAIN_HAND) return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+
         if (!worldIn.isRemote)
             Minelife.getNetwork().sendTo(new PacketOpenATM(ModEconomy.getBalanceATM(playerIn.getUniqueID())), (EntityPlayerMP) playerIn);
         else

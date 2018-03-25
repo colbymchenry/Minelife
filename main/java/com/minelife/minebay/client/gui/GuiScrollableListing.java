@@ -45,7 +45,11 @@ public class GuiScrollableListing extends GuiScrollableContent {
     @Override
     public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
         if (doubleClick) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiBuyItem(itemListings.get(index)));
+            if(itemListings.get(index).getSellerID().equals(mc.player.getUniqueID())) {
+                mc.displayGuiScreen(new GuiDeleteListing(itemListings.get(index)));
+            } else {
+                mc.displayGuiScreen(new GuiBuyItem(itemListings.get(index)));
+            }
         } else {
             this.itemListings.get(index).mouseClicked(mouseX, mouseY, false);
         }

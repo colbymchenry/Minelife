@@ -1,10 +1,22 @@
 package com.minelife.chestshop;
 
+import com.google.common.collect.Lists;
+import com.minelife.util.ItemHelper;
 import com.minelife.util.MLTileEntity;
+import cpw.mods.ironchest.common.blocks.chest.BlockIronChest;
+import cpw.mods.ironchest.common.tileentity.chest.TileEntityIronChest;
+import net.minecraft.block.BlockChest;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 
+import java.util.List;
 import java.util.UUID;
 
 public class TileEntityChestShop extends MLTileEntity {
@@ -31,7 +43,7 @@ public class TileEntityChestShop extends MLTileEntity {
         tag.setInteger("Facing", this.facing.ordinal());
         tag.setInteger("Price", this.price);
 
-        if(this.item != null){
+        if (this.item != null) {
             NBTTagCompound itemTag = new NBTTagCompound();
             this.item.writeToNBT(itemTag);
             tag.setTag("Item", itemTag);
@@ -70,6 +82,171 @@ public class TileEntityChestShop extends MLTileEntity {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public List<Stock> getStock() {
+        List<Stock> stacks = Lists.newArrayList();
+
+        if (getItem() == null) return stacks;
+
+        getChests().forEach(chest -> {
+            for (int i = 0; i < chest.getSizeInventory(); i++) {
+                if (ItemHelper.areStacksIdentical(getItem(), chest.getStackInSlot(i)))
+                    stacks.add(new Stock(chest.getPos(), i, chest.getStackInSlot(i)));
+            }
+        });
+
+        getIronChests().forEach(chest -> {
+            for (int i = 0; i < chest.chestContents.size(); i++) {
+                if (ItemHelper.areStacksIdentical(getItem(), chest.getStackInSlot(i)))
+                    stacks.add(new Stock(chest.getPos(), i, chest.getStackInSlot(i)));
+            }
+        });
+        return stacks;
+    }
+
+    public List<TileEntityChest> getChests() {
+        List<TileEntityChest> chests = Lists.newArrayList();
+
+        // get the chest underneath
+        if (getWorld().getBlockState(getPos().add(0, -1, 0)).getBlock() instanceof BlockChest) {
+            chests.add((TileEntityChest) getWorld().getTileEntity(getPos().add(0, -1, 0)));
+        }
+
+        // get the chest above
+        if (getWorld().getBlockState(getPos().add(0, 1, 0)).getBlock() instanceof BlockChest) {
+            chests.add((TileEntityChest) getWorld().getTileEntity(getPos().add(0, 1, 0)));
+        }
+
+        // get the chest left
+        if (getWorld().getBlockState(getPos().add(-1, 0, 0)).getBlock() instanceof BlockChest) {
+            chests.add((TileEntityChest) getWorld().getTileEntity(getPos().add(-1, 0, 0)));
+        }
+
+        // get the chest right
+        if (getWorld().getBlockState(getPos().add(1, 0, 0)).getBlock() instanceof BlockChest) {
+            chests.add((TileEntityChest) getWorld().getTileEntity(getPos().add(1, 0, 0)));
+        }
+
+        // get the chest behind
+        if (getWorld().getBlockState(getPos().add(0, 0, -1)).getBlock() instanceof BlockChest) {
+            chests.add((TileEntityChest) getWorld().getTileEntity(getPos().add(0, 0, -1)));
+        }
+
+        // get the chest front
+        if (getWorld().getBlockState(getPos().add(0, 0, 1)).getBlock() instanceof BlockChest) {
+            chests.add((TileEntityChest) getWorld().getTileEntity(getPos().add(0, 0, 1)));
+        }
+
+        return chests;
+    }
+
+    public List<TileEntityIronChest> getIronChests() {
+        List<TileEntityIronChest> ironChests = Lists.newArrayList();
+
+        // get the chest underneath
+        if (getWorld().getBlockState(getPos().add(0, -1, 0)).getBlock() instanceof BlockIronChest) {
+            ironChests.add((TileEntityIronChest) getWorld().getTileEntity(getPos().add(0, -1, 0)));
+        }
+
+        // get the chest above
+        if (getWorld().getBlockState(getPos().add(0, 1, 0)).getBlock() instanceof BlockIronChest) {
+            ironChests.add((TileEntityIronChest) getWorld().getTileEntity(getPos().add(0, 1, 0)));
+        }
+
+        // get the chest left
+        if (getWorld().getBlockState(getPos().add(-1, 0, 0)).getBlock() instanceof BlockIronChest) {
+            ironChests.add((TileEntityIronChest) getWorld().getTileEntity(getPos().add(-1, 0, 0)));
+        }
+
+        // get the chest right
+        if (getWorld().getBlockState(getPos().add(1, 0, 0)).getBlock() instanceof BlockIronChest) {
+            ironChests.add((TileEntityIronChest) getWorld().getTileEntity(getPos().add(1, 0, 0)));
+        }
+
+        // get the chest behind
+        if (getWorld().getBlockState(getPos().add(0, 0, -1)).getBlock() instanceof BlockIronChest) {
+            ironChests.add((TileEntityIronChest) getWorld().getTileEntity(getPos().add(0, 0, -1)));
+        }
+
+        // get the chest front
+        if (getWorld().getBlockState(getPos().add(0, 0, 1)).getBlock() instanceof BlockIronChest) {
+            ironChests.add((TileEntityIronChest) getWorld().getTileEntity(getPos().add(0, 0, 1)));
+        }
+
+        return ironChests;
+    }
+
+    public int getStockCount() {
+        int count = 0;
+        for (Stock stock : getStock()) count += stock.stack.getCount();
+        return count;
+    }
+
+    public void doPurchase(EntityPlayerMP player, int amount) {
+        if(getItem() == null) return;
+        amount *= getItem().getCount();
+
+        List<ItemStack> toDrop = Lists.newArrayList();
+
+       for (Stock stock : getStock()) {
+            if (world.getTileEntity(stock.pos) instanceof TileEntityChest) {
+                TileEntityChest tileChest = (TileEntityChest) world.getTileEntity(stock.pos);
+                if (stock.stack.getCount() <= amount) {
+                    tileChest.setInventorySlotContents(stock.slot, ItemStack.EMPTY);
+                    toDrop.add(stock.stack);
+                    amount -= stock.stack.getCount();
+                } else {
+                    stock.stack.setCount(stock.stack.getCount() - amount);
+                    ItemStack clone = stock.stack.copy();
+                    clone.setCount(amount);
+                    toDrop.add(clone);
+                    break;
+                }
+                stock.updateChest();
+            } else if (world.getTileEntity(stock.pos) instanceof TileEntityIronChest) {
+                TileEntityIronChest tileChest = (TileEntityIronChest) world.getTileEntity(stock.pos);
+                if (stock.stack.getCount() <= amount) {
+                    tileChest.setInventorySlotContents(stock.slot, ItemStack.EMPTY);
+                    toDrop.add(stock.stack);
+                    amount -= stock.stack.getCount();
+                } else {
+                    stock.stack.setCount(stock.stack.getCount() - amount);
+                    ItemStack clone = stock.stack.copy();
+                    clone.setCount(amount);
+                    toDrop.add(clone);
+                    break;
+                }
+                stock.updateChest();
+            }
+        }
+
+        toDrop.forEach(stack -> {
+            EntityItem entityItem = new EntityItem(player.world, player.posX, player.posY, player.posZ, stack);
+            entityItem.setPickupDelay(0);
+            player.dropItemAndGetStack(entityItem);
+        });
+    }
+
+    public class Stock {
+        BlockPos pos;
+        int slot;
+        ItemStack stack;
+
+        public Stock(BlockPos pos, int slot, ItemStack stack) {
+            this.pos = pos;
+            this.slot = slot;
+            this.stack = stack;
+        }
+
+        public void updateChest() {
+            TileEntity tileEntity = world.getTileEntity(pos);
+            world.markBlockRangeForRenderUpdate(tileEntity.getPos(), tileEntity.getPos());
+            world.notifyBlockUpdate(tileEntity.getPos(), tileEntity.getWorld().getBlockState(tileEntity.getPos()),
+                    tileEntity.getWorld().getBlockState(tileEntity.getPos()), 3);
+            world.scheduleBlockUpdate(tileEntity.getPos(), tileEntity.getBlockType(), 0, 0);
+            tileEntity.markDirty();
+        }
     }
 
 }

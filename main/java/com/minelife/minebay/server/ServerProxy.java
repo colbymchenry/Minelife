@@ -21,6 +21,8 @@ public class ServerProxy extends MLProxy {
         DB = new SQLite(Logger.getLogger("Minecraft"), "[Minebay]", Minelife.getDirectory().getAbsolutePath(), "minebay");
         DB.open();
         DB.query("CREATE TABLE IF NOT EXISTS items (uuid VARCHAR(36), seller VARCHAR(36), price INT, title TEXT, description TEXT, itemstack TEXT, meta INT, stacksize INT, datepublished TEXT, storage INT)");
+
+        // TODO: Add notification to player that the listing will be deleted in a day and they will lose their items.
         DB.query("DELETE FROM items WHERE datepublished < '" + DateHelper.dateToString(Calendar.getInstance().getTime()) + "'");
     }
 }

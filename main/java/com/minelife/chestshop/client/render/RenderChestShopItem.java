@@ -10,6 +10,7 @@ import codechicken.lib.vec.Translation;
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -30,6 +31,7 @@ import java.util.Map;
 public class RenderChestShopItem implements IItemRenderer {
 
     private static CCModel model;
+    private static ResourceLocation texture = new ResourceLocation("minelife:textures/block/chest_shop.png");
 
     public RenderChestShopItem() {
         Map<String, CCModel> map = OBJParser.parseModels(new ResourceLocation(Minelife.MOD_ID, "models/block/chest_shop.obj"));
@@ -38,14 +40,13 @@ public class RenderChestShopItem implements IItemRenderer {
         model.computeNormals();
     }
 
-    // TODO: Need to figure out actual fix for lightning, not just push and pop Attrib
     @Override
     public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType transformType) {
         GlStateManager.pushAttrib();
         GlStateManager.disableCull();
         RenderHelper.enableGUIStandardItemLighting();
         CCRenderState ccrs = CCRenderState.instance();
-        TextureUtils.changeTexture("minelife:textures/block/chest_shop.png");
+        Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
         model.render(ccrs);
         ccrs.draw();

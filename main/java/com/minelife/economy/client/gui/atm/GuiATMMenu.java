@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class GuiATMMenu extends GuiATMBase {
 
-    public GuiATMMenu(int balance) {
+    public GuiATMMenu(long balance) {
         super(balance);
     }
 

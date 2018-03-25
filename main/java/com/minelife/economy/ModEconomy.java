@@ -115,10 +115,10 @@ public class ModEconomy extends MLMod {
         return amount;
     }
 
-    public static void depositATM(UUID playerID, int amount) {
+    public static void depositATM(UUID playerID, long amount) {
         if (!NumberConversions.isInt(String.valueOf(getBalanceATM(playerID) + amount))) return;
 
-        int balance = getBalanceATM(playerID) + amount;
+        long balance = getBalanceATM(playerID) + amount;
         try {
             ResultSet result = getDatabase().query("SELECT * FROM atm WHERE player='" + playerID.toString() + "'");
             if (result.next()) {
@@ -148,17 +148,19 @@ public class ModEconomy extends MLMod {
         return amount;
     }
 
-    public static void withdrawCashPiles(UUID playerID, int amount) {
+    public static int withdrawCashPiles(UUID playerID, int amount) {
+        WithdrawlResult result = null;
         for (TileEntityCash tileCash : TileEntityCash.getCashPiles(playerID)) {
-            WithdrawlResult result = tileCash.withdraw(amount);
+             result = tileCash.withdraw(amount);
             tileCash.sendUpdates();
             amount -= ItemCash.getAmount(result.stacksTaken);
             if (amount <= 0) break;
         }
+        return result == null ? amount : result.changeThatDidNotFit;
     }
 
-    public static void withdrawATM(UUID playerID, int amount) {
-        int balance = getBalanceATM(playerID) - amount;
+    public static void withdrawATM(UUID playerID, long amount) {
+        long balance = getBalanceATM(playerID) - amount;
         balance = balance < 0 ? 0 : balance;
         try {
             ResultSet result = getDatabase().query("SELECT * FROM atm WHERE player='" + playerID.toString() + "'");
@@ -176,10 +178,7 @@ public class ModEconomy extends MLMod {
         WithdrawlResult result = ItemWallet.withdrawPlayer(player, amount);
         amount -= ItemCash.getAmount(result.stacksTaken);
 
-        if (amount <= 0) {
-            System.out.println("CALLED " + result.changeThatDidNotFit);
-            return result.changeThatDidNotFit;
-        }
+        if (amount <= 0) return result.changeThatDidNotFit;
 
         Map<Integer, ItemStack> wallets = ItemWallet.getWallets(player);
         for (Integer integer : wallets.keySet()) {
@@ -196,20 +195,20 @@ public class ModEconomy extends MLMod {
             }
         }
 
-        return result.changeThatDidNotFit;
+        return result == null ? amount : result.changeThatDidNotFit;
     }
 
-    public static int getBalanceCashPiles(UUID playerID) {
+    public static long getBalanceCashPiles(UUID playerID) {
         List<TileEntityCash> list = TileEntityCash.getCashPiles(playerID);
-        int total = 0;
+        long total = 0;
         for (TileEntityCash tileEntityCash : list) total += tileEntityCash.getBalance();
         return total;
     }
 
-    public static int getBalanceATM(UUID playerID) {
+    public static long getBalanceATM(UUID playerID) {
         try {
             ResultSet result = getDatabase().query("SELECT * FROM atm WHERE player='" + playerID.toString() + "'");
-            if (result.next()) return result.getInt("balance");
+            if (result.next()) return result.getLong("balance");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -274,7 +273,6 @@ public class ModEconomy extends MLMod {
         return amount;
     }
 
-    // TODO: Cash Items need to be exact amount. Withdrawl $50 from 3 $20s you get $60 not $50
     public static WithdrawlResult withdraw(InventoryRange inventory, int amount) {
         List<ItemStack> cashItems = Lists.newArrayList();
         List<Integer> emptySlots = Lists.newArrayList();

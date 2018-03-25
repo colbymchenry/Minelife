@@ -8,6 +8,7 @@ import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Translation;
 import com.minelife.Minelife;
 import com.minelife.economy.tileentity.TileEntityATM;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 public class RenderATMBlock extends TileEntitySpecialRenderer<TileEntityATM> {
 
+    private static ResourceLocation texture = new ResourceLocation("minelife:textures/block/atm.png");
     private static CCModel model;
 
     public RenderATMBlock() {
@@ -54,7 +56,7 @@ public class RenderATMBlock extends TileEntitySpecialRenderer<TileEntityATM> {
         GlStateManager.disableCull();
         RenderHelper.enableGUIStandardItemLighting();
         CCRenderState ccrs = CCRenderState.instance();
-        TextureUtils.changeTexture("minelife:textures/block/atm.png");
+        Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
         model.render(ccrs);
         ccrs.draw();

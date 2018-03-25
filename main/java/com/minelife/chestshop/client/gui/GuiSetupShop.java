@@ -23,7 +23,7 @@ public class GuiSetupShop extends GuiScreen {
     private int guiLeft, guiTop, xSize = 176, ySize = 186;
     private GuiFakeInventory fakeInventory;
     private ItemStack stack;
-    private GuiTextField priceField;
+    private GuiTextField priceField, sizeField;
     private GuiButton saveBtn;
 
     public GuiSetupShop(TileEntityChestShop tile) {
@@ -49,13 +49,15 @@ public class GuiSetupShop extends GuiScreen {
             GlStateManager.translate(0.5, 0.5, 0.5);
             GlStateManager.scale(3, 3, 3);
             GlStateManager.translate(-0.5, -0.5, -0.5);
-            GuiFakeInventory.renderItemInventory(this.stack, 0, 0, false);
+            GuiFakeInventory.renderItemInventory(this.stack, 0, 0, true);
             GlStateManager.popMatrix();
         }
 
         GlStateManager.disableLighting();
         this.priceField.drawTextBox();
+        this.sizeField.drawTextBox();
         this.fontRenderer.drawString(TextFormatting.BOLD + "Price", this.priceField.x, this.priceField.y - 10, 4210752);
+        this.fontRenderer.drawString(TextFormatting.BOLD + "Stack Size", this.sizeField.x, this.sizeField.y - 10, 4210752);
         this.fontRenderer.drawString(TextFormatting.BOLD + "Pick an item to sale!", this.guiLeft + 7, this.guiTop + 90, 4210752);
         this.saveBtn.drawButton(mc, mouseX, mouseY, partialTicks);
         GlStateManager.enableLighting();
@@ -69,8 +71,26 @@ public class GuiSetupShop extends GuiScreen {
 
         if (keyCode == Keyboard.KEY_BACK) {
             this.priceField.textboxKeyTyped(typedChar, keyCode);
-        } else if (NumberConversions.isInt(this.priceField.getText() + typedChar)) {
+            this.sizeField.textboxKeyTyped(typedChar, keyCode);
+            if (this.stack != null) {
+                if (NumberConversions.toInt(this.sizeField.getText()) <= 0) this.stack.setCount(1);
+                else this.stack.setCount(NumberConversions.toInt(this.sizeField.getText()));
+            }
+            return;
+        }
+
+        if (NumberConversions.isInt(this.priceField.getText() + typedChar)
+                && NumberConversions.toInt(this.priceField.getText() + typedChar) > 0) {
             this.priceField.textboxKeyTyped(typedChar, keyCode);
+        }
+
+        if (NumberConversions.isInt(this.sizeField.getText() + typedChar) && this.stack != null) {
+            if (NumberConversions.toInt(this.sizeField.getText() + typedChar) <= this.stack.getMaxStackSize() &&
+                    NumberConversions.toInt(this.sizeField.getText() + typedChar) > 0) {
+                this.sizeField.textboxKeyTyped(typedChar, keyCode);
+                if (NumberConversions.toInt(this.sizeField.getText()) <= 0) this.stack.setCount(1);
+                else this.stack.setCount(NumberConversions.toInt(this.sizeField.getText()));
+            }
         }
     }
 
@@ -80,13 +100,15 @@ public class GuiSetupShop extends GuiScreen {
 
         int slot = this.fakeInventory.mouseClicked(mouseX, mouseY);
         if (slot != -1) {
-            ItemStack stack = this.mc.player.inventory.getStackInSlot(slot);
+            ItemStack stack = this.mc.player.inventory.getStackInSlot(slot).copy();
             this.stack = stack.getItem() == Items.AIR ? null : stack;
+            if (this.stack != null) this.stack.setCount(1);
         }
 
         this.priceField.mouseClicked(mouseX, mouseY, mouseButton);
+        this.sizeField.mouseClicked(mouseX, mouseY, mouseButton);
 
-        if(this.saveBtn.mousePressed(mc, mouseX, mouseY)) {
+        if (this.saveBtn.mousePressed(mc, mouseX, mouseY)) {
             int price = this.priceField.getText().isEmpty() ? 0 : NumberConversions.toInt(this.priceField.getText());
             Minelife.getNetwork().sendToServer(new PacketSaveShop(this.tile, this.stack, price));
         }
@@ -99,15 +121,21 @@ public class GuiSetupShop extends GuiScreen {
         this.guiTop = (this.height - this.ySize) / 2;
         this.fakeInventory = new GuiFakeInventory(this.guiLeft, this.guiTop + 20, 18, 18, this);
         this.priceField = new GuiTextField(0, this.fontRenderer, this.guiLeft + 100, this.guiTop + 25, 60, 15);
-        this.saveBtn = new GuiButton(0, priceField.x + 20, priceField.y + 35, 40, 20, "Save");
+        this.sizeField = new GuiTextField(1, this.fontRenderer, this.guiLeft + 100, this.guiTop + 60, 60, 15);
+        this.saveBtn = new GuiButton(0, priceField.x + 30, priceField.y + 55, 40, 20, "Save");
         this.priceField.setText(tile.getPrice() > 0 ? String.valueOf(tile.getPrice()) : "");
         this.stack = tile.getItem();
+
+        if (this.stack != null) this.sizeField.setText(String.valueOf(this.stack.getCount()));
+        if (this.stack != null) this.priceField.setText(String.valueOf(tile.getPrice()));
     }
 
     @Override
     public void updateScreen() {
         super.updateScreen();
         this.priceField.updateCursorCounter();
+        this.sizeField.updateCursorCounter();
         this.priceField.setEnabled(this.stack != null);
+        this.sizeField.setEnabled(this.stack != null);
     }
 }

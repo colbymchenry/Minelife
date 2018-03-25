@@ -1,6 +1,7 @@
 package com.minelife.economy.client.render;
 
 import com.minelife.economy.tileentity.TileEntityCash;
+import com.minelife.util.client.GuiFakeInventory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -21,7 +22,7 @@ public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
         GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
         GlStateManager.scale(2, 2, 2);
         GlStateManager.translate(0, 0, 0);
-        renderItem(Minecraft.getMinecraft(), new ItemStack(Blocks.WOODEN_PRESSURE_PLATE));
+        GuiFakeInventory.renderItem(Minecraft.getMinecraft(), new ItemStack(Blocks.WOODEN_PRESSURE_PLATE), ItemCameraTransforms.TransformType.FIXED);
         GlStateManager.popMatrix();
 
         ItemStack lastStack = null;
@@ -55,7 +56,7 @@ public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
         GlStateManager.scale(0.8, (hitMaxY > 0 ? 28 : 0)+ 0.4+ (hitMaxZ > 0 ? 0 : (yOffset * 28)), 0.8);
         GlStateManager.rotate(90, 1, 0, 0);
 
-        renderItem(Minecraft.getMinecraft(), lastStack);
+        GuiFakeInventory.renderItem(Minecraft.getMinecraft(), lastStack, ItemCameraTransforms.TransformType.FIXED);
 
 
         GlStateManager.popMatrix();
@@ -65,12 +66,9 @@ public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
             GlStateManager.translate(x + 0.5, y + 0.08, z + 0.28 + 0.44);
             GlStateManager.scale(0.8, (hitMaxY > 1 ? 28 : 0) + 0.4 + (yOffset * 28), 0.8);
             GlStateManager.rotate(90, 1, 0, 0);
-            renderItem(Minecraft.getMinecraft(), lastStack);
+            GuiFakeInventory.renderItem(Minecraft.getMinecraft(), lastStack, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();
         }
     }
 
-    public static void renderItem(Minecraft mc, ItemStack item) {
-        mc.getItemRenderer().renderItem(mc.player, item, ItemCameraTransforms.TransformType.FIXED);
-    }
 }

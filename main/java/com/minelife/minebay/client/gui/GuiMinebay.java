@@ -12,12 +12,9 @@ import java.io.IOException;
 
 public class GuiMinebay extends GuiScreen {
 
-
     private static final ResourceLocation texLogo = new ResourceLocation(Minelife.MOD_ID, "textures/gui/minebay/logo_lg.png");
-    private GuiTextField searchField;
     protected int guiLeft, guiTop, xSize = 308, ySize = 169;
     private int logoWidth = 354, logoHeight = 104;
-
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {

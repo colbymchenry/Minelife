@@ -19,9 +19,9 @@ public class GuiATMBase extends GuiScreen {
     protected int block = 0;
 
     public int guiLeft, guiTop, xSize = 176, ySize = 186;
-    public int balance;
+    public long balance;
 
-    public GuiATMBase(int balance) {
+    public GuiATMBase(long balance) {
         this.balance = balance;
     }
 

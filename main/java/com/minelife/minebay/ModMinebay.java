@@ -2,10 +2,7 @@ package com.minelife.minebay;
 
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
-import com.minelife.minebay.network.PacketBuyItem;
-import com.minelife.minebay.network.PacketGetItemListings;
-import com.minelife.minebay.network.PacketSellItem;
-import com.minelife.minebay.network.PacketSendItemListings;
+import com.minelife.minebay.network.*;
 import com.minelife.minebay.server.ServerProxy;
 import lib.PatPeter.SQLibrary.Database;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -19,6 +16,8 @@ public class ModMinebay extends MLMod {
         registerPacket(PacketSendItemListings.Handler.class, PacketSendItemListings.class, Side.CLIENT);
         registerPacket(PacketSellItem.Handler.class, PacketSellItem.class, Side.SERVER);
         registerPacket(PacketBuyItem.Handler.class, PacketBuyItem.class, Side.SERVER);
+        registerPacket(PacketGetPlayerListings.Handler.class, PacketGetPlayerListings.class, Side.SERVER);
+        registerPacket(PacketDeleteListing.Handler.class, PacketDeleteListing.class, Side.SERVER);
     }
 
     @Override

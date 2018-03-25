@@ -1,7 +1,10 @@
 package com.minelife.chestshop;
 
 import com.minelife.Minelife;
+import com.minelife.chestshop.client.gui.GuiBuyShop;
 import com.minelife.chestshop.client.gui.GuiSetupShop;
+import com.minelife.economy.ModEconomy;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.client.MLParticleDigging;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.SoundType;
@@ -12,6 +15,7 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -23,6 +27,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -47,30 +52,60 @@ public class BlockChestShop extends BlockContainer {
 
     @SideOnly(Side.CLIENT)
     private void openBuyGui(TileEntityChestShop tile) {
-        // TODO
+        Minecraft.getMinecraft().displayGuiScreen(new GuiBuyShop(tile));
     }
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+       if(hand != EnumHand.MAIN_HAND) return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+
         TileEntityChestShop tile = (TileEntityChestShop) worldIn.getTileEntity(pos);
 
         if (Objects.equals(tile.getOwner(), playerIn.getUniqueID())) {
-            if(worldIn.isRemote) {
+            if (worldIn.isRemote) {
                 this.openSetupGui(tile);
-                return true;
+                return false;
             }
         } else {
-            if(playerIn.isSneaking()) {
-                if(worldIn.isRemote) {
-                    this.openBuyGui(tile);
+            if(tile.getItem() == null) return false;
+
+            if (playerIn.isSneaking()) {
+                if (worldIn.isRemote) this.openBuyGui(tile);
+                return false;
+            }
+
+            if (!worldIn.isRemote) {
+                int balance = ModEconomy.getBalanceInventory((EntityPlayerMP) playerIn);
+
+                if (tile.getItem() == null) {
+                    playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Item not set."));
+                    return false;
+                }
+
+                if (balance < tile.getPrice()) {
+                    playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Insufficient funds in inventory."));
+                    return false;
+                }
+
+                if (tile.getStockCount() < tile.getItem().getCount()) {
+                    playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Out of stock."));
+                    return false;
+                }
+
+                tile.doPurchase((EntityPlayerMP) playerIn, 1);
+                int didNotFitCash = ModEconomy.depositCashPiles(tile.getOwner(), tile.getPrice());
+                int didNotFitInv = ModEconomy.withdrawInventory((EntityPlayerMP) playerIn, tile.getPrice());
+
+                if(didNotFitCash > 0) ModEconomy.depositATM(tile.getOwner(), didNotFitCash);
+                if(didNotFitInv > 0){
+                    ModEconomy.depositATM(playerIn.getUniqueID(), didNotFitInv);
+                    playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "$" + NumberConversions.format(didNotFitInv) + " did not fit in your inventory and was deposited into your ATM."));
                     return true;
                 }
             }
-
-            // TODO: Purchasing
         }
 
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return false;
     }
 
     @SideOnly(Side.SERVER)
@@ -106,4 +141,5 @@ public class BlockChestShop extends BlockContainer {
         MLParticleDigging.addDestroyEffect(world, pos, manager, "minelife:textures/block/chest_shop.png");
         return true;
     }
+
 }

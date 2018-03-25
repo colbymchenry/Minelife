@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class GuiATMSendMoney extends GuiATMWithdraw {
 
-    public GuiATMSendMoney(int balance) {
+    public GuiATMSendMoney(long balance) {
         super(balance);
     }
 
@@ -22,7 +22,8 @@ public class GuiATMSendMoney extends GuiATMWithdraw {
         super.actionPerformed(button);
         if (NumberConversions.isInt(button.displayString)) {
             if (NumberConversions.isInt(String.valueOf(amount) + button.displayString)) {
-                if (NumberConversions.toInt(String.valueOf(amount) + button.displayString) <= balance)
+                if (NumberConversions.toInt(String.valueOf(amount) + button.displayString) <= balance
+                        && NumberConversions.toInt(String.valueOf(amount) + button.displayString) > 0)
                     amount = NumberConversions.toInt(String.valueOf(amount) + button.displayString);
             }
         } else if (button.displayString.equals("<")) {
@@ -45,7 +46,7 @@ public class GuiATMSendMoney extends GuiATMWithdraw {
         private GuiTextField playerNameField;
         private int amount;
 
-        public GuiATMSendMoney2(int balance, int amount) {
+        public GuiATMSendMoney2(long balance, int amount) {
             super(balance);
             this.amount = amount;
         }
