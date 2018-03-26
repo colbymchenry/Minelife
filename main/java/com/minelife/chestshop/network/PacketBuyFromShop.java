@@ -46,7 +46,6 @@ public class PacketBuyFromShop implements IMessage {
 
     public static class Handler implements IMessageHandler<PacketBuyFromShop, IMessage> {
 
-        // TODO: Does transaction correctly besides dropping the left over stacks, if inventory is full they are gone forever.
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketBuyFromShop message, MessageContext ctx) {
             FMLServerHandler.instance().getServer().addScheduledTask(() -> {

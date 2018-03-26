@@ -1,6 +1,6 @@
 # Blender v2.79 (sub 0) OBJ File: 'WeaponPack by ToastPlayTv - Copy (2).blend'
 # www.blender.org
-mtllib AWP.mtl
+mtllib awp.mtl
 o Sniper.001_Cube.001
 v 0.509025 3.661822 2.592740
 v 0.476505 3.661822 2.592740

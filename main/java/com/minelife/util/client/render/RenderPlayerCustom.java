@@ -1,289 +1,230 @@
 package com.minelife.util.client.render;
 
-import com.minelife.Minelife;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelPlayer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.client.renderer.entity.layers.*;
+import net.minecraft.entity.player.EnumPlayerModelParts;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemStack;
+import net.minecraft.scoreboard.Score;
+import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-
 @SideOnly(Side.CLIENT)
-public class RenderPlayerCustom extends RenderPlayer {
+public class RenderPlayerCustom extends RenderLivingBase<AbstractClientPlayer> {
+    /**
+     * this field is used to indicate the 3-pixel wide arms
+     */
+    private final boolean smallArms;
 
     public RenderPlayerCustom(RenderManager renderManager) {
-        super(renderManager);
+        this(renderManager, false);
     }
 
-
-    @Override
-    public void doRender(AbstractClientPlayer client, double x, double y, double z, float f, float f1) {
-
-//        boolean arrested = client.getEntityData().hasKey("arrested") ? client.getEntityData().getBoolean("arrested") : false;
-//        if (arrested) {
-//            GL11.glPushMatrix();
-//            {
-//                float yaw = Minecraft.getMinecraft().thePlayer.rotationYaw;
-//                GL11.glRotatef(-yaw, 0, 1, 0);
-//                super.doRender(client, x + 0.5f, y - 2.5f, z + 0.5f, f, f1);
-//            }
-//            GL11.glPopMatrix();
-//
-//            return;
-//        }
-
-//        if(client.getUniqueID().equals(Minecraft.getMinecraft().thePlayer.getUniqueID()) && ItemGunClient.aimingDownSight) {
-//            return;
-//        }
-
-        super.doRender(client, x, y, z, f, f1);
+    public RenderPlayerCustom(RenderManager renderManager, boolean useSmallArms) {
+        super(renderManager, new ModelPlayerCustom(0.0F, useSmallArms), 0.5F);
+        this.smallArms = useSmallArms;
+        this.addLayer(new LayerBipedArmor(this));
+        this.addLayer(new LayerHeldItem(this));
+        this.addLayer(new LayerArrow(this));
+        this.addLayer(new LayerCustomHead(this.getMainModel().bipedHead));
+        this.addLayer(new LayerElytra(this));
+        this.addLayer(new LayerEntityOnShoulder(renderManager));
     }
 
-//    @Override
-//    protected void renderEquippedItems(AbstractClientPlayer player, float p_77029_2_)
-//    {
-//        net.minecraftforge.client.event.RenderPlayerEvent.Specials.Pre event = new net.minecraftforge.client.event.RenderPlayerEvent.Specials.Pre(player, this, p_77029_2_);
-//        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return;
-//        GL11.glColor3f(1.0F, 1.0F, 1.0F);
-//        super.renderEquippedItems(player, p_77029_2_);
-//        super.renderArrowsStuckInEntity(player, p_77029_2_);
-//        ItemStack itemstack = player.inventory.armorItemInSlot(3);
-//
-//        if (itemstack != null && event.renderHelmet)
-//        {
-//            GL11.glPushMatrix();
-//            this.modelBipedMain.bipedHead.postRender(0.0625F);
-//            float f1;
-//
-//            if (itemstack.getItem() instanceof ItemBlock)
-//            {
-//                net.minecraftforge.client.IItemRenderer customRenderer = net.minecraftforge.client.MinecraftForgeClient.getItemRenderer(itemstack, net.minecraftforge.client.IItemRenderer.ItemRenderType.EQUIPPED);
-//                boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(net.minecraftforge.client.IItemRenderer.ItemRenderType.EQUIPPED, itemstack, net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D));
-//
-//                if (is3D || RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack.getItem()).getRenderType()))
-//                {
-//                    f1 = 0.625F;
-//                    GL11.glTranslatef(0.0F, -0.25F, 0.0F);
-//                    GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
-//                    GL11.glScalef(f1, -f1, -f1);
-//                }
-//
-//                this.renderManager.itemRenderer.renderItem(player, itemstack, 0);
-//            }
-//            else if (itemstack.getItem() == Items.skull)
-//            {
-//                f1 = 1.0625F;
-//                GL11.glScalef(f1, -f1, -f1);
-//                GameProfile gameprofile = null;
-//
-//                if (itemstack.hasTagCompound())
-//                {
-//                    NBTTagCompound nbttagcompound = itemstack.getTagCompound();
-//
-//                    if (nbttagcompound.hasKey("SkullOwner", 10))
-//                    {
-//                        gameprofile = NBTUtil.func_152459_a(nbttagcompound.getCompoundTag("SkullOwner"));
-//                    }
-//                    else if (nbttagcompound.hasKey("SkullOwner", 8) && !StringUtils.isNullOrEmpty(nbttagcompound.getString("SkullOwner")))
-//                    {
-//                        gameprofile = new GameProfile((UUID)null, nbttagcompound.getString("SkullOwner"));
-//                    }
-//                }
-//
-//                TileEntitySkullRenderer.field_147536_b.func_152674_a(-0.5F, 0.0F, -0.5F, 1, 180.0F, itemstack.getItemDamage(), gameprofile);
-//            }
-//
-//            GL11.glPopMatrix();
-//        }
-//
-//        float f2;
-//
-//        if (player.getCommandSenderName().equals("deadmau5") && player.func_152123_o())
-//        {
-//
-//            this.bindTexture(player.getLocationSkin());
-//
-//            for (int j = 0; j < 2; ++j)
-//            {
-//                float f9 = player.prevRotationYaw + (player.rotationYaw - player.prevRotationYaw) * p_77029_2_ - (player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * p_77029_2_);
-//                float f10 = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * p_77029_2_;
-//                GL11.glPushMatrix();
-//                GL11.glRotatef(f9, 0.0F, 1.0F, 0.0F);
-//                GL11.glRotatef(f10, 1.0F, 0.0F, 0.0F);
-//                GL11.glTranslatef(0.375F * (float)(j * 2 - 1), 0.0F, 0.0F);
-//                GL11.glTranslatef(0.0F, -0.375F, 0.0F);
-//                GL11.glRotatef(-f10, 1.0F, 0.0F, 0.0F);
-//                GL11.glRotatef(-f9, 0.0F, 1.0F, 0.0F);
-//                f2 = 1.3333334F;
-//                GL11.glScalef(f2, f2, f2);
-//                this.modelBipedMain.renderEars(0.0625F);
-//                GL11.glPopMatrix();
-//            }
-//        }
-//
-//        boolean flag = player.func_152122_n();
-//        flag = event.renderCape && flag;
-//        float f4;
-//
-//        if (player.getEntityData().hasKey("cape") && player.getEntityData().getBoolean("cape"))
-//        {
-//            if(!CapeLoader.hasCape(player.getUniqueID())) {
-//                CapeLoader.loadCape(player.getUniqueID());
-//                this.bindTexture(defaultCape);
-//            } else {
-//                this.bindTexture(CapeLoader.getCape(player.getUniqueID()));
-//            }
-//            GL11.glPushMatrix();
-//            GL11.glTranslatef(0.0F, 0.0F, 0.125F);
-//            double d3 = player.field_71091_bM + (player.field_71094_bP - player.field_71091_bM) * (double)p_77029_2_ - (player.prevPosX + (player.posX - player.prevPosX) * (double)p_77029_2_);
-//            double d4 = player.field_71096_bN + (player.field_71095_bQ - player.field_71096_bN) * (double)p_77029_2_ - (player.prevPosY + (player.posY - player.prevPosY) * (double)p_77029_2_);
-//            double d0 = player.field_71097_bO + (player.field_71085_bR - player.field_71097_bO) * (double)p_77029_2_ - (player.prevPosZ + (player.posZ - player.prevPosZ) * (double)p_77029_2_);
-//            f4 = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * p_77029_2_;
-//            double d1 = (double) MathHelper.sin(f4 * (float)Math.PI / 180.0F);
-//            double d2 = (double)(-MathHelper.cos(f4 * (float)Math.PI / 180.0F));
-//            float f5 = (float)d4 * 10.0F;
-//
-//            if (f5 < -6.0F)
-//            {
-//                f5 = -6.0F;
-//            }
-//
-//            if (f5 > 32.0F)
-//            {
-//                f5 = 32.0F;
-//            }
-//
-//            float f6 = (float)(d3 * d1 + d0 * d2) * 100.0F;
-//            float f7 = (float)(d3 * d2 - d0 * d1) * 100.0F;
-//
-//            if (f6 < 0.0F)
-//            {
-//                f6 = 0.0F;
-//            }
-//
-//            float f8 = player.prevCameraYaw + (player.cameraYaw - player.prevCameraYaw) * p_77029_2_;
-//            f5 += MathHelper.sin((player.prevDistanceWalkedModified + (player.distanceWalkedModified - player.prevDistanceWalkedModified) * p_77029_2_) * 6.0F) * 32.0F * f8;
-//
-//            if (player.isSneaking())
-//            {
-//                f5 += 25.0F;
-//            }
-//
-//            GL11.glRotatef(6.0F + f6 / 2.0F + f5, 1.0F, 0.0F, 0.0F);
-//            GL11.glRotatef(f7 / 2.0F, 0.0F, 0.0F, 1.0F);
-//            GL11.glRotatef(-f7 / 2.0F, 0.0F, 1.0F, 0.0F);
-//            GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
-//            this.modelBipedMain.renderCloak(0.0625F);
-//            GL11.glPopMatrix();
-//        }
-//
-//        ItemStack itemstack1 = player.inventory.getCurrentItem();
-//
-//        if (itemstack1 != null && event.renderItem)
-//        {
-//            GL11.glPushMatrix();
-//            this.modelBipedMain.bipedRightArm.postRender(0.0625F);
-//            GL11.glTranslatef(-0.0625F, 0.4375F, 0.0625F);
-//
-//            if (player.fishEntity != null)
-//            {
-//                itemstack1 = new ItemStack(Items.stick);
-//            }
-//
-//            EnumAction enumaction = null;
-//
-//            if (player.getItemInUseCount() > 0)
-//            {
-//                enumaction = itemstack1.getItemUseAction();
-//            }
-//
-//            net.minecraftforge.client.IItemRenderer customRenderer = net.minecraftforge.client.MinecraftForgeClient.getItemRenderer(itemstack1, net.minecraftforge.client.IItemRenderer.ItemRenderType.EQUIPPED);
-//            boolean is3D = (customRenderer != null && customRenderer.shouldUseRenderHelper(net.minecraftforge.client.IItemRenderer.ItemRenderType.EQUIPPED, itemstack1, net.minecraftforge.client.IItemRenderer.ItemRendererHelper.BLOCK_3D));
-//
-//            if (is3D || itemstack1.getItem() instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.getBlockFromItem(itemstack1.getItem()).getRenderType()))
-//            {
-//                f2 = 0.5F;
-//                GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);
-//                f2 *= 0.75F;
-//                GL11.glRotatef(20.0F, 1.0F, 0.0F, 0.0F);
-//                GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-//                GL11.glScalef(-f2, -f2, f2);
-//            }
-//            else if (itemstack1.getItem() == Items.bow)
-//            {
-//                f2 = 0.625F;
-//                GL11.glTranslatef(0.0F, 0.125F, 0.3125F);
-//                GL11.glRotatef(-20.0F, 0.0F, 1.0F, 0.0F);
-//                GL11.glScalef(f2, -f2, f2);
-//                GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
-//                GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-//            }
-//            else if (itemstack1.getItem().isFull3D())
-//            {
-//                f2 = 0.625F;
-//
-//                if (itemstack1.getItem().shouldRotateAroundWhenRendering())
-//                {
-//                    GL11.glRotatef(180.0F, 0.0F, 0.0F, 1.0F);
-//                    GL11.glTranslatef(0.0F, -0.125F, 0.0F);
-//                }
-//
-//                if (player.getItemInUseCount() > 0 && enumaction == EnumAction.block)
-//                {
-//                    GL11.glTranslatef(0.05F, 0.0F, -0.1F);
-//                    GL11.glRotatef(-50.0F, 0.0F, 1.0F, 0.0F);
-//                    GL11.glRotatef(-10.0F, 1.0F, 0.0F, 0.0F);
-//                    GL11.glRotatef(-60.0F, 0.0F, 0.0F, 1.0F);
-//                }
-//
-//                GL11.glTranslatef(0.0F, 0.1875F, 0.0F);
-//                GL11.glScalef(f2, -f2, f2);
-//                GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
-//                GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-//            }
-//            else
-//            {
-//                f2 = 0.375F;
-//                GL11.glTranslatef(0.25F, 0.1875F, -0.1875F);
-//                GL11.glScalef(f2, f2, f2);
-//                GL11.glRotatef(60.0F, 0.0F, 0.0F, 1.0F);
-//                GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-//                GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
-//            }
-//
-//            float f3;
-//            int k;
-//            float f12;
-//
-//            if (itemstack1.getItem().requiresMultipleRenderPasses())
-//            {
-//                for (k = 0; k < itemstack1.getItem().getRenderPasses(itemstack1.getItemDamage()); ++k)
-//                {
-//                    int i = itemstack1.getItem().getColorFromItemStack(itemstack1, k);
-//                    f12 = (float)(i >> 16 & 255) / 255.0F;
-//                    f3 = (float)(i >> 8 & 255) / 255.0F;
-//                    f4 = (float)(i & 255) / 255.0F;
-//                    GL11.glColor4f(f12, f3, f4, 1.0F);
-//                    this.renderManager.itemRenderer.renderItem(player, itemstack1, k);
-//                }
-//            }
-//            else
-//            {
-//                k = itemstack1.getItem().getColorFromItemStack(itemstack1, 0);
-//                float f11 = (float)(k >> 16 & 255) / 255.0F;
-//                f12 = (float)(k >> 8 & 255) / 255.0F;
-//                f3 = (float)(k & 255) / 255.0F;
-//                GL11.glColor4f(f11, f12, f3, 1.0F);
-//                this.renderManager.itemRenderer.renderItem(player, itemstack1, 0);
-//            }
-//
-//            GL11.glPopMatrix();
-//        }
-//        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderPlayerEvent.Specials.Post(player, this, p_77029_2_));
-//    }
+    public ModelPlayer getMainModel() {
+        return (ModelPlayer) super.getMainModel();
+    }
 
-    public static final ResourceLocation defaultCape = new ResourceLocation(Minelife.MOD_ID, "textures/capes/default.png");
+    /**
+     * Renders the desired {@code T} type Entity.
+     */
+    public void doRender(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        if (!entity.isUser() || this.renderManager.renderViewEntity == entity) {
+            double d0 = y;
 
+            if (entity.isSneaking()) {
+                d0 = y - 0.125D;
+            }
 
+            this.setModelVisibilities(entity);
+            GlStateManager.enableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
+            super.doRender(entity, x, d0, z, entityYaw, partialTicks);
+            GlStateManager.disableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
+        }
+    }
+
+    private void setModelVisibilities(AbstractClientPlayer clientPlayer) {
+        ModelPlayer modelplayer = this.getMainModel();
+
+        if (clientPlayer.isSpectator()) {
+            modelplayer.setVisible(false);
+            modelplayer.bipedHead.showModel = true;
+            modelplayer.bipedHeadwear.showModel = true;
+        } else {
+            ItemStack itemstack = clientPlayer.getHeldItemMainhand();
+            ItemStack itemstack1 = clientPlayer.getHeldItemOffhand();
+            modelplayer.setVisible(true);
+            modelplayer.bipedHeadwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.HAT);
+            modelplayer.bipedBodyWear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.JACKET);
+            modelplayer.bipedLeftLegwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.LEFT_PANTS_LEG);
+            modelplayer.bipedRightLegwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.RIGHT_PANTS_LEG);
+            modelplayer.bipedLeftArmwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.LEFT_SLEEVE);
+            modelplayer.bipedRightArmwear.showModel = clientPlayer.isWearing(EnumPlayerModelParts.RIGHT_SLEEVE);
+            modelplayer.isSneak = clientPlayer.isSneaking();
+            ModelBiped.ArmPose modelbiped$armpose = ModelBiped.ArmPose.EMPTY;
+            ModelBiped.ArmPose modelbiped$armpose1 = ModelBiped.ArmPose.EMPTY;
+
+            if (!itemstack.isEmpty()) {
+                modelbiped$armpose = ModelBiped.ArmPose.ITEM;
+
+                if (clientPlayer.getItemInUseCount() > 0) {
+                    EnumAction enumaction = itemstack.getItemUseAction();
+
+                    if (enumaction == EnumAction.BLOCK) {
+                        modelbiped$armpose = ModelBiped.ArmPose.BLOCK;
+                    } else if (enumaction == EnumAction.BOW) {
+                        modelbiped$armpose = ModelBiped.ArmPose.BOW_AND_ARROW;
+                    }
+                }
+            }
+
+            if (!itemstack1.isEmpty()) {
+                modelbiped$armpose1 = ModelBiped.ArmPose.ITEM;
+
+                if (clientPlayer.getItemInUseCount() > 0) {
+                    EnumAction enumaction1 = itemstack1.getItemUseAction();
+
+                    if (enumaction1 == EnumAction.BLOCK) {
+                        modelbiped$armpose1 = ModelBiped.ArmPose.BLOCK;
+                    }
+                    // FORGE: fix MC-88356 allow offhand to use bow and arrow animation
+                    else if (enumaction1 == EnumAction.BOW) {
+                        modelbiped$armpose1 = ModelBiped.ArmPose.BOW_AND_ARROW;
+                    }
+                }
+            }
+
+            if (clientPlayer.getPrimaryHand() == EnumHandSide.RIGHT) {
+                modelplayer.rightArmPose = modelbiped$armpose;
+                modelplayer.leftArmPose = modelbiped$armpose1;
+            } else {
+                modelplayer.rightArmPose = modelbiped$armpose1;
+                modelplayer.leftArmPose = modelbiped$armpose;
+            }
+        }
+    }
+
+    /**
+     * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
+     */
+    public ResourceLocation getEntityTexture(AbstractClientPlayer entity) {
+        return entity.getLocationSkin();
+    }
+
+    public void transformHeldFull3DItemLayer() {
+        GlStateManager.translate(0.0F, 0.1875F, 0.0F);
+    }
+
+    /**
+     * Allows the render to do state modifications necessary before the model is rendered.
+     */
+    protected void preRenderCallback(AbstractClientPlayer entitylivingbaseIn, float partialTickTime) {
+        float f = 0.9375F;
+        GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
+    }
+
+    protected void renderEntityName(AbstractClientPlayer entityIn, double x, double y, double z, String name, double distanceSq) {
+        if (distanceSq < 100.0D) {
+            Scoreboard scoreboard = entityIn.getWorldScoreboard();
+            ScoreObjective scoreobjective = scoreboard.getObjectiveInDisplaySlot(2);
+
+            if (scoreobjective != null) {
+                Score score = scoreboard.getOrCreateScore(entityIn.getName(), scoreobjective);
+                this.renderLivingLabel(entityIn, score.getScorePoints() + " " + scoreobjective.getDisplayName(), x, y, z, 64);
+                y += (double) ((float) this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * 0.025F);
+            }
+        }
+
+        super.renderEntityName(entityIn, x, y, z, name, distanceSq);
+    }
+
+    public void renderRightArm(AbstractClientPlayer clientPlayer) {
+        float f = 1.0F;
+        GlStateManager.color(1.0F, 1.0F, 1.0F);
+        float f1 = 0.0625F;
+        ModelPlayer modelplayer = this.getMainModel();
+        this.setModelVisibilities(clientPlayer);
+        GlStateManager.enableBlend();
+        modelplayer.swingProgress = 0.0F;
+        modelplayer.isSneak = false;
+        modelplayer.setRotationAngles(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F, clientPlayer);
+        modelplayer.bipedRightArm.rotateAngleX = 0.0F;
+        modelplayer.bipedRightArm.render(0.0625F);
+        modelplayer.bipedRightArmwear.rotateAngleX = 0.0F;
+        modelplayer.bipedRightArmwear.render(0.0625F);
+        GlStateManager.disableBlend();
+    }
+
+    public void renderLeftArm(AbstractClientPlayer clientPlayer) {
+        float f = 1.0F;
+        GlStateManager.color(1.0F, 1.0F, 1.0F);
+        float f1 = 0.0625F;
+        ModelPlayer modelplayer = this.getMainModel();
+        this.setModelVisibilities(clientPlayer);
+        GlStateManager.enableBlend();
+        modelplayer.isSneak = false;
+        modelplayer.swingProgress = 0.0F;
+        modelplayer.setRotationAngles(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F, clientPlayer);
+        modelplayer.bipedLeftArm.rotateAngleX = 0.0F;
+        modelplayer.bipedLeftArm.render(0.0625F);
+        modelplayer.bipedLeftArmwear.rotateAngleX = 0.0F;
+        modelplayer.bipedLeftArmwear.render(0.0625F);
+        GlStateManager.disableBlend();
+    }
+
+    /**
+     * Sets a simple glTranslate on a LivingEntity.
+     */
+    protected void renderLivingAt(AbstractClientPlayer entityLivingBaseIn, double x, double y, double z) {
+        if (entityLivingBaseIn.isEntityAlive() && entityLivingBaseIn.isPlayerSleeping()) {
+            super.renderLivingAt(entityLivingBaseIn, x + (double) entityLivingBaseIn.renderOffsetX, y + (double) entityLivingBaseIn.renderOffsetY, z + (double) entityLivingBaseIn.renderOffsetZ);
+        } else {
+            super.renderLivingAt(entityLivingBaseIn, x, y, z);
+        }
+    }
+
+    protected void applyRotations(AbstractClientPlayer entityLiving, float p_77043_2_, float rotationYaw, float partialTicks) {
+        if (entityLiving.isEntityAlive() && entityLiving.isPlayerSleeping()) {
+            GlStateManager.rotate(entityLiving.getBedOrientationInDegrees(), 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate(this.getDeathMaxRotation(entityLiving), 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(270.0F, 0.0F, 1.0F, 0.0F);
+        } else if (entityLiving.isElytraFlying()) {
+            super.applyRotations(entityLiving, p_77043_2_, rotationYaw, partialTicks);
+            float f = (float) entityLiving.getTicksElytraFlying() + partialTicks;
+            float f1 = MathHelper.clamp(f * f / 100.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(f1 * (-90.0F - entityLiving.rotationPitch), 1.0F, 0.0F, 0.0F);
+            Vec3d vec3d = entityLiving.getLook(partialTicks);
+            double d0 = entityLiving.motionX * entityLiving.motionX + entityLiving.motionZ * entityLiving.motionZ;
+            double d1 = vec3d.x * vec3d.x + vec3d.z * vec3d.z;
+
+            if (d0 > 0.0D && d1 > 0.0D) {
+                double d2 = (entityLiving.motionX * vec3d.x + entityLiving.motionZ * vec3d.z) / (Math.sqrt(d0) * Math.sqrt(d1));
+                double d3 = entityLiving.motionX * vec3d.z - entityLiving.motionZ * vec3d.x;
+                GlStateManager.rotate((float) (Math.signum(d3) * Math.acos(d2)) * 180.0F / (float) Math.PI, 0.0F, 1.0F, 0.0F);
+            }
+        } else {
+            super.applyRotations(entityLiving, p_77043_2_, rotationYaw, partialTicks);
+        }
+    }
 }

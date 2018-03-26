@@ -1,5 +1,5 @@
-# Blender MTL File: 'WeaponPack by ToastPlayTv - Copy (2).blend'
-# Material Count: 1
+# Blender MTL File: 'WeaponPack by ToastPlayTv.blend'
+# Material Count: 2
 
 newmtl Material
 Ns 96.078431
@@ -10,4 +10,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd Magnum.png
+map_Kd m4a4.png

@@ -222,9 +222,8 @@ public class TileEntityChestShop extends MLTileEntity {
         }
 
         toDrop.forEach(stack -> {
-            EntityItem entityItem = new EntityItem(player.world, player.posX, player.posY, player.posZ, stack);
-            entityItem.setPickupDelay(0);
-            player.dropItemAndGetStack(entityItem);
+            EntityItem entity_item = player.dropItem(stack, false);
+            entity_item.setPickupDelay(0);
         });
     }
 

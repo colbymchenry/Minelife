@@ -283,7 +283,7 @@ public class ModEconomy extends MLMod {
             if (itemStack.getItem() == ModEconomy.itemCash) {
                 amount -= ItemCash.getAmount(itemStack);
                 emptySlots.add(i);
-                // TODO: Test
+
                 if (amount < 1) {
                     cashItems.addAll(ItemCash.getStacks(Math.abs(amount)));
                     break;

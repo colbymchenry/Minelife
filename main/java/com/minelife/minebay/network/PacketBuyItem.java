@@ -105,12 +105,10 @@ public class PacketBuyItem implements IMessage {
                     }
 
                     for (ItemStack stack : toDrop) {
-                        EntityItem entityItem = new EntityItem(player.world, player.posX, player.posY, player.posZ, stack);
-                        entityItem.setPickupDelay(0);
-                        player.dropItemAndGetStack(entityItem);
+                        EntityItem entity_item = player.dropItem(stack, false);
+                        entity_item.setPickupDelay(0);
                     }
 
-                    // TODO: Some may not fit into inventory, need to make sure we deposit into ATM
                     int didNotFitWithdraw = ModEconomy.withdrawCashPiles(player.getUniqueID(), totalCost);
                     int didNotFitDeposit = ModEconomy.depositCashPiles(listing.getSellerID(), totalCost);
 

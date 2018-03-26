@@ -1,6 +1,6 @@
 # Blender v2.79 (sub 0) OBJ File: 'WeaponPack by ToastPlayTv - Copy (2).blend'
 # www.blender.org
-mtllib Magnum.mtl
+mtllib magnum.mtl
 o Revolver_Cube
 v 0.282900 2.686193 0.606860
 v 0.282900 2.686193 -0.529831

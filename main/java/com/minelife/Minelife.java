@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.minelife.chestshop.ModChestShop;
 import com.minelife.economy.ModEconomy;
 import com.minelife.essentials.ModEssentials;
+import com.minelife.guns.ModGuns;
 import com.minelife.minebay.ModMinebay;
 import com.minelife.netty.ModNetty;
 import com.minelife.permission.ModPermission;
@@ -50,6 +51,7 @@ public class Minelife {
         MODS.add(new ModChestShop());
         MODS.add(new ModRealEstate());
         MODS.add(new ModMinebay());
+        MODS.add(new ModGuns());
     }
 
     @Mod.EventHandler

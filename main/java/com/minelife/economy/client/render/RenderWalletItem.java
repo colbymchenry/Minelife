@@ -35,7 +35,6 @@ public class RenderWalletItem extends WrappedItemModel implements IItemRenderer 
         super(wrappedModel);
         cashStack = new ItemStack(ModEconomy.itemWallet, 1, DyeColor.values().length + 1);
         ModelRegistryHelper.registerPreBakeCallback(modelRegistry -> cashFirstModel = modelRegistry.getObject(wrappedModel1));
-
     }
 
     @Override
