@@ -15,53 +15,57 @@
     "category": "neutral",
     "sounds": ["minelife:atm/key_stroke"]
   },
-  "guns.M4A4.shot": {
+  "guns.m4a4.shot": {
     "category": "neutral",
-    "sounds": ["minelife:guns/M4A4"]
+    "sounds": ["minelife:guns/m4a4"]
   },
-  "guns.M4A4.reload": {
+  "guns.m4a4.reload": {
     "category": "neutral",
-    "sounds": ["minelife:guns/M4A4_RELOAD"]
+    "sounds": ["minelife:guns/m4a4_reload"]
   },
-  "guns.Barrett.shot": {
+  "guns.barrett.shot": {
     "category": "neutral",
-    "sounds": ["minelife:guns/Barrett"]
+    "sounds": ["minelife:guns/barrett"]
   },
-  "guns.Barrett.reload": {
+  "guns.barrett.reload": {
     "category": "neutral",
-    "sounds": ["minelife:guns/Barrett_RELOAD"]
+    "sounds": ["minelife:guns/barrett_reload"]
   },
-  "guns.AWP.shot": {
+  "guns.awp.shot": {
     "category": "neutral",
-    "sounds": ["minelife:guns/AWP"]
+    "sounds": ["minelife:guns/awp"]
   },
-  "guns.AWP.reload": {
+  "guns.awp.reload": {
     "category": "neutral",
-    "sounds": ["minelife:guns/AWP_RELOAD"]
+    "sounds": ["minelife:guns/awp_reload"]
   },
-  "guns.AK47.shot": {
+  "guns.ak47.shot": {
     "category": "neutral",
-    "sounds": ["minelife:guns/AK47"]
+    "sounds": ["minelife:guns/ak47"]
   },
-  "guns.AK47.reload": {
+  "guns.ak47.reload": {
     "category": "neutral",
-    "sounds": ["minelife:guns/AK47_RELOAD"]
+    "sounds": ["minelife:guns/ak47_reload"]
   },
-  "guns.Magnum.shot": {
+  "guns.magnum.shot": {
     "category": "neutral",
-    "sounds": ["minelife:guns/Magnum"]
+    "sounds": ["minelife:guns/magnum"]
   },
-  "guns.Magnum.reload": {
+  "guns.magnum.reload": {
     "category": "neutral",
-    "sounds": ["minelife:guns/Magnum_RELOAD"]
+    "sounds": ["minelife:guns/magnum_reload"]
   },
-  "guns.DesertEagle.shot": {
+  "guns.desert_eagle.shot": {
     "category": "neutral",
-    "sounds": ["minelife:guns/DesertEagle"]
+    "sounds": ["minelife:guns/desert_eagle"]
   },
-  "guns.DesertEagle.reload": {
+  "guns.desert_eagle.reload": {
     "category": "neutral",
-    "sounds": ["minelife:guns/DesertEagle_RELOAD"]
+    "sounds": ["minelife:guns/desert_eagle_reload"]
+  },
+  "guns.empty": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/empty"]
   },
   "guns.turret_shot": {
     "category": "neutral",

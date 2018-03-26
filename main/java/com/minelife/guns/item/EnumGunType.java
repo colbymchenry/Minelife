@@ -44,7 +44,7 @@ public enum EnumGunType {
             Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -1.4, 0.1)),
             Lists.newArrayList(new Rotation(-44.77, 0, 1, 0), new Rotation(0.02, 1, 0, 0), new Translation(-1.34, 0.18, 0.2)));
 
-    public ResourceLocation texture;
+    public ResourceLocation texture, soundShot, soundReload;
     public CCModel model;
     public final int fireRate, damage, clipSize, reloadTime;
     public final double bulletSpeed;
@@ -66,6 +66,8 @@ public enum EnumGunType {
         this.firstPersonTransformations = firstPersonTransformations;
         this.thirdPersonTransformations = thirdPersonTransformations;
         this.adsTransformations = adsTransformations;
+        this.soundShot = new ResourceLocation(Minelife.MOD_ID, "guns." + name() + ".shot");
+        this.soundReload = new ResourceLocation(Minelife.MOD_ID, "guns." + name() + ".reload");
     }
 
     @SideOnly(Side.CLIENT)
