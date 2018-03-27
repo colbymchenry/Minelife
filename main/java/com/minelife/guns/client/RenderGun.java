@@ -37,9 +37,17 @@ public class RenderGun implements IItemRenderer {
     public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType transformType) {
         EnumGunType gunType = EnumGunType.values()[stack.getMetadata()];
 
+        GlStateManager.pushMatrix();
         GlStateManager.pushAttrib();
 
         if (transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND) {
+
+            gunType.shotAnimation.animate();
+            GlStateManager.translate(gunType.shotAnimation.posX(), gunType.shotAnimation.posY(), gunType.shotAnimation.posZ());
+            GlStateManager.rotate(gunType.shotAnimation.rotX(), 1, 0, 0);
+            GlStateManager.rotate(gunType.shotAnimation.rotY(), 0, 1, 0);
+            GlStateManager.rotate(gunType.shotAnimation.rotZ(), 0, 0, 1);
+
             if (Mouse.isButtonDown(1))
                 gunType.adsTransformations.forEach(Transformation::glApply);
             else
@@ -58,6 +66,7 @@ public class RenderGun implements IItemRenderer {
         ccrs.draw();
         GlStateManager.enableCull();
         GlStateManager.popAttrib();
+        GlStateManager.popMatrix();
     }
 
     @Override

@@ -61,6 +61,8 @@ public class PacketFire implements IMessage {
 
                 pingDelay = pingDelay > 200 ? 60 : pingDelay;
 
+                if(ItemGun.isReloading(player.getHeldItemMainhand())) return;
+
                 if(ItemGun.getClipCount(player.getHeldItemMainhand()) <= 0) return;
 
                 Bullet bullet = new Bullet(player.getEntityWorld(), player.posX, player.posY + player.getEyeHeight(), player.posZ, pingDelay,

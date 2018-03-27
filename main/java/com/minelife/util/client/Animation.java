@@ -5,15 +5,16 @@ import com.sun.javafx.geom.Vec3f;
 
 import java.util.List;
 
-public class Animation {
+public class Animation implements Cloneable {
 
-    private List<Object> actions;
+    private List<Object> actions, originalActions;
     private float rotX, rotY, rotZ, posX, posY, posZ, scalar;
     private float startX, startY, startZ;
     private int stage = 0;
 
     public Animation(float startX, float startY, float startZ) {
         actions = Lists.newArrayList();
+        originalActions = Lists.newArrayList();
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;
@@ -22,42 +23,59 @@ public class Animation {
         this.posZ = startZ;
     }
 
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public List<Object> getActions() {
         return actions;
     }
 
     public Animation rotate(float rotX, float rotY, float rotZ) {
         actions.add(new SimpleRotation(rotX, rotY, rotZ));
+        originalActions.add(new SimpleRotation(rotX, rotY, rotZ));
         return this;
     }
 
     public Animation rotateTo(EnumRotation axis, float degree, float increment) {
         actions.add(new ComplexRotation(axis, degree, increment));
+        originalActions.add(new ComplexRotation(axis, degree, increment));
         return this;
     }
 
     public Animation translate(float x, float y, float z) {
         actions.add(new SimpleTranslation(x, y, z));
+        originalActions.add(new SimpleTranslation(x, y, z));
         return this;
     }
 
     public Animation translateTo(float x, float y, float z, float increment) {
         actions.add(new ComplexTranslation(x, y, z, increment));
+        originalActions.add(new ComplexTranslation(x, y, z, increment));
         return this;
     }
 
     public Animation scale(float scalar) {
         actions.add(new SimpleScalar(scalar));
+        originalActions.add(new SimpleScalar(scalar));
         return this;
     }
 
     public Animation scaleTo(float scalar, float increment) {
         actions.add(new ComplexScalar(scalar, increment));
+        originalActions.add(new ComplexScalar(scalar, increment));
         return this;
     }
 
     public Animation wait(int milliseconds) {
         actions.add(new Wait(milliseconds));
+        originalActions.add(new Wait(milliseconds));
         return this;
     }
 

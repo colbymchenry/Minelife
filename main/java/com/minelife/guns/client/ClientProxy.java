@@ -10,6 +10,7 @@ import com.minelife.guns.item.ItemGun;
 import com.minelife.guns.packet.PacketFire;
 import com.minelife.guns.packet.PacketReload;
 import com.minelife.minebay.client.gui.GuiItemListings;
+import com.minelife.util.client.Animation;
 import com.minelife.util.client.GuiHelper;
 import com.minelife.util.client.render.AdjustPlayerModelEvent;
 import net.minecraft.client.Minecraft;
@@ -90,6 +91,8 @@ public class ClientProxy extends MLProxy {
                 return;
             }
 
+            if(ItemGun.isReloading(player.getHeldItemMainhand())) return;
+
             Minelife.getNetwork().sendToServer(new PacketFire(player.getLookVec()));
 
             Bullet bullet = new Bullet(player.getEntityWorld(), player.posX, player.posY + player.getEyeHeight(), player.posZ, 0,
@@ -97,9 +100,9 @@ public class ClientProxy extends MLProxy {
 
             Bullet.BULLETS.add(bullet);
 
-            // TODO: Problem is gun comes up and down every shot, gotta make it not do that.
             ItemGun.decreaseAmmo(player.getHeldItemMainhand());
 
+            gunType.resetAnimation();
             player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gunType.soundShot), SoundCategory.NEUTRAL, 1, 1);
         }
     }
@@ -114,6 +117,12 @@ public class ClientProxy extends MLProxy {
             if(player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
 
             EnumGunType gunType = EnumGunType.values()[player.getHeldItemMainhand().getMetadata()];
+
+            if(ItemGun.getClipCount(player.getHeldItemMainhand()) == gunType.clipSize) return;
+
+            System.out.println(ItemGun.getClipCount(player.getHeldItemMainhand()) + "," + gunType.clipSize);
+
+            if(ItemGun.isReloading(player.getHeldItemMainhand())) return;
 
             if(ItemAmmo.getAmmoCount(player, player.getHeldItemMainhand()) <= 0) {
                 player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Guns] " + TextFormatting.GOLD + "No ammo."));

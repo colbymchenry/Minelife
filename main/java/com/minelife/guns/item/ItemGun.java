@@ -52,6 +52,11 @@ public class ItemGun extends Item {
     }
 
     @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
+    }
+
+    @Override
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         if (worldIn.isRemote) return;
 
@@ -59,7 +64,7 @@ public class ItemGun extends Item {
 
         EntityPlayer player = (EntityPlayer) entityIn;
 
-        boolean reloading = stack.hasTagCompound() && stack.getTagCompound().hasKey("reloadTime");
+        boolean reloading = isReloading(stack);
 
         if (isSelected) {
             if (reloading) {
@@ -115,18 +120,19 @@ public class ItemGun extends Item {
         int clipCount = getClipCount(gunStack);
         int amountNeeded = clipSize - clipCount;
         List<Integer> depletedSlots = Lists.newArrayList();
-        ItemStack lastStack = null;
         int lastStackSlot = -1;
 
+        int toAdd = 0;
         for (Integer slot : ammo.keySet()) {
             ItemStack stack = ammo.get(slot);
             if (stack.getCount() <= amountNeeded) {
                 amountNeeded -= stack.getCount();
                 depletedSlots.add(slot);
+                toAdd += stack.getCount();
             } else {
-                lastStack = stack.copy();
-                lastStack.setCount(lastStack.getCount() - amountNeeded);
+                stack.setCount(stack.getCount() - amountNeeded);
                 lastStackSlot = slot;
+                toAdd += amountNeeded;
                 amountNeeded = 0;
             }
 
@@ -134,10 +140,10 @@ public class ItemGun extends Item {
         }
 
         depletedSlots.forEach(slot -> player.inventory.setInventorySlotContents(slot, ItemStack.EMPTY));
-        if (lastStackSlot > -1) player.inventory.setInventorySlotContents(lastStackSlot, lastStack);
+        if (lastStackSlot > -1) player.inventory.setInventorySlotContents(lastStackSlot, ammo.get(lastStackSlot));
 
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
-        tagCompound.setInteger("ammo", (clipSize - clipCount) - amountNeeded);
+        tagCompound.setInteger("ammo", clipCount + toAdd);
         gunStack.setTagCompound(tagCompound);
     }
 
@@ -153,6 +159,10 @@ public class ItemGun extends Item {
         ammo = ammo < 0 ? 0 : ammo;
 
         tagCompound.setInteger("ammo", ammo);
+    }
+
+    public static boolean isReloading(ItemStack stack) {
+        return stack.hasTagCompound() && stack.getTagCompound().hasKey("reloadTime");
     }
 
 }

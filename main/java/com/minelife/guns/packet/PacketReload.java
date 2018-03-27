@@ -3,6 +3,7 @@ package com.minelife.guns.packet;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumGunType;
 import com.minelife.guns.item.ItemAmmo;
+import com.minelife.guns.item.ItemGun;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -50,6 +51,10 @@ public class PacketReload implements IMessage {
                 long pingDelay = System.currentTimeMillis() - message.timeStamp;
 
                 pingDelay = pingDelay > 200 ? 60 : pingDelay;
+
+                if(ItemGun.getClipCount(player.getHeldItemMainhand()) == gunType.clipSize) return;
+
+                if(ItemGun.isReloading(player.getHeldItemMainhand())) return;
 
                 if(ItemAmmo.getAmmoCount(player, player.getHeldItemMainhand()) <= 0) return;
 
