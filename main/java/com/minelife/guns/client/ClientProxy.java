@@ -4,13 +4,11 @@ import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
-import com.minelife.guns.item.EnumGunType;
+import com.minelife.guns.item.EnumAttachment;
+import com.minelife.guns.item.EnumGun;
 import com.minelife.guns.item.ItemAmmo;
 import com.minelife.guns.item.ItemGun;
-import com.minelife.guns.packet.PacketFire;
 import com.minelife.guns.packet.PacketReload;
-import com.minelife.minebay.client.gui.GuiItemListings;
-import com.minelife.util.client.Animation;
 import com.minelife.util.client.GuiHelper;
 import com.minelife.util.client.render.AdjustPlayerModelEvent;
 import net.minecraft.client.Minecraft;
@@ -20,7 +18,6 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
@@ -40,7 +37,8 @@ import org.lwjgl.opengl.GL11;
 
 public class ClientProxy extends MLProxy {
 
-    private KeyBinding reloadKey = new KeyBinding("key." + Minelife.MOD_ID + ".minebay", Keyboard.KEY_R, Minelife.NAME);
+    private KeyBinding reloadKey = new KeyBinding("key." + Minelife.MOD_ID + ".guns", Keyboard.KEY_R, Minelife.NAME);
+    private KeyBinding modifyKey = new KeyBinding("key." + Minelife.MOD_ID + ".guns", Keyboard.KEY_Z, Minelife.NAME);
 
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
@@ -48,16 +46,20 @@ public class ClientProxy extends MLProxy {
 
         ModGuns.itemAmmo.registerModels();
 
-        RenderGun gunRenderer = new RenderGun();
-        for (EnumGunType gunType : EnumGunType.values())
-            registerItemRenderer(ModGuns.itemGun, gunType.ordinal(), "minelife:gun", gunRenderer);
+        RenderGun gun = new RenderGun();
+        for (EnumGun gunType : EnumGun.values())
+            registerItemRenderer(ModGuns.itemGun, gunType.ordinal(), "minelife:gun", gun);
+
+        RenderAttachment attachmentRenderer = new RenderAttachment();
+        for (EnumAttachment attachment : EnumAttachment.values())
+            registerItemRenderer(ModGuns.itemAttachment, attachment.ordinal(), "minelife:gunAttachment", attachmentRenderer);
     }
 
     @SubscribeEvent
     public void updateModel(AdjustPlayerModelEvent event) {
         if (event.getPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() != ModGuns.itemGun) return;
 
-        EnumGunType gunType = EnumGunType.values()[event.getPlayer().getHeldItem(EnumHand.MAIN_HAND).getMetadata()];
+        EnumGun gunType = EnumGun.values()[event.getPlayer().getHeldItem(EnumHand.MAIN_HAND).getMetadata()];
 
         event.getModel().bipedRightArm.rotateAngleZ = 0.0F;
         event.getModel().bipedRightArm.rotateAngleY = -(0.1F * 0.6F) + event.getModel().bipedHead.rotateAngleY;
@@ -66,7 +68,7 @@ public class ClientProxy extends MLProxy {
         event.getModel().bipedRightArm.rotateAngleZ += MathHelper.cos(event.getAgeInTicks() * 0.09F) * 0.05F + 0.05F;
         event.getModel().bipedRightArm.rotateAngleX += MathHelper.sin(event.getAgeInTicks() * 0.067F) * 0.05F;
 
-        if (gunType == EnumGunType.DESERT_EAGLE || gunType == EnumGunType.MAGNUM) return;
+        if (gunType == EnumGun.DESERT_EAGLE || gunType == EnumGun.MAGNUM) return;
 
         event.getModel().bipedLeftArm.rotateAngleZ = 0.0F;
         event.getModel().bipedLeftArm.rotateAngleY = 0.1F * 0.6F + event.getModel().bipedHead.rotateAngleY + 0.4F;
@@ -82,9 +84,9 @@ public class ClientProxy extends MLProxy {
 
         EntityPlayer player = Minecraft.getMinecraft().player;
 
-        if(player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
+        if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
 
-        EnumGunType gunType = EnumGunType.values()[player.getHeldItemMainhand().getMetadata()];
+        EnumGun gunType = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
 
         if (event.getButton() == 0 && event.isButtonstate() && !gunType.isFullAuto) {
             event.setCanceled(true);
@@ -95,20 +97,20 @@ public class ClientProxy extends MLProxy {
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if(reloadKey.isPressed()) {
+        if (reloadKey.isPressed()) {
             EntityPlayer player = Minecraft.getMinecraft().player;
 
-            if(player == null) return;
+            if (player == null) return;
 
-            if(player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
+            if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
 
-            EnumGunType gunType = EnumGunType.values()[player.getHeldItemMainhand().getMetadata()];
+            EnumGun gunType = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
 
-            if(ItemGun.getClipCount(player.getHeldItemMainhand()) == gunType.clipSize) return;
+            if (ItemGun.getClipCount(player.getHeldItemMainhand()) == gunType.clipSize) return;
 
-            if(ItemGun.isReloading(player.getHeldItemMainhand())) return;
+            if (ItemGun.isReloading(player.getHeldItemMainhand())) return;
 
-            if(ItemAmmo.getAmmoCount(player, player.getHeldItemMainhand()) <= 0) {
+            if (ItemAmmo.getAmmoCount(player, player.getHeldItemMainhand()) <= 0) {
                 player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Guns] " + TextFormatting.GOLD + "No ammo."));
                 return;
             }
@@ -116,27 +118,31 @@ public class ClientProxy extends MLProxy {
             Minelife.getNetwork().sendToServer(new PacketReload());
             player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gunType.soundReload), SoundCategory.NEUTRAL, 1, 1);
         }
+
+        if(modifyKey.isPressed() && Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() == ModGuns.itemGun) {
+            Minecraft.getMinecraft().displayGuiScreen(new GuiModifyGun(Minecraft.getMinecraft().player.inventory.currentItem));
+        }
     }
 
     @SubscribeEvent
     public void renderOverlay(RenderGameOverlayEvent event) {
         if (Minecraft.getMinecraft().player == null) return;
 
-        if(Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
+        if (Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
 
-        if(event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
+        if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
             event.setCanceled(true);
 
             boolean aimingDownSight = Mouse.isButtonDown(1);
             ItemStack gunStack = Minecraft.getMinecraft().player.getHeldItemMainhand();
-            EnumGunType gunType = EnumGunType.values()[gunStack.getMetadata()];
+            EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
 
             GlStateManager.disableTexture2D();
             GlStateManager.enableBlend();
 
-            if(gunStack.hasTagCompound() && gunStack.getTagCompound().hasKey("reloadTime")) {
+            if (ItemGun.getReloadTime(gunStack) != 0) {
                 long max = gunType.reloadTime;
-                long fill = gunStack.getTagCompound().getLong("reloadTime") - System.currentTimeMillis();
+                long fill = ItemGun.getReloadTime(gunStack) - System.currentTimeMillis();
                 if (fill > -1) {
                     // 20D is the width of the progress bar
                     double toFill = ((double) fill / (double) max) * (30D);
@@ -155,14 +161,14 @@ public class ClientProxy extends MLProxy {
             int centerX = (event.getResolution().getScaledWidth() / 2);
             int centerY = (event.getResolution().getScaledHeight() / 2);
 
-            if(!aimingDownSight) {
+            if (!aimingDownSight) {
                 GuiHelper.drawRect(centerX, centerY, 1, 1);
                 GuiHelper.drawRect(centerX, centerY - 6, 1, 3);
                 GuiHelper.drawRect(centerX, centerY + 4, 1, 3);
                 GuiHelper.drawRect(centerX - 6, centerY, 3, 1);
                 GuiHelper.drawRect(centerX + 4, centerY, 3, 1);
             } else {
-                if(gunType == EnumGunType.BARRETT || gunType == EnumGunType.AWP)
+                if (gunType == EnumGun.BARRETT || gunType == EnumGun.AWP)
                     drawSniperScope(centerX, centerY, 100);
             }
 
@@ -180,7 +186,7 @@ public class ClientProxy extends MLProxy {
     public void fovUpdate(FOVUpdateEvent event) {
         if (event.getEntity().getHeldItemMainhand().getItem() == ModGuns.itemGun) {
             if (Mouse.isButtonDown(1)) {
-                EnumGunType gunType = EnumGunType.values()[event.getEntity().getHeldItemMainhand().getMetadata()];
+                EnumGun gunType = EnumGun.values()[event.getEntity().getHeldItemMainhand().getMetadata()];
 //                if (ItemGun.getSight(event.entity.getHeldItem()) != null) {
 //                    ItemSight site = (ItemSight) ItemGun.getSight(event.entity.getHeldItem()).getItem();
 //                    if (site == MLItems.holographicSight) {
@@ -193,11 +199,11 @@ public class ClientProxy extends MLProxy {
 //
 //
 //                } else {
-                    if(gunType == EnumGunType.AWP || gunType == EnumGunType.BARRETT) {
-                        event.setNewfov(0.2f);
-                    } else {
-                        event.setNewfov(0.9f);
-                    }
+                if (gunType == EnumGun.AWP || gunType == EnumGun.BARRETT) {
+                    event.setNewfov(0.2f);
+                } else {
+                    event.setNewfov(0.9f);
+                }
 //                }
             }
         }

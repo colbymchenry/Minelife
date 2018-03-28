@@ -8,6 +8,7 @@ import codechicken.lib.texture.TextureUtils;
 import codechicken.lib.util.TransformUtils;
 import com.google.common.collect.Lists;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.item.ItemWallet;
 import com.minelife.util.fireworks.DyeColor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -50,7 +51,8 @@ public class RenderWalletItem extends WrappedItemModel implements IItemRenderer 
         if (cashRenderModel == null) {
             cashRenderModel = cashFirstModel.getOverrides().handleItemState(cashFirstModel, cashStack, world, Minecraft.getMinecraft().player);
         } else {
-            CCRenderItem.getOverridenRenderItem().renderItem(cashStack, cashRenderModel);
+            if (cashRenderModel != null && ItemWallet.getHoldings(stack) > 0)
+                CCRenderItem.getOverridenRenderItem().renderItem(cashStack, cashRenderModel);
         }
 
         GlStateManager.translate(-0.5, -0.5, -0.5);

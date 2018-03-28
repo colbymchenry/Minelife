@@ -3,7 +3,6 @@ package com.minelife.guns.item;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.guns.ModGuns;
-import com.minelife.util.NumberConversions;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -96,7 +95,7 @@ public class ItemAmmo extends Item {
     }
 
     public static int getAmmoCount(EntityPlayer player, ItemStack gunStack) {
-        EnumGunType gunType = EnumGunType.values()[gunStack.getMetadata()];
+        EnumGun gun = EnumGun.values()[gunStack.getMetadata()];
 
         Map<Integer, ItemStack> sniperRounds = ItemAmmo.getSniperAmmo(player);
         Map<Integer, ItemStack> assaultRounds = ItemAmmo.getAssaultAmmo(player);
@@ -111,7 +110,7 @@ public class ItemAmmo extends Item {
         int pistolCount = 0;
         for (ItemStack stack : pistolRounds.values()) pistolCount += stack.getCount();
 
-        switch (gunType) {
+        switch (gun) {
             case AWP:
                 return sniperCount;
             case BARRETT:

@@ -9,9 +9,12 @@ import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import com.google.common.collect.Lists;
-import com.minelife.guns.item.EnumGunType;
+import com.minelife.guns.item.EnumAttachment;
+import com.minelife.guns.item.EnumGun;
+import com.minelife.guns.item.ItemGun;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -35,27 +38,46 @@ public class RenderGun implements IItemRenderer {
 
     @Override
     public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType transformType) {
-        EnumGunType gunType = EnumGunType.values()[stack.getMetadata()];
+        EnumGun gun = EnumGun.values()[stack.getMetadata()];
+        EnumAttachment attachment = ItemGun.getAttachment(stack);
+
+//        if(transformType == ItemCameraTransforms.TransformType.GUI) {
+//            GlStateManager.pushMatrix();
+//            GlStateManager.disableLighting();
+//            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+//            GlStateManager.scale(0.05, 0.05, 0.05);
+//            GlStateManager.rotate(180f, 0, 0, 1);
+//            GlStateManager.rotate(45f, 0, 1, 0);
+//            Minecraft.getMinecraft().getTextureManager().bindTexture(gun.guiTexture);
+//            Gui.drawModalRectWithCustomSizedTexture(-30, -27, 0, 0, 32, 32, 32, 32);
+//            GlStateManager.popMatrix();
+//            return;
+//        }
 
         GlStateManager.pushMatrix();
         GlStateManager.pushAttrib();
 
+        if (transformType == ItemCameraTransforms.TransformType.GUI)
+            gun.guiTransformations.forEach(Transformation::glApply);
+
         if (transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND) {
-            gunType.shotAnimation.animate();
+            gun.shotAnimation.animate();
 
             boolean aimingDownSight = Mouse.isButtonDown(1);
 
-            if (aimingDownSight)
-                gunType.adsTransformations.forEach(Transformation::glApply);
-            else
-                gunType.firstPersonTransformations.forEach(Transformation::glApply);
+            if (aimingDownSight) {
+                gun.adsTransformations.forEach(Transformation::glApply);
+                if (attachment != null && attachment.adsTransformations.get(gun) != null)
+                    attachment.adsTransformations.get(gun).transformations.forEach(Transformation::glApply);
+            } else
+                gun.firstPersonTransformations.forEach(Transformation::glApply);
 
-            GlStateManager.translate(gunType.shotAnimation.posX(), gunType.shotAnimation.posY(), gunType.shotAnimation.posZ());
-            GlStateManager.rotate(gunType.shotAnimation.rotX(), 1, 0, 0);
-            GlStateManager.rotate(gunType.shotAnimation.rotY(), 0, 1, 0);
-            GlStateManager.rotate(gunType.shotAnimation.rotZ(), 0, 0, 1);
+            GlStateManager.translate(gun.shotAnimation.posX(), gun.shotAnimation.posY(), gun.shotAnimation.posZ());
+            GlStateManager.rotate(gun.shotAnimation.rotX(), 1, 0, 0);
+            GlStateManager.rotate(gun.shotAnimation.rotY(), 0, 1, 0);
+            GlStateManager.rotate(gun.shotAnimation.rotZ(), 0, 0, 1);
 
-            if(aimingDownSight && gunType == EnumGunType.AWP || gunType == EnumGunType.BARRETT) {
+            if (aimingDownSight && (gun == EnumGun.AWP || gun == EnumGun.BARRETT)) {
                 GlStateManager.popAttrib();
                 GlStateManager.popMatrix();
                 return;
@@ -63,15 +85,27 @@ public class RenderGun implements IItemRenderer {
         }
 
         if (transformType == ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND)
-            gunType.thirdPersonTransformations.forEach(Transformation::glApply);
+            gun.thirdPersonTransformations.forEach(Transformation::glApply);
 
         GlStateManager.disableCull();
         RenderHelper.enableGUIStandardItemLighting();
         CCRenderState ccrs = CCRenderState.instance();
-        Minecraft.getMinecraft().getTextureManager().bindTexture(gunType.texture);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(gun.texture);
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
-        gunType.model.render(ccrs);
+        gun.model.render(ccrs);
         ccrs.draw();
+
+        // draw attachment
+        if (attachment != null && attachment.transformations.get(gun) != null) {
+            GlStateManager.pushMatrix();
+            attachment.transformations.get(gun).transformations.forEach(Transformation::glApply);
+            Minecraft.getMinecraft().getTextureManager().bindTexture(attachment.textureModel);
+            ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
+            attachment.model.render(ccrs);
+            ccrs.draw();
+            GlStateManager.popMatrix();
+        }
+
         GlStateManager.enableCull();
         GlStateManager.popAttrib();
         GlStateManager.popMatrix();

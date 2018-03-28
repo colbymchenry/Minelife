@@ -3,6 +3,7 @@ package com.minelife.guns;
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.guns.item.ItemAmmo;
+import com.minelife.guns.item.ItemAttachment;
 import com.minelife.guns.item.ItemGun;
 import com.minelife.guns.packet.PacketBullet;
 import com.minelife.guns.packet.PacketFire;
@@ -17,11 +18,13 @@ public class ModGuns extends MLMod {
 
     public static ItemGun itemGun;
     public static ItemAmmo itemAmmo;
+    public static ItemAttachment itemAttachment;
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         registerItem(itemGun = new ItemGun());
         registerItem(itemAmmo = new ItemAmmo());
+        registerItem(itemAttachment = new ItemAttachment());
         MinecraftForge.EVENT_BUS.register(this);
         registerPacket(PacketFire.Handler.class, PacketFire.class, Side.SERVER);
         registerPacket(PacketBullet.Handler.class, PacketBullet.class, Side.CLIENT);

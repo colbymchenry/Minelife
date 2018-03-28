@@ -1,18 +1,8 @@
 package com.minelife.guns.packet;
 
-import com.minelife.Minelife;
-import com.minelife.guns.Bullet;
-import com.minelife.guns.ModGuns;
-import com.minelife.guns.item.EnumGunType;
 import com.minelife.guns.item.ItemGun;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;

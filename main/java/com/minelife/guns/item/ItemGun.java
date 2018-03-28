@@ -5,16 +5,14 @@ import com.minelife.Minelife;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.packet.PacketBullet;
+import com.minelife.guns.packet.PacketFire;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -41,14 +39,14 @@ public class ItemGun extends Item {
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
         if (tab != CreativeTabs.MISC) return;
-        for (EnumGunType gunType : EnumGunType.values()) {
-            items.add(new ItemStack(this, 1, gunType.ordinal()));
+        for (EnumGun gun : EnumGun.values()) {
+            items.add(new ItemStack(this, 1, gun.ordinal()));
         }
     }
 
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
-        return WordUtils.capitalizeFully(EnumGunType.values()[stack.getMetadata()].name().replace("_", " "));
+        return WordUtils.capitalizeFully(EnumGun.values()[stack.getMetadata()].name().replace("_", " "));
     }
 
     @Override
@@ -73,31 +71,42 @@ public class ItemGun extends Item {
 
         if (isSelected) {
             if (reloading) {
-                if (System.currentTimeMillis() >= stack.getTagCompound().getLong("reloadTime")) {
-                    stack.getTagCompound().removeTag("reloadTime");
+                if (System.currentTimeMillis() >= getReloadTime(stack)) {
+                    stack.getTagCompound().removeTag("ReloadTime");
                     reload(player, stack);
                     player.inventory.setInventorySlotContents(itemSlot, stack);
                 }
             }
         } else {
             if (reloading) {
-                stack.getTagCompound().removeTag("reloadTime");
+                stack.getTagCompound().removeTag("ReloadTime");
                 player.inventory.setInventorySlotContents(itemSlot, stack);
             }
         }
     }
 
+    public static long getReloadTime(ItemStack gunStack) {
+        if (gunStack.getItem() != ModGuns.itemGun) return 0;
+        return gunStack.hasTagCompound() && gunStack.getTagCompound().hasKey("ReloadTime") ? gunStack.getTagCompound().getLong("ReloadTime") : 0;
+    }
+
+    public static void setReloadTime(ItemStack gunStack, long time) {
+        NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
+        tagCompound.setLong("ReloadTime", time);
+        gunStack.setTagCompound(tagCompound);
+    }
+
     public static void reload(EntityPlayer player, ItemStack gunStack) {
         if (gunStack.getItem() != ModGuns.itemGun) return;
 
-        EnumGunType gunType = EnumGunType.values()[gunStack.getMetadata()];
+        EnumGun gun = EnumGun.values()[gunStack.getMetadata()];
 
         Map<Integer, ItemStack> sniperRounds = ItemAmmo.getSniperAmmo(player);
         Map<Integer, ItemStack> assaultRounds = ItemAmmo.getAssaultAmmo(player);
         Map<Integer, ItemStack> pistolRounds = ItemAmmo.getPistolAmmo(player);
 
 
-        switch (gunType) {
+        switch (gun) {
             case AWP:
                 doReload(player, gunStack, sniperRounds);
                 break;
@@ -120,8 +129,8 @@ public class ItemGun extends Item {
     }
 
     private static void doReload(EntityPlayer player, ItemStack gunStack, Map<Integer, ItemStack> ammo) {
-        EnumGunType gunType = EnumGunType.values()[gunStack.getMetadata()];
-        int clipSize = gunType.clipSize;
+        EnumGun gun = EnumGun.values()[gunStack.getMetadata()];
+        int clipSize = gun.clipSize;
         int clipCount = getClipCount(gunStack);
         int amountNeeded = clipSize - clipCount;
         List<Integer> depletedSlots = Lists.newArrayList();
@@ -148,41 +157,46 @@ public class ItemGun extends Item {
         if (lastStackSlot > -1) player.inventory.setInventorySlotContents(lastStackSlot, ammo.get(lastStackSlot));
 
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
-        tagCompound.setInteger("ammo", clipCount + toAdd);
+        tagCompound.setInteger("Ammo", clipCount + toAdd);
         gunStack.setTagCompound(tagCompound);
     }
 
     public static int getClipCount(ItemStack gunStack) {
-        return gunStack != null && gunStack.hasTagCompound() && gunStack.getTagCompound().hasKey("ammo") ? gunStack.getTagCompound().getInteger("ammo") : 0;
+        return gunStack != null && gunStack.hasTagCompound() && gunStack.getTagCompound().hasKey("Ammo") ? gunStack.getTagCompound().getInteger("Ammo") : 0;
     }
 
     public static void decreaseAmmo(ItemStack gunStack) {
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
 
-        int ammo = tagCompound.hasKey("ammo") ? tagCompound.getInteger("ammo") : 0;
+        int ammo = tagCompound.hasKey("Ammo") ? tagCompound.getInteger("Ammo") : 0;
         ammo -= 1;
         ammo = ammo < 0 ? 0 : ammo;
 
-        tagCompound.setInteger("ammo", ammo);
+        tagCompound.setInteger("Ammo", ammo);
     }
 
     public static boolean isReloading(ItemStack stack) {
-        return stack.hasTagCompound() && stack.getTagCompound().hasKey("reloadTime");
+        return stack.hasTagCompound() && stack.getTagCompound().hasKey("ReloadTime");
     }
 
     public static boolean fire(EntityPlayer player, Vec3d lookVector, long pingDelay) {
         if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return false;
 
-        EnumGunType gunType = EnumGunType.values()[player.getHeldItemMainhand().getMetadata()];
+        EnumGun gun = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
 
         pingDelay = pingDelay > 200 ? 60 : pingDelay;
 
         if (ItemGun.isReloading(player.getHeldItemMainhand())) return false;
 
-        if (ItemGun.getClipCount(player.getHeldItemMainhand()) <= 0) return false;
+        if (ItemGun.getClipCount(player.getHeldItemMainhand()) <= 0) {
+            if(player.world.isRemote) {
+                player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gun.soundEmpty), SoundCategory.NEUTRAL, 1, 1);
+            }
+            return false;
+        }
 
         Bullet bullet = new Bullet(player.getEntityWorld(), player.posX, player.posY + player.getEyeHeight(), player.posZ, pingDelay,
-                lookVector, gunType.bulletSpeed, gunType.damage, player);
+                lookVector, gun.bulletSpeed, gun.damage, player);
 
         Bullet.BULLETS.add(bullet);
 
@@ -192,11 +206,24 @@ public class ItemGun extends Item {
             Minelife.getNetwork().sendToAllAround(new PacketBullet(bullet),
                     new NetworkRegistry.TargetPoint(player.world.provider.getDimension(), player.posX, player.posY, player.posZ, 112));
         } else {
-            gunType.resetAnimation();
-            player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gunType.soundShot), SoundCategory.NEUTRAL, 1, 1);
+            Minelife.getNetwork().sendToServer(new PacketFire(lookVector));
+            gun.resetAnimation();
+            player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gun.soundShot), SoundCategory.NEUTRAL, 1, 1);
         }
 
         return true;
+    }
+
+    public static EnumAttachment getAttachment(ItemStack gun) {
+        if(gun == null || gun.getItem() != ModGuns.itemGun) return null;
+        return gun.hasTagCompound() && gun.getTagCompound().hasKey("Attachment") ? EnumAttachment.valueOf(gun.getTagCompound().getString("Attachment")) : null;
+    }
+
+    public static void setAttachment(ItemStack gun, EnumAttachment attachment) {
+        if(gun == null || gun.getItem() != ModGuns.itemGun) return;
+        NBTTagCompound tagCompound = gun.hasTagCompound() ? gun.getTagCompound() : new NBTTagCompound();
+        tagCompound.setString("Attachment", attachment.name());
+        gun.setTagCompound(tagCompound);
     }
 
 }
