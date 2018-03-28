@@ -2,19 +2,19 @@ package com.minelife.util.client;
 
 import com.google.common.collect.Lists;
 import com.sun.javafx.geom.Vec3f;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.List;
 
-public class Animation implements Cloneable {
+public class Animation {
 
-    private List<Object> actions, originalActions;
+    private List<Object> actions;
     private float rotX, rotY, rotZ, posX, posY, posZ, scalar;
     private float startX, startY, startZ;
     private int stage = 0;
 
     public Animation(float startX, float startY, float startZ) {
         actions = Lists.newArrayList();
-        originalActions = Lists.newArrayList();
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;
@@ -39,43 +39,36 @@ public class Animation implements Cloneable {
 
     public Animation rotate(float rotX, float rotY, float rotZ) {
         actions.add(new SimpleRotation(rotX, rotY, rotZ));
-        originalActions.add(new SimpleRotation(rotX, rotY, rotZ));
         return this;
     }
 
     public Animation rotateTo(EnumRotation axis, float degree, float increment) {
         actions.add(new ComplexRotation(axis, degree, increment));
-        originalActions.add(new ComplexRotation(axis, degree, increment));
         return this;
     }
 
     public Animation translate(float x, float y, float z) {
         actions.add(new SimpleTranslation(x, y, z));
-        originalActions.add(new SimpleTranslation(x, y, z));
         return this;
     }
 
     public Animation translateTo(float x, float y, float z, float increment) {
         actions.add(new ComplexTranslation(x, y, z, increment));
-        originalActions.add(new ComplexTranslation(x, y, z, increment));
         return this;
     }
 
     public Animation scale(float scalar) {
         actions.add(new SimpleScalar(scalar));
-        originalActions.add(new SimpleScalar(scalar));
         return this;
     }
 
     public Animation scaleTo(float scalar, float increment) {
         actions.add(new ComplexScalar(scalar, increment));
-        originalActions.add(new ComplexScalar(scalar, increment));
         return this;
     }
 
     public Animation wait(int milliseconds) {
         actions.add(new Wait(milliseconds));
-        originalActions.add(new Wait(milliseconds));
         return this;
     }
 
@@ -290,11 +283,10 @@ public class Animation implements Cloneable {
 
     private class ComplexTranslation {
         private float x, y, z, increment;
-        private boolean done = false;
-        private Vec3f v1, v2, v1v2;
+        private boolean done = false, xLess = false, yLess = false, zLess = false;
 
-        private boolean isLessX = false, isLessY = false, isLessZ = false;
         private boolean started = false;
+        private Vec3d lookVector;
 
         public ComplexTranslation(float x, float y, float z, float increment) {
             this.x = x;
@@ -304,54 +296,26 @@ public class Animation implements Cloneable {
         }
 
         public void execute() {
-
             if (!started) {
                 started = true;
-
-                v1 = new Vec3f(posX(), posX(), posZ());
-                v2 = new Vec3f(x, y, z);
-
-                v1v2 = new Vec3f(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
-
-                if (x < posX()) {
-                    isLessX = true;
-                }
-
-                if (y < posY()) {
-                    isLessY = true;
-                }
-
-                if (z < posZ()) {
-                    isLessZ = true;
-                }
+                this.lookVector = new Vec3d(x - posX, y - posY, z - posZ).normalize();
             }
 
-            if (isLessX) {
-                float x = posX - Math.abs(increment * v1v2.x);
-                setPosX(x < this.x ? this.x : x);
-            } else {
-                float x = posX + Math.abs(increment * v1v2.x);
-                setPosX(x > this.x ? this.x : x);
-            }
 
-            if (isLessY) {
-                float y = posY - Math.abs(increment * v1v2.y);
-                setPosY(y < this.y ? this.y : y);
-            } else {
-                float y = posY + Math.abs(increment * v1v2.y);
-                setPosY(y > this.y ? this.y : y);
-            }
+            Vec3d goalVec = new Vec3d(x, y, z);
+            Vec3d posVec = new Vec3d(posX, posY, posZ);
 
-            if (isLessZ) {
-                float z = posZ - Math.abs(increment * v1v2.z);
-                setPosZ(z < this.z ? this.z : z);
-            } else {
-                float z = posZ + Math.abs(increment * v1v2.z);
-                setPosZ(z > this.z ? this.z : z);
-            }
+            if(posVec.equals(new Vec3d(x, y, z))) done = true;
 
-            if (posX == x && posY == y && posZ == z) {
+            setPosX((float) (posX + (this.lookVector.x * increment)));
+            setPosY((float) (posY + (this.lookVector.y * increment)));
+            setPosZ((float) (posZ + (this.lookVector.z * increment)));
+
+            if(Math.abs(this.lookVector.dotProduct(new Vec3d(goalVec.x - posVec.x, goalVec.y - posVec.y, goalVec.z - posVec.z).normalize()) + 1) < 0.1f) {
                 done = true;
+                setPosX(x);
+                setPosY(y);
+                setPosZ(z);
             }
         }
     }
@@ -423,6 +387,6 @@ public class Animation implements Cloneable {
     }
 
     public enum EnumRotation {
-        x, y, z;
+        x, y, z
     }
 }

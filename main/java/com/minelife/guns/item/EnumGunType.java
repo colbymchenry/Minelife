@@ -10,9 +10,11 @@ import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.util.client.Animation;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Mouse;
 import scala.actors.threadpool.Arrays;
 
 import java.util.List;
@@ -98,16 +100,16 @@ public enum EnumGunType {
                 this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0f, 0.2f);
                 break;
             case AWP:
-                this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0f, 0.2f);
+                this.shotAnimation = new Animation(0, 0, 0).translateTo(0, 0.2f, 1.2f, 0.1f).translateTo(0, 0f, 0, 0.08f);
                 break;
             case BARRETT:
-                this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0f, 0.2f);
+                this.shotAnimation = new Animation(0, 0, 0).translateTo(0, 0.2f, 1.2f, 0.1f).translateTo(0, 0f, 0, 0.08f);
                 break;
             case MAGNUM:
-                this.shotAnimation = new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.x, 35, 6.5f).rotateTo(Animation.EnumRotation.x, 0, 4.5f);
+                this.shotAnimation = new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.x, 35, 3.5f).rotateTo(Animation.EnumRotation.x, 0, 4.5f);
                 break;
             case DESERT_EAGLE:
-                this.shotAnimation = new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.x, 65, 6.5f).rotateTo(Animation.EnumRotation.x, 0, 4.5f);
+                this.shotAnimation = new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.x, 35, 3.5f).rotateTo(Animation.EnumRotation.x, 0, 4.5f);
                 break;
         }
     }

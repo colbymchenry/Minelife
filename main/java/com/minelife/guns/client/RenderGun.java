@@ -41,17 +41,25 @@ public class RenderGun implements IItemRenderer {
         GlStateManager.pushAttrib();
 
         if (transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND) {
-
             gunType.shotAnimation.animate();
+
+            boolean aimingDownSight = Mouse.isButtonDown(1);
+
+            if (aimingDownSight)
+                gunType.adsTransformations.forEach(Transformation::glApply);
+            else
+                gunType.firstPersonTransformations.forEach(Transformation::glApply);
+
             GlStateManager.translate(gunType.shotAnimation.posX(), gunType.shotAnimation.posY(), gunType.shotAnimation.posZ());
             GlStateManager.rotate(gunType.shotAnimation.rotX(), 1, 0, 0);
             GlStateManager.rotate(gunType.shotAnimation.rotY(), 0, 1, 0);
             GlStateManager.rotate(gunType.shotAnimation.rotZ(), 0, 0, 1);
 
-            if (Mouse.isButtonDown(1))
-                gunType.adsTransformations.forEach(Transformation::glApply);
-            else
-                gunType.firstPersonTransformations.forEach(Transformation::glApply);
+            if(aimingDownSight && gunType == EnumGunType.AWP || gunType == EnumGunType.BARRETT) {
+                GlStateManager.popAttrib();
+                GlStateManager.popMatrix();
+                return;
+            }
         }
 
         if (transformType == ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND)

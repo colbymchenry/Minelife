@@ -14,6 +14,7 @@ import com.minelife.util.client.Animation;
 import com.minelife.util.client.GuiHelper;
 import com.minelife.util.client.render.AdjustPlayerModelEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,6 +26,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -34,6 +36,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 public class ClientProxy extends MLProxy {
 
@@ -86,24 +89,7 @@ public class ClientProxy extends MLProxy {
         if (event.getButton() == 0 && event.isButtonstate() && !gunType.isFullAuto) {
             event.setCanceled(true);
 
-            if(ItemGun.getClipCount(player.getHeldItemMainhand()) <= 0) {
-                player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(new ResourceLocation(Minelife.MOD_ID, "guns.empty")), SoundCategory.NEUTRAL, 1, 1);
-                return;
-            }
-
-            if(ItemGun.isReloading(player.getHeldItemMainhand())) return;
-
-            Minelife.getNetwork().sendToServer(new PacketFire(player.getLookVec()));
-
-            Bullet bullet = new Bullet(player.getEntityWorld(), player.posX, player.posY + player.getEyeHeight(), player.posZ, 0,
-                    player.getLookVec(), gunType.bulletSpeed, gunType.damage, player);
-
-            Bullet.BULLETS.add(bullet);
-
-            ItemGun.decreaseAmmo(player.getHeldItemMainhand());
-
-            gunType.resetAnimation();
-            player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gunType.soundShot), SoundCategory.NEUTRAL, 1, 1);
+            ItemGun.fire(player, player.getLookVec(), 0);
         }
     }
 
@@ -119,8 +105,6 @@ public class ClientProxy extends MLProxy {
             EnumGunType gunType = EnumGunType.values()[player.getHeldItemMainhand().getMetadata()];
 
             if(ItemGun.getClipCount(player.getHeldItemMainhand()) == gunType.clipSize) return;
-
-            System.out.println(ItemGun.getClipCount(player.getHeldItemMainhand()) + "," + gunType.clipSize);
 
             if(ItemGun.isReloading(player.getHeldItemMainhand())) return;
 
@@ -143,6 +127,7 @@ public class ClientProxy extends MLProxy {
         if(event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
             event.setCanceled(true);
 
+            boolean aimingDownSight = Mouse.isButtonDown(1);
             ItemStack gunStack = Minecraft.getMinecraft().player.getHeldItemMainhand();
             EnumGunType gunType = EnumGunType.values()[gunStack.getMetadata()];
 
@@ -167,15 +152,18 @@ public class ClientProxy extends MLProxy {
 
             GlStateManager.color(1, 1, 1, 1);
 
-            if(!Mouse.isButtonDown(1)) {
-                int centerX = (event.getResolution().getScaledWidth() / 2);
-                int centerY = (event.getResolution().getScaledHeight() / 2);
+            int centerX = (event.getResolution().getScaledWidth() / 2);
+            int centerY = (event.getResolution().getScaledHeight() / 2);
 
+            if(!aimingDownSight) {
                 GuiHelper.drawRect(centerX, centerY, 1, 1);
                 GuiHelper.drawRect(centerX, centerY - 6, 1, 3);
                 GuiHelper.drawRect(centerX, centerY + 4, 1, 3);
                 GuiHelper.drawRect(centerX - 6, centerY, 3, 1);
                 GuiHelper.drawRect(centerX + 4, centerY, 3, 1);
+            } else {
+                if(gunType == EnumGunType.BARRETT || gunType == EnumGunType.AWP)
+                    drawSniperScope(centerX, centerY, 100);
             }
 
             GlStateManager.disableBlend();
@@ -188,33 +176,11 @@ public class ClientProxy extends MLProxy {
         Bullet.BULLETS.removeIf(bullet -> bullet.tick(event.getPartialTicks()));
     }
 
-//
-//    @SubscribeEvent
-//    public void onTick(TickEvent.ClientTickEvent event) {
-//        if (Minecraft.getMinecraft().thePlayer == null) return;
-//
-//        ItemStack heldItem = Minecraft.getMinecraft().thePlayer.getHeldItem();
-//
-//        if (ItemGun.getCurrentClipHoldings(heldItem) < 1) return;
-//
-//        if (ItemGunClient.modifying) return;
-//
-//        if (Minecraft.getMinecraft().currentScreen != null) {
-//            ItemGunClient.aimingDownSight = false;
-//            return;
-//        }
-//
-//        if (Mouse.isButtonDown(0) && ((ItemGun) heldItem.getItem()).isFullAuto()) {
-//            Minelife.NETWORK.sendToServer(new PacketMouseClick());
-//        }
-//
-//    }
-//
-//    @SubscribeEvent
-//    public void fovUpdate(FOVUpdateEvent event) {
-//        if (event.entity.getHeldItem() != null && event.entity.getHeldItem().getItem() instanceof ItemGun) {
-//            ItemGun gun = (ItemGun) event.entity.getHeldItem().getItem();
-//            if (ItemGunClient.aimingDownSight) {
+    @SubscribeEvent
+    public void fovUpdate(FOVUpdateEvent event) {
+        if (event.getEntity().getHeldItemMainhand().getItem() == ModGuns.itemGun) {
+            if (Mouse.isButtonDown(1)) {
+                EnumGunType gunType = EnumGunType.values()[event.getEntity().getHeldItemMainhand().getMetadata()];
 //                if (ItemGun.getSight(event.entity.getHeldItem()) != null) {
 //                    ItemSight site = (ItemSight) ItemGun.getSight(event.entity.getHeldItem()).getItem();
 //                    if (site == MLItems.holographicSight) {
@@ -227,14 +193,146 @@ public class ClientProxy extends MLProxy {
 //
 //
 //                } else {
-//                    if(gun == MLItems.awp || gun == MLItems.barrett) {
-//                        event.newfov = 0.2F;
-//                    } else {
-//                        event.newfov = 0.9f;
-//                    }
+                    if(gunType == EnumGunType.AWP || gunType == EnumGunType.BARRETT) {
+                        event.setNewfov(0.2f);
+                    } else {
+                        event.setNewfov(0.9f);
+                    }
 //                }
-//            }
-//        }
-//    }
+            }
+        }
+    }
+
+    void drawSniperScope(float x, float y, float radius) {
+        int i;
+        int lineAmount = 500;
+        double twicePi = 2.0f * Math.PI;
+
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(0, 0, 0, 1);
+
+        GL11.glLineWidth(10);
+
+        /**
+         * Draw the circle
+         */
+        GL11.glBegin(GL11.GL_LINE_LOOP);
+        {
+
+            for (i = 0; i <= lineAmount; i++) {
+                float edgeX = x + (radius * (float) Math.cos(i * twicePi / lineAmount));
+                float edgeY = y + (radius * (float) Math.sin(i * twicePi / lineAmount));
+
+                GL11.glVertex2f(edgeX, edgeY);
+
+            }
+        }
+        GL11.glEnd();
+
+        /**
+         * Fill corners around the circle
+         */
+        for (i = 0; i <= lineAmount; i++) {
+            GL11.glBegin(GL11.GL_LINE_LOOP);
+            {
+                float edgeX = x + (radius * (float) Math.cos(i * twicePi / lineAmount));
+                float edgeY = y + (radius * (float) Math.sin(i * twicePi / lineAmount));
+
+                if (edgeX < x)
+                    GL11.glVertex2f(x - radius, edgeY);
+
+                if (edgeX > x)
+                    GL11.glVertex2f(x + radius, edgeY);
+
+                GL11.glVertex2f(edgeX, edgeY);
+            }
+            GL11.glEnd();
+        }
+
+        /**
+         * START: Draw the rectangles around the circle
+         */
+
+        Minecraft mc = Minecraft.getMinecraft();
+        ScaledResolution scaledResolution = new ScaledResolution(mc);
+
+        float startX = 0, startY = 0;
+        float width = x - radius;
+        float height = scaledResolution.getScaledHeight();
+        GL11.glBegin(GL11.GL_QUADS);
+        {
+            GL11.glVertex2f(startX, startY + height);
+            GL11.glVertex2f(startX + width, startY + height);
+            GL11.glVertex2f(startX + width, startY);
+            GL11.glVertex2f(startX, startY);
+        }
+        GL11.glEnd();
+
+        startX = width;
+        startY = 0;
+        width = scaledResolution.getScaledWidth();
+        height = y - radius;
+        GL11.glBegin(GL11.GL_QUADS);
+        {
+            GL11.glVertex2f(startX, startY + height);
+            GL11.glVertex2f(startX + width, startY + height);
+            GL11.glVertex2f(startX + width, startY);
+            GL11.glVertex2f(startX, startY);
+        }
+        GL11.glEnd();
+
+        startX = 0;
+        startY = y + radius;
+        GL11.glBegin(GL11.GL_QUADS);
+        {
+            GL11.glVertex2f(startX, startY + height);
+            GL11.glVertex2f(startX + width, startY + height);
+            GL11.glVertex2f(startX + width, startY);
+            GL11.glVertex2f(startX, startY);
+        }
+        GL11.glEnd();
+
+        startX = x + radius;
+        startY = 0;
+        height = scaledResolution.getScaledHeight();
+        GL11.glBegin(GL11.GL_QUADS);
+        {
+            GL11.glVertex2f(startX, startY + height);
+            GL11.glVertex2f(startX + width, startY + height);
+            GL11.glVertex2f(startX + width, startY);
+            GL11.glVertex2f(startX, startY);
+        }
+        GL11.glEnd();
+
+        /**
+         * END: Drawing rectangles around the circle
+         */
+
+        GL11.glLineWidth(4);
+
+        /**
+         * Draw crosshairs
+         */
+        GL11.glBegin(GL11.GL_LINES);
+        {
+            GL11.glVertex2f(x, y - radius);
+            GL11.glVertex2f(x, y + radius);
+        }
+        GL11.glEnd();
+
+        GL11.glBegin(GL11.GL_LINES);
+        {
+            GL11.glVertex2f(x - radius, y);
+            GL11.glVertex2f(x + radius, y);
+        }
+        GL11.glEnd();
+
+        GL11.glLineWidth(1);
+
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(1, 1, 1, 1);
+    }
 
 }

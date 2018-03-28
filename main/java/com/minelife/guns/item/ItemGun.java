@@ -2,17 +2,22 @@ package com.minelife.guns.item;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
+import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
+import com.minelife.guns.packet.PacketBullet;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.List;
@@ -151,7 +156,7 @@ public class ItemGun extends Item {
         return gunStack != null && gunStack.hasTagCompound() && gunStack.getTagCompound().hasKey("ammo") ? gunStack.getTagCompound().getInteger("ammo") : 0;
     }
 
-    public static void decreaseAmmo(ItemStack gunStack){
+    public static void decreaseAmmo(ItemStack gunStack) {
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
 
         int ammo = tagCompound.hasKey("ammo") ? tagCompound.getInteger("ammo") : 0;
@@ -163,6 +168,35 @@ public class ItemGun extends Item {
 
     public static boolean isReloading(ItemStack stack) {
         return stack.hasTagCompound() && stack.getTagCompound().hasKey("reloadTime");
+    }
+
+    public static boolean fire(EntityPlayer player, Vec3d lookVector, long pingDelay) {
+        if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return false;
+
+        EnumGunType gunType = EnumGunType.values()[player.getHeldItemMainhand().getMetadata()];
+
+        pingDelay = pingDelay > 200 ? 60 : pingDelay;
+
+        if (ItemGun.isReloading(player.getHeldItemMainhand())) return false;
+
+        if (ItemGun.getClipCount(player.getHeldItemMainhand()) <= 0) return false;
+
+        Bullet bullet = new Bullet(player.getEntityWorld(), player.posX, player.posY + player.getEyeHeight(), player.posZ, pingDelay,
+                lookVector, gunType.bulletSpeed, gunType.damage, player);
+
+        Bullet.BULLETS.add(bullet);
+
+        ItemGun.decreaseAmmo(player.getHeldItemMainhand());
+
+        if (!player.world.isRemote) {
+            Minelife.getNetwork().sendToAllAround(new PacketBullet(bullet),
+                    new NetworkRegistry.TargetPoint(player.world.provider.getDimension(), player.posX, player.posY, player.posZ, 112));
+        } else {
+            gunType.resetAnimation();
+            player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gunType.soundShot), SoundCategory.NEUTRAL, 1, 1);
+        }
+
+        return true;
     }
 
 }

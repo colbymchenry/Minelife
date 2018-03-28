@@ -50,31 +50,7 @@ public class PacketFire implements IMessage {
 
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketFire message, MessageContext ctx) {
-            FMLServerHandler.instance().getServer().addScheduledTask(() -> {
-                EntityPlayerMP player = ctx.getServerHandler().player;
-
-                if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
-
-                EnumGunType gunType = EnumGunType.values()[player.getHeldItemMainhand().getMetadata()];
-
-                long pingDelay = System.currentTimeMillis() - message.timeStamp;
-
-                pingDelay = pingDelay > 200 ? 60 : pingDelay;
-
-                if(ItemGun.isReloading(player.getHeldItemMainhand())) return;
-
-                if(ItemGun.getClipCount(player.getHeldItemMainhand()) <= 0) return;
-
-                Bullet bullet = new Bullet(player.getEntityWorld(), player.posX, player.posY + player.getEyeHeight(), player.posZ, pingDelay,
-                        message.lookVector, gunType.bulletSpeed, gunType.damage, player);
-
-                Bullet.BULLETS.add(bullet);
-
-                ItemGun.decreaseAmmo(player.getHeldItemMainhand());
-
-                Minelife.getNetwork().sendToAllAround(new PacketBullet(bullet),
-                        new NetworkRegistry.TargetPoint(player.world.provider.getDimension(), player.posX, player.posY, player.posZ, 112));
-            });
+            FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.fire(ctx.getServerHandler().player, message.lookVector, System.currentTimeMillis() - message.timeStamp));
             return null;
         }
 
