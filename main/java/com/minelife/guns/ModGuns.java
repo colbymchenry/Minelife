@@ -5,6 +5,7 @@ import com.minelife.MLProxy;
 import com.minelife.guns.item.ItemAmmo;
 import com.minelife.guns.item.ItemAttachment;
 import com.minelife.guns.item.ItemGun;
+import com.minelife.guns.packet.PacketAttachment;
 import com.minelife.guns.packet.PacketBullet;
 import com.minelife.guns.packet.PacketFire;
 import com.minelife.guns.packet.PacketReload;
@@ -29,6 +30,7 @@ public class ModGuns extends MLMod {
         registerPacket(PacketFire.Handler.class, PacketFire.class, Side.SERVER);
         registerPacket(PacketBullet.Handler.class, PacketBullet.class, Side.CLIENT);
         registerPacket(PacketReload.Handler.class, PacketReload.class, Side.SERVER);
+        registerPacket(PacketAttachment.Handler.class, PacketAttachment.class, Side.SERVER);
     }
 
     @Override

@@ -225,6 +225,7 @@ public abstract class GuiScrollableContent extends Gui {
         GL11.glColor4f(0f, 0f, 0f, 1f);
         GuiHelper.drawRect(x, y, width, height);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(1, 1, 1, 1);
     }
 
     public void drawGrip(int gripHeight) {
@@ -232,6 +233,7 @@ public abstract class GuiScrollableContent extends Gui {
         GL11.glColor4f(90f / 255f, 90f / 255f, 90f / 255f, 1f);
         GuiHelper.drawRect(0, 0, getGripWidth(), gripHeight);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(1, 1, 1, 1);
     }
 
     public void drawSelectionBox(int index, int width, int height) {
@@ -239,6 +241,7 @@ public abstract class GuiScrollableContent extends Gui {
         GL11.glColor4f(128f / 255f, 128f / 255f, 128f / 255f, 1f);
         GuiHelper.drawRect(0, 0, width, height);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(1, 1, 1, 1);
     }
 
     public void drawTrack() {
@@ -246,6 +249,7 @@ public abstract class GuiScrollableContent extends Gui {
         GL11.glColor4f(60f / 255f, 60f / 255f, 60f / 255f, 1f);
         GuiHelper.drawRect(x + width - getGripWidth(), y, getGripWidth(), height);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(1, 1, 1, 1);
     }
 
     public abstract int getObjectHeight(int index);

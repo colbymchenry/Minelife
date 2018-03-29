@@ -28,6 +28,8 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -37,8 +39,8 @@ import org.lwjgl.opengl.GL11;
 
 public class ClientProxy extends MLProxy {
 
-    private KeyBinding reloadKey = new KeyBinding("key." + Minelife.MOD_ID + ".guns", Keyboard.KEY_R, Minelife.NAME);
-    private KeyBinding modifyKey = new KeyBinding("key." + Minelife.MOD_ID + ".guns", Keyboard.KEY_Z, Minelife.NAME);
+    private KeyBinding reloadKey = new KeyBinding("key." + Minelife.MOD_ID + ".guns.reload", Keyboard.KEY_R, Minelife.NAME);
+    private KeyBinding modifyKey = new KeyBinding("key." + Minelife.MOD_ID + ".guns.modify", Keyboard.KEY_Z, Minelife.NAME);
 
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
@@ -53,6 +55,12 @@ public class ClientProxy extends MLProxy {
         RenderAttachment attachmentRenderer = new RenderAttachment();
         for (EnumAttachment attachment : EnumAttachment.values())
             registerItemRenderer(ModGuns.itemAttachment, attachment.ordinal(), "minelife:gunAttachment", attachmentRenderer);
+    }
+
+    @Override
+    public void init(FMLInitializationEvent event) throws Exception {
+        ClientRegistry.registerKeyBinding(reloadKey);
+        ClientRegistry.registerKeyBinding(modifyKey);
     }
 
     @SubscribeEvent
@@ -86,9 +94,7 @@ public class ClientProxy extends MLProxy {
 
         if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
 
-        EnumGun gunType = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
-
-        if (event.getButton() == 0 && event.isButtonstate() && !gunType.isFullAuto) {
+        if (event.getButton() == 0 && event.isButtonstate()) {
             event.setCanceled(true);
 
             ItemGun.fire(player, player.getLookVec(), 0);
@@ -97,26 +103,13 @@ public class ClientProxy extends MLProxy {
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
+        // TODO: can't reload M4a4
         if (reloadKey.isPressed()) {
             EntityPlayer player = Minecraft.getMinecraft().player;
 
             if (player == null) return;
 
-            if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
-
-            EnumGun gunType = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
-
-            if (ItemGun.getClipCount(player.getHeldItemMainhand()) == gunType.clipSize) return;
-
-            if (ItemGun.isReloading(player.getHeldItemMainhand())) return;
-
-            if (ItemAmmo.getAmmoCount(player, player.getHeldItemMainhand()) <= 0) {
-                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Guns] " + TextFormatting.GOLD + "No ammo."));
-                return;
-            }
-
-            Minelife.getNetwork().sendToServer(new PacketReload());
-            player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gunType.soundReload), SoundCategory.NEUTRAL, 1, 1);
+            ItemGun.reload(player, 0);
         }
 
         if(modifyKey.isPressed() && Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() == ModGuns.itemGun) {

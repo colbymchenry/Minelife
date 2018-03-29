@@ -19,37 +19,37 @@ import java.util.Map;
 
 public enum EnumGun {
 
-    AK47(70, 6, 30, 2500, 8, 1, 393, 2.8, true,
+    AK47(70, 6, 30, 2500, 6, 7, 387, 2.8, true,
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.8, -0.5, 0.2)),
             Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -1.6, -0.6)),
             Lists.newArrayList(new Rotation(-44.77, 0, 1, 0), new Rotation(0.03, 1, 0, 0), new Translation(-1.34, -0.32, 0.2)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(1.1, 0.1, 0))),
 
-    M4A4(70, 4, 40, 1300, 8, 1, 393, 2.8, true,
+    M4A4(70, 4, 40, 1300, 8, 8, 386, 2.8, true,
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-1, 0.4, 0.7)),
             Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -0.9, -0.3)),
             Lists.newArrayList(new Rotation(-44.77, 0, 1, 0), new Rotation(0.02, 1, 0, 0), new Translation(-1.34, 0.48, 0.2)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(0.8, 0.5, 0))),
 
-    AWP(1200, 15, 5, 3100, 8, 1, 393, 4.8, false,
+    AWP(1200, 15, 5, 3100, 8, 7, 389, 4.8, false,
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.8, 0, 0.2)),
             Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -1.5, -0.1)),
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.8, -0.5, 0.2)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.3), new Translation(1.2, 0.5, 0))),
 
-    BARRETT(400, 20, 5, 20, 8, 1, 393, 3.8, false,
+    BARRETT(400, 20, 5, 20, 6, 8, 392, 3.8, false,
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.6, -0.5, 0.2)),
             Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -1.5, 0.3)),
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.8, -0.5, 0.2)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.35), new Translation(1.9, 0.6, 0))),
 
-    DESERT_EAGLE(50, 7, 10, 2400, 8, 1, 393, 2.8, false,
+    DESERT_EAGLE(50, 7, 10, 2400, 5, 7, 385, 2.8, false,
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.4, -0.5, -0.5)),
             Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -1.6, 0.3)),
             Lists.newArrayList(new Rotation(-44.77, 0, 1, 0), new Rotation(0.04, 1, 0, 0), new Translation(-1.34, -0.12, 0.2)),
             Lists.newArrayList(new Translation(0.2, -0.65, 0))),
 
-    MAGNUM(100, 5, 6, 20, 8, 1, 393, 2.8, false,
+    MAGNUM(100, 5, 6, 20, 6, 9, 380, 2.8, false,
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.65, -0.1, -0.1)),
             Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -1.4, 0.1)),
             Lists.newArrayList(new Rotation(-44.77, 0, 1, 0), new Rotation(0.02, 1, 0, 0), new Translation(-1.34, 0.18, 0.2)),
@@ -67,7 +67,7 @@ public enum EnumGun {
     public Animation shotAnimation;
     public double width, height, length;
 
-    EnumGun(int fireRate, int damage, int clipSize, int reloadTime, int width, int height, int length, double bulletSpeed, boolean isFullAuto,
+    EnumGun(int fireRate, int damage, int clipSize, int reloadTime, double width, double height, double length, double bulletSpeed, boolean isFullAuto,
             List<Transformation> firstPersonTransformations, List<Transformation> thirdPersonTransformations,
             List<Transformation> adsTransformations,
             List<Transformation> guiTransformations) {

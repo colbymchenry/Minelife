@@ -37,27 +37,7 @@ public class PacketReload implements IMessage {
 
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketReload message, MessageContext ctx) {
-            FMLServerHandler.instance().getServer().addScheduledTask(() -> {
-                EntityPlayerMP player = ctx.getServerHandler().player;
-
-                if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
-
-                EnumGun gunType = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
-
-                long pingDelay = System.currentTimeMillis() - message.timeStamp;
-
-                pingDelay = pingDelay > 200 ? 60 : pingDelay;
-
-                if(ItemGun.getClipCount(player.getHeldItemMainhand()) == gunType.clipSize) return;
-
-                if(ItemGun.isReloading(player.getHeldItemMainhand())) return;
-
-                if(ItemAmmo.getAmmoCount(player, player.getHeldItemMainhand()) <= 0) return;
-
-                ItemStack gunStack = player.getHeldItemMainhand();
-                ItemGun.setReloadTime(gunStack, System.currentTimeMillis() + gunType.reloadTime - pingDelay);
-                player.setHeldItem(EnumHand.MAIN_HAND, gunStack);
-            });
+            FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.reload(ctx.getServerHandler().player, System.currentTimeMillis() - message.timeStamp));
             return null;
         }
 

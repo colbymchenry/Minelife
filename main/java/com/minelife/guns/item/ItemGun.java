@@ -6,14 +6,18 @@ import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.packet.PacketBullet;
 import com.minelife.guns.packet.PacketFire;
+import com.minelife.guns.packet.PacketReload;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.*;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.commons.lang3.text.WordUtils;
@@ -46,7 +50,8 @@ public class ItemGun extends Item {
 
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
-        return WordUtils.capitalizeFully(EnumGun.values()[stack.getMetadata()].name().replace("_", " "));
+        return ItemGun.getCustomName(stack) != null ? TextFormatting.ITALIC + ItemGun.getCustomName(stack) :
+                WordUtils.capitalizeFully(EnumGun.values()[stack.getMetadata()].name().replace("_", " "));
     }
 
     @Override
@@ -189,7 +194,7 @@ public class ItemGun extends Item {
         if (ItemGun.isReloading(player.getHeldItemMainhand())) return false;
 
         if (ItemGun.getClipCount(player.getHeldItemMainhand()) <= 0) {
-            if(player.world.isRemote) {
+            if (player.world.isRemote) {
                 player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gun.soundEmpty), SoundCategory.NEUTRAL, 1, 1);
             }
             return false;
@@ -214,15 +219,62 @@ public class ItemGun extends Item {
         return true;
     }
 
+    public static boolean reload(EntityPlayer player, long pingDelay) {
+        if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return false;
+
+        EnumGun gunType = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
+
+        pingDelay = pingDelay > 200 ? 60 : pingDelay;
+
+        if (ItemGun.getClipCount(player.getHeldItemMainhand()) == gunType.clipSize) return false;
+
+        if (ItemGun.isReloading(player.getHeldItemMainhand())) return false;
+
+        if (ItemAmmo.getAmmoCount(player, player.getHeldItemMainhand()) <= 0) {
+            if (player.world.isRemote) {
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Guns] " + TextFormatting.GOLD + "Out of ammo."));
+            }
+            return false;
+        }
+
+        ItemStack gunStack = player.getHeldItemMainhand();
+        ItemGun.setReloadTime(gunStack, System.currentTimeMillis() + gunType.reloadTime - pingDelay);
+        player.setHeldItem(EnumHand.MAIN_HAND, gunStack);
+
+        if (player.world.isRemote) {
+            Minelife.getNetwork().sendToServer(new PacketReload());
+            player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gunType.soundReload), SoundCategory.NEUTRAL, 1, 1);
+        }
+        return true;
+    }
+
     public static EnumAttachment getAttachment(ItemStack gun) {
-        if(gun == null || gun.getItem() != ModGuns.itemGun) return null;
+        if (gun == null || gun.getItem() != ModGuns.itemGun) return null;
         return gun.hasTagCompound() && gun.getTagCompound().hasKey("Attachment") ? EnumAttachment.valueOf(gun.getTagCompound().getString("Attachment")) : null;
     }
 
     public static void setAttachment(ItemStack gun, EnumAttachment attachment) {
-        if(gun == null || gun.getItem() != ModGuns.itemGun) return;
+        if (gun == null || gun.getItem() != ModGuns.itemGun) return;
         NBTTagCompound tagCompound = gun.hasTagCompound() ? gun.getTagCompound() : new NBTTagCompound();
-        tagCompound.setString("Attachment", attachment.name());
+        if (attachment == null)
+            tagCompound.removeTag("Attachment");
+        else
+            tagCompound.setString("Attachment", attachment.name());
+        gun.setTagCompound(tagCompound);
+    }
+
+    public static String getCustomName(ItemStack gun) {
+        if (gun == null || gun.getItem() != ModGuns.itemGun) return null;
+        return gun.hasTagCompound() && gun.getTagCompound().hasKey("CustomName") ? gun.getTagCompound().getString("CustomName") : null;
+    }
+
+    public static void setCustomName(ItemStack gun, String name) {
+        if (gun == null || gun.getItem() != ModGuns.itemGun) return;
+        NBTTagCompound tagCompound = gun.hasTagCompound() ? gun.getTagCompound() : new NBTTagCompound();
+        if (name == null)
+            tagCompound.removeTag("CustomName");
+        else
+            tagCompound.setString("CustomName", name);
         gun.setTagCompound(tagCompound);
     }
 
