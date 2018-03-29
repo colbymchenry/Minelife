@@ -9,9 +9,12 @@ import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import com.google.common.collect.Lists;
+import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumAttachment;
 import com.minelife.guns.item.EnumGun;
 import com.minelife.guns.item.ItemGun;
+import com.minelife.util.client.GuiFakeInventory;
+import com.minelife.util.client.GuiHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -22,6 +25,7 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.model.IModelState;
@@ -30,6 +34,10 @@ import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.GL_AMBIENT;
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 
 public class RenderGun implements IItemRenderer {
 
@@ -98,11 +106,9 @@ public class RenderGun implements IItemRenderer {
         // draw attachment
         if (attachment != null && attachment.transformations.get(gun) != null) {
             GlStateManager.pushMatrix();
+            attachment.transformations.get(EnumGun.DESERT_EAGLE).transformations = Lists.newArrayList(new Scale(2,2, 2), new Translation(0.41, 0.8, -0.25), new Rotation(-0.07, 0, 1, 0));
             attachment.transformations.get(gun).transformations.forEach(Transformation::glApply);
-            Minecraft.getMinecraft().getTextureManager().bindTexture(attachment.textureModel);
-            ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
-            attachment.model.render(ccrs);
-            ccrs.draw();
+            GuiHelper.renderItem(new ItemStack(ModGuns.itemAttachment, 1, 1), ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND);
             GlStateManager.popMatrix();
         }
 

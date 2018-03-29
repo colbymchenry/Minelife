@@ -180,6 +180,12 @@ public class ClientProxy extends MLProxy {
         if (event.getEntity().getHeldItemMainhand().getItem() == ModGuns.itemGun) {
             if (Mouse.isButtonDown(1)) {
                 EnumGun gunType = EnumGun.values()[event.getEntity().getHeldItemMainhand().getMetadata()];
+                EnumAttachment attachment = ItemGun.getAttachment(event.getEntity().getHeldItemMainhand());
+                if(attachment != null) {
+                    if(attachment == EnumAttachment.HOLOGRAPHIC) {
+                        event.setNewfov(0.7F);
+                    }
+                }
 //                if (ItemGun.getSight(event.entity.getHeldItem()) != null) {
 //                    ItemSight site = (ItemSight) ItemGun.getSight(event.entity.getHeldItem()).getItem();
 //                    if (site == MLItems.holographicSight) {

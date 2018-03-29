@@ -68,8 +68,9 @@ public class GuiModifyGun extends GuiScreen {
         GlStateManager.popMatrix();
         GlStateManager.disableLighting();
 
-        fontRenderer.drawString("Current Site: " + (ItemGun.getAttachment(gunStack) == null ? "None" : ItemGun.getAttachment(gunStack).name()),
-                guiLeft + 130, guiTop + 10, 0xFFFFFF);
+        fontRenderer.drawString("Current Site: " +
+                        WordUtils.capitalizeFully(ItemGun.getAttachment(gunStack) == null ? "None" : ItemGun.getAttachment(gunStack).name()),
+                guiLeft + 115, guiTop + 10, 0xFFFFFF);
 
         this.nameField.drawTextBox();
         fontRenderer.drawString(TextFormatting.UNDERLINE + "Inventory", this.attachmentScrollList.x, this.attachmentScrollList.y - 14, 0xFFFFFF);
@@ -94,7 +95,10 @@ public class GuiModifyGun extends GuiScreen {
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
         if(button.id == 0) {
-            Minelife.getNetwork().sendToServer(new PacketAttachment(attachmentScrollList.getSelectedSlot(), gunSlot, nameField.getText()));
+            if(mc.player.inventory.getStackInSlot(attachmentScrollList.getSelectedSlot()).getItem() == ModGuns.itemAttachment) {
+                ItemGun.setAttachment(gunStack, EnumAttachment.values()[mc.player.inventory.getStackInSlot(attachmentScrollList.getSelectedSlot()).getMetadata()]);
+                Minelife.getNetwork().sendToServer(new PacketAttachment(attachmentScrollList.getSelectedSlot(), gunSlot, nameField.getText()));
+            }
         } else if (button.id == 1) {
             Minelife.getNetwork().sendToServer(new PacketAttachment(-2, gunSlot, nameField.getText()));
         }

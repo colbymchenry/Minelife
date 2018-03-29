@@ -4,16 +4,12 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.texture.TextureUtils;
 import codechicken.lib.util.TransformUtils;
-import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Translation;
 import com.google.common.collect.Lists;
 import com.minelife.guns.item.EnumAttachment;
-import com.minelife.guns.item.EnumGun;
-import com.minelife.guns.item.ItemGun;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -24,11 +20,12 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.model.IModelState;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 
 public class RenderAttachment implements IItemRenderer {
 
@@ -58,6 +55,21 @@ public class RenderAttachment implements IItemRenderer {
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
         attachment.model.render(ccrs);
         ccrs.draw();
+
+        if(transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND) {
+            GlStateManager.disableLighting();
+            GlStateManager.blendFunc(GL11.GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+            Minecraft.getMinecraft().getTextureManager().bindTexture(attachment.textureReticle);
+            GlStateManager.color(1, 1, 1, 90f / 255f);
+            GlStateManager.enableBlend();
+            GlStateManager.scale(0.005f, 0.005f, 0.005f);
+            GlStateManager.translate(49, 206, 120);
+            for(int i = 0; i < 8; i++)
+                Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, 64, 64, 64, 64);
+            GlStateManager.enableLighting();
+            GlStateManager.color(1, 1, 1, 1);
+        }
+
         GlStateManager.enableCull();
         GlStateManager.popAttrib();
         GlStateManager.popMatrix();
