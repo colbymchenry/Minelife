@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "normal": { "model": "minelife:zinc_ore" },
+        "inventory": { "model": "minelife:zinc_ore" }
+    }
+}

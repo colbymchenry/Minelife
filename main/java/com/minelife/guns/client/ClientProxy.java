@@ -14,8 +14,10 @@ import com.minelife.util.client.render.AdjustPlayerModelEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
@@ -55,12 +57,18 @@ public class ClientProxy extends MLProxy {
         RenderAttachment attachmentRenderer = new RenderAttachment();
         for (EnumAttachment attachment : EnumAttachment.values())
             registerItemRenderer(ModGuns.itemAttachment, attachment.ordinal(), "minelife:gunAttachment", attachmentRenderer);
+
+        ModGuns.itemGunPart.registerModels();
     }
 
     @Override
     public void init(FMLInitializationEvent event) throws Exception {
         ClientRegistry.registerKeyBinding(reloadKey);
         ClientRegistry.registerKeyBinding(modifyKey);
+        ModGuns.blockZincOre.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
+        ModGuns.itemZincPlate.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
+        ModGuns.itemZincIngot.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
+        ModGuns.itemGunmetal.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
     }
 
     @SubscribeEvent
@@ -103,6 +111,9 @@ public class ClientProxy extends MLProxy {
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
+        if(Minecraft.getMinecraft().player.getHeldItemMainhand() != null) {
+            System.out.println(Item.getIdFromItem(Minecraft.getMinecraft().player.getHeldItemMainhand().getItem()) + "," + Minecraft.getMinecraft().player.getHeldItemMainhand().getItem().getUnlocalizedName() + "," + Minecraft.getMinecraft().player.getHeldItemMainhand().getItem().getRegistryName().getResourcePath() + "," + Minecraft.getMinecraft().player.getHeldItemMainhand().getMetadata());
+        }
         // TODO: can't reload M4a4
         if (reloadKey.isPressed()) {
             EntityPlayer player = Minecraft.getMinecraft().player;

@@ -38,7 +38,7 @@ public class BlockChestShop extends BlockContainer {
 
     public BlockChestShop() {
         super(Material.IRON);
-        setRegistryName("chest_shop");
+        setRegistryName(Minelife.MOD_ID, "chest_shop");
         setUnlocalizedName(Minelife.MOD_ID + ":chest_shop");
         setCreativeTab(CreativeTabs.MISC);
         setHardness(10F);

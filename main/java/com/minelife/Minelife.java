@@ -29,7 +29,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.io.File;
 import java.util.List;
 
-@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION)
+@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies = "required-after:ic2;required-after:buildcraftlib")
 public class Minelife {
 
     public static final String MOD_ID = "minelife", VERSION = "3.0", NAME = "Minelife";

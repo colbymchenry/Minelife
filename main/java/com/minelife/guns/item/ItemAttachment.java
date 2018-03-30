@@ -1,16 +1,23 @@
 package com.minelife.guns.item;
 
 import com.minelife.Minelife;
+import com.minelife.guns.ModGuns;
+import ic2.core.item.ItemIC2;
+import ic2.core.ref.ItemName;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.commons.lang3.text.WordUtils;
 
 public class ItemAttachment extends Item {
 
     public ItemAttachment() {
-        setRegistryName("gunAttachment");
+        setRegistryName(Minelife.MOD_ID, "gunAttachment");
         setMaxDamage(0);
         setUnlocalizedName(Minelife.MOD_ID + ":gunAttachment");
         setCreativeTab(CreativeTabs.MISC);
@@ -38,6 +45,26 @@ public class ItemAttachment extends Item {
     @Override
     public int getMetadata(int damage) {
         return damage;
+    }
+
+    public void registerRecipes() {
+        ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":gun_attachment_" + EnumAttachment.HOLOGRAPHIC.ordinal());
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumAttachment.HOLOGRAPHIC.ordinal()),
+                "AAA",
+                " G ",
+                "ABA",
+                'A', Ingredient.fromItem(ModGuns.itemGunmetal),
+                'G', Ingredient.fromItem(Item.getItemFromBlock(Blocks.GLASS_PANE)),
+                'B', new ItemStack(ItemName.crafting.getInstance(), 1, 1));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":gun_attachment_" + EnumAttachment.REDDOT.ordinal());
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumAttachment.REDDOT.ordinal()),
+                " A ",
+                " G ",
+                "ABA",
+                'A', Ingredient.fromItem(ModGuns.itemGunmetal),
+                'G', Ingredient.fromItem(Item.getItemFromBlock(Blocks.GLASS_PANE)),
+                'B', new ItemStack(ItemName.crafting.getInstance(), 1, 1));
     }
 
 }

@@ -8,7 +8,7 @@ public class ItemChestShop extends ItemBlock {
 
     public ItemChestShop(Block block) {
         super(block);
-        setRegistryName("chest_shop");
+        setRegistryName(Minelife.MOD_ID, "chest_shop");
         setUnlocalizedName(Minelife.MOD_ID + ":chest_shop");
     }
 

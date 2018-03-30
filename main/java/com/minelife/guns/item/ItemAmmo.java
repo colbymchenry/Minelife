@@ -3,13 +3,20 @@ package com.minelife.guns.item;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.guns.ModGuns;
+import ic2.core.item.ItemIC2;
+import ic2.core.ref.ItemName;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -18,7 +25,7 @@ import java.util.Map;
 public class ItemAmmo extends Item {
 
     public ItemAmmo() {
-        setRegistryName("ammo");
+        setRegistryName(Minelife.MOD_ID, "ammo");
         setMaxDamage(0);
         setUnlocalizedName(Minelife.MOD_ID + ":ammo");
         setHasSubtypes(true);
@@ -126,6 +133,34 @@ public class ItemAmmo extends Item {
         }
 
         return 0;
+    }
+
+    public void registerRecipes() {
+        ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":gun_ammo_0");
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 16, 0),
+                " L ",
+                "CGC",
+                'C', Ingredient.fromStacks(new ItemStack(ItemName.ingot.getInstance(), 1, 2)),
+                'G', Ingredient.fromItem(Items.GUNPOWDER),
+                'L', Ingredient.fromStacks(new ItemStack(ItemName.ingot.getInstance(), 1, 3)));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":gun_ammo_1");
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 8, 1),
+                " L ",
+                " G ",
+                "CCC",
+                'C', Ingredient.fromStacks(new ItemStack(ItemName.ingot.getInstance(), 1, 2)),
+                'G', Ingredient.fromItem(Items.GUNPOWDER),
+                'L', Ingredient.fromStacks(new ItemStack(ItemName.ingot.getInstance(), 1, 3)));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":gun_ammo_2");
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 4, 2),
+                " L ",
+                "CGC",
+                "CGC",
+                'C', Ingredient.fromStacks(new ItemStack(ItemName.ingot.getInstance(), 1, 2)),
+                'G', Ingredient.fromItem(Items.GUNPOWDER),
+                'L', Ingredient.fromStacks(new ItemStack(ItemName.ingot.getInstance(), 1, 3)));
     }
 
 }
