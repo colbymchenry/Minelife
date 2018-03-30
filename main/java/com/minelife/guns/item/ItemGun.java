@@ -7,6 +7,7 @@ import com.minelife.guns.ModGuns;
 import com.minelife.guns.packet.PacketBullet;
 import com.minelife.guns.packet.PacketFire;
 import com.minelife.guns.packet.PacketReload;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,6 +23,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.commons.lang3.text.WordUtils;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -88,6 +90,11 @@ public class ItemGun extends Item {
                 player.inventory.setInventorySlotContents(itemSlot, stack);
             }
         }
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        tooltip.add(TextFormatting.GRAY + "Ammo: " + ItemGun.getClipCount(stack) + "/" + EnumGun.values()[stack.getMetadata()].clipSize);
     }
 
     public static long getReloadTime(ItemStack gunStack) {

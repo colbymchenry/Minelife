@@ -13,9 +13,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Mouse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public enum EnumGun {
 
@@ -104,12 +106,20 @@ public enum EnumGun {
 
     // TODO: Do better animation
     public void resetAnimation() {
+        int side = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
+        boolean mouseDown = Mouse.isButtonDown(1);
         switch (this) {
             case AK47:
-                this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0f, 0.2f);
+                if (mouseDown)
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 32f) * side, (float) (Math.random() / 32f) * side, 0.1F, 0.013f).translateTo(0, 0, 0f, 0.2f);
+                else
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0f, 0.2f);
                 break;
             case M4A4:
-                this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0f, 0.2f);
+                if (mouseDown)
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 32f) * side, (float) (Math.random() / 32f) * side, 0.1F, 0.013f).translateTo(0, 0, 0f, 0.2f);
+                else
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 32f), 0.5F, 0.05f).translateTo(0, 0, 0f, 0.2f);
                 break;
             case AWP:
                 this.shotAnimation = new Animation(0, 0, 0).translateTo(0, 0.2f, 1.2f, 0.1f).translateTo(0, 0f, 0, 0.08f);

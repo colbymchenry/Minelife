@@ -37,8 +37,6 @@ public class GuiModifyGun extends GuiScreen {
     private GuiTextField nameField;
     private int guiLeft, guiTop, xSize = 246, ySize = 186;
 
-    // TODO: add way to remove attachment.
-
     public GuiModifyGun(int gunSlot) {
         this.gunSlot = gunSlot;
         this.gunStack = Minecraft.getMinecraft().player.inventory.getStackInSlot(gunSlot);
@@ -68,9 +66,10 @@ public class GuiModifyGun extends GuiScreen {
         GlStateManager.popMatrix();
         GlStateManager.disableLighting();
 
-        fontRenderer.drawString("Current Site: " +
+
+        drawCenteredString(fontRenderer, "Current Site: " +
                         WordUtils.capitalizeFully(ItemGun.getAttachment(gunStack) == null ? "None" : ItemGun.getAttachment(gunStack).name()),
-                guiLeft + 115, guiTop + 10, 0xFFFFFF);
+                guiLeft + 180, guiTop + 10, 0xFFFFFF);
 
         this.nameField.drawTextBox();
         fontRenderer.drawString(TextFormatting.UNDERLINE + "Inventory", this.attachmentScrollList.x, this.attachmentScrollList.y - 14, 0xFFFFFF);
@@ -94,13 +93,16 @@ public class GuiModifyGun extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
-        if(button.id == 0) {
-            if(mc.player.inventory.getStackInSlot(attachmentScrollList.getSelectedSlot()).getItem() == ModGuns.itemAttachment) {
+        if (button.id == 0) {
+            if (mc.player.inventory.getStackInSlot(attachmentScrollList.getSelectedSlot()).getItem() == ModGuns.itemAttachment) {
                 ItemGun.setAttachment(gunStack, EnumAttachment.values()[mc.player.inventory.getStackInSlot(attachmentScrollList.getSelectedSlot()).getMetadata()]);
                 Minelife.getNetwork().sendToServer(new PacketAttachment(attachmentScrollList.getSelectedSlot(), gunSlot, nameField.getText()));
             }
         } else if (button.id == 1) {
             Minelife.getNetwork().sendToServer(new PacketAttachment(-2, gunSlot, nameField.getText()));
+        } else if (button.id == 2) {
+            ItemGun.setAttachment(gunStack, null);
+            Minelife.getNetwork().sendToServer(new PacketAttachment(-1, gunSlot, nameField.getText()));
         }
     }
 
@@ -112,16 +114,19 @@ public class GuiModifyGun extends GuiScreen {
         this.gunType = EnumGun.values()[gunStack.getMetadata()];
         this.attachmentScrollList = new AttachmentScrollList(mc, guiLeft + 140, guiTop + 46, 80, 80, getAttachmentsFromInventory());
         this.nameField = new GuiTextField(0, fontRenderer, this.guiLeft + 10, this.guiTop + 130, 70, 15);
-        if(ItemGun.getCustomName(gunStack) != null) this.nameField.setText(ItemGun.getCustomName(gunStack));
+        if (ItemGun.getCustomName(gunStack) != null) this.nameField.setText(ItemGun.getCustomName(gunStack));
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(0, this.attachmentScrollList.x + 25, this.attachmentScrollList.y + this.attachmentScrollList.height + 2, 50, 20, "Apply"));
         this.buttonList.add(new GuiButton(1, this.nameField.x + this.nameField.width + 3, this.nameField.y - 2, 50, 20, "Rename"));
+        this.buttonList.add(new GuiButton(2, this.guiLeft + (xSize - 120) / 2, this.guiTop + ySize - 30, 120, 20, "Remove Current Site"));
         this.buttonList.get(0).enabled = false;
+        this.buttonList.get(2).enabled = false;
     }
 
     @Override
     public void updateScreen() {
         this.buttonList.get(0).enabled = this.attachmentScrollList.selected != -1;
+        this.buttonList.get(2).enabled = gunStack != null && ItemGun.getAttachment(gunStack) != null;
         this.nameField.updateCursorCounter();
     }
 
@@ -165,7 +170,7 @@ public class GuiModifyGun extends GuiScreen {
         }
 
         public int getSelectedSlot() {
-            if(selected == -1) return -1;
+            if (selected == -1) return -1;
             int slot = (int) attachments.keySet().toArray()[selected];
             return slot;
         }

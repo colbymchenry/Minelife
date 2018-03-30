@@ -25,6 +25,7 @@ public class GuiBuyItem extends GuiMinebay {
         this.ySize = 180;
     }
 
+    // TODO: Cannot backspace in item slot
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -61,8 +62,13 @@ public class GuiBuyItem extends GuiMinebay {
             Minecraft.getMinecraft().displayGuiScreen(new GuiItemListings());
             return;
         }
-        if((keyCode == Keyboard.KEY_BACK || NumberConversions.isInt(amountField.getText() + typedChar))
-                && NumberConversions.toInt(amountField.getText() + typedChar) > 0 &&
+
+        if(keyCode == Keyboard.KEY_BACK ) {
+            amountField.textboxKeyTyped(typedChar, keyCode);
+            return;
+        }
+
+        if((NumberConversions.isInt(amountField.getText() + typedChar)) && NumberConversions.toInt(amountField.getText() + typedChar) > 0 &&
                 NumberConversions.toInt(amountField.getText() + typedChar) * itemListing.getItemStack().getCount() <= itemListing.getAmountStored()) {
             amountField.textboxKeyTyped(typedChar, keyCode);
         }

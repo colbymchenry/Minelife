@@ -12,7 +12,10 @@ import net.minecraft.item.ItemStack;
 
 public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
 
+    private ItemStack woodenPressurePlate;
+
     public RenderCashBlock() {
+        woodenPressurePlate = new ItemStack(Blocks.WOODEN_PRESSURE_PLATE);
     }
 
     @Override
@@ -22,7 +25,7 @@ public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
         GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
         GlStateManager.scale(2, 2, 2);
         GlStateManager.translate(0, 0, 0);
-        GuiFakeInventory.renderItem(Minecraft.getMinecraft(), new ItemStack(Blocks.WOODEN_PRESSURE_PLATE), ItemCameraTransforms.TransformType.FIXED);
+        GuiFakeInventory.renderItem(Minecraft.getMinecraft(), woodenPressurePlate, ItemCameraTransforms.TransformType.FIXED);
         GlStateManager.popMatrix();
 
         ItemStack lastStack = null;

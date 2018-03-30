@@ -30,7 +30,7 @@ public class GuiItemListings extends GuiMinebay {
     private static ResourceLocation texSort = new ResourceLocation(Minelife.MOD_ID, "textures/gui/arrow.png");
     private GuiScrollableListing guiListings;
     private GuiLoadingAnimation guiLoading;
-    private GuiDropDown guiSort, guiPage;
+    private static GuiDropDown guiSort, guiPage;
     private static GuiTextField searchField;
     private static boolean ascend = true;
     private List<ItemListing> itemListings;
@@ -83,6 +83,8 @@ public class GuiItemListings extends GuiMinebay {
         Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, 16, 16, 16, 16);
         GlStateManager.popMatrix();
 
+        this.guiListings.draw(mouseX, mouseY, Mouse.getDWheel());
+
         GlStateManager.disableLighting();
         guiSort.draw(mc, mouseX, mouseY);
         guiPage.draw(mc, mouseX, mouseY);
@@ -98,7 +100,6 @@ public class GuiItemListings extends GuiMinebay {
             return;
         }
 
-        this.guiListings.draw(mouseX, mouseY, Mouse.getDWheel());
 
         if (this.guiListings.getHoveringStack() != null)
             renderToolTip(this.guiListings.getHoveringStack(), mouseX, mouseY);

@@ -4,7 +4,9 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.texture.TextureUtils;
 import codechicken.lib.util.TransformUtils;
+import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
+import codechicken.lib.vec.Translation;
 import com.google.common.collect.Lists;
 import com.minelife.guns.item.EnumAttachment;
 import net.minecraft.block.state.IBlockState;
@@ -62,8 +64,7 @@ public class RenderAttachment implements IItemRenderer {
             Minecraft.getMinecraft().getTextureManager().bindTexture(attachment.textureReticle);
             GlStateManager.color(1, 1, 1, 90f / 255f);
             GlStateManager.enableBlend();
-            GlStateManager.scale(0.005f, 0.005f, 0.005f);
-            GlStateManager.translate(49, 206, 120);
+            attachment.reticleTransformations.forEach(Transformation::glApply);
             for(int i = 0; i < 8; i++)
                 Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, 64, 64, 64, 64);
             GlStateManager.enableLighting();

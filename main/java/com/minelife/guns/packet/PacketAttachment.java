@@ -58,7 +58,6 @@ public class PacketAttachment implements IMessage {
                 }
 
                 if (message.slotAttachment == -2) {
-                    System.out.println("CALLED");
                     ItemGun.setCustomName(gunStack, message.customName.trim().isEmpty() ? null : message.customName);
                     player.inventory.setInventorySlotContents(message.slotGun, gunStack);
                     return;
@@ -94,7 +93,7 @@ public class PacketAttachment implements IMessage {
 
                 ItemGun.setCustomName(gunStack, message.customName.trim().isEmpty() ? null : message.customName);
                 player.inventory.setInventorySlotContents(message.slotGun, gunStack);
-                player.inventory.setInventorySlotContents(message.slotAttachment, null);
+                player.inventory.setInventorySlotContents(message.slotAttachment, ItemStack.EMPTY);
             });
             return null;
         }

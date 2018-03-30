@@ -85,6 +85,13 @@ public class GuiSellItem extends GuiMinebay {
             if (mouse_x >= item_render_x && mouse_x <= item_render_x + item_render_width && mouse_y >= guiTop + 10 && mouse_y <= guiTop + 10 + 60) {
                 fakeInventory.renderToolTip(itemToSale, mouse_x, mouse_y);
             }
+
+            if(mouse_x >= storageField.x && mouse_x < storageField.x + this.width &&
+                    mouse_y >= storageField.y && mouse_y < storageField.y + storageField.height) {
+                int total = 0;
+                for (ItemStack itemStack : stacksWithinInventory.values()) total += itemStack.getCount();
+                drawHoveringText("You have: " + NumberConversions.format(total), mouse_x, mouse_y);
+            }
         }
     }
 
