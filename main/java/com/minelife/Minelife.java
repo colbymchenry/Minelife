@@ -2,6 +2,7 @@ package com.minelife;
 
 import com.google.common.collect.Lists;
 import com.minelife.chestshop.ModChestShop;
+import com.minelife.drugs.ModDrugs;
 import com.minelife.economy.ModEconomy;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.guns.ModGuns;
@@ -52,6 +53,7 @@ public class Minelife {
         MODS.add(new ModRealEstate());
         MODS.add(new ModMinebay());
         MODS.add(new ModGuns());
+        MODS.add(new ModDrugs());
     }
 
     @Mod.EventHandler

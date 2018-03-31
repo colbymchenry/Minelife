@@ -111,10 +111,6 @@ public class ClientProxy extends MLProxy {
 
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if(Minecraft.getMinecraft().player.getHeldItemMainhand() != null) {
-            System.out.println(Item.getIdFromItem(Minecraft.getMinecraft().player.getHeldItemMainhand().getItem()) + "," + Minecraft.getMinecraft().player.getHeldItemMainhand().getItem().getUnlocalizedName() + "," + Minecraft.getMinecraft().player.getHeldItemMainhand().getItem().getRegistryName().getResourcePath() + "," + Minecraft.getMinecraft().player.getHeldItemMainhand().getMetadata());
-        }
-        // TODO: can't reload M4a4
         if (reloadKey.isPressed()) {
             EntityPlayer player = Minecraft.getMinecraft().player;
 
