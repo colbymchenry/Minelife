@@ -18,6 +18,7 @@ import com.minelife.util.server.PacketResponseName;
 import com.minelife.util.server.PacketResponseUUID;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
@@ -30,7 +31,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.io.File;
 import java.util.List;
 
-@Mod(modid=Minelife.MOD_ID, name=Minelife.NAME, version=Minelife.VERSION, dependencies = "required-after:ic2;required-after:buildcraftlib")
+@Mod(modid = Minelife.MOD_ID, name = Minelife.NAME, version = Minelife.VERSION, dependencies = "required-after:ic2;required-after:buildcraftlib")
 public class Minelife {
 
     public static final String MOD_ID = "minelife", VERSION = "3.0", NAME = "Minelife";
@@ -40,6 +41,12 @@ public class Minelife {
 
     @Mod.Instance
     private static Minelife INSTANCE;
+
+
+    static {
+        FluidRegistry.enableUniversalBucket();
+    }
+
 
     private static SimpleNetworkWrapper NETWORK;
     private static List<MLMod> MODS = Lists.newArrayList();
@@ -94,12 +101,12 @@ public class Minelife {
     }
 
     @Mod.EventHandler
-    public void onLoadComplete(FMLLoadCompleteEvent event){
+    public void onLoadComplete(FMLLoadCompleteEvent event) {
         MODS.forEach(mod -> mod.onLoadComplete(event));
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event){
+    public void postInit(FMLPostInitializationEvent event) {
         MODS.forEach(mod -> mod.postInit(event));
     }
 

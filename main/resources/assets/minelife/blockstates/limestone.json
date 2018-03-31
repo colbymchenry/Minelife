@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "normal": { "model": "minelife:limestone" },
+        "inventory": { "model": "minelife:limestone" }
+    }
+}

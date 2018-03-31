@@ -4,7 +4,6 @@ import codechicken.lib.model.ModelRegistryHelper;
 import com.minelife.MLProxy;
 import com.minelife.drugs.ModDrugs;
 import com.minelife.drugs.client.render.ItemCocaLeafRenderer;
-import com.minelife.economy.client.render.RenderWalletItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -42,10 +41,14 @@ public class ClientProxy extends MLProxy {
         registerRenderer(ModDrugs.itemHeatedCocaine);
         registerRenderer(ModDrugs.itemPressedCocaine);
         registerRenderer(ModDrugs.itemPurpleCocaine);
-        registerRenderer(ModDrugs.itemAmmonia);
         registerRenderer(ModDrugs.itemCocaLeaf);
         registerRenderer(ModDrugs.itemPotassiumPermanganate);
         registerRenderer(ModDrugs.itemSulfuricAcid);
+        registerRenderer(ModDrugs.itemJoint);
+        ModDrugs.blockSulfurOre.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
+        ModDrugs.blockPyrolusiteOre.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
+        ModDrugs.blockPotash.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
+        ModDrugs.blockLimestone.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
     }
 
     private void registerRenderer(Item item) {

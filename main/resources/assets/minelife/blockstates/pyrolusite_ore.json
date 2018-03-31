@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "normal": { "model": "minelife:pyrolusite_ore" },
+        "inventory": { "model": "minelife:pyrolusite_ore" }
+    }
+}

@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "normal": { "model": "minelife:potash" },
+        "inventory": { "model": "minelife:potash" }
+    }
+}

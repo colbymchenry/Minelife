@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "normal": { "model": "minelife:sulfur_ore" },
+        "inventory": { "model": "minelife:sulfur_ore" }
+    }
+}
