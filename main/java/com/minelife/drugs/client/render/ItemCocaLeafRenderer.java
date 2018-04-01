@@ -1,15 +1,10 @@
 package com.minelife.drugs.client.render;
 
-import codechicken.lib.model.ModelRegistryHelper;
 import codechicken.lib.model.bakedmodels.WrappedItemModel;
-import codechicken.lib.render.item.CCRenderItem;
 import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.texture.TextureUtils;
 import codechicken.lib.util.TransformUtils;
 import com.google.common.collect.Lists;
-import com.minelife.economy.ModEconomy;
-import com.minelife.economy.item.ItemWallet;
-import com.minelife.util.fireworks.DyeColor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -55,7 +50,7 @@ public class ItemCocaLeafRenderer  extends WrappedItemModel implements IItemRend
         Color CLOSE = new Color(0, 237, 21);
         int[] transition_color = transition(FAR, CLOSE, stack.getItemDamage() / 80.0);
 
-        int color = new Color(transition_color[0], transition_color[1], transition_color[2]).getRGB();
+        int color = new Color(transition_color[0] > 255 ? 255 : transition_color[0], transition_color[1] > 255 ? 255 : transition_color[1], transition_color[2] > 255 ? 255 : transition_color[2]).getRGB();
 
         IBakedModel model = wrapped.getOverrides().handleItemState(wrapped, stack, world, entity);
         renderModel(model, color, stack);

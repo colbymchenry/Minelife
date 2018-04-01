@@ -1,0 +1,8 @@
+{
+  "parent": "block/orientable",
+  "textures": {
+    "top": "minelife:block/vacuum_top",
+    "front": "minelife:block/vacuum",
+    "side": "minelife:block/vacuum"
+  }
+}

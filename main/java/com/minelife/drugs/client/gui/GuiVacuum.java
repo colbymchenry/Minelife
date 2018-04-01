@@ -1,18 +1,25 @@
-package com.minelife.economy.client.gui.cash;
+package com.minelife.drugs.client.gui;
 
+import com.minelife.Minelife;
+import com.minelife.drugs.tileentity.TileEntityVacuum;
 import com.minelife.util.client.GuiFakeInventory;
 import com.minelife.util.client.GuiHelper;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 
-public class GuiCashBlock extends GuiContainer {
+public class GuiVacuum extends GuiContainer {
 
-    public GuiCashBlock(IInventory playerInventory, IInventory cashInventory) {
-        super(new ContainerCashBlock(playerInventory, cashInventory));
+    private static final ResourceLocation texture = new ResourceLocation(Minelife.MOD_ID + ":textures/gui/vacuum.png");
+    private TileEntityVacuum tile;
+
+    public GuiVacuum(EntityPlayer player, TileEntityVacuum tile) {
+        super(new ContainerVacuum(player, tile));
+        this.tile = tile;
         this.allowUserInput = false;
-        int inventoryRows = cashInventory.getSizeInventory() / 9;
-        this.ySize = 114 + inventoryRows * 18;
+        this.xSize = 176;
+        this.ySize = 197;
     }
 
     @Override
@@ -32,5 +39,11 @@ public class GuiCashBlock extends GuiContainer {
         GuiHelper.drawDefaultBackground(this.guiLeft, this.guiTop, this.xSize, this.ySize);
         this.inventorySlots.inventorySlots.forEach(slot ->
                 GuiFakeInventory.drawSlot(this.guiLeft + slot.xPos - 1, this.guiTop + slot.yPos - 1, 17, 17));
+
+        this.mc.renderEngine.bindTexture(texture);
+        if (this.tile.progress > 0) {
+            int progress = this.tile.progressScaled(23);
+            this.drawTexturedModalRect(this.guiLeft + 75, this.guiTop + 40, 176, 0, progress + 1, 60);
+        }
     }
 }

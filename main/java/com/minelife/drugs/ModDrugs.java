@@ -1,9 +1,11 @@
 package com.minelife.drugs;
 
+import com.minelife.AbstractGuiHandler;
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.drugs.block.*;
+import com.minelife.drugs.tileentity.TileEntityVacuum;
 import com.minelife.util.MLFluid;
 import com.minelife.util.MLFluidBlock;
 import com.minelife.drugs.item.ItemJoint;
@@ -31,13 +33,14 @@ public class ModDrugs extends MLMod {
     public static BlockPyrolusiteOre blockPyrolusiteOre;
     public static BlockPotash blockPotash;
     public static BlockLimestone blockLimestone;
-    public static ItemBlock itemSulfurOre, itemPyrolusiteOre, itemPotashBlock, itemLimestoneBlock;
+    public static ItemBlock itemSulfurOre, itemPyrolusiteOre, itemPotashBlock, itemLimestoneBlock, itemVacuumBlock;
     public static ItemJoint itemJoint;
     public static ItemSeeds itemHempSeed, itemLimeSeed, itemCocaSeed;
     public static Item itemCalciumHydroxide, itemCalciumOxide, itemHempBuds, itemHempShredded, itemCocaLeafShredded, itemCocaPaste, itemLime,
             itemPotassiumHydroxide, itemPotassiumManganate, itemPyrolusite, itemSalt, itemSulfur, itemPotassiumHydroxidePyrolusiteMixture,
             itemWaxyCocaine, itemHeatedCocaine, itemPressedCocaine, itemPurpleCocaine, itemCocaLeaf, itemPotassiumPermanganate,
             itemSulfuricAcid;
+    public static BlockVacuum blockVacuum;
 
     public static MLFluidBlock blockAmmonia, blockPotassiumPermanganate, blockSulfuricAcid;
     public static MLFluid fluidAmmonia, fluidPotassiumPermanganate, fluidSulfuricAcid;
@@ -64,6 +67,11 @@ public class ModDrugs extends MLMod {
         registerBlock(blockPyrolusiteOre = new BlockPyrolusiteOre());
         registerBlock(blockPotash = new BlockPotash());
         registerBlock(blockLimestone = new BlockLimestone());
+
+        registerBlock(blockVacuum = new BlockVacuum());
+        registerTileEntity(TileEntityVacuum.class, "vacuum");
+        registerItem(itemVacuumBlock = (ItemBlock) new ItemBlock(blockVacuum).setRegistryName(Minelife.MOD_ID, "vacuum")
+                .setUnlocalizedName(Minelife.MOD_ID + ":vacuum").setCreativeTab(CreativeTabs.MISC));
 
         registerItem(itemSulfurOre = (ItemBlock) new ItemBlock(blockSulfurOre).setRegistryName(Minelife.MOD_ID, "sulfur_ore")
         .setUnlocalizedName(Minelife.MOD_ID + ":sulfur_ore").setCreativeTab(CreativeTabs.MISC));
@@ -139,6 +147,11 @@ public class ModDrugs extends MLMod {
     @Override
     public Class<? extends MLProxy> getServerProxyClass() {
         return com.minelife.drugs.server.ServerProxy.class;
+    }
+
+    @Override
+    public AbstractGuiHandler getGuiHandler() {
+        return new DrugsGuiHandler();
     }
 
     public static void setCocaLeafMoisture(ItemStack stack, int moisture) {
