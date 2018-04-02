@@ -41,19 +41,6 @@ public class RenderGun implements IItemRenderer {
         EnumGun gun = EnumGun.values()[stack.getMetadata()];
         EnumAttachment attachment = ItemGun.getAttachment(stack);
 
-//        if(transformType == ItemCameraTransforms.TransformType.GUI) {
-//            GlStateManager.pushMatrix();
-//            GlStateManager.disableLighting();
-//            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-//            GlStateManager.scale(0.05, 0.05, 0.05);
-//            GlStateManager.rotate(180f, 0, 0, 1);
-//            GlStateManager.rotate(45f, 0, 1, 0);
-//            Minecraft.getMinecraft().getTextureManager().bindTexture(gun.guiTexture);
-//            Gui.drawModalRectWithCustomSizedTexture(-30, -27, 0, 0, 32, 32, 32, 32);
-//            GlStateManager.popMatrix();
-//            return;
-//        }
-
         GlStateManager.pushMatrix();
         GlStateManager.pushAttrib();
 
@@ -61,6 +48,7 @@ public class RenderGun implements IItemRenderer {
             gun.guiTransformations.forEach(Transformation::glApply);
 
         if (transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND) {
+            RenderHelper.enableGUIStandardItemLighting();
             gun.shotAnimation.animate();
 
             boolean aimingDownSight = Mouse.isButtonDown(1);
@@ -88,7 +76,6 @@ public class RenderGun implements IItemRenderer {
             gun.thirdPersonTransformations.forEach(Transformation::glApply);
 
         GlStateManager.disableCull();
-        RenderHelper.enableGUIStandardItemLighting();
         CCRenderState ccrs = CCRenderState.instance();
         Minecraft.getMinecraft().getTextureManager().bindTexture(gun.texture);
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
@@ -130,7 +117,7 @@ public class RenderGun implements IItemRenderer {
 
     @Override
     public boolean isBuiltInRenderer() {
-        return false;
+        return true;
     }
 
     @Override

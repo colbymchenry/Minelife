@@ -1,8 +1,11 @@
 package com.minelife.chestshop;
 
+import codechicken.lib.model.ModelRegistryHelper;
 import com.minelife.Minelife;
 import com.minelife.chestshop.client.gui.GuiBuyShop;
 import com.minelife.chestshop.client.gui.GuiSetupShop;
+import com.minelife.chestshop.client.render.RenderChestShopBlock;
+import com.minelife.chestshop.client.render.RenderChestShopItem;
 import com.minelife.economy.ModEconomy;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.MLParticleDigging;
@@ -16,6 +19,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -27,6 +31,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

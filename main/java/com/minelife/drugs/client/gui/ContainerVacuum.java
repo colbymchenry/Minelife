@@ -16,7 +16,7 @@ public class ContainerVacuum extends ContainerBCTile<TileEntityVacuum> {
         // add output slot
         this.addSlotToContainer(new SlotOutput(tile.invResult, 0, 107, 41));
 
-        addFullPlayerInventory(115);
+        addFullPlayerInventory(84);
     }
 
     @Override

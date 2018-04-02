@@ -50,13 +50,8 @@ public class ClientProxy extends MLProxy {
 
         ModGuns.itemAmmo.registerModels();
 
-        RenderGun gun = new RenderGun();
-        for (EnumGun gunType : EnumGun.values())
-            registerItemRenderer(ModGuns.itemGun, gunType.ordinal(), "minelife:gun", gun);
-
-        RenderAttachment attachmentRenderer = new RenderAttachment();
-        for (EnumAttachment attachment : EnumAttachment.values())
-            registerItemRenderer(ModGuns.itemAttachment, attachment.ordinal(), "minelife:gunAttachment", attachmentRenderer);
+        registerItemRenderer(ModGuns.itemGun, new RenderGun());
+        registerItemRenderer(ModGuns.itemAttachment, new RenderAttachment());
 
         ModGuns.itemGunPart.registerModels();
     }
@@ -119,7 +114,7 @@ public class ClientProxy extends MLProxy {
             ItemGun.reload(player, 0);
         }
 
-        if(modifyKey.isPressed() && Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() == ModGuns.itemGun) {
+        if (modifyKey.isPressed() && Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() == ModGuns.itemGun) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiModifyGun(Minecraft.getMinecraft().player.inventory.currentItem));
         }
     }
@@ -188,8 +183,8 @@ public class ClientProxy extends MLProxy {
             if (Mouse.isButtonDown(1)) {
                 EnumGun gunType = EnumGun.values()[event.getEntity().getHeldItemMainhand().getMetadata()];
                 EnumAttachment attachment = ItemGun.getAttachment(event.getEntity().getHeldItemMainhand());
-                if(attachment != null) {
-                    if(attachment == EnumAttachment.HOLOGRAPHIC) {
+                if (attachment != null) {
+                    if (attachment == EnumAttachment.HOLOGRAPHIC) {
                         event.setNewfov(0.7F);
                     }
                 }

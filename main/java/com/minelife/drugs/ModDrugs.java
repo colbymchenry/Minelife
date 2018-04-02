@@ -5,6 +5,7 @@ import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.drugs.block.*;
+import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
 import com.minelife.drugs.tileentity.TileEntityVacuum;
 import com.minelife.util.MLFluid;
 import com.minelife.util.MLFluidBlock;
@@ -33,7 +34,7 @@ public class ModDrugs extends MLMod {
     public static BlockPyrolusiteOre blockPyrolusiteOre;
     public static BlockPotash blockPotash;
     public static BlockLimestone blockLimestone;
-    public static ItemBlock itemSulfurOre, itemPyrolusiteOre, itemPotashBlock, itemLimestoneBlock, itemVacuumBlock;
+    public static ItemBlock itemSulfurOre, itemPyrolusiteOre, itemPotashBlock, itemLimestoneBlock, itemVacuumBlock, itemLeafMulcherBlock;
     public static ItemJoint itemJoint;
     public static ItemSeeds itemHempSeed, itemLimeSeed, itemCocaSeed;
     public static Item itemCalciumHydroxide, itemCalciumOxide, itemHempBuds, itemHempShredded, itemCocaLeafShredded, itemCocaPaste, itemLime,
@@ -41,6 +42,7 @@ public class ModDrugs extends MLMod {
             itemWaxyCocaine, itemHeatedCocaine, itemPressedCocaine, itemPurpleCocaine, itemCocaLeaf, itemPotassiumPermanganate,
             itemSulfuricAcid;
     public static BlockVacuum blockVacuum;
+    public static BlockLeafMulcher blockLeafMulcher;
 
     public static MLFluidBlock blockAmmonia, blockPotassiumPermanganate, blockSulfuricAcid;
     public static MLFluid fluidAmmonia, fluidPotassiumPermanganate, fluidSulfuricAcid;
@@ -72,6 +74,11 @@ public class ModDrugs extends MLMod {
         registerTileEntity(TileEntityVacuum.class, "vacuum");
         registerItem(itemVacuumBlock = (ItemBlock) new ItemBlock(blockVacuum).setRegistryName(Minelife.MOD_ID, "vacuum")
                 .setUnlocalizedName(Minelife.MOD_ID + ":vacuum").setCreativeTab(CreativeTabs.MISC));
+
+        registerBlock(blockLeafMulcher = new BlockLeafMulcher());
+        registerTileEntity(TileEntityLeafMulcher.class, "leaf_mulcher");
+        registerItem(itemLeafMulcherBlock = (ItemBlock) new ItemBlock(blockLeafMulcher).setRegistryName(Minelife.MOD_ID, "leaf_mulcher")
+                .setUnlocalizedName(Minelife.MOD_ID + ":leaf_mulcher").setCreativeTab(CreativeTabs.MISC));
 
         registerItem(itemSulfurOre = (ItemBlock) new ItemBlock(blockSulfurOre).setRegistryName(Minelife.MOD_ID, "sulfur_ore")
         .setUnlocalizedName(Minelife.MOD_ID + ":sulfur_ore").setCreativeTab(CreativeTabs.MISC));

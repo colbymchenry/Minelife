@@ -34,6 +34,7 @@ public class RenderATMBlock extends TileEntitySpecialRenderer<TileEntityATM> {
     @Override
     public void render(TileEntityATM te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         super.render(te, x, y, z, partialTicks, destroyStage, alpha);
+
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 

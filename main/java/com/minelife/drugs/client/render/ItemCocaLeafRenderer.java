@@ -60,7 +60,7 @@ public class ItemCocaLeafRenderer  extends WrappedItemModel implements IItemRend
 
     @Override
     public IModelState getTransforms() {
-        return TransformUtils.DEFAULT_HANDHELD_ROD;
+        return TransformUtils.DEFAULT_ITEM;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ItemCocaLeafRenderer  extends WrappedItemModel implements IItemRend
 
     @Override
     public boolean isBuiltInRenderer() {
-        return false;
+        return true;
     }
 
     @Override

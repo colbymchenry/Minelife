@@ -19,7 +19,7 @@ public class GuiVacuum extends GuiContainer {
         this.tile = tile;
         this.allowUserInput = false;
         this.xSize = 176;
-        this.ySize = 197;
+        this.ySize = 166;
     }
 
     @Override
@@ -36,14 +36,13 @@ public class GuiVacuum extends GuiContainer {
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color(1, 1, 1, 1);
-        GuiHelper.drawDefaultBackground(this.guiLeft, this.guiTop, this.xSize, this.ySize);
-        this.inventorySlots.inventorySlots.forEach(slot ->
-                GuiFakeInventory.drawSlot(this.guiLeft + slot.xPos - 1, this.guiTop + slot.yPos - 1, 17, 17));
 
-        this.mc.renderEngine.bindTexture(texture);
+        mc.getTextureManager().bindTexture(texture);
+        drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+
         if (this.tile.progress > 0) {
             int progress = this.tile.progressScaled(23);
-            this.drawTexturedModalRect(this.guiLeft + 75, this.guiTop + 40, 176, 0, progress + 1, 60);
+            this.drawTexturedModalRect(this.guiLeft + 75, this.guiTop + 40, 176, 0, progress + 1, 18);
         }
     }
 }

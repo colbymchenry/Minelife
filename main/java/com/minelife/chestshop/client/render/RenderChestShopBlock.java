@@ -85,4 +85,8 @@ public class RenderChestShopBlock extends TileEntitySpecialRenderer<TileEntityCh
 
     }
 
+    @Override
+    public boolean isGlobalRenderer(TileEntityChestShop te) {
+        return true;
+    }
 }

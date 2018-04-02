@@ -1,9 +1,11 @@
 package com.minelife;
 
+import codechicken.lib.render.CCRenderEventHandler;
 import com.minelife.util.client.render.RenderPlayerCustom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -18,6 +20,7 @@ public class ClientProxy extends MLProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
+        OBJLoader.INSTANCE.addDomain(Minelife.MOD_ID);
 
         Minelife.getModList().forEach(mod -> {
             try {
@@ -34,6 +37,8 @@ public class ClientProxy extends MLProxy {
 
     @Override
     public void init(FMLInitializationEvent event) {
+        CCRenderEventHandler.init();
+
         Minelife.getModList().forEach(mod -> {
             try {
                 mod.clientProxy.init(event);

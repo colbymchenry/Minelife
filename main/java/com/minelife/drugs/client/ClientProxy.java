@@ -2,8 +2,15 @@ package com.minelife.drugs.client;
 
 import codechicken.lib.model.ModelRegistryHelper;
 import com.minelife.MLProxy;
+import com.minelife.chestshop.ModChestShop;
+import com.minelife.chestshop.TileEntityChestShop;
+import com.minelife.chestshop.client.render.RenderChestShopBlock;
+import com.minelife.chestshop.client.render.RenderChestShopItem;
 import com.minelife.drugs.ModDrugs;
 import com.minelife.drugs.client.render.ItemCocaLeafRenderer;
+import com.minelife.drugs.client.render.ItemLeafMulcherRenderer;
+import com.minelife.drugs.client.render.TileEntityLeafMulcherRenderer;
+import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -17,6 +24,8 @@ public class ClientProxy extends MLProxy {
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         ModelResourceLocation model = new ModelResourceLocation("minelife:coca_leaf", "inventory");
         ModelRegistryHelper.register(model, new ItemCocaLeafRenderer(() -> model));
+        registerItemRenderer(ModDrugs.itemLeafMulcherBlock, new ItemLeafMulcherRenderer());
+        registerBlockRenderer(TileEntityLeafMulcher.class, new TileEntityLeafMulcherRenderer());
     }
 
     @Override

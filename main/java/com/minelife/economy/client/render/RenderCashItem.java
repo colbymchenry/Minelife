@@ -87,7 +87,7 @@ public class RenderCashItem implements IItemRenderer {
 
     @Override
     public boolean isBuiltInRenderer() {
-        return false;
+        return true;
     }
 
     @Override

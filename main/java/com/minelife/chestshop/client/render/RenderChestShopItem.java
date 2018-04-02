@@ -8,23 +8,24 @@ import codechicken.lib.texture.TextureUtils;
 import codechicken.lib.util.TransformUtils;
 import codechicken.lib.vec.Translation;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.model.IModelState;
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
+import javax.vecmath.Matrix4f;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +45,10 @@ public class RenderChestShopItem implements IItemRenderer {
     public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType transformType) {
         GlStateManager.pushAttrib();
         GlStateManager.disableCull();
-        RenderHelper.enableGUIStandardItemLighting();
+
+        if(transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND)
+            RenderHelper.enableGUIStandardItemLighting();
+
         CCRenderState ccrs = CCRenderState.instance();
         Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
@@ -76,7 +80,7 @@ public class RenderChestShopItem implements IItemRenderer {
 
     @Override
     public boolean isBuiltInRenderer() {
-        return false;
+        return true;
     }
 
     @Override

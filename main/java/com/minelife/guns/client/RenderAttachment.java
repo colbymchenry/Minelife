@@ -41,8 +41,10 @@ public class RenderAttachment implements IItemRenderer {
         GlStateManager.pushMatrix();
         GlStateManager.pushAttrib();
 
-        if (transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND)
+        if (transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND) {
+            RenderHelper.enableGUIStandardItemLighting();
             attachment.firstPersonTransformations.forEach(Transformation::glApply);
+        }
 
         if (transformType == ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND)
             attachment.thirdPersonTransformations.forEach(Transformation::glApply);
@@ -51,7 +53,6 @@ public class RenderAttachment implements IItemRenderer {
             attachment.guiTransformations.forEach(Transformation::glApply);
 
         GlStateManager.disableCull();
-        RenderHelper.enableGUIStandardItemLighting();
         CCRenderState ccrs = CCRenderState.instance();
         Minecraft.getMinecraft().getTextureManager().bindTexture(attachment.textureModel);
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
@@ -98,7 +99,7 @@ public class RenderAttachment implements IItemRenderer {
 
     @Override
     public boolean isBuiltInRenderer() {
-        return false;
+        return true;
     }
 
     @Override

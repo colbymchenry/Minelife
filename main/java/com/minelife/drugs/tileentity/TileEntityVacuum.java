@@ -7,7 +7,6 @@ import buildcraft.api.mj.MjAPI;
 import buildcraft.api.mj.MjCapabilityHelper;
 import buildcraft.api.tiles.IHasWork;
 import buildcraft.api.tiles.TilesAPI;
-import buildcraft.lib.misc.MathUtil;
 import buildcraft.lib.net.PacketBufferBC;
 import buildcraft.lib.tile.TileBC_Neptune;
 import buildcraft.lib.tile.item.ItemHandlerManager;
@@ -22,8 +21,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-public class TileEntityVacuum extends TileBC_Neptune
-        implements ITickable, IHasWork, IMjRedstoneReceiver {
+public class TileEntityVacuum extends TileBC_Neptune implements ITickable, IHasWork, IMjRedstoneReceiver {
 
     /**
      * A redstone engine generates <code> 1 * {@link MjAPI#MJ}</code> per tick. This makes it a lot slower without one
@@ -35,7 +33,7 @@ public class TileEntityVacuum extends TileBC_Neptune
     /**
      * It takes 3 seconds to craft an item.
      */
-    private static final long POWER_REQUIRED = POWER_GEN_PASSIVE * 20 * 3;
+    private static final long POWER_REQUIRED = POWER_GEN_PASSIVE * 20 * 5;
 
     private static final long POWER_LOST = POWER_GEN_PASSIVE * 10;
 
@@ -49,7 +47,6 @@ public class TileEntityVacuum extends TileBC_Neptune
      * will craft the current recipe.
      */
     private long powerStored;
-    private long powerStoredLast;
 
     public TileEntityVacuum() {
         invMaterials = itemManager.addInvHandler("input", 1, ItemHandlerManager.EnumAccess.INSERT, EnumPipePart.VALUES);
@@ -92,11 +89,7 @@ public class TileEntityVacuum extends TileBC_Neptune
     public void writePayload(int id, PacketBufferBC buffer, Side side) {
         super.writePayload(id, buffer, side);
         if (side == Side.SERVER) {
-            if (id == NET_GUI_TICK) {
-                buffer.writeLong(powerStored);
-            } else if (id == NET_GUI_DATA) {
-                buffer.writeInt(this.progress);
-            }
+           if (id == NET_GUI_DATA) buffer.writeInt(this.progress);
         }
     }
 
@@ -104,15 +97,7 @@ public class TileEntityVacuum extends TileBC_Neptune
     public void readPayload(int id, PacketBufferBC buffer, Side side, MessageContext ctx) throws IOException {
         super.readPayload(id, buffer, side, ctx);
         if (side == Side.CLIENT) {
-            if (id == NET_GUI_TICK) {
-                powerStoredLast = powerStored;
-                powerStored = buffer.readLong();
-                if (powerStored < 10) {
-                    powerStoredLast = powerStored;
-                }
-            } else if (id == NET_GUI_DATA) {
-                this.progress = buffer.readInt();
-            }
+            if (id == NET_GUI_DATA) this.progress = buffer.readInt();
         }
     }
 

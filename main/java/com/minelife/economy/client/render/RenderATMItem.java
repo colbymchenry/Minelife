@@ -49,7 +49,10 @@ public class RenderATMItem implements IItemRenderer {
         GlStateManager.pushAttrib();
         GlStateManager.enableDepth();
         GlStateManager.disableCull();
-        RenderHelper.enableGUIStandardItemLighting();
+
+        if(transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND)
+            RenderHelper.enableGUIStandardItemLighting();
+
         CCRenderState ccrs = CCRenderState.instance();
         Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
@@ -81,7 +84,7 @@ public class RenderATMItem implements IItemRenderer {
 
     @Override
     public boolean isBuiltInRenderer() {
-        return false;
+        return true;
     }
 
     @Override
