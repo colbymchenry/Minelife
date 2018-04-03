@@ -2,7 +2,7 @@ package com.minelife.economy;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
 
-public class BillEvent extends Event{
+public class BillEvent extends Event {
 
     private Bill bill;
 

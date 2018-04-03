@@ -3,6 +3,8 @@ package com.minelife.realestate.server;
 import com.google.common.collect.Sets;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
+import com.minelife.economy.Bill;
+import com.minelife.economy.ModEconomy;
 import com.minelife.realestate.Estate;
 import com.minelife.util.MLConfig;
 import com.minelife.util.NBTHelper;
@@ -29,6 +31,7 @@ public class ServerProxy extends MLProxy {
         DB = new SQLite(Logger.getLogger("Minecraft"), "[RealEstate]", Minelife.getDirectory().getAbsolutePath(), "realestate");
         DB.open();
         DB.query("CREATE TABLE IF NOT EXISTS estates (uuid VARCHAR(36), tagCompound TEXT)");
+        Bill.createTable(DB, "bills");
         loadEstates();
 
         CONFIG = new MLConfig("realestate");

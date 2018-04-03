@@ -64,7 +64,6 @@ public class GuiCreateEstate extends GuiScreen {
         content = new Content(mc, guiLeft, guiTop, xSize, ySize);
     }
 
-    // TODO
     class Content extends GuiScrollableContent {
 
         private int totalHeight = 0;

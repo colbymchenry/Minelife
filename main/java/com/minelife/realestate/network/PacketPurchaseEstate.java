@@ -49,12 +49,25 @@ public class PacketPurchaseEstate implements IMessage {
                 EntityPlayerMP player = ctx.getServerHandler().player;
                 Estate estate = ModRealEstate.getEstate(message.estateID);
 
-                if(estate == null) {
+                if (estate == null) {
                     PacketPopup.sendPopup("Estate not found.", player);
                     return;
                 }
 
-               // TODO: Checking balance
+                // TODO: Checking balance
+                if (ModEconomy.getBalanceCashPiles(player.getUniqueID()) < (message.rent ? estate.getRentPrice() : estate.getPurchasePrice())) {
+                    PacketPopup.sendPopup("Insufficient funds in cash piles.", player);
+                    return;
+                }
+
+                int didNotFit = ModEconomy.withdrawCashPiles(player.getUniqueID(), message.rent ? estate.getRentPrice() : estate.getPurchasePrice());
+                if (didNotFit > 0) ModEconomy.depositATM(player.getUniqueID(), didNotFit);
+                didNotFit = ModEconomy.depositCashPiles(estate.getOwnerID(), message.rent ? estate.getRentPrice() : estate.getPurchasePrice());
+                if (didNotFit > 0) ModEconomy.depositATM(estate.getOwnerID(), didNotFit);
+
+                if(message.rent) {
+                    estate.setRenterID(player.getUniqueID());
+                }
             });
             return null;
         }
