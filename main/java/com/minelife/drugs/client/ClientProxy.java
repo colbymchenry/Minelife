@@ -7,9 +7,8 @@ import com.minelife.chestshop.TileEntityChestShop;
 import com.minelife.chestshop.client.render.RenderChestShopBlock;
 import com.minelife.chestshop.client.render.RenderChestShopItem;
 import com.minelife.drugs.ModDrugs;
-import com.minelife.drugs.client.render.ItemCocaLeafRenderer;
-import com.minelife.drugs.client.render.ItemLeafMulcherRenderer;
-import com.minelife.drugs.client.render.TileEntityLeafMulcherRenderer;
+import com.minelife.drugs.client.render.*;
+import com.minelife.drugs.tileentity.TileEntityCementMixer;
 import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -26,6 +25,8 @@ public class ClientProxy extends MLProxy {
         ModelRegistryHelper.register(model, new ItemCocaLeafRenderer(() -> model));
         registerItemRenderer(ModDrugs.itemLeafMulcherBlock, new ItemLeafMulcherRenderer());
         registerBlockRenderer(TileEntityLeafMulcher.class, new TileEntityLeafMulcherRenderer());
+        registerItemRenderer(ModDrugs.itemCementMixerBlock, new ItemCementMixerRenderer());
+        registerBlockRenderer(TileEntityCementMixer.class, new TileEntityCementMixerRenderer());
     }
 
     @Override

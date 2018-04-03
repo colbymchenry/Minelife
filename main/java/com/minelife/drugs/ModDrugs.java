@@ -6,6 +6,7 @@ import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.drugs.block.*;
 import com.minelife.drugs.item.ItemProcessedCocaine;
+import com.minelife.drugs.tileentity.TileEntityCementMixer;
 import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
 import com.minelife.drugs.tileentity.TileEntityPresser;
 import com.minelife.drugs.tileentity.TileEntityVacuum;
@@ -36,7 +37,8 @@ public class ModDrugs extends MLMod {
     public static BlockPyrolusiteOre blockPyrolusiteOre;
     public static BlockPotash blockPotash;
     public static BlockLimestone blockLimestone;
-    public static ItemBlock itemSulfurOre, itemPyrolusiteOre, itemPotashBlock, itemLimestoneBlock, itemVacuumBlock, itemLeafMulcherBlock, itemPresserBlock;
+    public static ItemBlock itemSulfurOre, itemPyrolusiteOre, itemPotashBlock, itemLimestoneBlock, itemVacuumBlock,
+            itemLeafMulcherBlock, itemPresserBlock, itemCementMixerBlock;
     public static ItemJoint itemJoint;
     public static ItemSeeds itemHempSeed, itemLimeSeed, itemCocaSeed;
     public static Item itemCalciumHydroxide, itemCalciumOxide, itemHempBuds, itemHempShredded, itemCocaLeafShredded, itemCocaPaste, itemLime,
@@ -46,6 +48,7 @@ public class ModDrugs extends MLMod {
     public static BlockVacuum blockVacuum;
     public static BlockLeafMulcher blockLeafMulcher;
     public static BlockPresser blockPresser;
+    public static BlockCementMixer blockCementMixer;
 
     public static MLFluidBlock blockAmmonia, blockPotassiumPermanganate, blockSulfuricAcid;
     public static MLFluid fluidAmmonia, fluidPotassiumPermanganate, fluidSulfuricAcid;
@@ -89,6 +92,11 @@ public class ModDrugs extends MLMod {
         registerTileEntity(TileEntityLeafMulcher.class, "leaf_mulcher");
         registerItem(itemLeafMulcherBlock = (ItemBlock) new ItemBlock(blockLeafMulcher).setRegistryName(Minelife.MOD_ID, "leaf_mulcher")
                 .setUnlocalizedName(Minelife.MOD_ID + ":leaf_mulcher").setCreativeTab(CreativeTabs.MISC));
+
+        registerBlock(blockCementMixer = new BlockCementMixer());
+        registerTileEntity(TileEntityCementMixer.class, "cement_mixer");
+        registerItem(itemCementMixerBlock = (ItemBlock) new ItemBlock(blockCementMixer).setRegistryName(Minelife.MOD_ID, "cement_mixer")
+                .setUnlocalizedName(Minelife.MOD_ID + ":cement_mixer").setCreativeTab(CreativeTabs.MISC));
 
         registerItem(itemSulfurOre = (ItemBlock) new ItemBlock(blockSulfurOre).setRegistryName(Minelife.MOD_ID, "sulfur_ore")
         .setUnlocalizedName(Minelife.MOD_ID + ":sulfur_ore").setCreativeTab(CreativeTabs.MISC));

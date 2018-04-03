@@ -71,7 +71,13 @@ public class TileEntityVacuum extends TileBC_Neptune implements ITickable, IHasW
             return;
         }
 
-        if (!hasWork()) return;
+        if (!hasWork()) {
+            if(progress > 0) {
+                sendNetworkUpdate(NET_GUI_DATA);
+                progress = 0;
+            }
+            return;
+        }
 
         this.progress += 2;
 

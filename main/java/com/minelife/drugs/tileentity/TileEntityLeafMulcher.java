@@ -16,6 +16,7 @@ import com.minelife.drugs.ModDrugs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
@@ -74,7 +75,10 @@ public class TileEntityLeafMulcher extends TileBC_Neptune implements ITickable, 
 
         sendNetworkUpdate(NET_GUI_DATA);
 
-        if (!hasWork()) return;
+        if (!hasWork()) {
+            progress = 0;
+            return;
+        }
 
         if (!burn()) return;
 
@@ -141,6 +145,11 @@ public class TileEntityLeafMulcher extends TileBC_Neptune implements ITickable, 
 
     public TankManager getTankManager() {
         return this.tankManager;
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return new AxisAlignedBB(getPos().getX(), getPos().getY() - 1, getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
     }
 
 }

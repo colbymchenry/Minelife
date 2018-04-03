@@ -2,6 +2,7 @@ package com.minelife.drugs;
 
 import com.minelife.AbstractGuiHandler;
 import com.minelife.drugs.client.gui.*;
+import com.minelife.drugs.tileentity.TileEntityCementMixer;
 import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
 import com.minelife.drugs.tileentity.TileEntityPresser;
 import com.minelife.drugs.tileentity.TileEntityVacuum;
@@ -17,6 +18,7 @@ public class DrugsGuiHandler extends AbstractGuiHandler {
     public static final int VACUUM_GUI = 51312;
     public static final int LEAF_MULCHER_GUI = 51313;
     public static final int PRESSER_GUI = 51314;
+    public static final int CEMENT_MIXER_GUI = 51315;
 
     @Nullable
     @Override
@@ -38,6 +40,12 @@ public class DrugsGuiHandler extends AbstractGuiHandler {
         if(ID == PRESSER_GUI) {
             if(tileEntity != null && tileEntity instanceof TileEntityPresser) {
                 return new ContainerPresser(player, (TileEntityPresser) tileEntity);
+            }
+        }
+
+        if(ID == CEMENT_MIXER_GUI) {
+            if(tileEntity != null && tileEntity instanceof TileEntityCementMixer) {
+                return new ContainerCementMixer(player, (TileEntityCementMixer) tileEntity);
             }
         }
         return null;
@@ -63,6 +71,12 @@ public class DrugsGuiHandler extends AbstractGuiHandler {
         if(ID == PRESSER_GUI) {
             if(tileEntity != null && tileEntity instanceof TileEntityPresser) {
                 return new GuiPresser(player, (TileEntityPresser) tileEntity);
+            }
+        }
+
+        if(ID == CEMENT_MIXER_GUI) {
+            if(tileEntity != null && tileEntity instanceof TileEntityCementMixer) {
+                return new GuiCementMixer(player, (TileEntityCementMixer) tileEntity);
             }
         }
         return null;
