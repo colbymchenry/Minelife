@@ -21,7 +21,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 
-public class TileEntityVacuum extends TileBC_Neptune implements ITickable, IHasWork, IMjRedstoneReceiver {
+public class TileEntityPresser extends TileBC_Neptune implements ITickable, IHasWork, IMjRedstoneReceiver {
 
     /**
      * A redstone engine generates <code> 1 * {@link MjAPI#MJ}</code> per tick. This makes it a lot slower without one
@@ -31,9 +31,9 @@ public class TileEntityVacuum extends TileBC_Neptune implements ITickable, IHasW
     private static final long POWER_GEN_PASSIVE = MjAPI.MJ / 5;
 
     /**
-     * It takes 5 seconds to craft an item.
+     * It takes 3 seconds to craft an item.
      */
-    private static final long POWER_REQUIRED = POWER_GEN_PASSIVE * 20 * 5;
+    private static final long POWER_REQUIRED = POWER_GEN_PASSIVE * 20 * 3;
 
     private static final long POWER_LOST = POWER_GEN_PASSIVE * 10;
 
@@ -48,7 +48,7 @@ public class TileEntityVacuum extends TileBC_Neptune implements ITickable, IHasW
      */
     private long powerStored;
 
-    public TileEntityVacuum() {
+    public TileEntityPresser() {
         invMaterials = itemManager.addInvHandler("input", 1, ItemHandlerManager.EnumAccess.INSERT, EnumPipePart.VALUES);
         invResult = itemManager.addInvHandler("result", 1, ItemHandlerManager.EnumAccess.EXTRACT, EnumPipePart.VALUES);
         caps.addCapabilityInstance(TilesAPI.CAP_HAS_WORK, this, EnumPipePart.VALUES);
@@ -78,7 +78,7 @@ public class TileEntityVacuum extends TileBC_Neptune implements ITickable, IHasW
         if (this.progress >= this.processingTime) {
             this.progress = 0;
             this.invMaterials.extractItem(0, 1, false);
-            this.invResult.insertItem(0, new ItemStack(ModDrugs.itemCocaLeaf, 1, 100), false);
+            this.invResult.insertItem(0, new ItemStack(ModDrugs.itemPressedCocaine), false);
             this.powerStored = this.invMaterials.stacks.get(0) == ItemStack.EMPTY ? 0 : 1;
         }
 
@@ -103,7 +103,7 @@ public class TileEntityVacuum extends TileBC_Neptune implements ITickable, IHasW
 
     @Override
     public boolean hasWork() {
-        return this.powerStored > 0 && invMaterials.stacks.get(0).getItem() == ModDrugs.itemCocaLeaf && invMaterials.stacks.get(0).getItemDamage() < 100 && invResult.stacks.get(0).getCount() < 64;
+        return this.powerStored > 0 && invMaterials.stacks.get(0).getItem() == ModDrugs.itemHeatedCocaine && invResult.stacks.get(0).getCount() < 64;
     }
 
     @Override

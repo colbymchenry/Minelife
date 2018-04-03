@@ -1,8 +1,7 @@
 package com.minelife.drugs.item;
 
 import com.minelife.Minelife;
-import com.minelife.drugs.DetectableHempEffect;
-import com.minelife.drugs.XRayEffect;
+import com.minelife.drugs.DetectableCocaineEffect;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -15,22 +14,25 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemJoint extends Item {
+public class ItemProcessedCocaine extends Item {
 
-    public ItemJoint() {
-        setRegistryName(Minelife.MOD_ID, "joint");
-        setUnlocalizedName(Minelife.MOD_ID + ":joint");
+    public ItemProcessedCocaine() {
+        setRegistryName(Minelife.MOD_ID, "processed_cocaine");
+        setUnlocalizedName(Minelife.MOD_ID + ":processed_cocaine");
         setCreativeTab(CreativeTabs.MISC);
     }
 
     @SideOnly(Side.SERVER)
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        playerIn.addPotionEffect(new PotionEffect(XRayEffect.INSTANCE, 90 * 20, 0, false, false));
-        playerIn.addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, 60 * 20, 0, false, false));
-        playerIn.addPotionEffect(new PotionEffect(MobEffects.WATER_BREATHING, 60 * 20, 0, false, false));
-        playerIn.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 60 * 20, 1, false, false));
-        playerIn.addPotionEffect(new PotionEffect(DetectableHempEffect.INSTANCE, 1 *(20 * (60 * 20)) , 0, false, false));
+        playerIn.addPotionEffect(new PotionEffect(MobEffects.SPEED, 20 * 300, 3, false, false));
+        playerIn.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 20 * 300, 2, false, false));
+        playerIn.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 20 * 300, 1, false, false));
+        playerIn.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 20 * 300, 1, false, false));
+        playerIn.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 20 * 300, 0, false, false));
+        // 60 * 20 = 1 minute, 20 * 60 * 20 = 1 mc day, 7 * 20 * 60 * 20 = 7 mc days
+        playerIn.addPotionEffect(new PotionEffect(DetectableCocaineEffect.INSTANCE, 1 *(20 * (60 * 20)) , 0, false, false));
+
         if(playerIn.getHeldItem(handIn).getCount() == 1) playerIn.setHeldItem(handIn, ItemStack.EMPTY);
         else {
             ItemStack stack = playerIn.getHeldItem(handIn).copy();
@@ -39,4 +41,5 @@ public class ItemJoint extends Item {
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }
+
 }

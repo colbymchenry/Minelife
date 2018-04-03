@@ -54,11 +54,13 @@ public class ClientProxy extends MLProxy {
         registerRenderer(ModDrugs.itemPotassiumPermanganate);
         registerRenderer(ModDrugs.itemSulfuricAcid);
         registerRenderer(ModDrugs.itemJoint);
+        registerRenderer(ModDrugs.itemProcessedCocaine);
         ModDrugs.blockSulfurOre.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
         ModDrugs.blockPyrolusiteOre.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
         ModDrugs.blockPotash.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
         ModDrugs.blockLimestone.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
         ModDrugs.blockVacuum.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
+        ModDrugs.blockPresser.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
     }
 
     private void registerRenderer(Item item) {

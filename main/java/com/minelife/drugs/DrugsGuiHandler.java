@@ -1,11 +1,9 @@
 package com.minelife.drugs;
 
 import com.minelife.AbstractGuiHandler;
-import com.minelife.drugs.client.gui.ContainerLeafMulcher;
-import com.minelife.drugs.client.gui.ContainerVacuum;
-import com.minelife.drugs.client.gui.GuiLeafMulcher;
-import com.minelife.drugs.client.gui.GuiVacuum;
+import com.minelife.drugs.client.gui.*;
 import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
+import com.minelife.drugs.tileentity.TileEntityPresser;
 import com.minelife.drugs.tileentity.TileEntityVacuum;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -18,6 +16,7 @@ public class DrugsGuiHandler extends AbstractGuiHandler {
 
     public static final int VACUUM_GUI = 51312;
     public static final int LEAF_MULCHER_GUI = 51313;
+    public static final int PRESSER_GUI = 51314;
 
     @Nullable
     @Override
@@ -33,6 +32,12 @@ public class DrugsGuiHandler extends AbstractGuiHandler {
         if(ID == LEAF_MULCHER_GUI) {
             if(tileEntity != null && tileEntity instanceof TileEntityLeafMulcher) {
                 return new ContainerLeafMulcher(player, (TileEntityLeafMulcher) tileEntity);
+            }
+        }
+
+        if(ID == PRESSER_GUI) {
+            if(tileEntity != null && tileEntity instanceof TileEntityPresser) {
+                return new ContainerPresser(player, (TileEntityPresser) tileEntity);
             }
         }
         return null;
@@ -52,6 +57,12 @@ public class DrugsGuiHandler extends AbstractGuiHandler {
         if(ID == LEAF_MULCHER_GUI) {
             if(tileEntity != null && tileEntity instanceof TileEntityLeafMulcher) {
                 return new GuiLeafMulcher(player, (TileEntityLeafMulcher) tileEntity);
+            }
+        }
+
+        if(ID == PRESSER_GUI) {
+            if(tileEntity != null && tileEntity instanceof TileEntityPresser) {
+                return new GuiPresser(player, (TileEntityPresser) tileEntity);
             }
         }
         return null;

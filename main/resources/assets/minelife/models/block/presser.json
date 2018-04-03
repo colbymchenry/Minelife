@@ -1,0 +1,8 @@
+{
+  "parent": "block/orientable",
+  "textures": {
+    "top": "minelife:block/presser_top",
+    "front": "minelife:block/presser",
+    "side": "minelife:block/presser"
+  }
+}

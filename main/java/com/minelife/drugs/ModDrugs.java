@@ -5,7 +5,9 @@ import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.drugs.block.*;
+import com.minelife.drugs.item.ItemProcessedCocaine;
 import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
+import com.minelife.drugs.tileentity.TileEntityPresser;
 import com.minelife.drugs.tileentity.TileEntityVacuum;
 import com.minelife.util.MLFluid;
 import com.minelife.util.MLFluidBlock;
@@ -34,15 +36,16 @@ public class ModDrugs extends MLMod {
     public static BlockPyrolusiteOre blockPyrolusiteOre;
     public static BlockPotash blockPotash;
     public static BlockLimestone blockLimestone;
-    public static ItemBlock itemSulfurOre, itemPyrolusiteOre, itemPotashBlock, itemLimestoneBlock, itemVacuumBlock, itemLeafMulcherBlock;
+    public static ItemBlock itemSulfurOre, itemPyrolusiteOre, itemPotashBlock, itemLimestoneBlock, itemVacuumBlock, itemLeafMulcherBlock, itemPresserBlock;
     public static ItemJoint itemJoint;
     public static ItemSeeds itemHempSeed, itemLimeSeed, itemCocaSeed;
     public static Item itemCalciumHydroxide, itemCalciumOxide, itemHempBuds, itemHempShredded, itemCocaLeafShredded, itemCocaPaste, itemLime,
             itemPotassiumHydroxide, itemPotassiumManganate, itemPyrolusite, itemSalt, itemSulfur, itemPotassiumHydroxidePyrolusiteMixture,
             itemWaxyCocaine, itemHeatedCocaine, itemPressedCocaine, itemPurpleCocaine, itemCocaLeaf, itemPotassiumPermanganate,
-            itemSulfuricAcid;
+            itemSulfuricAcid, itemProcessedCocaine;
     public static BlockVacuum blockVacuum;
     public static BlockLeafMulcher blockLeafMulcher;
+    public static BlockPresser blockPresser;
 
     public static MLFluidBlock blockAmmonia, blockPotassiumPermanganate, blockSulfuricAcid;
     public static MLFluid fluidAmmonia, fluidPotassiumPermanganate, fluidSulfuricAcid;
@@ -51,8 +54,10 @@ public class ModDrugs extends MLMod {
     public void preInit(FMLPreInitializationEvent event) {
         ForgeRegistries.POTIONS.register(XRayEffect.INSTANCE);
         ForgeRegistries.POTIONS.register(DetectableHempEffect.INSTANCE);
+        ForgeRegistries.POTIONS.register(DetectableCocaineEffect.INSTANCE);
         MinecraftForge.EVENT_BUS.register(XRayEffect.INSTANCE);
         MinecraftForge.EVENT_BUS.register(DetectableHempEffect.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(DetectableCocaineEffect.INSTANCE);
 
         FluidRegistry.registerFluid(fluidAmmonia = new MLFluid("ammonia"));
         FluidRegistry.registerFluid(fluidPotassiumPermanganate = new MLFluid("potassium_permanganate"));
@@ -74,6 +79,11 @@ public class ModDrugs extends MLMod {
         registerTileEntity(TileEntityVacuum.class, "vacuum");
         registerItem(itemVacuumBlock = (ItemBlock) new ItemBlock(blockVacuum).setRegistryName(Minelife.MOD_ID, "vacuum")
                 .setUnlocalizedName(Minelife.MOD_ID + ":vacuum").setCreativeTab(CreativeTabs.MISC));
+
+        registerBlock(blockPresser = new BlockPresser());
+        registerTileEntity(TileEntityPresser.class, "presser");
+        registerItem(itemPresserBlock = (ItemBlock) new ItemBlock(blockPresser).setRegistryName(Minelife.MOD_ID, "presser")
+                .setUnlocalizedName(Minelife.MOD_ID + ":presser").setCreativeTab(CreativeTabs.MISC));
 
         registerBlock(blockLeafMulcher = new BlockLeafMulcher());
         registerTileEntity(TileEntityLeafMulcher.class, "leaf_mulcher");
@@ -139,6 +149,7 @@ public class ModDrugs extends MLMod {
         registerItem(itemSulfuricAcid = new Item().setRegistryName(Minelife.MOD_ID, "sulfuric_acid").setUnlocalizedName(Minelife.MOD_ID + ":" + "sulfuric_acid")
                 .setCreativeTab(CreativeTabs.MISC));
         registerItem(itemJoint = new ItemJoint());
+        registerItem(itemProcessedCocaine = new ItemProcessedCocaine());
 
         GameRegistry.registerWorldGenerator(new BlockSulfurOre.Generator(), 0);
         GameRegistry.registerWorldGenerator(new BlockPyrolusiteOre.Generator(), 0);
@@ -159,20 +170,6 @@ public class ModDrugs extends MLMod {
     @Override
     public AbstractGuiHandler getGuiHandler() {
         return new DrugsGuiHandler();
-    }
-
-    public static void setCocaLeafMoisture(ItemStack stack, int moisture) {
-        if(stack == null) return;
-        if(stack.getItem() != itemCocaLeaf) return;
-        moisture = moisture < 0 ? 0 : moisture > 100 ? 100 : moisture;
-        stack.setItemDamage(100 - moisture);
-    }
-
-    public static int getCocaLeafMoisture(ItemStack stack) {
-        if(stack == null) return 0;
-        if(stack.getItem() != itemCocaLeaf) return 0;
-
-        return 100 - stack.getItemDamage();
     }
 
 }
