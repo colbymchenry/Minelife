@@ -107,17 +107,24 @@ public class TileEntityCementMixer extends TileBC_Neptune implements ITickable, 
 
         this.progress++;
 
-        // TODO: Implement fuel being used in recipe for first recipe.
         if (this.progress >= this.processingTime) {
             this.progress = 0;
             Recipe recipe = getCurrentRecipe();
             for(int i = 0; i < invMaterials.getSlots(); i++) this.invMaterials.extractItem(i, 1, false);
             this.invResult.insertItem(0, recipe.getResult().copy(), false);
 
-            if(tankSolvent.getFluid().amount - recipe.getFluid().amount > 0) {
-                tankSolvent.getFluid().amount -= recipe.getFluid().amount;
+            if(recipe.getFluid().getFluid() == BCEnergyFluids.fuelLight[0]) {
+                if (tankFuel.getFluid().amount - recipe.getFluid().amount > 0) {
+                    tankFuel.getFluid().amount -= recipe.getFluid().amount;
+                } else {
+                    tankFuel.setFluid(null);
+                }
             } else {
-                tankSolvent.setFluid(null);
+                if (tankSolvent.getFluid().amount - recipe.getFluid().amount > 0) {
+                    tankSolvent.getFluid().amount -= recipe.getFluid().amount;
+                } else {
+                    tankSolvent.setFluid(null);
+                }
             }
         }
 

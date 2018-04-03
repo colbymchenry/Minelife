@@ -1,18 +1,27 @@
 package com.minelife.drugs;
 
+import buildcraft.core.BCCoreBlocks;
+import buildcraft.core.BCCoreItems;
+import buildcraft.energy.BCEnergyBlocks;
+import buildcraft.energy.BCEnergyItems;
+import buildcraft.factory.BCFactoryBlocks;
+import buildcraft.lib.BCLibItems;
 import com.minelife.AbstractGuiHandler;
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.drugs.block.*;
+import com.minelife.drugs.item.ItemJoint;
 import com.minelife.drugs.item.ItemProcessedCocaine;
 import com.minelife.drugs.tileentity.TileEntityCementMixer;
 import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
 import com.minelife.drugs.tileentity.TileEntityPresser;
 import com.minelife.drugs.tileentity.TileEntityVacuum;
+import com.minelife.guns.item.EnumGun;
 import com.minelife.util.MLFluid;
 import com.minelife.util.MLFluidBlock;
-import com.minelife.drugs.item.ItemJoint;
+import ic2.core.ref.BlockName;
+import ic2.core.ref.ItemName;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -20,8 +29,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -166,6 +178,11 @@ public class ModDrugs extends MLMod {
     }
 
     @Override
+    public void init(FMLInitializationEvent event) {
+        registerRecipes();
+    }
+
+    @Override
     public Class<? extends MLProxy> getClientProxyClass() {
         return com.minelife.drugs.client.ClientProxy.class;
     }
@@ -178,6 +195,44 @@ public class ModDrugs extends MLMod {
     @Override
     public AbstractGuiHandler getGuiHandler() {
         return new DrugsGuiHandler();
+    }
+
+    private void registerRecipes() {
+        ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":leaf_mulcher");
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemLeafMulcherBlock),
+                "AAA",
+                "ABA",
+                "ACA",
+                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 3)),
+                'B', Ingredient.fromStacks(new ItemStack(Item.getItemFromBlock(BCCoreBlocks.engine), 1, 2)),
+                'C', Ingredient.fromStacks(new ItemStack(ItemName.block_cutting_blade.getInstance(), 1, 0)));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":cement_mixer");
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemCementMixerBlock),
+                "AAA",
+                "ABA",
+                "ACA",
+                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 3)),
+                'B', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 6)),
+                'C', Ingredient.fromStacks(new ItemStack(Item.getItemFromBlock(BCFactoryBlocks.tank))));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":vacuum");
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemVacuumBlock),
+                "AAA",
+                "ABA",
+                "ACA",
+                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 15)),
+                'B', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 2)),
+                'C', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 6)));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":presser");
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemPresserBlock),
+                "AAA",
+                "ABA",
+                "ACA",
+                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 15)),
+                'B', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 2)),
+                'C', Ingredient.fromStacks(new ItemStack(Item.getItemFromBlock(BCCoreBlocks.engine), 1, 0)));
     }
 
 }

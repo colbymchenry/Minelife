@@ -1,5 +1,6 @@
 package com.minelife.guns.client;
 
+import buildcraft.core.BCCoreBlocks;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.guns.Bullet;
@@ -94,6 +95,13 @@ public class ClientProxy extends MLProxy {
         if (Minecraft.getMinecraft().player == null) return;
 
         EntityPlayer player = Minecraft.getMinecraft().player;
+
+        // Used to debug items
+//        System.out.println(player.getHeldItemMainhand().getItem().getUnlocalizedName());
+//        System.out.println(player.getHeldItemMainhand().getItem().getRegistryName());
+//        System.out.println(player.getHeldItemMainhand().getItem().getClass().getName());
+//        System.out.println(player.getHeldItemMainhand().getItemDamage());
+//        System.out.println(Item.getItemFromBlock(BCCoreBlocks.engine) == player.getHeldItemMainhand().getItem());
 
         if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
 
