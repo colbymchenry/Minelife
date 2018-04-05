@@ -8,6 +8,7 @@ import com.minelife.essentials.ModEssentials;
 import com.minelife.guns.ModGuns;
 import com.minelife.minebay.ModMinebay;
 import com.minelife.netty.ModNetty;
+import com.minelife.notifications.ModNotifications;
 import com.minelife.permission.ModPermission;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.util.PacketPlaySound;
@@ -54,6 +55,7 @@ public class Minelife {
     public Minelife() {
         MODS.add(new ModNetty());
         MODS.add(new ModPermission());
+        MODS.add(new ModNotifications());
         MODS.add(new ModEssentials());
         MODS.add(new ModEconomy());
         MODS.add(new ModChestShop());
