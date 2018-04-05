@@ -16,9 +16,7 @@ import com.minelife.economy.item.ItemATM;
 import com.minelife.economy.item.ItemCash;
 import com.minelife.economy.item.ItemCashBlock;
 import com.minelife.economy.item.ItemWallet;
-import com.minelife.economy.network.PacketOpenATM;
-import com.minelife.economy.network.PacketSendMoneyATM;
-import com.minelife.economy.network.PacketWithdrawATM;
+import com.minelife.economy.network.*;
 import com.minelife.economy.server.CommandEconomy;
 import com.minelife.economy.server.ServerProxy;
 import com.minelife.economy.tileentity.TileEntityATM;
@@ -36,6 +34,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import org.sqlite.core.DB;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -73,6 +72,10 @@ public class ModEconomy extends MLMod {
         registerPacket(PacketOpenATM.Handler.class, PacketOpenATM.class, Side.CLIENT);
         registerPacket(PacketWithdrawATM.Handler.class, PacketWithdrawATM.class, Side.SERVER);
         registerPacket(PacketSendMoneyATM.Handler.class, PacketSendMoneyATM.class, Side.SERVER);
+        registerPacket(PacketRequestBills.Handler.class, PacketRequestBills.class, Side.SERVER);
+        registerPacket(PacketSendBills.Handler.class, PacketSendBills.class, Side.CLIENT);
+        registerPacket(PacketPayBill.Handler.class, PacketPayBill.class, Side.SERVER);
+        registerPacket(PacketDepositATM.Handler.class, PacketDepositATM.class, Side.SERVER);
     }
 
     @Override
@@ -99,9 +102,9 @@ public class ModEconomy extends MLMod {
         return ServerProxy.DB;
     }
 
-    public static Set<Bill> getBills(Database DB, String table, UUID player) throws Exception {
+    public static Set<Bill> getBills(UUID player) throws Exception {
         Set<Bill> bills = Sets.newTreeSet();
-        ResultSet result = DB.query("SELECT * FROM " + table + " WHERE player='" + player.toString() + "'");
+        ResultSet result = getDatabase().query("SELECT * FROM bills WHERE player='" + player.toString() + "'");
         while (result.next()) bills.add(new Bill(UUID.fromString(result.getString("uuid"))));
         return bills;
     }
@@ -215,7 +218,7 @@ public class ModEconomy extends MLMod {
         return 0;
     }
 
-    public static int getBalanceInventory(EntityPlayerMP player) {
+    public static int getBalanceInventory(EntityPlayer player) {
         int total = 0;
         for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
             ItemStack stack = player.inventory.getStackInSlot(i);

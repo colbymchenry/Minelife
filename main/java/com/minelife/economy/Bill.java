@@ -5,6 +5,7 @@ import com.minelife.util.NBTHelper;
 import io.netty.buffer.ByteBuf;
 import lib.PatPeter.SQLibrary.Database;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 import java.sql.ResultSet;
@@ -81,23 +82,19 @@ public final class Bill implements Comparable<Bill> {
         this.memo = memo;
     }
 
-    public void save(Database DB, String table) throws SQLException {
-        ResultSet result = DB.query("SELECT * FROM " + table + " WHERE uuid='" + this.getUniqueID().toString() + "'");
+    public void save() throws SQLException {
+        ResultSet result = ModEconomy.getDatabase().query("SELECT * FROM bills WHERE uuid='" + this.getUniqueID().toString() + "'");
         if(result.next()) {
-            DB.query("UPDATE " + table + " SET uuid='', player='" + this.getPlayer().toString() + "', " +
+            ModEconomy.getDatabase().query("UPDATE bills SET uuid='', player='" + this.getPlayer().toString() + "', " +
                     "memo='" + this.getMemo() + "', amountDue='" + this.getAmountDue() + "', " +
                     "dueDate='" + DateHelper.dateToString(this.getDueDate()) + "', " +
                     "tagCompound='" + this.getTagCompound().toString() + "' WHERE uuid='" + this.getUniqueID().toString() + "'");
         } else {
-           DB.query("INSERT INTO " + table + " (uuid, player, memo, amountDue, dueDate, tagCompound) VALUES " +
+            ModEconomy.getDatabase().query("INSERT INTO bills (uuid, player, memo, amountDue, dueDate, tagCompound) VALUES " +
                     "('" + this.getUniqueID().toString() + "', '" + this.getPlayer().toString() + "', " +
                     "'" + this.getMemo() + "', '" + this.getAmountDue() + "', " +
                     "'" + DateHelper.dateToString(this.getDueDate()) + "', '" + this.getTagCompound().toString() + "')");
         }
-    }
-
-    public static void createTable(Database DB, String table) throws SQLException {
-        DB.query("CREATE TABLE IF NOT EXISTS " + table + " (uuid VARCHAR(36), player VARCHAR(36), memo TEXT, amountDue INT, dueDate VARCHAR(36), tagCompound TEXT)");
     }
 
     public void toBytes(ByteBuf buf) {

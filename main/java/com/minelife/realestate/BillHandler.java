@@ -13,12 +13,15 @@ import java.util.UUID;
 public class BillHandler {
 
     public static Set<Bill> getRentBills(UUID playerID) {
+        Set<Bill> bills = Sets.newTreeSet();
         try {
-            return ModEconomy.getBills(ModRealEstate.getDatabase(), "bills", playerID);
+            for (Bill bill : ModEconomy.getBills(playerID)) {
+                if(bill.getTagCompound().hasKey("EstateID")) bills.add(bill);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Sets.newTreeSet();
+        return bills;
     }
 
     public static Bill createRentBill(UUID playerID, Estate estate) throws SQLException {
@@ -31,7 +34,7 @@ public class BillHandler {
         tagCompound.setString("EstateID", estate.getUniqueID().toString());
         Bill bill = new Bill(UUID.randomUUID(), playerID, "Estate Rent: x=" + estate.getMinimum().getX() +
                 ",y=" + estate.getMinimum().getY() + ",z=" + estate.getMinimum().getZ(), estate.getRentPrice(), calendar.getTime(), tagCompound);
-        bill.save(ModRealEstate.getDatabase(), "bills");
+        bill.save();
         return bill;
     }
 

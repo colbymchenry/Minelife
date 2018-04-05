@@ -8,6 +8,7 @@ import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateProperty;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.realestate.PlayerPermission;
+import com.minelife.realestate.network.PacketBuyGui;
 import com.minelife.realestate.network.PacketCreateGui;
 import com.minelife.realestate.network.PacketModifyGui;
 import com.minelife.util.client.PacketPopup;
@@ -43,6 +44,9 @@ public class CommandEstate extends CommandBase {
     public String getUsage(ICommandSender sender) {
         sender.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Estate]" + TextFormatting.GOLD + " /e create"));
         sender.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Estate]" + TextFormatting.GOLD + " /e delete"));
+        sender.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Estate]" + TextFormatting.GOLD + " /e modify"));
+        sender.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Estate]" + TextFormatting.GOLD + " /e buy"));
+        sender.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Estate]" + TextFormatting.GOLD + " /e rent"));
         return null;
     }
 
@@ -66,34 +70,65 @@ public class CommandEstate extends CommandBase {
                 Minelife.getNetwork().sendTo(new PacketCreateGui(basePermissions, baseProperties), player);
         } else if (args[0].equalsIgnoreCase("delete")) {
             if(estateAtPos == null) {
-                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "There is no estate at your location."));
+                sendMessage(player, TextFormatting.RED + "There is no estate at your location.");
                 return;
             }
 
             if(!Objects.equals(estateAtPos.getOwnerID(),player.getUniqueID())) {
-                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "You are not the owner of this estate."));
+                sendMessage(player, TextFormatting.RED + "You are not the owner of this estate.");
                 return;
             }
 
             try {
                 estateAtPos.delete();
-                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.GOLD + "Estate deleted."));
+                sendMessage(player, TextFormatting.GOLD + "Estate deleted.");
             } catch (SQLException e) {
                 e.printStackTrace();
-                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "An error occurred while attempting to delete the estate."));
+                sendMessage(player, TextFormatting.RED + "An error occurred while attempting to delete the estate.");
             }
         } else if(args[0].equalsIgnoreCase("modify")) {
             if(estateAtPos == null) {
-                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "There is no estate at your location."));
+                sendMessage(player, TextFormatting.RED + "There is no estate at your location.");
                 return;
             }
 
             if(!Objects.equals(estateAtPos.getOwnerID(), player.getUniqueID()) && !Objects.equals(estateAtPos.getRenterID(), player.getUniqueID())) {
-                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "You are not authorized to modify this estate."));
+                sendMessage(player, TextFormatting.RED + "You are not authorized to modify this estate.");
                 return;
             }
 
             Minelife.getNetwork().sendTo(new PacketModifyGui(estateAtPos, basePermissions, baseProperties), player);
+        } else if(args[0].equalsIgnoreCase("rent") || args[0].equalsIgnoreCase("buy")) {
+            if(estateAtPos == null) {
+                sendMessage(player, TextFormatting.RED + "There is no estate at your location.");
+                return;
+            }
+
+            if(Objects.equals(estateAtPos.getOwnerID(), player.getUniqueID()) || Objects.equals(estateAtPos.getRenterID(), player.getUniqueID())) {
+                sendMessage(player, TextFormatting.RED + "You cannot buy from yourself.");
+                return;
+            }
+
+            if (estateAtPos.getRenterID() != null) {
+                sendMessage(player, TextFormatting.RED + "This estate has someone renting it.");
+                return;
+            }
+
+            if(args[0].equalsIgnoreCase("rent")) {
+                if (estateAtPos.getRentPrice() <= 0 || estateAtPos.getRentPeriod() <= 0) {
+                    sendMessage(player, TextFormatting.RED + "Estate is not for rent.");
+                    return;
+                }
+            } else {
+                if (estateAtPos.getPurchasePrice() <= 0) {
+                    sendMessage(player, TextFormatting.RED + "Estate is not for purchase.");
+                    return;
+                }
+            }
+
+            Minelife.getNetwork().sendTo(new PacketBuyGui(estateAtPos), player);
+        } else {
+            getUsage(sender);
         }
     }
 
@@ -168,6 +203,10 @@ public class CommandEstate extends CommandBase {
         }
 
         return true;
+    }
+
+    public static void sendMessage(EntityPlayerMP player, String msg) {
+        player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.GOLD + msg));
     }
 
 }

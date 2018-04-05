@@ -21,6 +21,7 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import org.apache.commons.lang3.text.WordUtils;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
@@ -152,11 +153,30 @@ public class GuiCreateEstate extends GuiScreen {
         @Override
         public void keyTyped(char keycode, int keynum) {
             super.keyTyped(keycode, keynum);
-            this.purchaseField.textboxKeyTyped(keycode, keynum);
-            this.rentField.textboxKeyTyped(keycode, keynum);
-            this.periodField.textboxKeyTyped(keycode, keynum);
-            this.introField.textboxKeyTyped(keycode, keynum);
-            this.outroField.textboxKeyTyped(keycode, keynum);
+
+            if (keynum == Keyboard.KEY_BACK) {
+                introField.textboxKeyTyped(keycode, keynum);
+                outroField.textboxKeyTyped(keycode, keynum);
+                this.purchaseField.textboxKeyTyped(keycode, keynum);
+                this.rentField.textboxKeyTyped(keycode, keynum);
+                this.periodField.textboxKeyTyped(keycode, keynum);
+                return;
+            }
+
+            if (introField.isFocused() || outroField.isFocused()) {
+                introField.textboxKeyTyped(keycode, keynum);
+                outroField.textboxKeyTyped(keycode, keynum);
+            } else {
+                if (this.purchaseField.isFocused() && NumberConversions.isInt(purchaseField.getText() + keycode)
+                        && NumberConversions.toInt(purchaseField.getText() + keycode) * 20 > 0)
+                    this.purchaseField.textboxKeyTyped(keycode, keynum);
+                if (this.rentField.isFocused() && NumberConversions.isInt(rentField.getText() + keycode)
+                        && NumberConversions.toInt(rentField.getText() + keycode) * 20 > 0)
+                    this.rentField.textboxKeyTyped(keycode, keynum);
+                if (this.periodField.isFocused() && NumberConversions.isInt(periodField.getText() + keycode)
+                        && NumberConversions.toInt(periodField.getText() + keycode) * 20 > 0)
+                    this.periodField.textboxKeyTyped(keycode, keynum);
+            }
         }
 
         @Override
@@ -180,7 +200,7 @@ public class GuiCreateEstate extends GuiScreen {
                 if (NumberConversions.isInt(this.rentField.getText()))
                     rentPrice = NumberConversions.toInt(this.rentField.getText());
                 if (NumberConversions.isInt(this.periodField.getText()))
-                    rentPeriod = NumberConversions.toByte((this.periodField.getText()));
+                    rentPeriod = NumberConversions.toInt((this.periodField.getText()));
 
                 Set<PlayerPermission> globalPermissions = Sets.newTreeSet(), renterPermissions = Sets.newTreeSet();
                 Set<EstateProperty> estateProperties = Sets.newTreeSet();

@@ -22,13 +22,16 @@ public class GuiATMMenu extends GuiATMBase {
         super.actionPerformed(button);
         switch (button.id) {
             case 0:
-
+                mc.displayGuiScreen(new GuiATMSendMoney(this.balance));
                 break;
             case 1:
-                mc.displayGuiScreen(new GuiATMWithdraw(this.balance));
+                mc.displayGuiScreen(new GuiATMDeposit(this.balance));
                 break;
             case 2:
-
+                mc.displayGuiScreen(new GuiATMWithdraw(this.balance));
+                break;
+            case 3:
+                mc.displayGuiScreen(new GuiATMBills(this.balance));
                 break;
         }
     }
@@ -36,8 +39,9 @@ public class GuiATMMenu extends GuiATMBase {
     @Override
     public void initGui() {
         super.initGui();
-        this.buttonList.add(new ButtonATM(0, this.guiLeft + ((this.xSize - 150) / 2), this.guiTop + 40, 150, 30, "Send Money", 2.0));
-        this.buttonList.add(new ButtonATM(1, this.guiLeft + ((this.xSize - 150) / 2), this.buttonList.get(0).y + 50, 150, 30, "Withdraw", 2.0));
-        this.buttonList.add(new ButtonATM(2, this.guiLeft + ((this.xSize - 150) / 2), this.buttonList.get(1).y + 50, 150, 30, "Pay Bills", 2.0));
+        this.buttonList.add(new ButtonATM(0, this.guiLeft + ((this.xSize - 150) / 2), this.guiTop + 30, 150, 30, "Send Money", 2.0));
+        this.buttonList.add(new ButtonATM(1, this.guiLeft + ((this.xSize - 150) / 2), this.buttonList.get(0).y + 40, 150, 30, "Deposit", 2.0));
+        this.buttonList.add(new ButtonATM(2, this.guiLeft + ((this.xSize - 150) / 2), this.buttonList.get(1).y + 40, 150, 30, "Withdraw", 2.0));
+        this.buttonList.add(new ButtonATM(3, this.guiLeft + ((this.xSize - 150) / 2), this.buttonList.get(2).y + 40, 150, 30, "Pay Bills", 2.0));
     }
 }

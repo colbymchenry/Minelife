@@ -1,11 +1,11 @@
 package com.minelife.realestate.client.gui;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateProperty;
 import com.minelife.realestate.PlayerPermission;
+import com.minelife.realestate.network.PacketPurchaseEstate;
 import com.minelife.realestate.network.PacketUpdateEstate;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiHelper;
@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
-import java.util.UUID;
 
 public class GuiBuyEstate extends GuiCreateEstate {
 
@@ -38,46 +37,7 @@ public class GuiBuyEstate extends GuiCreateEstate {
             @Override
             public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
                 if (this.createBtn.mousePressed(mc, mouseX, mouseY)) {
-                    int purchasePrice = 0, rentPrice = 0, rentPeriod = 0;
-                    if (NumberConversions.isInt(this.purchaseField.getText()))
-                        purchasePrice = NumberConversions.toInt(this.purchaseField.getText());
-                    if (NumberConversions.isInt(this.rentField.getText()))
-                        rentPrice = NumberConversions.toInt(this.rentField.getText());
-                    if (NumberConversions.isInt(this.periodField.getText()))
-                        rentPeriod = NumberConversions.toByte((this.periodField.getText()));
-
-                    Set<PlayerPermission> globalPermissions = Sets.newTreeSet(), renterPermissions = Sets.newTreeSet();
-                    Set<EstateProperty> estateProperties = Sets.newTreeSet();
-
-                    this.tickBoxList.forEach(guiTickBox -> {
-                        String[] data = guiTickBox.key.split("\\.");
-                        String key = data[0], value = data[1];
-                        switch (key) {
-                            case "GLOBAL":
-                                if (guiTickBox.isChecked())
-                                    globalPermissions.add(PlayerPermission.valueOf(value));
-                                break;
-                            case "RENTER":
-                                if (guiTickBox.isChecked())
-                                    renterPermissions.add(PlayerPermission.valueOf(value));
-                                break;
-                            case "PROPERTY":
-                                if (guiTickBox.isChecked())
-                                    estateProperties.add(EstateProperty.valueOf(value));
-                                break;
-                        }
-                    });
-
-                    estate.setPurchasePrice(purchasePrice);
-                    estate.setRentPrice(rentPrice);
-                    estate.setRentPeriod(rentPeriod);
-                    estate.setIntro(this.introField.getText());
-                    estate.setOutro(this.outroField.getText());
-                    estate.setGlobalPermissions(globalPermissions);
-                    estate.setRenterPermissions(renterPermissions);
-                    estate.setProperties(estateProperties);
-
-                    Minelife.getNetwork().sendToServer(new PacketUpdateEstate(estate));
+                    mc.displayGuiScreen(new GuiPopup(estate));
                 }
             }
         };
@@ -101,13 +61,13 @@ public class GuiBuyEstate extends GuiCreateEstate {
             }
         }
 
-        this.content.createBtn.displayString = "Purchase";
+        this.content.createBtn.displayString = "Next";
     }
 
     class GuiPopup extends GuiScreen {
 
         private Estate estate;
-        private int guiLeft, guiTop, xSize = 80, ySize = 100;
+        private int guiLeft, guiTop, xSize = 80, ySize = 80;
 
         public GuiPopup(Estate estate) {
             this.estate = estate;
@@ -126,9 +86,10 @@ public class GuiBuyEstate extends GuiCreateEstate {
             super.actionPerformed(button);
             switch (button.id) {
                 case 0:
-
+                    Minelife.getNetwork().sendToServer(new PacketPurchaseEstate(estate.getUniqueID(), false));
                     break;
                 case 1:
+                    Minelife.getNetwork().sendToServer(new PacketPurchaseEstate(estate.getUniqueID(), true));
                     break;
                 case 2:
                     Minecraft.getMinecraft().displayGuiScreen(new GuiBuyEstate(this.estate));
@@ -145,6 +106,8 @@ public class GuiBuyEstate extends GuiCreateEstate {
             buttonList.add(new GuiButton(0, (this.width - 40) / 2, this.guiTop + 5, 40, 20, "Buy"));
             buttonList.add(new GuiButton(1, (this.width - 40) / 2, buttonList.get(0).y + 25, 40, 20, "Rent"));
             buttonList.add(new GuiButton(2, (this.width - 40) / 2, buttonList.get(1).y + 25, 40, 20, "Cancel"));
+            this.buttonList.get(0).enabled = this.estate.getPurchasePrice() > 0;
+            this.buttonList.get(1).enabled = this.estate.getRentPrice() > 0 && this.estate.getRentPeriod() > 0;
         }
     }
 }

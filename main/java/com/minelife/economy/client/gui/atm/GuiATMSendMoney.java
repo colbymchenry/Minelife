@@ -19,7 +19,7 @@ public class GuiATMSendMoney extends GuiATMWithdraw {
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        super.actionPerformed(button);
+//        super.actionPerformed(button);
         if (NumberConversions.isInt(button.displayString)) {
             if (NumberConversions.isInt(String.valueOf(amount) + button.displayString)) {
                 if (NumberConversions.toInt(String.valueOf(amount) + button.displayString) <= balance

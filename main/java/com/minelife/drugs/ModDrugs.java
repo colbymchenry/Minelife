@@ -196,7 +196,7 @@ public class ModDrugs extends MLMod {
     public AbstractGuiHandler getGuiHandler() {
         return new DrugsGuiHandler();
     }
-
+// TODO: Make marijuana need torches near them to grow and make plants need a certain altitude to grow and maybe fans for air
     private void registerRecipes() {
         ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":leaf_mulcher");
         GameRegistry.addShapedRecipe(name, null, new ItemStack(itemLeafMulcherBlock),

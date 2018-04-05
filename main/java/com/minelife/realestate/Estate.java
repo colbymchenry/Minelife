@@ -301,11 +301,14 @@ public class Estate implements Comparable<Estate> {
 
         for (PlayerPermission permission : PlayerPermission.values()) {
             if (Objects.equals(this.getRenterID(), playerID)) {
-                if (!this.getRenterPermissions().contains(permission)) toRemove.add(permission);
+                if (!this.getRenterPermissions().contains(permission) && !this.getGlobalPermissions().contains(permission) &&
+                        !this.getMemberPermissions(playerID).contains(permission)) toRemove.add(permission);
+            } else if (this.getMemberIDs().contains(playerID)) {
+                if (!this.getGlobalPermissions().contains(permission) &&
+                        !this.getMemberPermissions(playerID).contains(permission)) toRemove.add(permission);
+            } else {
+                if (!this.getGlobalPermissions().contains(permission)) toRemove.add(permission);
             }
-
-            if (!this.getGlobalPermissions().contains(permission) &&
-                    !this.getMemberPermissions(playerID).contains(permission)) toRemove.add(permission);
         }
 
         permissions.removeAll(toRemove);

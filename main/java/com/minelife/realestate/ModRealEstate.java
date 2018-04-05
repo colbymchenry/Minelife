@@ -27,6 +27,8 @@ public class ModRealEstate extends MLMod {
         registerPacket(PacketCreateEstate.Handler.class, PacketCreateEstate.class, Side.SERVER);
         registerPacket(PacketUpdateEstate.Handler.class, PacketUpdateEstate.class, Side.SERVER);
         registerPacket(PacketModifyGui.Handler.class, PacketModifyGui.class, Side.CLIENT);
+        registerPacket(PacketBuyGui.Handler.class, PacketBuyGui.class, Side.CLIENT);
+        registerPacket(PacketPurchaseEstate.Handler.class, PacketPurchaseEstate.class, Side.SERVER);
     }
 
     @Override
