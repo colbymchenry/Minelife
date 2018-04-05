@@ -45,11 +45,9 @@ public class ServerProxy extends MLProxy {
             try {
                 ResultSet result = ModEconomy.getDatabase().query("SELECT * FROM bills WHERE duedate > '" + DateHelper.dateToString(Calendar.getInstance().getTime()) + "'");
                 while(result.next()) {
-                    BillEvent billEvent = new BillEvent.LateEvent(new Bill(UUID.fromString(result.getString("uuid"))), null);
+                    BillEvent billEvent = new BillEvent.LateEvent(new Bill(UUID.fromString(result.getString("uuid"))), null, result.getInt("amountDue"));
                     MinecraftForge.EVENT_BUS.post(billEvent);
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
