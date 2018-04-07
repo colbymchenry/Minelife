@@ -104,7 +104,6 @@ public enum EnumGun {
         model.computeNormals();
     }
 
-    // TODO: Do better animation
     public void resetAnimation() {
         int side = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
         boolean mouseDown = Mouse.isButtonDown(1);

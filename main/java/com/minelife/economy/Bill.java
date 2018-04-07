@@ -85,7 +85,7 @@ public final class Bill implements Comparable<Bill> {
     public void save() throws SQLException {
         ResultSet result = ModEconomy.getDatabase().query("SELECT * FROM bills WHERE uuid='" + this.getUniqueID().toString() + "'");
         if(result.next()) {
-            ModEconomy.getDatabase().query("UPDATE bills SET uuid='', player='" + this.getPlayer().toString() + "', " +
+            ModEconomy.getDatabase().query("UPDATE bills SET player='" + this.getPlayer().toString() + "', " +
                     "memo='" + this.getMemo() + "', amountDue='" + this.getAmountDue() + "', " +
                     "dueDate='" + DateHelper.dateToString(this.getDueDate()) + "', " +
                     "tagCompound='" + this.getTagCompound().toString() + "' WHERE uuid='" + this.getUniqueID().toString() + "'");
@@ -95,6 +95,10 @@ public final class Bill implements Comparable<Bill> {
                     "'" + this.getMemo() + "', '" + this.getAmountDue() + "', " +
                     "'" + DateHelper.dateToString(this.getDueDate()) + "', '" + this.getTagCompound().toString() + "')");
         }
+    }
+
+    public void delete() throws SQLException {
+        ModEconomy.getDatabase().query("DELETE FROM bills WHERE uuid='" + getUniqueID().toString() + "'");
     }
 
     public void toBytes(ByteBuf buf) {

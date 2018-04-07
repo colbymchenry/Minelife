@@ -105,7 +105,7 @@ public class ModEconomy extends MLMod {
     public static Set<Bill> getBills(UUID player) throws Exception {
         Set<Bill> bills = Sets.newTreeSet();
         ResultSet result = getDatabase().query("SELECT * FROM bills WHERE player='" + player.toString() + "'");
-        while (result.next()) bills.add(new Bill(UUID.fromString(result.getString("uuid"))));
+        while (result.next()) if(!result.getString("uuid").isEmpty()) bills.add(new Bill(UUID.fromString(result.getString("uuid"))));
         return bills;
     }
 

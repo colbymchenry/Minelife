@@ -9,18 +9,21 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.sql.SQLException;
+
 public class PacketNotification implements IMessage {
 
     private Notification notification;
-    private boolean playSound, render;
+    private boolean playSound, render, save;
 
     public PacketNotification() {
     }
 
-    public PacketNotification(Notification notification, boolean playSound, boolean render) {
+    public PacketNotification(Notification notification, boolean playSound, boolean render, boolean save) {
         this.notification = notification;
         this.playSound = playSound;
         this.render = render;
+        this.save = save;
     }
 
     @Override
@@ -28,6 +31,7 @@ public class PacketNotification implements IMessage {
         notification = Notification.fromBytes(buf);
         playSound = buf.readBoolean();
         render = buf.readBoolean();
+        save = buf.readBoolean();
     }
 
     @Override
@@ -35,6 +39,7 @@ public class PacketNotification implements IMessage {
         notification.toBytes(buf);
         buf.writeBoolean(playSound);
         buf.writeBoolean(render);
+        buf.writeBoolean(save);
     }
 
     public static class Handler implements IMessageHandler<PacketNotification, IMessage> {
@@ -42,6 +47,13 @@ public class PacketNotification implements IMessage {
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketNotification message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> OverlayRenderer.addNotification(message.notification, message.playSound, message.render));
+            if(message.save) {
+                try {
+                    message.notification.save();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
             return null;
         }
     }

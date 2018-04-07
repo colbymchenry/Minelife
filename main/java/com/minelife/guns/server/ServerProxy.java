@@ -7,6 +7,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.util.ListIterator;
+
 public class ServerProxy extends MLProxy {
 
     @Override
@@ -16,6 +18,10 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent
     public void serverTick(TickEvent.ServerTickEvent event) {
-        Bullet.BULLETS.removeIf(bullet -> bullet.tick(0));
+        ListIterator<Bullet> bulletIterator = Bullet.BULLETS.listIterator();
+        while(bulletIterator.hasNext()) {
+            Bullet.HitResult hitResult = bulletIterator.next().tick(0, false);
+            if(hitResult.isTooFar() || hitResult.getBlockState() != null || hitResult.getEntity() != null) bulletIterator.remove();
+        }
     }
 }

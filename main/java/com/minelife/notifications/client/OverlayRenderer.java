@@ -24,7 +24,8 @@ public class OverlayRenderer {
 
     @SubscribeEvent
     public void onGameOverlay(RenderGameOverlayEvent.Pre event) {
-        if (event.getType() != RenderGameOverlayEvent.ElementType.HOTBAR) return;
+        if (event.getType() != RenderGameOverlayEvent.ElementType.HOTBAR || (Minecraft.getMinecraft().currentScreen != null &&
+                !(Minecraft.getMinecraft().currentScreen instanceof GuiChat))) return;
 
         if (ClientProxy.notifications.isEmpty()) return;
 

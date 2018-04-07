@@ -1,6 +1,9 @@
 package com.minelife.realestate;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.minelife.util.PlayerHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -42,7 +45,10 @@ public class Estate implements Comparable<Estate> {
     }
 
     public void setRenterID(UUID uniqueID) {
-        this.tagCompound.setString("Renter", uniqueID.toString());
+        if (uniqueID == null)
+            this.tagCompound.removeTag("Renter");
+        else
+            this.tagCompound.setString("Renter", uniqueID.toString());
     }
 
     public void setOwnerID(UUID uniqueID) {
@@ -76,7 +82,10 @@ public class Estate implements Comparable<Estate> {
     }
 
     public void setPurchasePrice(int price) {
-        tagCompound.setInteger("PurchasePrice", price);
+        if (price < 1)
+            tagCompound.removeTag("PurchasePrice");
+        else
+            tagCompound.setInteger("PurchasePrice", price);
     }
 
     public int getRentPrice() {
@@ -84,7 +93,10 @@ public class Estate implements Comparable<Estate> {
     }
 
     public void setRentPrice(int price) {
-        tagCompound.setInteger("RentPrice", price);
+        if (price < 1)
+            tagCompound.removeTag("RentPrice");
+        else
+            tagCompound.setInteger("RentPrice", price);
     }
 
     public int getRentPeriod() {
@@ -92,7 +104,10 @@ public class Estate implements Comparable<Estate> {
     }
 
     public void setRentPeriod(int mcDays) {
-        tagCompound.setInteger("RentPeriod", mcDays);
+        if (mcDays < 1)
+            tagCompound.removeTag("RentPeriod");
+        else
+            tagCompound.setInteger("RentPeriod", mcDays);
     }
 
     public Set<UUID> getMemberIDs() {
@@ -109,6 +124,12 @@ public class Estate implements Comparable<Estate> {
         StringBuilder builder = new StringBuilder();
         for (UUID member : members) builder.append(member.toString()).append(",");
         this.tagCompound.setString("Members", builder.toString());
+    }
+
+    public Map<UUID, Set<PlayerPermission>> getMembersWithPermissions() {
+        Map<UUID, Set<PlayerPermission>> members = Maps.newHashMap();
+        for (UUID uuid : getMemberIDs()) members.put(uuid, getMemberPermissions(uuid));
+        return members;
     }
 
     public Set<EstateProperty> getProperties() {
@@ -177,6 +198,29 @@ public class Estate implements Comparable<Estate> {
         this.tagCompound.setTag(memberID.toString(), tagCompound);
     }
 
+    public Map<UUID, Set<PlayerPermission>> getSurroundingMembers() {
+        Map<UUID, Set<PlayerPermission>> members = Maps.newHashMap();
+        Estate e = getParentEstate();
+        while (e != null) {
+            members.putAll(e.getMembersWithPermissions());
+            e = e.getParentEstate();
+        }
+
+        members.putAll(e.getMembersWithPermissions());
+        return members;
+    }
+
+    public Set<UUID> getSurroundingOwners() {
+        Set<UUID> owners = Sets.newTreeSet();
+        Estate e = getParentEstate();
+        while (e != null) {
+            owners.add(e.getOwnerID());
+            e = e.getParentEstate();
+        }
+        owners.add(getOwnerID());
+        return owners;
+    }
+
     public String getIntro() {
         return this.tagCompound.hasKey("Intro") ? this.tagCompound.getString("Intro") : null;
     }
@@ -186,12 +230,12 @@ public class Estate implements Comparable<Estate> {
     }
 
     public void setIntro(String msg) {
-        if(msg == null) return;
+        if (msg == null) return;
         this.tagCompound.setString("Intro", msg);
     }
 
     public void setOutro(String msg) {
-        if(msg == null) return;
+        if (msg == null) return;
         this.tagCompound.setString("Outro", msg);
     }
 
@@ -281,42 +325,98 @@ public class Estate implements Comparable<Estate> {
     // TODO: this needs a lot more testing
     public Set<PlayerPermission> getPlayerPermissions(UUID playerID) {
         Set<PlayerPermission> permissions = Sets.newTreeSet();
-        Set<PlayerPermission> toRemove = Sets.newTreeSet();
-        Estate estate = this.getMasterEstate();
+        permissions.addAll(getActualGlobalPerms());
 
-        while (estate != null && estate != this) {
-            permissions.addAll(estate.getGlobalPermissions());
-            permissions.addAll(estate.getRenterPermissions());
-            permissions.addAll(estate.getMemberPermissions(playerID));
-            for (Estate estateInside : estate.getContainingEstates()) {
-                if (estateInside == this || estateInside.contains(this)) {
-                    estate = estateInside;
-                }
-            }
+        if (getParentEstate() == null && Objects.equals(playerID, getOwnerID())) {
+            permissions.addAll(toSet(Arrays.asList(PlayerPermission.values())));
+            return permissions;
         }
 
-        if (Objects.equals(this.getRenterID(), playerID)) permissions.addAll(this.getRenterPermissions());
-        permissions.addAll(this.getMemberPermissions(playerID));
-        permissions.addAll(this.getGlobalPermissions());
-
-        for (PlayerPermission permission : PlayerPermission.values()) {
-            if (Objects.equals(this.getRenterID(), playerID)) {
-                if (!this.getRenterPermissions().contains(permission) && !this.getGlobalPermissions().contains(permission) &&
-                        !this.getMemberPermissions(playerID).contains(permission)) toRemove.add(permission);
-            } else if (this.getMemberIDs().contains(playerID)) {
-                if (!this.getGlobalPermissions().contains(permission) &&
-                        !this.getMemberPermissions(playerID).contains(permission)) toRemove.add(permission);
-            } else {
-                if (!this.getGlobalPermissions().contains(permission)) toRemove.add(permission);
-            }
+        if (Objects.equals(playerID, getMasterEstate().getOwnerID())) {
+            permissions.addAll(toSet(Arrays.asList(PlayerPermission.values())));
+            return permissions;
         }
 
-        permissions.removeAll(toRemove);
+        if (PlayerHelper.isOp(PlayerHelper.getPlayer(playerID))) {
+            permissions.addAll(toSet(Arrays.asList(PlayerPermission.values())));
+            return permissions;
+        }
 
-        if (Objects.equals(this.getOwnerID(), playerID)) permissions.addAll(Arrays.asList(PlayerPermission.values()));
-
+        if (Objects.equals(playerID, getOwnerID())) {
+            permissions.addAll(Arrays.asList(PlayerPermission.values()));
+        } else if (Objects.equals(playerID, getRenterID())) {
+            permissions.addAll(getActualRenterPerms());
+        } else if (getMembersWithPermissions().containsKey(playerID)) {
+            permissions.addAll(getActualMemberPerms(playerID));
+        }
         return permissions;
     }
 
+    public Set<PlayerPermission> getActualGlobalPerms() {
+        Set<PlayerPermission> globalPermissions = getGlobalPermissions();
+        Set<PlayerPermission> toRemove = Sets.newTreeSet();
+        Estate parentEstate = getParentEstate();
+        while (parentEstate != null) {
+            for (PlayerPermission p : globalPermissions)
+                if (!parentEstate.getGlobalPermissions().contains(p) && !parentEstate.getPlayerPermissions(parentEstate.getOwnerID()).contains(p))
+                    toRemove.add(p);
+            parentEstate = parentEstate.getParentEstate();
+        }
+
+        globalPermissions.removeAll(toRemove);
+        return globalPermissions;
+    }
+
+    public Set<PlayerPermission> getActualRenterPerms() {
+        Set<PlayerPermission> renterPerms = getRenterPermissions();
+        Set<PlayerPermission> toRemove = Sets.newTreeSet();
+
+        Estate parentEstate = getParentEstate();
+
+        while (parentEstate != null) {
+
+            for (PlayerPermission p : renterPerms)
+                if (!parentEstate.getRenterPermissions().contains(p) && !parentEstate.getPlayerPermissions(parentEstate.getOwnerID()).contains(p))
+                    toRemove.add(p);
+
+            parentEstate = parentEstate.getParentEstate();
+        }
+
+        renterPerms.removeAll(toRemove);
+        return renterPerms;
+    }
+
+    // 0TODO: Will still need some testings and fine tuning
+    public Set<PlayerPermission> getActualMemberPerms(UUID playerID) {
+        Set<PlayerPermission> memberPerms = getMembersWithPermissions().get(playerID);
+        Set<PlayerPermission> toRemove = Sets.newTreeSet();
+
+        Estate parentEstate = getParentEstate();
+
+        while (parentEstate != null) {
+
+            for (PlayerPermission p : memberPerms)
+                if (parentEstate.getMembersWithPermissions().containsKey(playerID) &&
+                        !parentEstate.getMembersWithPermissions().get(playerID).contains(p))
+                    toRemove.add(p);
+
+            parentEstate = parentEstate.getParentEstate();
+        }
+
+        memberPerms.removeAll(toRemove);
+        return memberPerms;
+    }
+
+    private Set<PlayerPermission> toSet(List<PlayerPermission> list) {
+        Set<PlayerPermission> set = Sets.newTreeSet();
+        set.addAll(list);
+        return set;
+    }
+
+    private List<PlayerPermission> toList(Set<PlayerPermission> treeSet) {
+        List<PlayerPermission> list = Lists.newArrayList();
+        list.addAll(treeSet);
+        return list;
+    }
 
 }

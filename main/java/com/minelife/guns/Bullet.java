@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.minelife.util.client.render.LineRenderer;
 import com.minelife.util.client.render.Vector;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -25,7 +26,7 @@ public class Bullet {
     public static volatile List<Bullet> BULLETS = Lists.newArrayList();
 
     private static final List<Block> blackListedBlocks = new ArrayList<>(Arrays.asList(Blocks.TALLGRASS, Blocks.WATER,
-            Blocks.FLOWING_WATER, Blocks.DOUBLE_PLANT, Blocks.RED_FLOWER, Blocks.YELLOW_FLOWER));
+            Blocks.FLOWING_WATER, Blocks.DOUBLE_PLANT, Blocks.RED_FLOWER, Blocks.YELLOW_FLOWER, ModGuns.blockTurretBottom, ModGuns.blockTurretTop));
 
     public World world;
     public double posX, posY, posZ, prevPosX, prevPosY, prevPosZ, startX, startY, startZ, bulletSpeed, bulletDamage;
@@ -55,21 +56,25 @@ public class Bullet {
                 prevPosX + range, prevPosY + range, prevPosZ + range));
     }
 
-    public boolean tick(float partialTicks) {
+    public HitResult tick(float partialTicks, boolean simulate) {
         BlockPos pos = new BlockPos(MathHelper.floor(posX), MathHelper.floor(posY), MathHelper.floor(posZ));
         Block block = world.getBlockState(pos).getBlock();
 
         boolean hitBlock = block != null && block != Blocks.AIR && !blackListedBlocks.contains(block);
-        if (hitBlock) return true;
+        if (hitBlock) return new HitResult(world.getBlockState(pos), null);
 
         for (EntityLivingBase e : nearbyTargets) {
             if (e != shooter && collisionTest(e)) {
-                if (world.isRemote) return true;
+                if (world.isRemote) return new HitResult(null, e);
 
-                if (e instanceof EntityPlayerMP && ((EntityPlayerMP) e).isCreative()) return true;
+                if (e instanceof EntityPlayerMP && ((EntityPlayerMP) e).isCreative()) return new HitResult(null, null);
 
-                e.attackEntityFrom(DamageSource.GENERIC, (float) bulletDamage);
-                e.hurtResistantTime = 0;
+                if(!simulate) {
+                    e.attackEntityFrom(DamageSource.GENERIC, (float) bulletDamage);
+                    e.hurtResistantTime = 0;
+                }
+
+                return new HitResult(null, e);
             }
         }
 
@@ -87,7 +92,7 @@ public class Bullet {
         posY += lookVec.y * bulletSpeed;
         posZ += lookVec.z * bulletSpeed;
 
-        if(world.isRemote) {
+        if(world.isRemote && !simulate) {
             world.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, prevPosX, prevPosY, prevPosZ, lookVec.x, lookVec.y, lookVec.z);
             Vector topLeft = new Vector(prevPosX, prevPosY, prevPosZ);
             Vector bottomLeft = new Vector(prevPosX, prevPosY - 0.01, prevPosZ);
@@ -100,7 +105,7 @@ public class Bullet {
         double d5 = posZ - startZ;
         double distance = Math.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
 
-        return distance > range;
+        return new HitResult(distance > range);
     }
 
     private boolean collisionTest(EntityLivingBase e) {
@@ -110,10 +115,42 @@ public class Bullet {
             Vec3d newVec = new Vec3d(lookNormalized.x * distance + posX,
                     lookNormalized.y * distance + posY, lookNormalized.z * distance + posZ);
 
+            Block block = e.getEntityWorld().getBlockState(new BlockPos(Math.floor(newVec.x), Math.floor(newVec.y), Math.floor(newVec.z))).getBlock();
+            boolean hitBlock = block != null && block != Blocks.AIR && !blackListedBlocks.contains(block);
+
+            if(hitBlock) return false;
+
             if (e.getEntityBoundingBox().contains(newVec)) return true;
         }
 
         return false;
+    }
+
+    public class HitResult {
+        private IBlockState blockState;
+        private EntityLivingBase entity;
+        private boolean tooFar = false;
+
+        public HitResult(IBlockState blockState, EntityLivingBase entity) {
+            this.blockState = blockState;
+            this.entity = entity;
+        }
+
+        public HitResult(boolean tooFar) {
+            this.tooFar = tooFar;
+        }
+
+        public boolean isTooFar() {
+            return tooFar;
+        }
+
+        public IBlockState getBlockState() {
+            return blockState;
+        }
+
+        public EntityLivingBase getEntity() {
+            return entity;
+        }
     }
 
 }

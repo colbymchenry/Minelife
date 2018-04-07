@@ -11,12 +11,14 @@ import com.minelife.netty.ModNetty;
 import com.minelife.notifications.ModNotifications;
 import com.minelife.permission.ModPermission;
 import com.minelife.realestate.ModRealEstate;
+import com.minelife.tracker.ModTracker;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.PacketPopup;
 import com.minelife.util.client.PacketRequestName;
 import com.minelife.util.client.PacketRequestUUID;
 import com.minelife.util.server.PacketResponseName;
 import com.minelife.util.server.PacketResponseUUID;
+import com.minelife.welfare.ModWelfare;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -55,6 +57,8 @@ public class Minelife {
     public Minelife() {
         MODS.add(new ModNetty());
         MODS.add(new ModPermission());
+        MODS.add(new ModTracker());
+        MODS.add(new ModWelfare());
         MODS.add(new ModNotifications());
         MODS.add(new ModEssentials());
         MODS.add(new ModEconomy());

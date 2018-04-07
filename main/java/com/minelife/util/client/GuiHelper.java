@@ -1,6 +1,7 @@
 package com.minelife.util.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -9,10 +10,14 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.opengl.GL11;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class GuiHelper {
 
@@ -21,6 +26,17 @@ public class GuiHelper {
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         }
     };
+
+    public static void drawImage(int x, int y, int width, int height, ResourceLocation resourceLocation) {
+        try {
+            BufferedImage bimg = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(resourceLocation).getInputStream());
+            int w = bimg.getWidth();
+            int h = bimg.getHeight();
+            Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, w, h, width, height, w, h);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void drawRect(int x, int y, int width, int height) {
         helperScreen.drawTexturedModalRect(x, y, 0, 0, width, height);

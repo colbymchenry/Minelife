@@ -1,15 +1,22 @@
 package com.minelife.minebay.network;
 
 import com.google.common.collect.Lists;
+import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
 import com.minelife.minebay.ItemListing;
 import com.minelife.minebay.ModMinebay;
+import com.minelife.notifications.Notification;
+import com.minelife.notifications.NotificationType;
 import com.minelife.util.ItemHelper;
+import com.minelife.util.NumberConversions;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.PacketPopup;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -115,10 +122,25 @@ public class PacketBuyItem implements IMessage {
                     if (didNotFitDeposit > 0) ModEconomy.depositATM(listing.getSellerID(), didNotFitDeposit);
                     if (didNotFitWithdraw > 0) ModEconomy.depositATM(player.getUniqueID(), didNotFitWithdraw);
 
+
+                    // TODO: Allow enabling and disabling notifications for a listing when creating it
+                    Notification itemSoldNotification = new Notification(listing.getSellerID(),
+                            TextFormatting.DARK_PURPLE + "Minebay\n" + TextFormatting.DARK_GRAY + totalToBuy + " " +
+                                    listing.getItemStack().getDisplayName() + "'s Sold!\nIncome: " + TextFormatting.DARK_GREEN + "$" + NumberConversions.format(totalCost),
+                            new ResourceLocation(Minelife.MOD_ID, "textures/gui/notification/minebay_icon.png"), NotificationType.EDGED, 5, 0xFFFFFF);
+
+                    EntityPlayerMP seller = PlayerHelper.getPlayer(listing.getSellerID());
+
                     if (listing.getAmountStored() - totalToBuy < 1) {
                         listing.delete();
                     } else {
                         listing.setAmountStored(listing.getAmountStored() - totalToBuy);
+                    }
+
+                    if(seller != null) {
+                        itemSoldNotification.sendTo(seller, true, true, false);
+                    } else {
+                        itemSoldNotification.save();
                     }
 
                     player.closeScreen();

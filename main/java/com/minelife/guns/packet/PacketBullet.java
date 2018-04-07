@@ -26,13 +26,14 @@ public class PacketBullet implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-         posX = buf.readDouble();
-         posY = buf.readDouble();
-         posZ = buf.readDouble();
-         lookVec = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
-         speed = buf.readDouble();
-         damage = buf.readDouble();
-         entityID = buf.readInt();
+        posX = buf.readDouble();
+        posY = buf.readDouble();
+        posZ = buf.readDouble();
+        lookVec = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
+        speed = buf.readDouble();
+        damage = buf.readDouble();
+        if (buf.readBoolean()) entityID = buf.readInt();
+        else entityID = -1;
     }
 
     @Override
@@ -45,7 +46,9 @@ public class PacketBullet implements IMessage {
         buf.writeDouble(bullet.lookVec.z);
         buf.writeDouble(bullet.bulletSpeed);
         buf.writeDouble(bullet.bulletDamage);
-        buf.writeInt(bullet.shooter.getEntityId());
+        buf.writeBoolean(bullet.shooter != null);
+        if (bullet.shooter != null)
+            buf.writeInt(bullet.shooter.getEntityId());
     }
 
     public static class Handler implements IMessageHandler<PacketBullet, IMessage> {
@@ -53,7 +56,7 @@ public class PacketBullet implements IMessage {
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketBullet message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
-                if(message.entityID != Minecraft.getMinecraft().player.getEntityId()) {
+                if (message.entityID != Minecraft.getMinecraft().player.getEntityId()) {
                     Bullet.BULLETS.add(new Bullet(Minecraft.getMinecraft().world, message.posX, message.posY, message.posZ, 0,
                             message.lookVec, message.speed, message.damage, Minecraft.getMinecraft().player));
                 }

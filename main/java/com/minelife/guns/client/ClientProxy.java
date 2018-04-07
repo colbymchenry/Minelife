@@ -3,6 +3,10 @@ package com.minelife.guns.client;
 import buildcraft.core.BCCoreBlocks;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
+import com.minelife.drugs.ModDrugs;
+import com.minelife.drugs.client.render.ItemLeafMulcherRenderer;
+import com.minelife.drugs.client.render.TileEntityLeafMulcherRenderer;
+import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumAttachment;
@@ -10,6 +14,10 @@ import com.minelife.guns.item.EnumGun;
 import com.minelife.guns.item.ItemAmmo;
 import com.minelife.guns.item.ItemGun;
 import com.minelife.guns.packet.PacketReload;
+import com.minelife.guns.turret.BlockTurret;
+import com.minelife.guns.turret.ItemRenderTurret;
+import com.minelife.guns.turret.TileEntityRenderTurret;
+import com.minelife.guns.turret.TileEntityTurret;
 import com.minelife.util.client.GuiHelper;
 import com.minelife.util.client.render.AdjustPlayerModelEvent;
 import net.minecraft.client.Minecraft;
@@ -40,6 +48,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.util.ListIterator;
+
 public class ClientProxy extends MLProxy {
 
     private KeyBinding reloadKey = new KeyBinding("key." + Minelife.MOD_ID + ".guns.reload", Keyboard.KEY_R, Minelife.NAME);
@@ -55,6 +65,10 @@ public class ClientProxy extends MLProxy {
         registerItemRenderer(ModGuns.itemAttachment, new RenderAttachment());
 
         ModGuns.itemGunPart.registerModels();
+
+        TileEntityRenderTurret renderTurret;
+        registerBlockRenderer(TileEntityTurret.class, renderTurret = new TileEntityRenderTurret());
+        registerItemRenderer(ModGuns.itemTurret, new ItemRenderTurret(renderTurret));
     }
 
     @Override
@@ -182,7 +196,11 @@ public class ClientProxy extends MLProxy {
 
     @SubscribeEvent
     public void onRenderTick(RenderWorldLastEvent event) {
-        Bullet.BULLETS.removeIf(bullet -> bullet.tick(event.getPartialTicks()));
+        ListIterator<Bullet> bulletIterator = Bullet.BULLETS.listIterator();
+        while(bulletIterator.hasNext()) {
+            Bullet.HitResult hitResult = bulletIterator.next().tick(event.getPartialTicks(), false);
+            if(hitResult.isTooFar() || hitResult.getBlockState() != null || hitResult.getEntity() != null) bulletIterator.remove();
+        }
     }
 
     @SubscribeEvent
