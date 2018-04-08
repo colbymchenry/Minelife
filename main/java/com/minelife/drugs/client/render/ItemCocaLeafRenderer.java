@@ -24,7 +24,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ItemCocaLeafRenderer  extends WrappedItemModel implements IItemRenderer {
+public class ItemCocaLeafRenderer extends WrappedItemModel implements IItemRenderer {
 
     public ItemCocaLeafRenderer(Supplier<ModelResourceLocation> wrappedModel) {
         super(wrappedModel);

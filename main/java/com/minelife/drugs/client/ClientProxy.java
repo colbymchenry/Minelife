@@ -2,10 +2,6 @@ package com.minelife.drugs.client;
 
 import codechicken.lib.model.ModelRegistryHelper;
 import com.minelife.MLProxy;
-import com.minelife.chestshop.ModChestShop;
-import com.minelife.chestshop.TileEntityChestShop;
-import com.minelife.chestshop.client.render.RenderChestShopBlock;
-import com.minelife.chestshop.client.render.RenderChestShopItem;
 import com.minelife.drugs.ModDrugs;
 import com.minelife.drugs.client.render.*;
 import com.minelife.drugs.tileentity.TileEntityCementMixer;

@@ -5,6 +5,7 @@ import com.minelife.Minelife;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Rectangle;
@@ -38,7 +39,7 @@ public class GuiPixelArt extends Gui {
                 int green = (rgb >> 8) & 0x000000FF;
                 int blue = (rgb) & 0x000000FF;
                 GL11.glColor4f(red / 255f, green / 255f, blue / 255f, 1f);
-                GuiHelper.drawRect(p.x, p.y, 1, 1);
+                Gui.drawRect(p.x, p.y, p.x + 1, p.y + 1, 0xFFFFFF);
             }
         }
         GL11.glPopMatrix();
@@ -52,21 +53,17 @@ public class GuiPixelArt extends Gui {
             eraseBtn.drawButton(mc, eraseBtn.x + 2, eraseBtn.y + 2, 0);
             mc.getTextureManager().bindTexture(eraser);
             GL11.glColor4f(1, 1, 1, 1);
-            GuiHelper.drawRect(eraseBtn.x + 2, eraseBtn.y + 2, 16, 16);
-            GuiHelper.drawRect(mouseX, mouseY, 16, 16);
+            GuiHelper.drawImage(eraseBtn.x + 2, eraseBtn.y + 2, 16, 16, eraser);
+            GuiHelper.drawImage(mouseX, mouseY, 16, 16, eraser);
         } else {
             eraseBtn.drawButton(mc, mouseX, mouseY, 0);
             GL11.glColor4f(1, 1, 1, 1);
             mc.getTextureManager().bindTexture(eraser);
-            GuiHelper.drawRect(eraseBtn.x + 2, eraseBtn.y + 2, 16, 16);
+            GuiHelper.drawImage(eraseBtn.x + 2, eraseBtn.y + 2, 16, 16, eraser);
         }
 
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        int r = (colorPicker.getColor()>>16)&0xFF;
-        int g = (colorPicker.getColor()>>8)&0xFF;
-        int b = (colorPicker.getColor()>>0)&0xFF;
-        GL11.glColor4f(r / 255f, g / 255f, b / 255f, 1f);
-        GuiHelper.drawRect(colorPicker.xPosition, colorPicker.yPosition, colorPicker.width, 10);
+        GlStateManager.disableTexture2D();
+        Gui.drawRect(colorPicker.xPosition, colorPicker.yPosition, colorPicker.xPosition + colorPicker.width, colorPicker.yPosition + colorPicker.height, colorPicker.getColor());
     }
 
     public void mouseClicked(int mouseX, int mouseY) {
