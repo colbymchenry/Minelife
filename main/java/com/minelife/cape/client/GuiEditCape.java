@@ -42,21 +42,7 @@ public class GuiEditCape extends GuiScreen {
         }
         GL11.glPopMatrix();
 
-            // TODO: GuiPixelart causing entire screen to be white
         GuiPixelArt.drawScreen(mouse_x, mouse_y);
-    }
-
-    @Override
-    protected void mouseClicked(int mouse_x, int mouse_y, int mouse_btn) throws IOException {
-        super.mouseClicked(mouse_x, mouse_y, mouse_btn);
-        GuiPixelArt.mouseClicked(mouse_x, mouse_y);
-    }
-
-    // TODO: This doesnt work really well with the dragging, it's sloppy. May need to do in the draw portion of the GuiPixelArt
-    @Override
-    protected void mouseClickMove(int mouse_x, int mouse_y, int p_146273_3_, long p_146273_4_) {
-        super.mouseClickMove(mouse_x, mouse_y, p_146273_3_, p_146273_4_);
-        GuiPixelArt.mouseClickMove(mouse_x, mouse_y);
     }
 
     @Override

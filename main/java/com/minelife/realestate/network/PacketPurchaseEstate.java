@@ -94,14 +94,14 @@ public class PacketPurchaseEstate implements IMessage {
                 int didNotFit = ModEconomy.withdrawCashPiles(player.getUniqueID(), message.rent ? estate.getRentPrice() : estate.getPurchasePrice());
                 if (didNotFit > 0) {
                     CommandEconomy.sendMessage(player, "$" + NumberConversions.format(didNotFit) + " was deposited to your ATM.");
-                    ModEconomy.depositATM(player.getUniqueID(), didNotFit);
+                    ModEconomy.depositATM(player.getUniqueID(), didNotFit, true);
                 }
                 didNotFit = ModEconomy.depositCashPiles(estateOwnerID, message.rent ? estate.getRentPrice() : estate.getPurchasePrice());
                 if (didNotFit > 0) {
                     if(PlayerHelper.getPlayer(estateOwnerID) != null) {
                         CommandEconomy.sendMessage(PlayerHelper.getPlayer(estateOwnerID), "$" + NumberConversions.format(didNotFit) + " was deposited to your ATM.");
                     }
-                    ModEconomy.depositATM(estateOwnerID, didNotFit);
+                    ModEconomy.depositATM(estateOwnerID, didNotFit, true);
                 }
 
                 player.closeScreen();

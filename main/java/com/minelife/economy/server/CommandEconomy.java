@@ -81,7 +81,7 @@ public class CommandEconomy extends MLCommand {
                         int couldNotFit = ModEconomy.withdrawInventory(player, NumberConversions.toInt(args[3]));
                         if (couldNotFit > 0) {
                             sendMessage(sender, TextFormatting.RED + "$" + NumberConversions.format(couldNotFit) + TextFormatting.GOLD + " could not fit and was deposited into the player's ATM account.");
-                            ModEconomy.depositATM(playerUUID, couldNotFit);
+                            ModEconomy.depositATM(playerUUID, couldNotFit, true);
                         }
                     }
                     break;
@@ -90,12 +90,12 @@ public class CommandEconomy extends MLCommand {
                         sendMessage(sender, "Amount must be a whole number.");
                         return;
                     }
-                    if (atm) ModEconomy.depositATM(playerUUID, NumberConversions.toInt(args[3]));
+                    if (atm) ModEconomy.depositATM(playerUUID, NumberConversions.toInt(args[3]), true);
                     else if (cash) {
                         int couldNotFit = ModEconomy.depositCashPiles(playerUUID, NumberConversions.toInt(args[3]));
                         if (couldNotFit > 0) {
                             sendMessage(sender, TextFormatting.RED + "$" + NumberConversions.format(couldNotFit) + TextFormatting.GOLD + " could not fit and was deposited into the player's ATM account.");
-                            ModEconomy.depositATM(playerUUID, couldNotFit);
+                            ModEconomy.depositATM(playerUUID, couldNotFit, true);
                         }
                     } else if (inventory) {
                         EntityPlayerMP player = PlayerHelper.getPlayer(playerUUID);
@@ -106,7 +106,7 @@ public class CommandEconomy extends MLCommand {
                         int couldNotFit = ModEconomy.depositInventory(player, NumberConversions.toInt(args[3]));
                         if (couldNotFit > 0) {
                             sendMessage(sender, TextFormatting.RED + "$" + NumberConversions.format(couldNotFit) + TextFormatting.GOLD + " could not fit and was deposited into the player's ATM account.");
-                            ModEconomy.depositATM(playerUUID, couldNotFit);
+                            ModEconomy.depositATM(playerUUID, couldNotFit, true);
                         }
                     }
                     break;

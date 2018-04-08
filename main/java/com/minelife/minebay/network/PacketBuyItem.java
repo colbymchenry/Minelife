@@ -119,8 +119,8 @@ public class PacketBuyItem implements IMessage {
                     int didNotFitWithdraw = ModEconomy.withdrawCashPiles(player.getUniqueID(), totalCost);
                     int didNotFitDeposit = ModEconomy.depositCashPiles(listing.getSellerID(), totalCost);
 
-                    if (didNotFitDeposit > 0) ModEconomy.depositATM(listing.getSellerID(), didNotFitDeposit);
-                    if (didNotFitWithdraw > 0) ModEconomy.depositATM(player.getUniqueID(), didNotFitWithdraw);
+                    if (didNotFitDeposit > 0) ModEconomy.depositATM(listing.getSellerID(), didNotFitDeposit, true);
+                    if (didNotFitWithdraw > 0) ModEconomy.depositATM(player.getUniqueID(), didNotFitWithdraw, true);
 
 
                     // TODO: Allow enabling and disabling notifications for a listing when creating it

@@ -1,6 +1,7 @@
 package com.minelife.util.client;
 
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -23,8 +24,14 @@ public class GuiColorPicker extends Gui {
     }
 
     public void drawScreen(int mouse_x, int mouse_y) {
+        GuiHelper.drawDefaultBackground(xPosition, yPosition + 10, width, height - 10);
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color(getRed() / 255f, getGreen() / 255f, getBlue() / 255f, 1f);
+        GuiHelper.drawRect(xPosition - 50, yPosition + 10, 40, 40);
+        GlStateManager.color(1, 1, 1, 1);
 
         // Draw tracks
         GL11.glColor4d(1, 1, 1, 1);
@@ -80,4 +87,27 @@ public class GuiColorPicker extends Gui {
         return (red << 16 | green << 8 | blue);
     }
 
+    public void setRed(int red) {
+        this.red = red;
+    }
+
+    public void setGreen(int green) {
+        this.green = green;
+    }
+
+    public void setBlue(int blue) {
+        this.blue = blue;
+    }
+
+    public int getRed() {
+        return red;
+    }
+
+    public int getGreen() {
+        return green;
+    }
+
+    public int getBlue() {
+        return blue;
+    }
 }

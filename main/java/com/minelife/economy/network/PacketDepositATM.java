@@ -42,11 +42,11 @@ public class PacketDepositATM implements IMessage {
                 return null;
             }
 
-            ModEconomy.depositATM(player.getUniqueID(), message.amount);
+            ModEconomy.depositATM(player.getUniqueID(), message.amount, false);
             int didNotFit = ModEconomy.withdrawInventory(player, message.amount);
 
             if(didNotFit > 0) {
-                ModEconomy.depositATM(player.getUniqueID(), didNotFit);
+                ModEconomy.depositATM(player.getUniqueID(), didNotFit, false);
                 CommandEconomy.sendMessage(player, TextFormatting.RED + "$" + NumberConversions.format(message.amount) + TextFormatting.GOLD + " did not fit in your inventory.");
             }
 

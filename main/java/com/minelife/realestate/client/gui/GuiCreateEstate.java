@@ -33,8 +33,8 @@ public class GuiCreateEstate extends GuiScreen {
 
     protected int guiLeft, guiTop, xSize = 176, ySize = 186;
     protected Content content;
-    private Set<PlayerPermission> allowedPermissions;
-    private Set<EstateProperty> allowedProperties;
+    protected Set<PlayerPermission> allowedPermissions;
+    protected Set<EstateProperty> allowedProperties;
 
     public GuiCreateEstate(Set<PlayerPermission> allowedPermissions, Set<EstateProperty> allowedProperties) {
         this.allowedPermissions = allowedPermissions;
@@ -43,11 +43,11 @@ public class GuiCreateEstate extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
         drawDefaultBackground();
         GuiHelper.drawDefaultBackground(guiLeft - 2, guiTop - 2, xSize + 4, ySize + 4);
         GlStateManager.disableLighting();
         content.draw(mouseX, mouseY, Mouse.getDWheel());
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Override

@@ -21,7 +21,10 @@ import com.minelife.economy.server.CommandEconomy;
 import com.minelife.economy.server.ServerProxy;
 import com.minelife.economy.tileentity.TileEntityATM;
 import com.minelife.economy.tileentity.TileEntityCash;
+import com.minelife.notifications.Notification;
+import com.minelife.notifications.NotificationType;
 import com.minelife.util.NumberConversions;
+import com.minelife.util.PlayerHelper;
 import lib.PatPeter.SQLibrary.Database;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -30,12 +33,14 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import org.sqlite.core.DB;
 
+import javax.vecmath.TexCoord2f;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -118,7 +123,7 @@ public class ModEconomy extends MLMod {
         return amount;
     }
 
-    public static void depositATM(UUID playerID, long amount) {
+    public static void depositATM(UUID playerID, long amount, boolean sendNotification) {
         if (!NumberConversions.isInt(String.valueOf(getBalanceATM(playerID) + amount))) return;
 
         long balance = getBalanceATM(playerID) + amount;
@@ -128,6 +133,16 @@ public class ModEconomy extends MLMod {
                 getDatabase().query("UPDATE atm SET balance='" + balance + "' WHERE player='" + playerID.toString() + "'");
             } else {
                 getDatabase().query("INSERT INTO atm (player, balance) VALUES ('" + playerID.toString() + "', '" + balance + "')");
+            }
+
+            if(sendNotification) {
+                Notification notification = new Notification(playerID, TextFormatting.DARK_GRAY + "ATM Deposit\n" + TextFormatting.DARK_GREEN + "$" + NumberConversions.format(amount), NotificationType.EDGED, 5, 0xFFFFFF);
+                EntityPlayerMP player = PlayerHelper.getPlayer(playerID);
+                if(player != null) {
+                    notification.sendTo(player, true, true, false);
+                } else {
+                    notification.save();
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

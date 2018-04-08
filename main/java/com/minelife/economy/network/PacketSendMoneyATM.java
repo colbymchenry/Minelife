@@ -47,9 +47,7 @@ public class PacketSendMoneyATM implements IMessage {
             if(ModEconomy.getBalanceATM(player.getUniqueID()) < message.amount) return null;
 
             ModEconomy.withdrawATM(player.getUniqueID(), message.amount);
-            ModEconomy.depositATM(message.playerID, message.amount);
-
-            // TODO: Send notification
+            ModEconomy.depositATM(message.playerID, message.amount, true);
 
             Minelife.getNetwork().sendTo(new PacketOpenATM(ModEconomy.getBalanceATM(player.getUniqueID())), player);
             return null;

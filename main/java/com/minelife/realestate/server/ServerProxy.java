@@ -70,7 +70,7 @@ public class ServerProxy extends MLProxy {
 
         ModEconomy.withdrawATM(event.getPlayer().getUniqueID(), event.getAmount());
         int didNotFit = ModEconomy.depositCashPiles(estate.getOwnerID(), event.getAmount());
-        ModEconomy.depositATM(estate.getOwnerID(), didNotFit);
+        ModEconomy.depositATM(estate.getOwnerID(), didNotFit, true);
 
         if (event.getBill().getDueDate().before(Calendar.getInstance().getTime()) && event.getAmount() >= event.getBill().getAmountDue()) {
             Calendar cal = Calendar.getInstance();

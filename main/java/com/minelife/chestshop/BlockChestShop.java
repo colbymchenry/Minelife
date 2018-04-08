@@ -101,9 +101,9 @@ public class BlockChestShop extends BlockContainer {
                 int didNotFitCash = ModEconomy.depositCashPiles(tile.getOwner(), tile.getPrice());
                 int didNotFitInv = ModEconomy.withdrawInventory((EntityPlayerMP) playerIn, tile.getPrice());
 
-                if(didNotFitCash > 0) ModEconomy.depositATM(tile.getOwner(), didNotFitCash);
+                if(didNotFitCash > 0) ModEconomy.depositATM(tile.getOwner(), didNotFitCash, true);
                 if(didNotFitInv > 0){
-                    ModEconomy.depositATM(playerIn.getUniqueID(), didNotFitInv);
+                    ModEconomy.depositATM(playerIn.getUniqueID(), didNotFitInv, true);
                     playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "$" + NumberConversions.format(didNotFitInv) + " did not fit in your inventory and was deposited into your ATM."));
                     return true;
                 }

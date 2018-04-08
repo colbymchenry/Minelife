@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 public class ServerProxy extends MLProxy {
 
-    private static int tick;
+    private static long billCheckTime = 0L;
 
     public static Database DB;
 
@@ -38,25 +38,21 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent
     public void serverTick(TickEvent.ServerTickEvent event) {
-        Calendar cal = Calendar.getInstance();
+        if (billCheckTime == 0L) billCheckTime = System.currentTimeMillis() + (1000L * 10);
 
-        if (cal.get(Calendar.SECOND) % 10 == 0) {
-            if (tick == 0) {
-                tick = 1;
-                try {
-                    ResultSet result = ModEconomy.getDatabase().query("SELECT * FROM bills WHERE duedate < '" + DateHelper.dateToString(Calendar.getInstance().getTime()) + "'");
-                    while (result.next()) {
-                        if (!result.getString("uuid").isEmpty()) {
-                            BillEvent billEvent = new BillEvent.LateEvent(new Bill(UUID.fromString(result.getString("uuid"))), null, result.getInt("amountDue"));
-                            MinecraftForge.EVENT_BUS.post(billEvent);
-                        }
+        if (System.currentTimeMillis() >= billCheckTime) {
+            billCheckTime += System.currentTimeMillis() + (1000L * 10);
+            try {
+                ResultSet result = ModEconomy.getDatabase().query("SELECT * FROM bills WHERE duedate < '" + DateHelper.dateToString(Calendar.getInstance().getTime()) + "'");
+                while (result.next()) {
+                    if (!result.getString("uuid").isEmpty()) {
+                        BillEvent billEvent = new BillEvent.LateEvent(new Bill(UUID.fromString(result.getString("uuid"))), null, result.getInt("amountDue"));
+                        MinecraftForge.EVENT_BUS.post(billEvent);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } else {
-            tick = 0;
         }
     }
 }

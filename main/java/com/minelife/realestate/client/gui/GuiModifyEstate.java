@@ -9,8 +9,10 @@ import com.minelife.realestate.network.PacketCreateEstate;
 import com.minelife.realestate.network.PacketUpdateEstate;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.GuiTickBox;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,8 +26,17 @@ public class GuiModifyEstate extends GuiCreateEstate {
     }
 
     @Override
+    protected void actionPerformed(GuiButton button) throws IOException {
+        super.actionPerformed(button);
+        mc.displayGuiScreen(new GuiMembers(estate, allowedPermissions));
+    }
+
+    @Override
     public void initGui() {
         super.initGui();
+        buttonList.clear();
+        buttonList.add(new GuiButton(0, guiLeft - 40, guiTop, 40, 20, "Members"));
+        buttonList.get(0).enabled = estate.getPlayerPermissions(mc.player.getUniqueID()).contains(PlayerPermission.MODIFY_MEMBERS);
 
         // override content variable to adjust for sending modify packet and not create packet
         content = new Content(mc, guiLeft, guiTop, xSize, ySize) {

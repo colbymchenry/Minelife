@@ -57,6 +57,14 @@ public class CommandCape extends CommandBase {
                 return;
             }
 
+            if(player.getEntityData().hasKey("Cape") && player.getEntityData().hasKey("CapePixels")) {
+                ItemStack capeStack = new ItemStack(ModCapes.itemCape);
+                ModCapes.itemCape.setUniqueID(capeStack);
+                ModCapes.itemCape.setPixels(capeStack, ModCapes.itemCape.getPixels(player));
+                EntityItem entityCapeItem = player.dropItem(capeStack, true);
+                entityCapeItem.setPickupDelay(0);
+            }
+
             setCape(player, player.getHeldItemMainhand());
             player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
 

@@ -18,7 +18,7 @@ import java.util.Calendar;
 
 public class ServerProxy extends MLProxy {
 
-    private static boolean paid = false;
+    private static long payTime = 0L;
 
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
@@ -27,26 +27,22 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
-        Calendar cal = Calendar.getInstance();
+        if(payTime == 0L) payTime = System.currentTimeMillis() + ((1000L * 60) * 20);
 
-        if (cal.get(Calendar.MINUTE) % 20 == 0) {
-            if (!paid) {
-                paid = true;
-                try {
-                    for (EntityPlayerMP entityPlayerMP : FMLServerHandler.instance().getServer().getPlayerList().getPlayers()) {
-                        int payout = (ModTracker.getHoursPlayed(entityPlayerMP.getUniqueID()) * 60) + 60;
-                        ModEconomy.depositATM(entityPlayerMP.getUniqueID(), payout);
-                        Notification welfareNotification = new Notification(entityPlayerMP.getUniqueID(),
-                                TextFormatting.DARK_GRAY + "Welfare: " + TextFormatting.DARK_GREEN + "$" + NumberConversions.format(payout),
-                                NotificationType.EDGED, 5, 0xFFFFFF);
-                        welfareNotification.sendTo(entityPlayerMP, true, true, false);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+        if (System.currentTimeMillis() >= payTime) {
+            payTime += (1000L * 60) * 20;
+            try {
+                for (EntityPlayerMP entityPlayerMP : FMLServerHandler.instance().getServer().getPlayerList().getPlayers()) {
+                    int payout = (ModTracker.getHoursPlayed(entityPlayerMP.getUniqueID()) * 60) + 60;
+                    ModEconomy.depositATM(entityPlayerMP.getUniqueID(), payout, true);
+                    Notification welfareNotification = new Notification(entityPlayerMP.getUniqueID(),
+                            TextFormatting.DARK_GRAY + "Welfare: " + TextFormatting.DARK_GREEN + "$" + NumberConversions.format(payout),
+                            NotificationType.EDGED, 5, 0xFFFFFF);
+                    welfareNotification.sendTo(entityPlayerMP, true, true, false);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } else {
-            paid = false;
         }
     }
 
