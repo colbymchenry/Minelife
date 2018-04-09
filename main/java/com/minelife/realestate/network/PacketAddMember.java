@@ -73,6 +73,7 @@ public class PacketAddMember implements IMessage {
         public void callback(UUID id, String name, Object... objects) {
             Estate estate = (Estate) objects[0];
             EntityPlayerMP player = (EntityPlayerMP) objects[1];
+
             if(id == null) {
                 PacketPopup.sendPopup("Player not found by that name.", player);
                 return;

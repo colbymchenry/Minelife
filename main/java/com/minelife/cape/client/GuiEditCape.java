@@ -28,6 +28,7 @@ public class GuiEditCape extends GuiScreen {
         this.inventorySlot = slot;
     }
 
+    //TODO: On Auto Scale it's too big... Cuts off on top of screen
     @Override
     public void drawScreen(int mouse_x, int mouse_y, float f) {
         super.drawScreen(mouse_x, mouse_y, f);

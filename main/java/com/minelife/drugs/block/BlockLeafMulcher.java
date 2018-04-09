@@ -39,6 +39,7 @@ public class BlockLeafMulcher extends BlockBCTile_Neptune {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         worldIn.setBlockToAir(pos);
+        // TODO: Leaf Mulcher and CementMixer can't see on placement for other players, need right update flag
         worldIn.setBlockState(pos.add(0, 1, 0), this.getDefaultState(), 1);
     }
 

@@ -24,6 +24,8 @@ public class PacketBullet implements IMessage {
         this.bullet = bullet;
     }
 
+    // TODO: Gun sound not firing on server
+
     @Override
     public void fromBytes(ByteBuf buf) {
         posX = buf.readDouble();

@@ -67,7 +67,6 @@ public class BreakHelper {
 
                             if (iblockstate.getMaterial() != Material.AIR) {
                                 f -= (f2 + 0.3F) * 0.3F;
-                                System.out.println("CALLED");
                                 map.put(blockpos, (int) ((240.0F * power) / f2));
                             }
 

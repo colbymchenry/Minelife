@@ -1,7 +1,7 @@
 package com.minelife.util.client;
 
 import com.google.common.collect.Maps;
-import com.sun.javafx.geom.Vec2d;
+import com.minelife.util.Vec2d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;

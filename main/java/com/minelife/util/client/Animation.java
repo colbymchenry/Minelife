@@ -1,7 +1,6 @@
 package com.minelife.util.client;
 
 import com.google.common.collect.Lists;
-import com.sun.javafx.geom.Vec3f;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.List;

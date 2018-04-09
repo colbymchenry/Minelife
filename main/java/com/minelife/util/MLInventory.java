@@ -1,7 +1,6 @@
 package com.minelife.util;
 
 import com.google.common.collect.Lists;
-import com.sun.istack.internal.NotNull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -119,13 +118,11 @@ public class MLInventory implements IInventory {
         this.contents.set(slot, stack);
     }
 
-    @NotNull
     @Override
     public ItemStack getStackInSlot(int slot) {
         return this.contents.get(slot);
     }
 
-    @NotNull
     @Override
     public ItemStack decrStackSize(int index, int count) {
         ItemStack stack = contents.get(index);
@@ -135,7 +132,6 @@ public class MLInventory implements IInventory {
         return stack1;
     }
 
-    @NotNull
     @Override
     public ItemStack removeStackFromSlot(int index) {
         ItemStack before = contents.get(index).copy();

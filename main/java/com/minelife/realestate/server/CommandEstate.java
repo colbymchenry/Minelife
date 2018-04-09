@@ -178,7 +178,9 @@ public class CommandEstate extends CommandBase {
         Estate parentEstate = null;
 
         for (Estate estate : ModRealEstate.getLoadedEstates()) {
-            if (estate.getWorld().equals(player.getEntityWorld()) && !estate.isInside(min, max) && estate.intersects(min, max)) {
+            if (estate.getWorld().equals(player.getEntityWorld()) && ((!estate.isInside(min, max) && estate.intersects(min, max)) ||
+                    (min.getX() <= estate.getMinimum().getX() && min.getY() <= estate.getMinimum().getY() && min.getZ() <= estate.getMinimum().getZ() &&
+                    max.getX() >= estate.getMaximum().getX() && max.getY() >= estate.getMaximum().getY() && max.getZ() >= estate.getMaximum().getZ()))) {
                 if (sendMessages)
                     player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.RED + " Selection is intersecting another estate."));
                 else if (sendPopups)

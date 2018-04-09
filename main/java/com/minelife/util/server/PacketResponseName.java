@@ -25,14 +25,20 @@ public class PacketResponseName implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        playerUUID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
-        playerName = ByteBufUtils.readUTF8String(buf);
+        if (buf.readBoolean())
+            playerUUID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+        if (buf.readBoolean())
+            playerName = ByteBufUtils.readUTF8String(buf);
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeUTF8String(buf, playerUUID.toString());
-        ByteBufUtils.writeUTF8String(buf, playerName);
+        buf.writeBoolean(playerUUID != null);
+        if (playerUUID != null)
+            ByteBufUtils.writeUTF8String(buf, playerUUID.toString());
+        buf.writeBoolean(playerName != null);
+        if (playerName != null)
+            ByteBufUtils.writeUTF8String(buf, playerName);
     }
 
     public static class Handler implements IMessageHandler<PacketResponseName, IMessage> {

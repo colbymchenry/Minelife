@@ -188,12 +188,12 @@ public class TileEntityCementMixer extends TileBC_Neptune implements ITickable, 
 
                 if(!itemStackFound) break searchItems;
                 else {
-                    if(tankSolvent.getFluid().getFluid() == recipe.getFluid().getFluid()
+                    if(tankSolvent.getFluid() != null && tankSolvent.getFluid().getFluid() == recipe.getFluid().getFluid()
                             && tankSolvent.getFluid().amount >= recipe.getFluid().amount) {
                         return recipe;
                     }
 
-                    if(tankFuel.getFluid().getFluid() == recipe.getFluid().getFluid()
+                    if(tankFuel.getFluid() != null && tankFuel.getFluid().getFluid() == recipe.getFluid().getFluid()
                             && tankFuel.getFluid().amount >= recipe.getFluid().amount) {
                         return recipe;
                     }

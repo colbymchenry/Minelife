@@ -332,7 +332,7 @@ public class Estate implements Comparable<Estate> {
             return permissions;
         }
 
-        if (Objects.equals(playerID, getMasterEstate().getOwnerID())) {
+        if (getMasterEstate() != null && Objects.equals(playerID, getMasterEstate().getOwnerID())) {
             permissions.addAll(toSet(Arrays.asList(PlayerPermission.values())));
             return permissions;
         }

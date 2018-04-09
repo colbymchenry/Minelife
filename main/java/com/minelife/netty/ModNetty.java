@@ -36,4 +36,8 @@ public class ModNetty extends MLMod {
     public static void setNettyConnection(ChatClient connection) {
         ServerProxy.CONNECTION = connection;
     }
+
+    public static boolean hasConnection() {
+        return ModNetty.getNettyConnection() != null && ModNetty.getNettyConnection().getChannel() != null && ModNetty.getNettyConnection().getChannel().isActive();
+    }
 }

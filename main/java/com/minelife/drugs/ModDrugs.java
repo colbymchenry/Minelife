@@ -175,6 +175,8 @@ public class ModDrugs extends MLMod {
         GameRegistry.registerWorldGenerator(new BlockPyrolusiteOre.Generator(), 0);
         GameRegistry.registerWorldGenerator(new BlockPotash.Generator(), 0);
         GameRegistry.registerWorldGenerator(new BlockLimestone.Generator(), 0);
+        // TODO: waxy Cocaine not going in IronFurnace, purple cocaine is making pressed cocaine
+        // TODO: Add negative effects such as slowness after getting addicted to drug
     }
 
     @Override

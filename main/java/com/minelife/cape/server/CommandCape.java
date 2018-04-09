@@ -4,6 +4,7 @@ import com.minelife.Minelife;
 import com.minelife.cape.ModCapes;
 import com.minelife.cape.network.PacketUpdateCape;
 import com.minelife.cape.network.PacketUpdateCapeStatus;
+import com.minelife.netty.ModNetty;
 import com.minelife.netty.NettyOutbound;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -15,6 +16,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+
+import javax.xml.soap.Text;
 
 public class CommandCape extends CommandBase {
 
@@ -45,6 +48,11 @@ public class CommandCape extends CommandBase {
         EntityPlayerMP player = (EntityPlayerMP) sender;
 
         boolean holdingCape = player.getHeldItemMainhand().getItem() == ModCapes.itemCape;
+
+        if(!ModNetty.hasConnection()) {
+            sendMessage(sender, TextFormatting.RED + "Cape servers are down. Try again later.");
+            return;
+        }
 
         if (args[0].equalsIgnoreCase("on")) {
             if (!holdingCape) {

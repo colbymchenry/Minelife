@@ -43,6 +43,7 @@ public class PacketAddedMember implements IMessage {
                     GuiMembers guiMembers = (GuiMembers) Minecraft.getMinecraft().currentScreen;
                     Set<UUID> memberIDs = guiMembers.getEstate().getMemberIDs();
                     memberIDs.add(message.playerID);
+                    guiMembers.getEstate().setMemberIDs(memberIDs);
                 }
             });
 

@@ -26,6 +26,8 @@ public class ServerProxy extends MLProxy {
 
     public static Database DB;
 
+    // TODO: Add ATM 10% deducation
+
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         DB = new SQLite(Logger.getLogger("Minecraft"), "[Economy]", Minelife.getDirectory().getAbsolutePath(), "economy");
