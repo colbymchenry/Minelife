@@ -25,8 +25,6 @@ public class GuiModifyEstate extends GuiCreateEstate {
         this.estate = estate;
     }
 
-    // TODO: Add eviction
-
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);

@@ -60,7 +60,7 @@ public class TileEntityCementMixer extends TileBC_Neptune implements ITickable, 
         recipes.add(new Recipe(new ItemStack(ModDrugs.itemWaxyCocaine), Lists.newArrayList(new ItemStack(ModDrugs.itemCocaLeafShredded), new ItemStack(ModDrugs.itemLime), new ItemStack(ModDrugs.itemSalt)), new FluidStack(BCEnergyFluids.fuelLight[0], 100)));
         recipes.add(new Recipe(new ItemStack(ModDrugs.itemCocaPaste), Lists.newArrayList(new ItemStack(ModDrugs.itemPressedCocaine)), new FluidStack(ModDrugs.fluidSulfuricAcid, 100)));
         recipes.add(new Recipe(new ItemStack(ModDrugs.itemPurpleCocaine), Lists.newArrayList(new ItemStack(ModDrugs.itemCocaPaste)), new FluidStack(ModDrugs.fluidPotassiumPermanganate, 100)));
-        recipes.add(new Recipe(new ItemStack(ModDrugs.itemPressedCocaine), Lists.newArrayList(new ItemStack(ModDrugs.itemPurpleCocaine)), new FluidStack(ModDrugs.fluidAmmonia, 100)));
+        recipes.add(new Recipe(new ItemStack(ModDrugs.itemProcessedCocaine), Lists.newArrayList(new ItemStack(ModDrugs.itemPurpleCocaine)), new FluidStack(ModDrugs.fluidAmmonia, 100)));
     }
 
     private boolean isValidFuel(FluidStack fluid) {

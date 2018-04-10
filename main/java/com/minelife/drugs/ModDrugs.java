@@ -11,6 +11,7 @@ import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.drugs.block.*;
+import com.minelife.drugs.item.ItemGrinder;
 import com.minelife.drugs.item.ItemJoint;
 import com.minelife.drugs.item.ItemProcessedCocaine;
 import com.minelife.drugs.tileentity.TileEntityCementMixer;
@@ -25,6 +26,7 @@ import ic2.core.ref.ItemName;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemSeeds;
@@ -37,6 +39,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.awt.*;
 
@@ -56,7 +59,7 @@ public class ModDrugs extends MLMod {
     public static Item itemCalciumHydroxide, itemCalciumOxide, itemHempBuds, itemHempShredded, itemCocaLeafShredded, itemCocaPaste, itemLime,
             itemPotassiumHydroxide, itemPotassiumManganate, itemPyrolusite, itemSalt, itemSulfur, itemPotassiumHydroxidePyrolusiteMixture,
             itemWaxyCocaine, itemHeatedCocaine, itemPressedCocaine, itemPurpleCocaine, itemCocaLeaf, itemPotassiumPermanganate,
-            itemSulfuricAcid, itemProcessedCocaine;
+            itemSulfuricAcid, itemProcessedCocaine, itemGrinder;
     public static BlockVacuum blockVacuum;
     public static BlockLeafMulcher blockLeafMulcher;
     public static BlockPresser blockPresser;
@@ -111,13 +114,13 @@ public class ModDrugs extends MLMod {
                 .setUnlocalizedName(Minelife.MOD_ID + ":cement_mixer").setCreativeTab(CreativeTabs.MISC));
 
         registerItem(itemSulfurOre = (ItemBlock) new ItemBlock(blockSulfurOre).setRegistryName(Minelife.MOD_ID, "sulfur_ore")
-        .setUnlocalizedName(Minelife.MOD_ID + ":sulfur_ore").setCreativeTab(CreativeTabs.MISC));
+                .setUnlocalizedName(Minelife.MOD_ID + ":sulfur_ore").setCreativeTab(CreativeTabs.MISC));
         registerItem(itemPyrolusiteOre = (ItemBlock) new ItemBlock(blockPyrolusiteOre).setRegistryName(Minelife.MOD_ID, "pyrolusite_ore")
-        .setUnlocalizedName(Minelife.MOD_ID + ":pyrolusite_ore").setCreativeTab(CreativeTabs.MISC));
+                .setUnlocalizedName(Minelife.MOD_ID + ":pyrolusite_ore").setCreativeTab(CreativeTabs.MISC));
         registerItem(itemPotashBlock = (ItemBlock) new ItemBlock(blockPotash).setRegistryName(Minelife.MOD_ID, "potash")
-        .setUnlocalizedName(Minelife.MOD_ID + ":potash").setCreativeTab(CreativeTabs.MISC));
+                .setUnlocalizedName(Minelife.MOD_ID + ":potash").setCreativeTab(CreativeTabs.MISC));
         registerItem(itemLimestoneBlock = (ItemBlock) new ItemBlock(blockLimestone).setRegistryName(Minelife.MOD_ID, "limestone")
-        .setUnlocalizedName(Minelife.MOD_ID + ":limestone").setCreativeTab(CreativeTabs.MISC));
+                .setUnlocalizedName(Minelife.MOD_ID + ":limestone").setCreativeTab(CreativeTabs.MISC));
 
         registerItem(itemHempSeed = (ItemSeeds) new ItemSeeds(blockHempCrop, Blocks.FARMLAND)
                 .setRegistryName(Minelife.MOD_ID, "hemp_seed").setUnlocalizedName(Minelife.MOD_ID + ":hemp_seed")
@@ -170,6 +173,7 @@ public class ModDrugs extends MLMod {
                 .setCreativeTab(CreativeTabs.MISC));
         registerItem(itemJoint = new ItemJoint());
         registerItem(itemProcessedCocaine = new ItemProcessedCocaine());
+        registerItem(itemGrinder = new ItemGrinder());
 
         GameRegistry.registerWorldGenerator(new BlockSulfurOre.Generator(), 0);
         GameRegistry.registerWorldGenerator(new BlockPyrolusiteOre.Generator(), 0);
@@ -198,7 +202,8 @@ public class ModDrugs extends MLMod {
     public AbstractGuiHandler getGuiHandler() {
         return new DrugsGuiHandler();
     }
-// TODO: Make marijuana need torches near them to grow and make plants need a certain altitude to grow and maybe fans for air
+
+    // TODO: Make marijuana need torches near them to grow and make plants need a certain altitude to grow and maybe fans for air
     private void registerRecipes() {
         ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":leaf_mulcher");
         GameRegistry.addShapedRecipe(name, null, new ItemStack(itemLeafMulcherBlock),
@@ -235,6 +240,41 @@ public class ModDrugs extends MLMod {
                 'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 15)),
                 'B', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 2)),
                 'C', Ingredient.fromStacks(new ItemStack(Item.getItemFromBlock(BCCoreBlocks.engine), 1, 0)));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":calcium_hydroxide");
+        GameRegistry.addShapelessRecipe(name, null, new ItemStack(itemCalciumHydroxide), Ingredient.fromItem(Items.WATER_BUCKET), Ingredient.fromItem(ModDrugs.itemCalciumOxide));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":shredded_hemp");
+        GameRegistry.addShapelessRecipe(name, null, new ItemStack(itemHempShredded), Ingredient.fromItem(ModDrugs.itemHempBuds), Ingredient.fromStacks(new ItemStack(ModDrugs.itemGrinder, 1, OreDictionary.WILDCARD_VALUE)));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":shredded_coca");
+        GameRegistry.addShapelessRecipe(name, null, new ItemStack(itemCocaLeafShredded), Ingredient.fromStacks(new ItemStack(ModDrugs.itemCocaLeaf, 1, 100)), Ingredient.fromStacks(new ItemStack(ModDrugs.itemGrinder, 1, OreDictionary.WILDCARD_VALUE)));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":joint");
+        GameRegistry.addShapelessRecipe(name, null, new ItemStack(itemJoint), Ingredient.fromItem(ModDrugs.itemHempShredded), Ingredient.fromItem(Items.PAPER));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":grinder");
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemGrinder),
+                "AAA",
+                "BBB",
+                "AAA",
+                'A', Ingredient.fromStacks(new ItemStack(Items.IRON_INGOT)),
+                'B', Ingredient.fromStacks(new ItemStack(Blocks.PLANKS)));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":potassium_hydroxide");
+        GameRegistry.addShapelessRecipe(name, null, new ItemStack(itemPotassiumHydroxide), Ingredient.fromItem(ModDrugs.itemPotashBlock), Ingredient.fromItem(itemCalciumHydroxide));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":potassium_permanganate");
+        GameRegistry.addShapelessRecipe(name, null, new ItemStack(itemPotassiumPermanganate), Ingredient.fromItem(ModDrugs.itemSulfuricAcid), Ingredient.fromItem(itemPotassiumManganate));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":potassium_hydroxide_pyrolusite_mixture");
+        GameRegistry.addShapelessRecipe(name, null, new ItemStack(itemPotassiumHydroxidePyrolusiteMixture), Ingredient.fromItem(ModDrugs.itemPotassiumHydroxide), Ingredient.fromItem(itemPyrolusite));
+
+        GameRegistry.addSmelting(itemLimestoneBlock, new ItemStack(itemCalciumOxide), 0.3F);
+        GameRegistry.addSmelting(Items.WATER_BUCKET, new ItemStack(itemSalt), 1F);
+        GameRegistry.addSmelting(itemSulfur, new ItemStack(itemSulfuricAcid), 0.3F);
+        GameRegistry.addSmelting(itemPotassiumHydroxidePyrolusiteMixture, new ItemStack(itemPotassiumManganate), 0.3F);
+        GameRegistry.addSmelting(itemWaxyCocaine, new ItemStack(itemHeatedCocaine), 0.3F);
     }
 
 }

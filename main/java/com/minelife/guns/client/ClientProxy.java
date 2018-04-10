@@ -1,20 +1,12 @@
 package com.minelife.guns.client;
 
-import buildcraft.core.BCCoreBlocks;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
-import com.minelife.drugs.ModDrugs;
-import com.minelife.drugs.client.render.ItemLeafMulcherRenderer;
-import com.minelife.drugs.client.render.TileEntityLeafMulcherRenderer;
-import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumAttachment;
 import com.minelife.guns.item.EnumGun;
-import com.minelife.guns.item.ItemAmmo;
 import com.minelife.guns.item.ItemGun;
-import com.minelife.guns.packet.PacketReload;
-import com.minelife.guns.turret.BlockTurret;
 import com.minelife.guns.turret.ItemRenderTurret;
 import com.minelife.guns.turret.TileEntityRenderTurret;
 import com.minelife.guns.turret.TileEntityTurret;
@@ -23,17 +15,11 @@ import com.minelife.util.client.render.AdjustPlayerModelEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -44,6 +30,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -110,20 +97,34 @@ public class ClientProxy extends MLProxy {
 
         EntityPlayer player = Minecraft.getMinecraft().player;
 
-        // Used to debug items
-//        System.out.println(player.getHeldItemMainhand().getItem().getUnlocalizedName());
-//        System.out.println(player.getHeldItemMainhand().getItem().getRegistryName());
-//        System.out.println(player.getHeldItemMainhand().getItem().getClass().getName());
-//        System.out.println(player.getHeldItemMainhand().getItemDamage());
-//        System.out.println(Item.getItemFromBlock(BCCoreBlocks.engine) == player.getHeldItemMainhand().getItem());
+        if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
+
+        if (Minecraft.getMinecraft().currentScreen != null) return;
+
+        EnumGun gunType = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
+
+        if (event.getButton() == 0) event.setCanceled(true);
+
+        if (event.getButton() == 0 && event.isButtonstate() && !gunType.isFullAuto) {
+            event.setCanceled(true);
+            ItemGun.fire(player, player.getLookVec(), 0);
+        }
+    }
+
+
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent event) {
+        if (Minecraft.getMinecraft().player == null) return;
+
+        EntityPlayer player = Minecraft.getMinecraft().player;
 
         if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
 
-        if (event.getButton() == 0 && event.isButtonstate()) {
-            event.setCanceled(true);
+        if (Minecraft.getMinecraft().currentScreen != null) return;
 
-            ItemGun.fire(player, player.getLookVec(), 0);
-        }
+        EnumGun gunType = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
+
+        if (Mouse.isButtonDown(0) && gunType.isFullAuto) ItemGun.fire(player, player.getLookVec(), 0);
     }
 
     @SubscribeEvent
@@ -197,9 +198,14 @@ public class ClientProxy extends MLProxy {
     @SubscribeEvent
     public void onRenderTick(RenderWorldLastEvent event) {
         ListIterator<Bullet> bulletIterator = Bullet.BULLETS.listIterator();
-        while(bulletIterator.hasNext()) {
+        while (bulletIterator.hasNext()) {
             Bullet.HitResult hitResult = bulletIterator.next().tick(event.getPartialTicks(), false);
-            if(hitResult.isTooFar() || hitResult.getBlockState() != null || hitResult.getEntity() != null) bulletIterator.remove();
+            if (hitResult.isTooFar() || hitResult.getBlockState() != null || hitResult.getEntity() != null)
+                bulletIterator.remove();
+        }
+
+        if(Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() == ModGuns.itemGun) {
+            RenderGun.handleRecoil(EnumGun.values()[Minecraft.getMinecraft().player.getHeldItemMainhand().getMetadata()]);
         }
     }
 
@@ -214,24 +220,8 @@ public class ClientProxy extends MLProxy {
                         event.setNewfov(0.7F);
                     }
                 }
-//                if (ItemGun.getSight(event.entity.getHeldItem()) != null) {
-//                    ItemSight site = (ItemSight) ItemGun.getSight(event.entity.getHeldItem()).getItem();
-//                    if (site == MLItems.holographicSight) {
-//                        event.newfov = 0.7F;
-//                    } else if (site == MLItems.twoXSight) {
-//                        event.newfov = 0.5F;
-//                    } else if (site == MLItems.acogSight) {
-//                        event.newfov = 0.33F;
-//                    }
-//
-//
-//                } else {
-                if (gunType == EnumGun.AWP || gunType == EnumGun.BARRETT) {
-                    event.setNewfov(0.2f);
-                } else {
-                    event.setNewfov(0.9f);
-                }
-//                }
+
+                event.setNewfov(gunType == EnumGun.AWP || gunType == EnumGun.BARRETT ? 0.2F : 0.9F);
             }
         }
     }

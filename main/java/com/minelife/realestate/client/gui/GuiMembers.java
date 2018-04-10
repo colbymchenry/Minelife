@@ -8,6 +8,7 @@ import com.minelife.realestate.EstateProperty;
 import com.minelife.realestate.PlayerPermission;
 import com.minelife.realestate.network.PacketAddMember;
 import com.minelife.realestate.network.PacketModifyMember;
+import com.minelife.realestate.network.PacketRemoveMember;
 import com.minelife.util.client.GuiHelper;
 import com.minelife.util.client.GuiScrollableContent;
 import com.minelife.util.client.GuiTickBox;
@@ -189,14 +190,15 @@ public class GuiMembers extends GuiScreen {
 
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
+            UUID memberID = (UUID) estate.getMemberIDs().toArray()[index];
+
             if(doubleClick) {
-                UUID memberID = (UUID) estate.getMemberIDs().toArray()[index];
                 Set<PlayerPermission> permissions = estate.getMemberPermissions(memberID);
                 mc.displayGuiScreen(new GuiMember(memberID, permissions));
             }
 
             if(mouseX >= width - 20 && mouseX <= width - 20 + 12 && mouseY >= 2 && mouseY <= 2 + 12) {
-
+                Minelife.getNetwork().sendToServer(new PacketRemoveMember(memberID, estate.getUniqueID()));
             }
         }
     }

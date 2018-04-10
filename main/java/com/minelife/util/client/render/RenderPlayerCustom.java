@@ -60,6 +60,7 @@ public class RenderPlayerCustom extends RenderLivingBase<AbstractClientPlayer> {
                 d0 = y - 0.125D;
             }
 
+//            RenderPlayer
             this.setModelVisibilities(entity);
             GlStateManager.enableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
             super.doRender(entity, x, d0, z, entityYaw, partialTicks);

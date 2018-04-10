@@ -81,6 +81,7 @@ public class PacketModifyMember implements IMessage {
             estate.setMemberPermissions(message.memberUniqueID, message.permissions);
             try {
                 estate.save();
+                Minelife.getNetwork().sendTo(new PacketUpdatedMember(message.memberUniqueID, true, message.permissions), player);
             } catch (SQLException e) {
                 e.printStackTrace();
                 PacketPopup.sendPopup(TextFormatting.DARK_RED + "There was an error writing changes. Notify an admin.", player);

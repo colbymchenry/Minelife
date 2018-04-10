@@ -30,7 +30,7 @@ public class ModRealEstate extends MLMod {
         registerPacket(PacketBuyGui.Handler.class, PacketBuyGui.class, Side.CLIENT);
         registerPacket(PacketPurchaseEstate.Handler.class, PacketPurchaseEstate.class, Side.SERVER);
         registerPacket(PacketModifyMember.Handler.class, PacketModifyMember.class, Side.SERVER);
-        registerPacket(PacketAddedMember.Handler.class, PacketAddedMember.class, Side.CLIENT);
+        registerPacket(PacketUpdatedMember.Handler.class, PacketUpdatedMember.class, Side.CLIENT);
         registerPacket(PacketAddMember.Handler.class, PacketAddMember.class, Side.SERVER);
     }
 

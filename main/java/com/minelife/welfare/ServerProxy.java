@@ -33,7 +33,7 @@ public class ServerProxy extends MLProxy {
             payTime += (1000L * 60) * 20;
             try {
                 for (EntityPlayerMP entityPlayerMP : FMLServerHandler.instance().getServer().getPlayerList().getPlayers()) {
-                    int payout = (ModTracker.getHoursPlayed(entityPlayerMP.getUniqueID()) * 60) + 60;
+                    int payout = (ModTracker.getHoursPlayed(entityPlayerMP.getUniqueID()) * 30) + 60;
                     ModEconomy.depositATM(entityPlayerMP.getUniqueID(), payout, false);
                     Notification welfareNotification = new Notification(entityPlayerMP.getUniqueID(),
                             TextFormatting.DARK_GRAY + "Welfare: " + TextFormatting.DARK_GREEN + "$" + NumberConversions.format(payout),

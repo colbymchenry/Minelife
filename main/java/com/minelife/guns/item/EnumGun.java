@@ -135,4 +135,60 @@ public enum EnumGun {
         }
     }
 
+    public int[] getRecoilYaw() {
+        boolean aimingDownSight = Mouse.isButtonDown(1);
+        switch (this) {
+            case AK47:
+                return !aimingDownSight ? new int[]{10, 20} : new int[]{1, 5};
+            case AWP:
+                return new int[]{1, 10};
+            case BARRETT:
+                return new int[]{5, 10};
+            case DESERT_EAGLE:
+                return new int[]{1, 10};
+            case M4A4:
+                return !aimingDownSight ? new int[]{10, 20} : new int[]{2, 8};
+            case MAGNUM:
+                return new int[]{1, 10};
+        }
+        return new int[]{0, 0};
+    }
+
+    public int[] getRecoilPitch() {
+        boolean aimingDownSight = Mouse.isButtonDown(1);
+        switch (this) {
+            case AK47:
+                return !aimingDownSight ? new int[]{5, 20} : new int[]{1, 10};
+            case AWP:
+                return new int[]{20, 60};
+            case BARRETT:
+                return new int[]{20, 90};
+            case DESERT_EAGLE:
+                return new int[]{20, 60};
+            case M4A4:
+                return !aimingDownSight ? new int[]{1, 20} : new int[]{1, 4};
+            case MAGNUM:
+                return new int[]{20, 60};
+        }
+        return new int[]{0, 0};
+    }
+
+    public int getReboundSpeed() {
+        switch (this) {
+            case AK47:
+                return 8;
+            case AWP:
+                return 8;
+            case BARRETT:
+                return 8;
+            case DESERT_EAGLE:
+                return 2;
+            case M4A4:
+                return 8;
+            case MAGNUM:
+                return 2;
+        }
+        return 10;
+    }
+
 }

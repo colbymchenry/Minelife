@@ -101,6 +101,8 @@ public class EstateListener {
         event.setCanceled(true);
     }
 
+    // TODO: Add fire spread protection
+
     @SubscribeEvent
     public void onHurt(LivingHurtEvent event) {
         Estate estate = ModRealEstate.getEstateAt(event.getEntityLiving().getEntityWorld(), event.getEntityLiving().getPosition());

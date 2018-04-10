@@ -33,6 +33,9 @@ import java.util.List;
 
 public class RenderGun implements IItemRenderer {
 
+    public static boolean recoilProcess = false;
+    public static float recoilYaw, recoilPitch;
+
     public RenderGun() {
     }
 
@@ -128,6 +131,28 @@ public class RenderGun implements IItemRenderer {
     @Override
     public ItemOverrideList getOverrides() {
         return ItemOverrideList.NONE;
+    }
+
+    public static void handleRecoil(EnumGun gunType) {
+        if (recoilProcess) {
+            float reboundSpeed = gunType.getReboundSpeed();
+            float yaw = Minecraft.getMinecraft().player.rotationYaw;
+            float yawDiff = Math.abs(recoilYaw - yaw);
+            float yawInc = recoilYaw > yaw ? (yawDiff / reboundSpeed) : recoilYaw < yaw ? -(yawDiff / reboundSpeed) : 0.0F;
+            if (yawDiff < 0.2) yawInc = 0.0F;
+            float pitch = Minecraft.getMinecraft().player.rotationPitch;
+            float pitchDiff = Math.abs(recoilPitch - pitch);
+            float pitchInc = recoilPitch > pitch ? -(pitchDiff / reboundSpeed) : recoilPitch < pitch ? (pitchDiff / reboundSpeed) : 0.0F;
+            if (pitchDiff < 0.2) pitchInc = 0.0F;
+            if (yawInc == 0 && pitchInc == 0) recoilProcess = false;
+            Minecraft.getMinecraft().player.turn(yawInc, pitchInc);
+        }
+
+        if (Math.abs(Mouse.getEventDX()) > 1 || Math.abs(Mouse.getEventDY()) > 1) {
+            recoilProcess = false;
+            recoilYaw = Minecraft.getMinecraft().player.rotationYaw;
+            recoilPitch = Minecraft.getMinecraft().player.rotationPitch;
+        }
     }
 
 }

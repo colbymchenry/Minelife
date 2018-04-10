@@ -1,11 +1,10 @@
 package com.minelife.essentials.server.commands;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.minelife.notifications.Notification;
+import com.minelife.notifications.NotificationType;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.PlayerHelper;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -60,23 +59,10 @@ public class Reply extends CommandBase {
 
         String msg = "";
 
-        for (int i = 0; i < args.length; i++) {
-            msg += args[i] + " ";
-        }
+        for (int i = 0; i < args.length; i++) msg += args[i] + " ";
 
-        GameProfile gameprofile = server.getPlayerProfileCache().getGameProfileForUsername(sender.getName());
-
-        if (gameprofile != null) {
-            Property property = (Property) Iterables.getFirst(gameprofile.getProperties().get("textures"), (Object) null);
-
-            if (property == null) {
-                gameprofile = server.getMinecraftSessionService().fillProfileProperties(gameprofile, true);
-            }
-        }
-
-        //TODO
-//        NotificationPM notificationPM = new NotificationPM(Receiver.getUniqueID(), msg, gameprofile);
-//        notificationPM.sendTo(Receiver);
+        Notification notification = new Notification(Receiver.getUniqueID(), TextFormatting.DARK_GREEN + Player.getName() + "\n" + TextFormatting.DARK_GRAY + msg, NotificationType.EDGED, 10, 0xFFFFFF);
+        notification.sendTo(Receiver, true, true, true);
 
         Whisper.PutLastSender(Receiver.getUniqueID(), ((EntityPlayerMP) sender).getUniqueID());
 

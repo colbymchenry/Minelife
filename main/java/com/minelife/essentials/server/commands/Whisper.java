@@ -1,18 +1,19 @@
 package com.minelife.essentials.server.commands;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import com.minelife.notifications.Notification;
+import com.minelife.notifications.NotificationType;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.PlayerHelper;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -53,23 +54,10 @@ public class Whisper extends CommandBase {
 
         String msg = "";
 
-        for (int i = 1; i < args.length; i++) {
-            msg += args[i] + " ";
-        }
+        for (int i = 1; i < args.length; i++) msg += args[i] + " ";
 
-        GameProfile gameprofile = server.getPlayerProfileCache().getGameProfileForUsername(sender.getName());
-
-        if (gameprofile != null) {
-            Property property = (Property) Iterables.getFirst(gameprofile.getProperties().get("textures"), (Object) null);
-
-            if (property == null) {
-                gameprofile = server.getMinecraftSessionService().fillProfileProperties(gameprofile, true);
-            }
-        }
-
-        // TODO
-//        NotificationPM notificationPM = new NotificationPM(Receiver.getUniqueID(), msg, gameprofile);
-//        notificationPM.sendTo(Receiver);
+        Notification notification = new Notification(Receiver.getUniqueID(), TextFormatting.DARK_GREEN + sender.getName() + "\n" + TextFormatting.DARK_GRAY + msg, NotificationType.EDGED, 10, 0xFFFFFF);
+        notification.sendTo(Receiver, true, true, true);
 
         MessagePairs.put(Receiver.getUniqueID(), ((EntityPlayerMP) sender).getUniqueID());
     }
@@ -82,6 +70,11 @@ public class Whisper extends CommandBase {
     @Override
     public boolean isUsernameIndex(String[] args, int index) {
         return index == 1;
+    }
+
+    @Override
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        return isUsernameIndex(args, args.length) ? CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames()) : null;
     }
 
     public static UUID GetLastSender(UUID PlayerUUID) {

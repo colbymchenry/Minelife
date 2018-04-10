@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
+import com.minelife.guns.item.EnumGun;
 import com.minelife.guns.packet.PacketBullet;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.ModRealEstate;
@@ -27,8 +28,6 @@ import java.util.*;
 
 
 public class TileEntityTurret extends MLTileEntity implements ITickable {
-
-    // TODO: Clean up the turret stuff
 
     private EnumFacing direction = EnumFacing.NORTH;
     private EntityLivingBase target;
@@ -186,7 +185,8 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
             Vec3d vec3d = new Vec3d(vector.getX(), vector.getY(), vector.getZ());
             Bullet bullet = new Bullet(getWorld(), getPos().getX() + 0.5, getPos().getY() + 1.5, getPos().getZ() + 0.5, 0L, vec3d, 3.5, 2.5, null);
             Bullet.BULLETS.add(bullet);
-            Minelife.getNetwork().sendToAllAround(new PacketBullet(bullet),
+            // TODO: add own sound effect for turret
+            Minelife.getNetwork().sendToAllAround(new PacketBullet(EnumGun.M4A4, bullet),
                     new NetworkRegistry.TargetPoint(getWorld().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 80));
             sendUpdates();
         }

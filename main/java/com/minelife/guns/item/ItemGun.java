@@ -5,9 +5,11 @@ import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
+import com.minelife.guns.client.RenderGun;
 import com.minelife.guns.packet.PacketBullet;
 import com.minelife.guns.packet.PacketFire;
 import com.minelife.guns.packet.PacketReload;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -26,6 +28,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.text.WordUtils;
 
 import javax.annotation.Nullable;
@@ -212,6 +216,10 @@ public class ItemGun extends Item {
             return false;
         }
 
+        if (!ItemGun.canFire(player.getHeldItemMainhand())) return false;
+
+        ItemGun.addFireRate(player.getHeldItemMainhand(), pingDelay);
+
         Bullet bullet = new Bullet(player.getEntityWorld(), player.posX, player.posY + player.getEyeHeight(), player.posZ, pingDelay,
                 lookVector, gun.bulletSpeed, gun.damage, player);
 
@@ -220,15 +228,63 @@ public class ItemGun extends Item {
         ItemGun.decreaseAmmo(player.getHeldItemMainhand());
 
         if (!player.world.isRemote) {
-            Minelife.getNetwork().sendToAllAround(new PacketBullet(bullet),
+            Minelife.getNetwork().sendToAllAround(new PacketBullet(gun, bullet),
                     new NetworkRegistry.TargetPoint(player.world.provider.getDimension(), player.posX, player.posY, player.posZ, 112));
         } else {
             Minelife.getNetwork().sendToServer(new PacketFire(lookVector));
             gun.resetAnimation();
             player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gun.soundShot), SoundCategory.NEUTRAL, 1, 1);
+            initRecoil();
         }
 
         return true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void initRecoil() {
+        if (Minecraft.getMinecraft().currentScreen != null) return;
+
+        ItemStack heldItem = Minecraft.getMinecraft().player.getHeldItemMainhand();
+
+        if (heldItem.getItem() != ModGuns.itemGun) return;
+
+        EnumGun gunType = EnumGun.values()[heldItem.getMetadata()];
+
+        RenderGun.recoilYaw = Minecraft.getMinecraft().player.rotationYaw;
+        RenderGun.recoilPitch = Minecraft.getMinecraft().player.rotationPitch;
+        RenderGun.recoilProcess = true;
+
+        Minecraft.getMinecraft().player.turn(
+                (float) generateRandomDouble(gunType.getRecoilYaw()[0],
+                        gunType.getRecoilYaw()[1]) * getLeftOrRight(),
+                (float) generateRandomDouble(gunType.getRecoilPitch()[0],
+                        gunType.getRecoilPitch()[1]));
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static int getLeftOrRight() {
+        int[] i = new int[]{1, -1};
+        return i[Minecraft.getMinecraft().world.rand.nextInt(2)];
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static double generateRandomDouble(double min, double max) {
+        return min + (max - min) * Minecraft.getMinecraft().world.rand.nextDouble();
+    }
+
+    public static void addFireRate(ItemStack gunStack, long pingDelay) {
+        if (!(gunStack.getItem() == ModGuns.itemGun)) return;
+        EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
+        NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
+        tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate - pingDelay);
+        gunStack.setTagCompound(tagCompound);
+    }
+
+    public static boolean canFire(ItemStack gunStack) {
+        if (!(gunStack.getItem() == ModGuns.itemGun)) return false;
+        NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
+        if (!tagCompound.hasKey("NextFire")) return true;
+        return System.currentTimeMillis() > tagCompound.getLong("NextFire");
     }
 
     public static boolean reload(EntityPlayer player, long pingDelay) {

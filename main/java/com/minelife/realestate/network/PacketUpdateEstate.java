@@ -1,11 +1,14 @@
 package com.minelife.realestate.network;
 
+import com.minelife.notifications.Notification;
+import com.minelife.notifications.NotificationType;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateProperty;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.realestate.PlayerPermission;
 import com.minelife.realestate.server.CommandEstate;
 import com.minelife.realestate.server.SelectionListener;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.PacketPopup;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -21,6 +24,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -60,6 +65,22 @@ public class PacketUpdateEstate implements IMessage {
                     return;
                 }
 
+                if(message.estate.getRentPrice() < 1 && message.estate.getRentPeriod() < 1) {
+                    if(message.estate.getRenterID() != null) {
+                        Notification notification = new Notification(message.estate.getRenterID(), TextFormatting.DARK_RED + "You have been evicted!", NotificationType.EDGED, 5, 0xFFFFFF);
+                        if(PlayerHelper.getPlayer(message.estate.getRenterID()) != null) {
+                            notification.sendTo(PlayerHelper.getPlayer(message.estate.getRenterID()), true, true, false);
+                        } else {
+                            try {
+                                notification.save();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    message.estate.setRenterID(null);
+                }
+
                 if (message.estate.getIntro().trim().isEmpty()) message.estate.setIntro(null);
                 if (message.estate.getOutro().trim().isEmpty()) message.estate.setOutro(null);
 
@@ -71,6 +92,9 @@ public class PacketUpdateEstate implements IMessage {
                 }
                 message.estate.setProperties(properties);
 
+                Estate loadedEstate = ModRealEstate.getEstate(message.estate.getUniqueID());
+
+                Set<PlayerPermission> playerPermissions = loadedEstate.getPlayerPermissions(player.getUniqueID());
                 // check permissions
                 Set<PlayerPermission> globalPermissions = message.estate.getGlobalPermissions();
                 Set<PlayerPermission> renterPermissions = message.estate.getRenterPermissions();
@@ -80,10 +104,21 @@ public class PacketUpdateEstate implements IMessage {
                         renterPermissions.remove(playerPermission);
                     }
                 }
+
+                Iterator<PlayerPermission> globalIter = globalPermissions.iterator();
+                while(globalIter.hasNext()) if(!playerPermissions.contains(globalIter.next())) globalIter.remove();
+
+                Iterator<PlayerPermission> renterIter = renterPermissions.iterator();
+                while(renterIter.hasNext()) if(!playerPermissions.contains(renterIter.next())) renterIter.remove();
+
                 message.estate.setGlobalPermissions(globalPermissions);
                 message.estate.setRenterPermissions(renterPermissions);
 
-                Estate loadedEstate = ModRealEstate.getEstate(message.estate.getUniqueID());
+                if(!Objects.equals(loadedEstate.getRenterID(), player.getUniqueID()) &&
+                        !Objects.equals(loadedEstate.getOwnerID(), player.getUniqueID())) {
+                    PacketPopup.sendPopup(TextFormatting.DARK_RED + "You are not allowed to modify this estate.", player);
+                    return;
+                }
 
                 try {
                     message.estate.save();
