@@ -80,7 +80,7 @@ public class ClientProxy extends MLProxy {
         event.getModel().bipedRightArm.rotateAngleX -= 0.0F;
         event.getModel().bipedRightArm.rotateAngleZ += MathHelper.cos(event.getAgeInTicks() * 0.09F) * 0.05F + 0.05F;
         event.getModel().bipedRightArm.rotateAngleX += MathHelper.sin(event.getAgeInTicks() * 0.067F) * 0.05F;
-
+        System.out.println("CALLED");
         if (gunType == EnumGun.DESERT_EAGLE || gunType == EnumGun.MAGNUM) return;
 
         event.getModel().bipedLeftArm.rotateAngleZ = 0.0F;

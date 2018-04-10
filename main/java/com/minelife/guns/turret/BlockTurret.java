@@ -110,4 +110,6 @@ public class BlockTurret extends BlockContainer {
         MLParticleDigging.addDestroyEffect(world, pos, manager, "minelife:textures/block/turret_body_off.png");
         return true;
     }
+
+    // TODO: Add recipe
 }
