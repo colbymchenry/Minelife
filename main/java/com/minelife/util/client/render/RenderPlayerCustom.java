@@ -45,6 +45,7 @@ public class RenderPlayerCustom extends RenderPlayer {
     public void doRender(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks) {
         if (!entity.isUser() || this.renderManager.renderViewEntity == entity)
         {
+            System.out.println("BNOOM");
             double d0 = y;
 
             if (entity.isSneaking())

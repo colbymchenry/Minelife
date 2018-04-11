@@ -17,6 +17,11 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.lang.reflect.Field;
 
 public class ClientProxy extends MLProxy {
 
@@ -25,9 +30,7 @@ public class ClientProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
-//        RenderingRegistry.registerEntityRenderingHandler(AbstractClientPlayer.class, manager -> new RenderPlayerCustom(manager, false));
-
-                MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(this);
         OBJLoader.INSTANCE.addDomain(Minelife.MOD_ID);
 
         Minelife.getModList().forEach(mod -> {
@@ -66,12 +69,13 @@ public class ClientProxy extends MLProxy {
     // TODO: Try to get renderer to work for player arms correctly
     @SubscribeEvent
     public void pre(RenderPlayerEvent.Pre event) {
-        if(renderPlayerCustom == null) {
-            renderPlayerCustom = new RenderPlayerCustom(Minecraft.getMinecraft().getRenderManager(), false);
-        }
-        event.setCanceled(true);
-        float entityYaw = event.getEntity().rotationYaw + (event.getEntity().prevRotationYaw - event.getEntity().rotationYaw) * partialTicks;
-        renderPlayerCustom.doRender((AbstractClientPlayer) event.getEntityPlayer(), event.getX(), event.getY(), event.getZ(), entityYaw, event.getPartialRenderTick());
+//        if (renderPlayerCustom == null) {
+//            renderPlayerCustom = new RenderPlayerCustom(Minecraft.getMinecraft().getRenderManager(), false);
+//        }
+
+//        event.setCanceled(true);
+//        float entityYaw = event.getEntity().rotationYaw + (event.getEntity().prevRotationYaw - event.getEntity().rotationYaw) * partialTicks;
+//        renderPlayerCustom.doRender((AbstractClientPlayer) event.getEntityPlayer(), event.getX(), event.getY(), event.getZ(), entityYaw, event.getPartialRenderTick());
     }
 
 }

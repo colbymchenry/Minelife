@@ -96,13 +96,13 @@ public class ServerProxy extends MLProxy {
         }
     }
 
+    // TODO: Add achievenements for money amount
     @SubscribeEvent
     public void onBillLate(BillEvent.LateEvent event) {
         if (!event.getBill().getTagCompound().hasKey("EstateID")) return;
 
         try {
             Estate estate = ModRealEstate.getEstate(UUID.fromString(event.getBill().getTagCompound().getString("EstateID")));
-            estate.setRenterID(UUIDFetcher.get("HunchCraft"));
 
             if (event.getBill().getAmountDue() + estate.getRentPrice() <= 0) {
                 event.getBill().setAmountDue(event.getBill().getAmountDue() + estate.getRentPrice());

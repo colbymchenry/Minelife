@@ -38,6 +38,8 @@ import java.util.Map;
 
 public class ItemGun extends Item {
 
+    public static long nextFire = 0L;
+
     public ItemGun() {
         setRegistryName(Minelife.MOD_ID, "gun");
         setMaxDamage(0);
@@ -216,9 +218,9 @@ public class ItemGun extends Item {
             return false;
         }
 
-        if (!ItemGun.canFire(player.getHeldItemMainhand())) return false;
+        if (!ItemGun.canFire(player.getEntityWorld(), player.getHeldItemMainhand())) return false;
 
-        ItemGun.addFireRate(player.getHeldItemMainhand(), pingDelay);
+        ItemGun.addFireRate(player.getEntityWorld(), player.getHeldItemMainhand(), pingDelay);
 
         Bullet bullet = new Bullet(player.getEntityWorld(), player.posX, player.posY + player.getEyeHeight(), player.posZ, pingDelay,
                 lookVector, gun.bulletSpeed, gun.damage, player);
@@ -272,16 +274,19 @@ public class ItemGun extends Item {
         return min + (max - min) * Minecraft.getMinecraft().world.rand.nextDouble();
     }
 
-    public static void addFireRate(ItemStack gunStack, long pingDelay) {
+    public static void addFireRate(World world, ItemStack gunStack, long pingDelay) {
         if (!(gunStack.getItem() == ModGuns.itemGun)) return;
-        EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
+        EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
+        if (world.isRemote) nextFire = System.currentTimeMillis() + gunType.fireRate;
         tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate - pingDelay);
+        System.out.println(pingDelay);
         gunStack.setTagCompound(tagCompound);
     }
 
-    public static boolean canFire(ItemStack gunStack) {
+    public static boolean canFire(World world, ItemStack gunStack) {
         if (!(gunStack.getItem() == ModGuns.itemGun)) return false;
+        if (world.isRemote) return System.currentTimeMillis() > nextFire;
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
         if (!tagCompound.hasKey("NextFire")) return true;
         return System.currentTimeMillis() > tagCompound.getLong("NextFire");
