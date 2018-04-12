@@ -1,6 +1,7 @@
 package com.minelife.jobs.server.commands;
 
 import com.minelife.jobs.EntityJobNPC;
+import com.minelife.jobs.EnumJob;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.PlayerHelper;
@@ -47,7 +48,11 @@ public class CommandNPC extends CommandBase {
             return;
         }
 
-        System.out.println("CALLED");
+        if(NumberConversions.toInt(args[1]) > EnumJob.values().length || NumberConversions.toInt(args[1]) < 0) {
+            player.sendMessage(new TextComponentString(TextFormatting.RED + "Min: 0, Max: " + (EnumJob.values().length - 1)));
+            return;
+        }
+
         EntityJobNPC jobNPC = new EntityJobNPC(player.getEntityWorld(), NumberConversions.toInt(args[1]));
         jobNPC.setPosition(player.posX, player.posY, player.posZ);
         player.getEntityWorld().spawnEntity(jobNPC);

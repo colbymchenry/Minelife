@@ -1,40 +1,24 @@
 package com.minelife.jobs;
 
-import com.google.common.collect.Maps;
-import com.minelife.guns.ModGuns;
-import com.pam.harvestcraft.item.ItemRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.ai.*;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
+import net.minecraft.entity.ai.EntityAIWatchClosest2;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
-
-import java.util.Map;
+import org.apache.commons.lang3.text.WordUtils;
 
 public class EntityJobNPC extends EntityCreature {
 
     private static final DataParameter<Integer> DATA_PROFESSION = EntityDataManager.createKey(EntityJobNPC.class, DataSerializers.VARINT);
-
-    private static Map<Integer, ItemStack> heldItems = Maps.newHashMap();
-
-    static {
-        heldItems.put(-1, new ItemStack(Items.APPLE));
-        heldItems.put(0, new ItemStack(Items.IRON_HOE));
-        heldItems.put(1, new ItemStack(Items.FISHING_ROD));
-        heldItems.put(2, new ItemStack(Items.IRON_PICKAXE));
-        heldItems.put(3, new ItemStack(Items.BOW));
-        heldItems.put(4, new ItemStack(ItemRegistry.baconcheeseburgerItem));
-        heldItems.put(5, new ItemStack(Items.IRON_AXE));
-        heldItems.put(6, new ItemStack(ModGuns.itemGun, 1, 1));
-    }
 
     public EntityJobNPC(World world) {
         this(world, 0);
@@ -75,7 +59,22 @@ public class EntityJobNPC extends EntityCreature {
 
     @Override
     public ItemStack getHeldItemMainhand() {
-        return heldItems.containsKey(this.getProfession()) ? heldItems.get(this.getProfession()) : heldItems.get(-1);
+        return EnumJob.values()[this.getProfession()].heldStack;
+    }
+
+    @Override
+    protected boolean isMovementBlocked() {
+        return false;
+    }
+
+    @Override
+    protected void dealFireDamage(int amount) {
+
+    }
+
+    @Override
+    protected void damageEntity(DamageSource damageSrc, float damageAmount) {
+
     }
 
     @Override
@@ -85,7 +84,7 @@ public class EntityJobNPC extends EntityCreature {
 
     @Override
     public boolean canBeCollidedWith() {
-        return false;
+        return true;
     }
 
     @Override
@@ -113,30 +112,21 @@ public class EntityJobNPC extends EntityCreature {
 
     @Override
     public String getCustomNameTag() {
-        switch (this.getProfession()) {
-            case 0:
-                return TextFormatting.YELLOW + "Farmer";
-            case 1:
-                return TextFormatting.AQUA + "Fisherman";
-            case 2:
-                return TextFormatting.GOLD + "Miner";
-            case 3:
-                return TextFormatting.RED + "Bounty Hunter";
-            case 4:
-                return TextFormatting.GREEN + "Restaurateur";
-            case 5:
-                return TextFormatting.DARK_GREEN + "Lumberjack";
-            case 6:
-                return TextFormatting.BLUE + "Police";
-        }
-
-        return "";
+        return EnumJob.values()[this.getProfession()].coloredName +
+                WordUtils.capitalizeFully(EnumJob.values()[this.getProfession()].name().replace("_", " "));
     }
 
     @Override
     protected void entityInit() {
         super.entityInit();
         this.getDataManager().register(DATA_PROFESSION, 0);
+    }
+
+    @Override
+    protected boolean processInteract(EntityPlayer player, EnumHand hand) {
+        if (EnumJob.values()[getProfession()].getHandler() != null && hand == EnumHand.MAIN_HAND)
+            EnumJob.values()[getProfession()].getHandler().onEntityRightClick(player);
+        return super.processInteract(player, hand);
     }
 
 }
