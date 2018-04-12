@@ -38,7 +38,6 @@ public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
                     yOffset = 0;
                     zOffset += 0.45;
                     hitMaxY++;
-
                 }
 
                 if (zOffset >= 0.45) {
@@ -54,20 +53,20 @@ public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
         if (lastStack == null) return;
 
         GlStateManager.pushMatrix();
-
         GlStateManager.translate(x + 0.5, y + 0.08, z + 0.28);
-        GlStateManager.scale(0.8, (hitMaxY > 0 ? 28 : 0)+ 0.4+ (hitMaxZ > 0 ? 0 : (yOffset * 28)), 0.8);
+        GlStateManager.translate(0, -0.03, 0);
+        GlStateManager.scale(0.8, (hitMaxY > 0 ? 15 : 0) + 0.4 + (hitMaxZ > 0 ? 0 : (yOffset * 15)), 0.8);
+        GlStateManager.translate(0, 0.03, 0);
         GlStateManager.rotate(90, 1, 0, 0);
-
         GuiFakeInventory.renderItem(Minecraft.getMinecraft(), lastStack, ItemCameraTransforms.TransformType.FIXED);
-
-
         GlStateManager.popMatrix();
 
-        if(hitMaxZ > 0) {
+        if (hitMaxZ > 0) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(x + 0.5, y + 0.08, z + 0.28 + 0.44);
-            GlStateManager.scale(0.8, (hitMaxY > 1 ? 28 : 0) + 0.4 + (yOffset * 28), 0.8);
+            GlStateManager.translate(0, -0.03, 0);
+            GlStateManager.scale(0.8, (hitMaxY > 1 ? 15 : 0) + 0.4, 0.8);
+            GlStateManager.translate(0, 0.03, 0);
             GlStateManager.rotate(90, 1, 0, 0);
             GuiFakeInventory.renderItem(Minecraft.getMinecraft(), lastStack, ItemCameraTransforms.TransformType.FIXED);
             GlStateManager.popMatrix();

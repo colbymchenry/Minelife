@@ -152,7 +152,6 @@ public class CommandEstate extends CommandBase {
         return properties;
     }
 
-    // TODO: need to make sure can't create estate that encapsulates an estate they do not own
     public static boolean creationCheck(EntityPlayerMP player, boolean sendMessages, boolean sendPopups) {
         if (!SelectionListener.hasFullSelection(player)) {
             if (sendMessages)

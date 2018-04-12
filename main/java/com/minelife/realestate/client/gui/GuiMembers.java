@@ -31,8 +31,6 @@ import java.util.UUID;
 
 public class GuiMembers extends GuiScreen {
 
-    // TODO: Test all of this and add a way to delete members of an estate.
-
     private static ResourceLocation xTex = new ResourceLocation(Minelife.MOD_ID, "textures/gui/x.png");
 
     private Estate estate;

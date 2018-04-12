@@ -41,7 +41,7 @@ public class BlockCementMixer extends BlockBCTile_Neptune {
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         worldIn.setBlockToAir(pos);
-        worldIn.setBlockState(pos.add(0, 1, 0), this.getDefaultState(), 1);
+        worldIn.setBlockState(pos.add(0, 1, 0), this.getDefaultState(), 2);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.minelife.util.client.render;
 
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -10,9 +11,9 @@ import net.minecraft.util.math.MathHelper;
 
 public class CustomLayerCape implements LayerRenderer<AbstractClientPlayer> {
 
-    private final RenderPlayerCustom playerRenderer;
+    private final RenderPlayer playerRenderer;
 
-    public CustomLayerCape(RenderPlayerCustom playerRendererIn) {
+    public CustomLayerCape(RenderPlayer playerRendererIn) {
         this.playerRenderer = playerRendererIn;
     }
 

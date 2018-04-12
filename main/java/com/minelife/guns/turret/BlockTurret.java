@@ -11,6 +11,7 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -43,7 +44,7 @@ public class BlockTurret extends BlockContainer {
         if(worldIn.isRemote) return true;
 
         TileEntityTurret tileEntityTurret = (TileEntityTurret) (bottom ? worldIn.getTileEntity(pos) : worldIn.getTileEntity(pos.add(0, -1, 0)));
-        if(tileEntityTurret != null) {
+        if(tileEntityTurret != null && tileEntityTurret.hasPermissionToModifySettings((EntityPlayerMP) playerIn)) {
             playerIn.openGui(Minelife.getInstance(), GuiHandler.TURRET, worldIn, tileEntityTurret.getPos().getX(),
                     tileEntityTurret.getPos().getY(), tileEntityTurret.getPos().getZ());
         }

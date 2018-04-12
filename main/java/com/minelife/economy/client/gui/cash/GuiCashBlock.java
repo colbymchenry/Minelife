@@ -1,5 +1,6 @@
 package com.minelife.economy.client.gui.cash;
 
+import com.minelife.economy.tileentity.TileEntityCash;
 import com.minelife.util.client.GuiFakeInventory;
 import com.minelife.util.client.GuiHelper;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -8,8 +9,8 @@ import net.minecraft.inventory.IInventory;
 
 public class GuiCashBlock extends GuiContainer {
 
-    public GuiCashBlock(IInventory playerInventory, IInventory cashInventory) {
-        super(new ContainerCashBlock(playerInventory, cashInventory));
+    public GuiCashBlock(IInventory playerInventory, IInventory cashInventory, TileEntityCash tileCash) {
+        super(new ContainerCashBlock(playerInventory, cashInventory, tileCash));
         this.allowUserInput = false;
         int inventoryRows = cashInventory.getSizeInventory() / 9;
         this.ySize = 114 + inventoryRows * 18;

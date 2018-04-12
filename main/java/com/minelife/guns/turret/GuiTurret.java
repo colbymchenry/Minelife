@@ -1,15 +1,12 @@
 package com.minelife.guns.turret;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.util.client.GuiFakeInventory;
 import com.minelife.util.client.GuiHelper;
-import com.minelife.util.client.GuiPopup;
-import net.minecraft.client.Minecraft;
+import com.minelife.util.client.GuiTickBox;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
@@ -21,9 +18,7 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 public class GuiTurret extends GuiContainer {
 
@@ -34,6 +29,7 @@ public class GuiTurret extends GuiContainer {
     private boolean editSettings = false;
     private GuiButton BtnSettings, BtnLeft, BtnRight, BtnCopy, BtnPaste;
     protected GuiTurretScrollList WhiteListMob, BlackListMob;
+    private GuiTickBox waitForAgroPlayer;
 
     private Color slotColor = new Color(139, 139, 139, 255);
 
@@ -124,6 +120,14 @@ public class GuiTurret extends GuiContainer {
 
         BtnCopy.drawButton(mc, mouseX, mouseY, partialTicks);
         BtnPaste.drawButton(mc, mouseX, mouseY, partialTicks);
+
+        mc.fontRenderer.drawString("Wait For Agro Players", guiLeft + 10, waitForAgroPlayer.yPosition + 4, 4210752);
+        waitForAgroPlayer.drawTickBox();
+
+        if(mouseX >= waitForAgroPlayer.xPosition && mouseX <= waitForAgroPlayer.xPosition + 32 &&
+                mouseY >= waitForAgroPlayer.yPosition && mouseY <= waitForAgroPlayer.yPosition + 16) {
+            drawHoveringText(Lists.newArrayList("Only target players who are ", "not apart of current estate. ", "Must be holding a gun,", "dynamite, or sword."), mouseX, mouseY);
+        }
     }
 
     @Override
@@ -172,6 +176,8 @@ public class GuiTurret extends GuiContainer {
                 WhiteListMob = copied.WhiteListMob;
                 BlackListMob = copied.BlackListMob;
             }
+
+            waitForAgroPlayer.mouseClicked(mouseX, mouseY);
         }
     }
 
@@ -185,7 +191,7 @@ public class GuiTurret extends GuiContainer {
             }
         });
 
-        Minelife.getNetwork().sendToServer(new PacketSetTurretSettings(MobWhiteList, TileTurret.getPos().getX(), TileTurret.getPos().getY(), TileTurret.getPos().getZ()));
+        Minelife.getNetwork().sendToServer(new PacketSetTurretSettings(MobWhiteList, waitForAgroPlayer.isChecked(), TileTurret.getPos().getX(), TileTurret.getPos().getY(), TileTurret.getPos().getZ()));
     }
 
     @Override
@@ -220,6 +226,7 @@ public class GuiTurret extends GuiContainer {
 
         BtnRight = new GuiButton(0, guiLeft + ((xSize - 20) / 2), WhiteListMob.y + 6, 20, 20, "");
         BtnLeft = new GuiButton(0, guiLeft + ((xSize - 20) / 2), WhiteListMob.y + 30, 20, 20, "");
+        waitForAgroPlayer = new GuiTickBox(mc, guiLeft + xSize - 50, guiTop + 90, TileTurret.isWaitForAgroPlayer());
 
         BtnCopy = new GuiButton(0, guiLeft - 42, guiTop + 80, 40, 20, "Copy");
         BtnPaste = new GuiButton(0, guiLeft - 42, guiTop + 101, 40, 20, "Paste");

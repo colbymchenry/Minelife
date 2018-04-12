@@ -24,7 +24,7 @@ public class GuiHandler extends AbstractGuiHandler {
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == CASH_BLOCK_ID && world.getTileEntity(new BlockPos(x, y, z)) instanceof TileEntityCash) {
             TileEntityCash tile = (TileEntityCash) world.getTileEntity(new BlockPos(x, y, z));
-            return new ContainerCashBlock(player.inventory, tile.getInventory());
+            return new ContainerCashBlock(player.inventory, tile.getInventory(), tile);
         }
         if (ID == WALLET_ID && player.getHeldItem(EnumHand.MAIN_HAND) != null &&
                 player.getHeldItem(EnumHand.MAIN_HAND).getItem() == ModEconomy.itemWallet) {
@@ -38,7 +38,7 @@ public class GuiHandler extends AbstractGuiHandler {
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == CASH_BLOCK_ID && world.getTileEntity(new BlockPos(x, y, z)) instanceof TileEntityCash) {
             TileEntityCash tile = (TileEntityCash) world.getTileEntity(new BlockPos(x, y, z));
-            return new GuiCashBlock(player.inventory, tile.getInventory());
+            return new GuiCashBlock(player.inventory, tile.getInventory(), tile);
         }
         if (ID == WALLET_ID && player.getHeldItem(EnumHand.MAIN_HAND) != null &&
                 player.getHeldItem(EnumHand.MAIN_HAND).getItem() == ModEconomy.itemWallet) {

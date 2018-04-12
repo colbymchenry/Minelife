@@ -126,6 +126,7 @@ public class LineRenderer {
 
     }
 
+    // TODO: One of these messes up shaders
     private static void drawRectSetUp() {
 
         GL11.glDisable(GL11.GL_LIGHTING);

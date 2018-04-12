@@ -48,8 +48,6 @@ public class ClientProxy extends MLProxy {
         registerRenderer(ModDrugs.itemPressedCocaine);
         registerRenderer(ModDrugs.itemPurpleCocaine);
         registerRenderer(ModDrugs.itemCocaLeaf);
-        registerRenderer(ModDrugs.itemPotassiumPermanganate);
-        registerRenderer(ModDrugs.itemSulfuricAcid);
         registerRenderer(ModDrugs.itemJoint);
         registerRenderer(ModDrugs.itemProcessedCocaine);
         registerRenderer(ModDrugs.itemGrinder);

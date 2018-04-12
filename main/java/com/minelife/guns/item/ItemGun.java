@@ -38,7 +38,7 @@ import java.util.Map;
 
 public class ItemGun extends Item {
 
-    public static long nextFire = 0L;
+    public static long nextFire = 0L, reloadTime = 0L;
 
     public ItemGun() {
         setRegistryName(Minelife.MOD_ID, "gun");
@@ -85,11 +85,11 @@ public class ItemGun extends Item {
 
         EntityPlayer player = (EntityPlayer) entityIn;
 
-        boolean reloading = isReloading(stack);
+        boolean reloading = isReloading(worldIn, stack);
 
         if (isSelected) {
             if (reloading) {
-                if (System.currentTimeMillis() >= getReloadTime(stack)) {
+                if (System.currentTimeMillis() >= getReloadTime(worldIn, stack)) {
                     stack.getTagCompound().removeTag("ReloadTime");
                     reload(player, stack);
                     player.inventory.setInventorySlotContents(itemSlot, stack);
@@ -108,12 +108,14 @@ public class ItemGun extends Item {
         tooltip.add(TextFormatting.GRAY + "Ammo: " + ItemGun.getClipCount(stack) + "/" + EnumGun.values()[stack.getMetadata()].clipSize);
     }
 
-    public static long getReloadTime(ItemStack gunStack) {
+    public static long getReloadTime(World world, ItemStack gunStack) {
         if (gunStack.getItem() != ModGuns.itemGun) return 0;
+        if(world.isRemote) return reloadTime;
         return gunStack.hasTagCompound() && gunStack.getTagCompound().hasKey("ReloadTime") ? gunStack.getTagCompound().getLong("ReloadTime") : 0;
     }
 
-    public static void setReloadTime(ItemStack gunStack, long time) {
+    public static void setReloadTime(World world, ItemStack gunStack, long time) {
+        if(world.isRemote) reloadTime = time;
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
         tagCompound.setLong("ReloadTime", time);
         gunStack.setTagCompound(tagCompound);
@@ -198,7 +200,8 @@ public class ItemGun extends Item {
         tagCompound.setInteger("Ammo", ammo);
     }
 
-    public static boolean isReloading(ItemStack stack) {
+    public static boolean isReloading(World world, ItemStack stack) {
+        if(world.isRemote) return reloadTime > System.currentTimeMillis();
         return stack.hasTagCompound() && stack.getTagCompound().hasKey("ReloadTime");
     }
 
@@ -209,7 +212,7 @@ public class ItemGun extends Item {
 
         pingDelay = pingDelay > 200 ? 60 : pingDelay;
 
-        if (ItemGun.isReloading(player.getHeldItemMainhand())) return false;
+        if (ItemGun.isReloading(player.getEntityWorld(), player.getHeldItemMainhand())) return false;
 
         if (ItemGun.getClipCount(player.getHeldItemMainhand()) <= 0) {
             if (player.world.isRemote) {
@@ -274,13 +277,13 @@ public class ItemGun extends Item {
         return min + (max - min) * Minecraft.getMinecraft().world.rand.nextDouble();
     }
 
+    // TODO: Slow down when aiming down sight and when reloading
     public static void addFireRate(World world, ItemStack gunStack, long pingDelay) {
         if (!(gunStack.getItem() == ModGuns.itemGun)) return;
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
         EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
         if (world.isRemote) nextFire = System.currentTimeMillis() + gunType.fireRate;
         tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate - pingDelay);
-        System.out.println(pingDelay);
         gunStack.setTagCompound(tagCompound);
     }
 
@@ -301,7 +304,7 @@ public class ItemGun extends Item {
 
         if (ItemGun.getClipCount(player.getHeldItemMainhand()) == gunType.clipSize) return false;
 
-        if (ItemGun.isReloading(player.getHeldItemMainhand())) return false;
+        if (ItemGun.isReloading(player.getEntityWorld(), player.getHeldItemMainhand())) return false;
 
         if (ItemAmmo.getAmmoCount(player, player.getHeldItemMainhand()) <= 0) {
             if (player.world.isRemote) {
@@ -311,7 +314,7 @@ public class ItemGun extends Item {
         }
 
         ItemStack gunStack = player.getHeldItemMainhand();
-        ItemGun.setReloadTime(gunStack, System.currentTimeMillis() + gunType.reloadTime - pingDelay);
+        ItemGun.setReloadTime(player.getEntityWorld(), gunStack, System.currentTimeMillis() + gunType.reloadTime - pingDelay);
         player.setHeldItem(EnumHand.MAIN_HAND, gunStack);
 
         if (player.world.isRemote) {

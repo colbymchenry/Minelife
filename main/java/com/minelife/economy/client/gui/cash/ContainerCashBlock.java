@@ -1,6 +1,7 @@
 package com.minelife.economy.client.gui.cash;
 
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.tileentity.TileEntityCash;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
@@ -11,9 +12,11 @@ import net.minecraft.item.ItemStack;
 public class ContainerCashBlock extends Container {
 
     private final int numRows;
+    private final TileEntityCash tileCash;
 
-    public ContainerCashBlock(IInventory playerInventory, IInventory inventory) {
+    public ContainerCashBlock(IInventory playerInventory, IInventory inventory, TileEntityCash tileCash) {
         this.numRows = inventory.getSizeInventory() / 9;
+        this.tileCash = tileCash;
 
         int i = (this.numRows - 4) * 18;
 
@@ -37,6 +40,13 @@ public class ContainerCashBlock extends Container {
     @Override
     public boolean canInteractWith(EntityPlayer playerIn) {
         return true;
+    }
+
+    @Override
+    public void onContainerClosed(EntityPlayer playerIn) {
+        super.onContainerClosed(playerIn);
+        if (tileCash != null)
+            tileCash.sendUpdates();
     }
 
     @Override

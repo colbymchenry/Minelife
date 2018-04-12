@@ -19,15 +19,17 @@ public class PacketSetTurretSettings implements IMessage {
 
     private int TileX, TileY, TileZ;
     private Set<EnumMob> MobWhiteList;
+    private boolean waitAgroPlayer;
 
     public PacketSetTurretSettings() {
     }
 
-    public PacketSetTurretSettings(Set<EnumMob> mobWhiteList, int TileX, int TileY, int TileZ) {
+    public PacketSetTurretSettings(Set<EnumMob> mobWhiteList, boolean waitAgroPlayer, int TileX, int TileY, int TileZ) {
         MobWhiteList = mobWhiteList;
         this.TileX = TileX;
         this.TileY = TileY;
         this.TileZ = TileZ;
+        this.waitAgroPlayer = waitAgroPlayer;
     }
 
     @Override
@@ -39,6 +41,8 @@ public class PacketSetTurretSettings implements IMessage {
         TileX = buf.readInt();
         TileY = buf.readInt();
         TileZ = buf.readInt();
+
+        waitAgroPlayer = buf.readBoolean();
     }
 
     @Override
@@ -49,6 +53,8 @@ public class PacketSetTurretSettings implements IMessage {
         buf.writeInt(TileX);
         buf.writeInt(TileY);
         buf.writeInt(TileZ);
+
+        buf.writeBoolean(waitAgroPlayer);
     }
 
     public static class Handler implements IMessageHandler<PacketSetTurretSettings, IMessage> {
@@ -67,6 +73,7 @@ public class PacketSetTurretSettings implements IMessage {
 
                 if (TileTurret.hasPermissionToModifySettings(player)) {
                     TileTurret.setMobWhiteList(message.MobWhiteList);
+                    TileTurret.setWaitForAgroPlayer(message.waitAgroPlayer);
                 }
             });
 

@@ -11,8 +11,10 @@ import net.minecraft.potion.Potion;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -90,6 +92,9 @@ public abstract class MLMod {
 
     protected void registerTileEntity(Class<? extends TileEntity> tile, String identifier) {
         GameRegistry.registerTileEntity(tile, identifier);
+    }
+
+    public void entityRegistration(final RegistryEvent.Register<EntityEntry> event) {
     }
 
 }

@@ -58,8 +58,7 @@ public class ModDrugs extends MLMod {
     public static ItemSeeds itemHempSeed, itemLimeSeed, itemCocaSeed;
     public static Item itemCalciumHydroxide, itemCalciumOxide, itemHempBuds, itemHempShredded, itemCocaLeafShredded, itemCocaPaste, itemLime,
             itemPotassiumHydroxide, itemPotassiumManganate, itemPyrolusite, itemSalt, itemSulfur, itemPotassiumHydroxidePyrolusiteMixture,
-            itemWaxyCocaine, itemHeatedCocaine, itemPressedCocaine, itemPurpleCocaine, itemCocaLeaf, itemPotassiumPermanganate,
-            itemSulfuricAcid, itemProcessedCocaine, itemGrinder;
+            itemWaxyCocaine, itemHeatedCocaine, itemPressedCocaine, itemPurpleCocaine, itemCocaLeaf, itemProcessedCocaine, itemGrinder;
     public static BlockVacuum blockVacuum;
     public static BlockLeafMulcher blockLeafMulcher;
     public static BlockPresser blockPresser;
@@ -167,10 +166,6 @@ public class ModDrugs extends MLMod {
                 .setCreativeTab(CreativeTabs.MISC));
         registerItem(itemCocaLeaf = new Item().setRegistryName(Minelife.MOD_ID, "coca_leaf").setUnlocalizedName(Minelife.MOD_ID + ":" + "coca_leaf")
                 .setCreativeTab(CreativeTabs.MISC).setMaxDamage(100));
-        registerItem(itemPotassiumPermanganate = new Item().setRegistryName(Minelife.MOD_ID, "potassium_permanganate").setUnlocalizedName(Minelife.MOD_ID + ":" + "potassium_permanganate")
-                .setCreativeTab(CreativeTabs.MISC));
-        registerItem(itemSulfuricAcid = new Item().setRegistryName(Minelife.MOD_ID, "sulfuric_acid").setUnlocalizedName(Minelife.MOD_ID + ":" + "sulfuric_acid")
-                .setCreativeTab(CreativeTabs.MISC));
         registerItem(itemJoint = new ItemJoint());
         registerItem(itemProcessedCocaine = new ItemProcessedCocaine());
         registerItem(itemGrinder = new ItemGrinder());
@@ -264,15 +259,11 @@ public class ModDrugs extends MLMod {
         name = new ResourceLocation(Minelife.MOD_ID + ":potassium_hydroxide");
         GameRegistry.addShapelessRecipe(name, null, new ItemStack(itemPotassiumHydroxide), Ingredient.fromItem(ModDrugs.itemPotashBlock), Ingredient.fromItem(itemCalciumHydroxide));
 
-        name = new ResourceLocation(Minelife.MOD_ID + ":potassium_permanganate");
-        GameRegistry.addShapelessRecipe(name, null, new ItemStack(itemPotassiumPermanganate), Ingredient.fromItem(ModDrugs.itemSulfuricAcid), Ingredient.fromItem(itemPotassiumManganate));
-
         name = new ResourceLocation(Minelife.MOD_ID + ":potassium_hydroxide_pyrolusite_mixture");
         GameRegistry.addShapelessRecipe(name, null, new ItemStack(itemPotassiumHydroxidePyrolusiteMixture), Ingredient.fromItem(ModDrugs.itemPotassiumHydroxide), Ingredient.fromItem(itemPyrolusite));
 
         GameRegistry.addSmelting(itemLimestoneBlock, new ItemStack(itemCalciumOxide), 0.3F);
         GameRegistry.addSmelting(Items.WATER_BUCKET, new ItemStack(itemSalt), 1F);
-        GameRegistry.addSmelting(itemSulfur, new ItemStack(itemSulfuricAcid), 0.3F);
         GameRegistry.addSmelting(itemPotassiumHydroxidePyrolusiteMixture, new ItemStack(itemPotassiumManganate), 0.3F);
         GameRegistry.addSmelting(itemWaxyCocaine, new ItemStack(itemHeatedCocaine), 0.3F);
     }

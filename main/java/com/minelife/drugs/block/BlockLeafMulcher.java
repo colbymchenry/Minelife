@@ -7,6 +7,7 @@ import com.minelife.drugs.DrugsGuiHandler;
 import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
 import com.minelife.drugs.tileentity.TileEntityVacuum;
 import com.minelife.util.client.MLParticleDigging;
+import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.particle.ParticleManager;
@@ -40,7 +41,7 @@ public class BlockLeafMulcher extends BlockBCTile_Neptune {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         worldIn.setBlockToAir(pos);
         // TODO: Leaf Mulcher and CementMixer can't see on placement for other players, need right update flag
-        worldIn.setBlockState(pos.add(0, 1, 0), this.getDefaultState(), 1);
+        worldIn.setBlockState(pos.add(0, 1, 0), this.getDefaultState(), 2);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
+import com.minelife.drugs.ModDrugs;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumGun;
@@ -13,6 +14,7 @@ import com.minelife.realestate.ModRealEstate;
 import com.minelife.util.MLInventory;
 import com.minelife.util.MLTileEntity;
 import com.minelife.util.client.render.Vector;
+import ic2.core.ref.ItemName;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -35,7 +37,9 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
     private MLInventory inventory;
     private boolean hitRight = true;
     private Set<EnumMob> MobWhiteList = Sets.newTreeSet();
+    private Map<UUID, Long> AgroPlayers = Maps.newHashMap();
     private UUID owner;
+    private boolean waitForAgroPlayer = false;
 
     public float rotationYaw, rotationPitch;
 
@@ -56,6 +60,7 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
         for (EnumMob enumMob : MobWhiteList) mobs += enumMob.name() + ",";
 
         compound.setString("MobWhiteList", mobs);
+        compound.setBoolean("waitForAgroPlayer", waitForAgroPlayer);
         return super.writeToNBT(compound);
     }
 
@@ -77,6 +82,8 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
                 }
             }
         }
+
+        waitForAgroPlayer = compound.getBoolean("waitForAgroPlayer");
     }
 
     @Override
@@ -113,7 +120,7 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
 
         tick = 0;
 
-        if(ammo.isEmpty()) return;
+        if (ammo.isEmpty()) return;
 
 
         target = null;
@@ -141,13 +148,30 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
                 if (((EntityPlayerMP) e).isCreative()) toRemove.add(e);
                 if (owner != null && owner.equals(e.getUniqueID())) toRemove.add(e);
 
+                boolean agro = e.getHeldItemMainhand().getItem() == ModGuns.itemGun
+                        || e.getHeldItemMainhand().getItem() == ItemName.dynamite.getInstance()
+                        || e.getHeldItemMainhand().getItem() == ItemName.dynamite_sticky.getInstance();
+
                 if (estate != null) {
                     if (Objects.equals(estate.getOwnerID(), e.getUniqueID())) toRemove.add(e);
                     if (memberKeys.contains(e.getUniqueID())) toRemove.add(e);
                     if (ownersKeys.contains(e.getUniqueID())) toRemove.add(e);
+
+                    if (isWaitForAgroPlayer()) {
+                        if (agro) {
+                            AgroPlayers.put(e.getUniqueID(), System.currentTimeMillis() + (60000L * 5));
+                        } else {
+                            if (!AgroPlayers.containsKey(e.getUniqueID())) toRemove.add(e);
+                        }
+                    }
                 }
 
                 if (Objects.equals(getOwner(), e.getUniqueID())) toRemove.add(e);
+
+                if (AgroPlayers.containsKey(e.getUniqueID()) && System.currentTimeMillis() > AgroPlayers.get(e.getUniqueID())) {
+                    toRemove.add(e);
+                    AgroPlayers.remove(e.getUniqueID());
+                }
             }
 
         });
@@ -162,10 +186,13 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
             Vector vector = getLookVec(nearbyTarget);
             Vec3d vec3d = new Vec3d(vector.getX(), vector.getY(), vector.getZ());
             Bullet bullet = new Bullet(getWorld(), getPos().getX() + 0.5, getPos().getY() + 1.5, getPos().getZ() + 0.5, 0L, vec3d, 3.5, 0, null);
-            bulletLoop: for (int i = 0; i < 10; i++) {
+            bulletLoop:
+            for (int i = 0; i < 10; i++) {
                 Bullet.HitResult result = bullet.tick(0, true);
-                if(result.getBlockState() != null) {
-                    break bulletLoop;
+                if (result.getBlockState() != null) {
+                    target = null;
+                    targetID = -1;
+                    break targetLoop;
                 }
                 if (result.getEntity() != null) {
                     target = result.getEntity();
@@ -185,7 +212,6 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
             Vec3d vec3d = new Vec3d(vector.getX(), vector.getY(), vector.getZ());
             Bullet bullet = new Bullet(getWorld(), getPos().getX() + 0.5, getPos().getY() + 1.5, getPos().getZ() + 0.5, 0L, vec3d, 3.5, 2.5, null);
             Bullet.BULLETS.add(bullet);
-            // TODO: add own sound effect for turret
             Minelife.getNetwork().sendToAllAround(new PacketBullet(EnumGun.M4A4, bullet),
                     new NetworkRegistry.TargetPoint(getWorld().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 80));
             sendUpdates();
@@ -195,7 +221,7 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
     public MLInventory getInventory() {
         return inventory;
     }
-    
+
     public Vector getLookVec(EntityLivingBase target) {
         if (target == null) return new Vector(0, 0, 0);
 
@@ -247,16 +273,34 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
         return ammo;
     }
 
+    public void setWaitForAgroPlayer(boolean waitForAgroPlayer) {
+        this.waitForAgroPlayer = waitForAgroPlayer;
+        sendUpdates();
+    }
+
+    public boolean isWaitForAgroPlayer() {
+        return waitForAgroPlayer;
+    }
+
+    public void setAgroPlayers(Map<UUID, Long> agroPlayers) {
+        AgroPlayers = agroPlayers;
+        sendUpdates();
+    }
+
+    public Map<UUID, Long> getAgroPlayers() {
+        return AgroPlayers;
+    }
+
     public boolean hasPermissionToModifySettings(EntityPlayerMP Player) {
         Estate estate = ModRealEstate.getEstateAt(getWorld(), getPos());
 
+        if (Objects.equals(getOwner(), Player.getUniqueID())) return true;
+
         if (estate != null) {
-            if (Objects.equals(estate.getOwnerID(), this.getOwner())) return true;
+            if (Objects.equals(estate.getOwnerID(), Player.getUniqueID())) return true;
             if (estate.getSurroundingMembers().keySet().contains(Player.getUniqueID())) return true;
             if (estate.getSurroundingOwners().contains(Player.getUniqueID())) return true;
         }
-
-        if (getOwner() != null && Player.getUniqueID().equals(getOwner())) return true;
 
         return false;
     }

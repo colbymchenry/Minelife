@@ -110,13 +110,13 @@ public enum EnumGun {
         switch (this) {
             case AK47:
                 if (mouseDown)
-                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 32f) * side, (float) (Math.random() / 32f) * side, 0.1F, 0.013f).translateTo(0, 0, 0f, 0.2f);
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 32f) * side, (float) (Math.random() / 32f) * side, 0.2F, 0.05f).translateTo(0, 0, 0f, 0.2f);
                 else
                     this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0f, 0.2f);
                 break;
             case M4A4:
                 if (mouseDown)
-                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 32f) * side, (float) (Math.random() / 32f) * side, 0.1F, 0.013f).translateTo(0, 0, 0f, 0.2f);
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 32f) * side, (float) (Math.random() / 32f) * side, 0.1F, 0.02f).translateTo(0, 0, 0f, 0.2f);
                 else
                     this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 32f), 0.5F, 0.05f).translateTo(0, 0, 0f, 0.2f);
                 break;

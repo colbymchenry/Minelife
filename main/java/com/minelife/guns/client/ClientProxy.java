@@ -80,7 +80,14 @@ public class ClientProxy extends MLProxy {
         event.getModel().bipedRightArm.rotateAngleX -= 0.0F;
         event.getModel().bipedRightArm.rotateAngleZ += MathHelper.cos(event.getAgeInTicks() * 0.09F) * 0.05F + 0.05F;
         event.getModel().bipedRightArm.rotateAngleX += MathHelper.sin(event.getAgeInTicks() * 0.067F) * 0.05F;
-        System.out.println("CALLED");
+
+        event.getModel().bipedRightArmwear.rotateAngleZ = 0.0F;
+        event.getModel().bipedRightArmwear.rotateAngleY = -(0.1F * 0.6F) + event.getModel().bipedHead.rotateAngleY;
+        event.getModel().bipedRightArmwear.rotateAngleX = -((float) Math.PI / 2F) + event.getModel().bipedHead.rotateAngleX;
+        event.getModel().bipedRightArmwear.rotateAngleX -= 0.0F;
+        event.getModel().bipedRightArmwear.rotateAngleZ += MathHelper.cos(event.getAgeInTicks() * 0.09F) * 0.05F + 0.05F;
+        event.getModel().bipedRightArmwear.rotateAngleX += MathHelper.sin(event.getAgeInTicks() * 0.067F) * 0.05F;
+
         if (gunType == EnumGun.DESERT_EAGLE || gunType == EnumGun.MAGNUM) return;
 
         event.getModel().bipedLeftArm.rotateAngleZ = 0.0F;
@@ -89,6 +96,13 @@ public class ClientProxy extends MLProxy {
         event.getModel().bipedLeftArm.rotateAngleX -= 0;
         event.getModel().bipedLeftArm.rotateAngleZ -= MathHelper.cos(event.getAgeInTicks() * 0.09F) * 0.05F + 0.05F;
         event.getModel().bipedLeftArm.rotateAngleX -= MathHelper.sin(event.getAgeInTicks() * 0.067F) * 0.05F;
+
+        event.getModel().bipedLeftArmwear.rotateAngleZ = 0.0F;
+        event.getModel().bipedLeftArmwear.rotateAngleY = 0.1F * 0.6F + event.getModel().bipedHead.rotateAngleY + 0.4F;
+        event.getModel().bipedLeftArmwear.rotateAngleX = -((float) Math.PI / 2F) + event.getModel().bipedHead.rotateAngleX;
+        event.getModel().bipedLeftArmwear.rotateAngleX -= 0;
+        event.getModel().bipedLeftArmwear.rotateAngleZ -= MathHelper.cos(event.getAgeInTicks() * 0.09F) * 0.05F + 0.05F;
+        event.getModel().bipedLeftArmwear.rotateAngleX -= MathHelper.sin(event.getAgeInTicks() * 0.067F) * 0.05F;
     }
 
     @SubscribeEvent
@@ -158,9 +172,9 @@ public class ClientProxy extends MLProxy {
             GlStateManager.disableTexture2D();
             GlStateManager.enableBlend();
 
-            if (ItemGun.getReloadTime(gunStack) != 0) {
+            if (ItemGun.getReloadTime(Minecraft.getMinecraft().world, gunStack) != 0) {
                 long max = gunType.reloadTime;
-                long fill = ItemGun.getReloadTime(gunStack) - System.currentTimeMillis();
+                long fill = ItemGun.getReloadTime(Minecraft.getMinecraft().world, gunStack) - System.currentTimeMillis();
                 if (fill > -1) {
                     // 20D is the width of the progress bar
                     double toFill = ((double) fill / (double) max) * (30D);

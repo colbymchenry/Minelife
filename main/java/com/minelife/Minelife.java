@@ -7,6 +7,7 @@ import com.minelife.drugs.ModDrugs;
 import com.minelife.economy.ModEconomy;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.guns.ModGuns;
+import com.minelife.jobs.ModJobs;
 import com.minelife.minebay.ModMinebay;
 import com.minelife.netty.ModNetty;
 import com.minelife.notifications.ModNotifications;
@@ -17,14 +18,12 @@ import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.PacketPopup;
 import com.minelife.util.client.PacketRequestName;
 import com.minelife.util.client.PacketRequestUUID;
-import com.minelife.util.client.render.RenderPlayerCustom;
 import com.minelife.util.server.PacketResponseName;
 import com.minelife.util.server.PacketResponseUUID;
 import com.minelife.welfare.ModWelfare;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -32,12 +31,11 @@ import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.List;
 
 @Mod(modid = Minelife.MOD_ID, name = Minelife.NAME, version = Minelife.VERSION, dependencies = "required-after:ic2;required-after:buildcraftcore;")
@@ -74,6 +72,7 @@ public class Minelife {
         MODS.add(new ModGuns());
         MODS.add(new ModDrugs());
         MODS.add(new ModCapes());
+        MODS.add(new ModJobs());
     }
 
     @Mod.EventHandler
@@ -127,6 +126,11 @@ public class Minelife {
     @SideOnly(Side.CLIENT)
     public void textureHook(TextureStitchEvent.Post event) {
         MODS.forEach(mod -> mod.textureHook(event));
+    }
+
+    @SubscribeEvent
+    public void entityRegistration(final RegistryEvent.Register<EntityEntry> event) {
+        MODS.forEach(mod -> mod.entityRegistration(event));
     }
 
     public static File getDirectory() {

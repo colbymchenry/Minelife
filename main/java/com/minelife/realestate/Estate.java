@@ -206,7 +206,7 @@ public class Estate implements Comparable<Estate> {
             e = e.getParentEstate();
         }
 
-        members.putAll(e.getMembersWithPermissions());
+        members.putAll(getMembersWithPermissions());
         return members;
     }
 

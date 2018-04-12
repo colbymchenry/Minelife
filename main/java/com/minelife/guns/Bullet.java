@@ -57,26 +57,8 @@ public class Bullet {
     }
 
     public HitResult tick(float partialTicks, boolean simulate) {
-        BlockPos pos = new BlockPos(MathHelper.floor(posX), MathHelper.floor(posY), MathHelper.floor(posZ));
-        Block block = world.getBlockState(pos).getBlock();
-
-        boolean hitBlock = block != null && block != Blocks.AIR && !blackListedBlocks.contains(block);
-        if (hitBlock) return new HitResult(world.getBlockState(pos), null);
-
-        for (EntityLivingBase e : nearbyTargets) {
-            if (e != shooter && collisionTest(e)) {
-                if (world.isRemote) return new HitResult(null, e);
-
-                if (e instanceof EntityPlayerMP && ((EntityPlayerMP) e).isCreative()) return new HitResult(null, null);
-
-                if(!simulate) {
-                    e.attackEntityFrom(DamageSource.GENERIC, (float) bulletDamage);
-                    e.hurtResistantTime = 0;
-                }
-
-                return new HitResult(null, e);
-            }
-        }
+        HitResult hitResult = collisionTest(simulate);
+        if(hitResult != null) return hitResult;
 
         if(posX == startX && posY == startY && posZ == startZ) {
             prevPosX = posX - lookVec.x;
@@ -108,22 +90,35 @@ public class Bullet {
         return new HitResult(distance > range);
     }
 
-    private boolean collisionTest(EntityLivingBase e) {
+    private HitResult collisionTest(boolean simulate) {
         Vec3d lookNormalized = new Vec3d(lookVec.x, lookVec.y, lookVec.z).normalize();
 
         for (double distance = 0; distance < bulletSpeed; distance += bulletSpeed / 100) {
             Vec3d newVec = new Vec3d(lookNormalized.x * distance + posX,
                     lookNormalized.y * distance + posY, lookNormalized.z * distance + posZ);
 
-            Block block = e.getEntityWorld().getBlockState(new BlockPos(Math.floor(newVec.x), Math.floor(newVec.y), Math.floor(newVec.z))).getBlock();
+            Block block = world.getBlockState(new BlockPos(Math.floor(newVec.x), Math.floor(newVec.y), Math.floor(newVec.z))).getBlock();
             boolean hitBlock = block != null && block != Blocks.AIR && !blackListedBlocks.contains(block);
 
-            if(hitBlock) return false;
+            if(hitBlock) return new HitResult(world.getBlockState(new BlockPos(Math.floor(newVec.x), Math.floor(newVec.y), Math.floor(newVec.z))), null);
 
-            if (e.getEntityBoundingBox().contains(newVec)) return true;
+            for (EntityLivingBase e : nearbyTargets) {
+                if (e != shooter && e.getEntityBoundingBox().contains(newVec)) {
+                    if (world.isRemote) return new HitResult(null, e);
+
+                    if (e instanceof EntityPlayerMP && ((EntityPlayerMP) e).isCreative()) return new HitResult(null, null);
+
+                    if(!simulate) {
+                        e.attackEntityFrom(DamageSource.GENERIC, (float) bulletDamage);
+                        e.hurtResistantTime = 0;
+                    }
+
+                    return new HitResult(null, e);
+                }
+            }
         }
 
-        return false;
+        return null;
     }
 
     public class HitResult {
