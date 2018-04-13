@@ -36,6 +36,7 @@ public class PacketJoinProfession implements IMessage {
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketJoinProfession message, MessageContext ctx) {
             Objects.requireNonNull(message.profession.getHandler()).joinProfession(ctx.getServerHandler().player);
+            ctx.getServerHandler().player.closeScreen();
             return null;
         }
 

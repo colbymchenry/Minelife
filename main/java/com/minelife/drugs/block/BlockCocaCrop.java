@@ -18,7 +18,7 @@ public class BlockCocaCrop extends BlockCrops {
 
     @Override
     protected Item getCrop() {
-        return ModDrugs.itemCocaSeed;
+        return ModDrugs.itemCocaLeaf;
     }
 
     @Override

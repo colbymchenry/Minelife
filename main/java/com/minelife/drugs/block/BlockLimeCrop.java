@@ -18,7 +18,7 @@ public class BlockLimeCrop extends BlockCrops {
 
     @Override
     protected Item getCrop() {
-        return ModDrugs.itemLimeSeed;
+        return ModDrugs.itemLime;
     }
 
     @Override

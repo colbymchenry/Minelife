@@ -2,6 +2,7 @@ package com.minelife.jobs.server;
 
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
+import com.minelife.jobs.EnumJob;
 import com.minelife.jobs.job.farmer.FarmerListener;
 import lib.PatPeter.SQLibrary.Database;
 import lib.PatPeter.SQLibrary.SQLite;
@@ -18,8 +19,10 @@ public class ServerProxy extends MLProxy {
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         DB = new SQLite(Logger.getLogger("Minecraft"), "[Jobs]", Minelife.getDirectory().getAbsolutePath(), "jobs");
         DB.open();
-        DB.query("CREATE TABLE IF NOT EXISTS farmer (playerID VARCHAR(36), int xp)");
 
-        MinecraftForge.EVENT_BUS.register(new FarmerListener());
+        for (EnumJob enumJob : EnumJob.values()) {
+            DB.query("CREATE TABLE IF NOT EXISTS " + enumJob.name().toLowerCase().replace("_", "") + " (playerID VARCHAR(36), xp LONG)");
+            MinecraftForge.EVENT_BUS.register(enumJob.getListener());
+        }
     }
 }

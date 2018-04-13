@@ -18,12 +18,12 @@ public abstract class NPCHandler {
     protected static final Random r = new Random();
     protected String name;
     protected MLConfig config;
-    protected double lvlConst = 1.5;
+    protected double lvlConst = 0.12;
 
     protected NPCHandler(String name) {
         this.name = name;
         try {
-            config = new MLConfig(new File(Minelife.getDirectory(), "jobs"), "farmer");
+            config = new MLConfig(new File(Minelife.getDirectory(), "jobs"), name);
             config.addDefault("MaxLevel", 1500);
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
@@ -42,13 +42,43 @@ public abstract class NPCHandler {
         try {
             ResultSet result = ModJobs.getDatabase().query("SELECT * FROM " + name + " WHERE playerID='" + playerID.toString() + "'");
             if (result.next()) {
-                int lvl = (int) Math.floor(lvlConst * Math.sqrt(result.getInt("xp")));
+                int lvl = (int) Math.floor(0.25 * Math.sqrt(result.getLong("xp")));
                 return lvl > config.getInt("MaxLevel") ? config.getInt("MaxLevel") : lvl;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public long getXP(UUID playerID) {
+        try {
+            ResultSet result = ModJobs.getDatabase().query("SELECT * FROM " + name + " WHERE playerID='" + playerID.toString() + "'");
+            if (result.next()) return result.getLong("xp");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public void addXP(UUID playerID, long xp) {
+        try {
+            long newXP = getXP(playerID) + xp;
+            newXP = newXP < 0 ? 0 : newXP;
+            ModJobs.getDatabase().query("UPDATE " + name + " SET xp='" + newXP + "' WHERE playerID='" + playerID.toString() + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeXP(UUID playerID, long xp) {
+        try {
+            long newXP = getXP(playerID) - xp;
+            newXP = newXP < 0 ? 0 : newXP;
+            ModJobs.getDatabase().query("UPDATE " + name + " SET xp='" + newXP + "' WHERE playerID='" + playerID.toString() + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public MLConfig getConfig() {

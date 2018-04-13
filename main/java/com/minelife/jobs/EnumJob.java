@@ -1,7 +1,18 @@
 package com.minelife.jobs;
 
 import com.minelife.guns.ModGuns;
+import com.minelife.jobs.job.bountyhunter.BountyHunterHandler;
+import com.minelife.jobs.job.bountyhunter.BountyHunterListener;
 import com.minelife.jobs.job.farmer.FarmerHandler;
+import com.minelife.jobs.job.farmer.FarmerListener;
+import com.minelife.jobs.job.fisherman.FishermanHandler;
+import com.minelife.jobs.job.fisherman.FishermanListener;
+import com.minelife.jobs.job.lumberjack.LumberjackHandler;
+import com.minelife.jobs.job.lumberjack.LumberjackListener;
+import com.minelife.jobs.job.miner.MinerHandler;
+import com.minelife.jobs.job.miner.MinerListener;
+import com.minelife.jobs.job.restaurateur.RestaurateurHandler;
+import com.minelife.jobs.job.restaurateur.RestaurateurListener;
 import com.pam.harvestcraft.item.ItemRegistry;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -28,6 +39,23 @@ public enum EnumJob {
     public NPCHandler getHandler() {
         switch (this) {
             case FARMER: return FarmerHandler.INSTANCE;
+            case FISHERMAN: return FishermanHandler.INSTANCE;
+            case MINER: return MinerHandler.INSTANCE;
+            case BOUNTY_HUNTER: return BountyHunterHandler.INSTANCE;
+            case RESTAURATEUR: return RestaurateurHandler.INSTANCE;
+            case LUMBERJACK: return LumberjackHandler.INSTANCE;
+        }
+        return null;
+    }
+
+    public Object getListener() {
+        switch (this) {
+            case FARMER: return new FarmerListener();
+            case FISHERMAN: return new FishermanListener();
+            case MINER: return new MinerListener();
+            case BOUNTY_HUNTER: return new BountyHunterListener();
+            case RESTAURATEUR: return new RestaurateurListener();
+            case LUMBERJACK: return new LumberjackListener();
         }
         return null;
     }

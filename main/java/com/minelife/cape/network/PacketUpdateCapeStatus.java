@@ -37,7 +37,11 @@ public class PacketUpdateCapeStatus implements IMessage {
 
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketUpdateCapeStatus message, MessageContext ctx) {
-            Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().player.getEntityWorld().getEntityByID(message.entityID).getEntityData().setBoolean("Cape", message.on));
+            Minecraft.getMinecraft().addScheduledTask(() -> {
+                if(Minecraft.getMinecraft().player.getEntityWorld().getEntityByID(message.entityID) != null) {
+                    Minecraft.getMinecraft().player.getEntityWorld().getEntityByID(message.entityID).getEntityData().setBoolean("Cape", message.on);
+                }
+            });
             return null;
         }
     }

@@ -18,7 +18,7 @@ public class BlockHempCrop extends BlockCrops {
 
     @Override
     protected Item getCrop() {
-        return ModDrugs.itemHempSeed;
+        return ModDrugs.itemHempBuds;
     }
 
     @Override

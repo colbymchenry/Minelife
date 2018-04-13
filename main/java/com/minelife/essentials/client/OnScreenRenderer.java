@@ -28,7 +28,7 @@ public class OnScreenRenderer {
                     GlStateManager.color(1, 1, 1, 1);
                     int stringWidth = fontRenderer.getStringWidth(title);
 
-                    GlStateManager.translate(centerX, (subTitle != null ? -30 : 0) + centerY, 400);
+                    GlStateManager.translate(centerX - (stringWidth / 2), (subTitle != null ? -30 : 0) + centerY, 400);
 
                     GlStateManager.translate(stringWidth / 2, fontRenderer.FONT_HEIGHT / 2, 0);
                     GlStateManager.scale(4, 4, 4);
@@ -42,7 +42,7 @@ public class OnScreenRenderer {
                     GlStateManager.color(1, 1, 1, 1);
                     int stringWidth = fontRenderer.getStringWidth(subTitle);
 
-                    GlStateManager.translate(centerX, (title != null ? +20 : 0) + centerY, 400);
+                    GlStateManager.translate(centerX - (stringWidth / 2), (title != null ? +20 : 0) + centerY, 400);
 
                     GlStateManager.translate(stringWidth / 2, fontRenderer.FONT_HEIGHT / 2, 0);
                     GlStateManager.scale(1.5f, 1.5f, 1.5f);

@@ -1,9 +1,14 @@
 package com.minelife.jobs.job.farmer;
 
+import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.essentials.ModEssentials;
+import com.minelife.jobs.EnumJob;
+import com.minelife.jobs.server.CommandJob;
+import com.minelife.jobs.server.commands.CommandNPC;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.ModRealEstate;
+import com.minelife.util.PacketPlaySound;
 import com.minelife.util.fireworks.Color;
 import com.minelife.util.fireworks.FireworkBuilder;
 import net.minecraft.block.BlockCrops;
@@ -23,19 +28,27 @@ public class FarmerListener {
     private static final ResourceLocation levelUpSFX = new ResourceLocation(Minelife.MOD_ID, "level_up");
 
     @SubscribeEvent
-    public void onBreak(BlockEvent.BreakEvent event) {
-        EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
+    public void onBreak(BlockEvent.HarvestDropsEvent event) {
+        EntityPlayerMP player = (EntityPlayerMP) event.getHarvester();
         World world = event.getWorld();
 
-        if(!(world.getBlockState(event.getPos()) instanceof BlockCrops)) return;
+//        if(!(world.getBlockState(event.getPos()) instanceof BlockCrops)) return;
+
+        if(player == null) return;
 
         if(!FarmerHandler.INSTANCE.isProfession(player)) return;
+
+        FarmerHandler.INSTANCE.getConfig().set("crops", Lists.newArrayList("minelife:hemp_crop;50", "minelife:coca_crop;10", "minecraft:wheat_crop;10"));
+        FarmerHandler.INSTANCE.getConfig().save();
 
         Estate estate = ModRealEstate.getEstateAt(world, event.getPos());
         boolean inFarmZone = estate != null && FarmerHandler.INSTANCE.getConfig().getStringList("zones").contains(String.valueOf(estate.getUniqueID()));
 
         int level = FarmerHandler.INSTANCE.getLevel(player);
-        BlockCrops blockCrop = (BlockCrops) world.getBlockState(event.getPos());
+        BlockCrops blockCrop = (BlockCrops) world.getBlockState(event.getPos()).getBlock();
+        int xp = FarmerHandler.INSTANCE.getXPForBlock(blockCrop);
+
+        if(xp < 1) return;
 
         // auto replant
         if(inFarmZone) {
@@ -53,8 +66,12 @@ public class FarmerListener {
             world.setBlockState(event.getPos(), blockCrop.getDefaultState().withProperty(BlockCrops.AGE, FarmerHandler.INSTANCE.getGrowthStage(player)), 2);
         }
 
+        FarmerHandler.INSTANCE.addXP(player.getUniqueID(), xp);
+        CommandJob.sendMessage(player, EnumJob.FARMER, "+" + xp);
+
         if(FarmerHandler.INSTANCE.getLevel(player) > level) {
-            world.playSound(event.getPlayer(), event.getPos(), new SoundEvent(levelUpSFX), SoundCategory.MASTER, 1.0F, 1.0F);
+            Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:level_up", 1, 1), player);
+
             ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, FireworkBuilder.Type.LARGE_BALL,
                     new int[]{Color.RED.asRGB(), Color.BLUE.asRGB()}, new int[]{Color.PURPLE.asRGB(), Color.WHITE.asRGB()}).getStack(1);
 
