@@ -2,6 +2,7 @@ package com.minelife.jobs;
 
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
+import com.minelife.jobs.network.PacketJoinProfession;
 import com.minelife.jobs.network.PacketOpenNormalGui;
 import com.minelife.jobs.network.PacketOpenSignupGui;
 import com.minelife.jobs.server.CommandJob;
@@ -21,6 +22,7 @@ public class ModJobs extends MLMod {
     public void preInit(FMLPreInitializationEvent event) {
         registerPacket(PacketOpenNormalGui.Handler.class, PacketOpenNormalGui.class, Side.CLIENT);
         registerPacket(PacketOpenSignupGui.Handler.class, PacketOpenSignupGui.class, Side.CLIENT);
+        registerPacket(PacketJoinProfession.Handler.class, PacketJoinProfession.class, Side.SERVER);
     }
 
     @Override

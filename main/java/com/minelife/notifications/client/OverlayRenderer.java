@@ -94,7 +94,6 @@ public class OverlayRenderer {
             }
         }
         GlStateManager.popAttrib();
-
     }
 
     public static void addNotification(Notification notification, boolean playSound, boolean render) {

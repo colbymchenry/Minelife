@@ -1,6 +1,7 @@
 package com.minelife.jobs.server;
 
 import com.google.common.collect.Maps;
+import com.minelife.jobs.EnumJob;
 import com.minelife.jobs.job.farmer.CommandFarmer;
 import com.minelife.jobs.server.commands.CommandNPC;
 import net.minecraft.command.CommandBase;
@@ -8,6 +9,9 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.Map;
 
@@ -42,4 +46,9 @@ public class CommandJob extends CommandBase {
 
         subCommands.get(args[0].toLowerCase()).execute(server, sender, args);
     }
+
+    public static void sendMessage(ICommandSender sender, EnumJob job, String msg) {
+        sender.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[" + WordUtils.capitalizeFully(job.name().replace("_", " ")) + "] " + TextFormatting.GOLD + msg));
+    }
+
 }

@@ -57,4 +57,6 @@ public abstract class NPCHandler {
 
     public abstract void onEntityRightClick(EntityPlayer player);
 
+    public abstract void joinProfession(EntityPlayer player);
+
 }
