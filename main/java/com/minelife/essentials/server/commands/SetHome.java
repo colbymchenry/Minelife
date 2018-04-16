@@ -13,6 +13,7 @@ import java.sql.SQLException;
 
 public class SetHome extends CommandBase {
 
+    // TODO: Can't have more than one home, this and warps needs to be cleaned up, also no server warps, only player warps, need to have this swapped, Multiple homes, and warps for everyone
     @Override
     public String getName() {
         return "sethome";

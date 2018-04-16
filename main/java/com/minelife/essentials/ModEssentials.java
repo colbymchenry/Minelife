@@ -53,6 +53,7 @@ public class ModEssentials extends MLMod {
             event.registerServerCommand(new Whisper());
             event.registerServerCommand(new Reply());
             event.registerServerCommand(new TempBan());
+            event.registerServerCommand(new Heal());
         } catch (SQLException e) {
             e.printStackTrace();
         }

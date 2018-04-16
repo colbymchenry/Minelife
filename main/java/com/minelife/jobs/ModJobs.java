@@ -5,6 +5,7 @@ import com.minelife.MLProxy;
 import com.minelife.jobs.network.PacketJoinProfession;
 import com.minelife.jobs.network.PacketOpenNormalGui;
 import com.minelife.jobs.network.PacketOpenSignupGui;
+import com.minelife.jobs.network.PacketSellItemStack;
 import com.minelife.jobs.server.CommandJob;
 import com.minelife.jobs.server.ServerProxy;
 import lib.PatPeter.SQLibrary.Database;
@@ -23,6 +24,7 @@ public class ModJobs extends MLMod {
         registerPacket(PacketOpenNormalGui.Handler.class, PacketOpenNormalGui.class, Side.CLIENT);
         registerPacket(PacketOpenSignupGui.Handler.class, PacketOpenSignupGui.class, Side.CLIENT);
         registerPacket(PacketJoinProfession.Handler.class, PacketJoinProfession.class, Side.SERVER);
+        registerPacket(PacketSellItemStack.Handler.class, PacketSellItemStack.class, Side.SERVER);
     }
 
     @Override

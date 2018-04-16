@@ -25,14 +25,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class FarmerListener {
 
-    private static final ResourceLocation levelUpSFX = new ResourceLocation(Minelife.MOD_ID, "level_up");
-
     @SubscribeEvent
     public void onBreak(BlockEvent.HarvestDropsEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getHarvester();
         World world = event.getWorld();
 
-//        if(!(world.getBlockState(event.getPos()) instanceof BlockCrops)) return;
+        if(!(world.getBlockState(event.getPos()) instanceof BlockCrops)) return;
 
         if(player == null) return;
 
@@ -52,17 +50,13 @@ public class FarmerListener {
 
         // auto replant
         if(inFarmZone) {
-            if(blockCrop.getMaxAge() < world.getBlockState(event.getPos()).getValue(BlockCrops.AGE)) {
+            if (blockCrop.getMaxAge() < world.getBlockState(event.getPos()).getValue(BlockCrops.AGE)) {
                 event.setCanceled(true);
                 return;
             }
+        }
 
-            if(FarmerHandler.INSTANCE.replant(player)) {
-                world.setBlockState(event.getPos(), blockCrop.getDefaultState().withProperty(BlockCrops.AGE, FarmerHandler.INSTANCE.getGrowthStage(player)), 2);
-            } else {
-                world.setBlockState(event.getPos(), blockCrop.getDefaultState(), 2);
-            }
-        } else if(FarmerHandler.INSTANCE.replant(player)) {
+        if(FarmerHandler.INSTANCE.replant(player)) {
             world.setBlockState(event.getPos(), blockCrop.getDefaultState().withProperty(BlockCrops.AGE, FarmerHandler.INSTANCE.getGrowthStage(player)), 2);
         }
 

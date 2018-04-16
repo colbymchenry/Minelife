@@ -1,6 +1,7 @@
 package com.minelife.jobs;
 
 import com.minelife.Minelife;
+import com.minelife.jobs.job.SellingOption;
 import com.minelife.util.MLConfig;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -18,13 +20,13 @@ public abstract class NPCHandler {
     protected static final Random r = new Random();
     protected String name;
     protected MLConfig config;
-    protected double lvlConst = 0.12;
 
     protected NPCHandler(String name) {
         this.name = name;
         try {
             config = new MLConfig(new File(Minelife.getDirectory(), "jobs"), name);
             config.addDefault("MaxLevel", 1500);
+            config.save();
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
@@ -42,8 +44,11 @@ public abstract class NPCHandler {
         try {
             ResultSet result = ModJobs.getDatabase().query("SELECT * FROM " + name + " WHERE playerID='" + playerID.toString() + "'");
             if (result.next()) {
-                int lvl = (int) Math.floor(0.25 * Math.sqrt(result.getLong("xp")));
-                return lvl > config.getInt("MaxLevel") ? config.getInt("MaxLevel") : lvl;
+                long xp = result.getLong("xp");
+                for(int lvl = config.getInt("MaxLevel"); lvl > 0; lvl--) {
+                    double xpNeeded = Math.floor(100.0D * (Math.pow(lvl, 2.0D)) - (100.0D * lvl));
+                    if(xp >= xpNeeded) return lvl;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -88,5 +93,9 @@ public abstract class NPCHandler {
     public abstract void onEntityRightClick(EntityPlayer player);
 
     public abstract void joinProfession(EntityPlayer player);
+
+    public abstract List<SellingOption> getSellingOptions();
+
+    public abstract void setupConfig();
 
 }

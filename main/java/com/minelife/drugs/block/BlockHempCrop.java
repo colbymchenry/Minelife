@@ -16,6 +16,8 @@ public class BlockHempCrop extends BlockCrops {
         disableStats();
     }
 
+    // TODO: Still grows in non farmland
+
     @Override
     protected Item getCrop() {
         return ModDrugs.itemHempBuds;

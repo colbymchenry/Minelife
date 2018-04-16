@@ -45,6 +45,11 @@ import java.awt.*;
 
 public class ModDrugs extends MLMod {
 
+
+    // TODO: Make hemp, lime, and coca randomly generate or come up with a way for players to get the seeds, would be cool if rare and random
+    // TODO: That way they are more valuable
+    // TODO: Make hydroponics system for marijuana
+
     public static BlockHempCrop blockHempCrop;
     public static BlockLimeCrop blockLimeCrop;
     public static BlockCocaCrop blockCocaCrop;

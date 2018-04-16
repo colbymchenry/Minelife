@@ -4,6 +4,7 @@ import com.minelife.Minelife;
 import com.minelife.jobs.EnumJob;
 import com.minelife.jobs.ModJobs;
 import com.minelife.jobs.NPCHandler;
+import com.minelife.jobs.job.SellingOption;
 import com.minelife.jobs.job.bountyhunter.BountyHunterHandler;
 import com.minelife.jobs.network.PacketOpenSignupGui;
 import com.minelife.jobs.server.CommandJob;
@@ -16,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class RestaurateurHandler extends NPCHandler {
 
@@ -55,5 +57,15 @@ public class RestaurateurHandler extends NPCHandler {
             e.printStackTrace();
             CommandJob.sendMessage(player, EnumJob.RESTAURATEUR, TextFormatting.RED + "Something went wrong. Notify an admin.");
         }
+    }
+
+    @Override
+    public List<SellingOption> getSellingOptions() {
+        return null;
+    }
+
+    @Override
+    public void setupConfig() {
+
     }
 }

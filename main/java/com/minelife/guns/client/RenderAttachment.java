@@ -34,6 +34,7 @@ public class RenderAttachment implements IItemRenderer {
     public RenderAttachment() {
     }
 
+    // TODO: Guns and attachments render slightly yellow on bullet fire
     @Override
     public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType transformType) {
         EnumAttachment attachment = EnumAttachment.values()[stack.getMetadata()];
@@ -56,6 +57,8 @@ public class RenderAttachment implements IItemRenderer {
         CCRenderState ccrs = CCRenderState.instance();
         Minecraft.getMinecraft().getTextureManager().bindTexture(attachment.textureModel);
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.disableBlend();
         attachment.model.render(ccrs);
         ccrs.draw();
 

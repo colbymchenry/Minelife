@@ -82,6 +82,8 @@ public class RenderGun implements IItemRenderer {
         CCRenderState ccrs = CCRenderState.instance();
         Minecraft.getMinecraft().getTextureManager().bindTexture(gun.texture);
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.disableBlend();
         gun.model.render(ccrs);
         ccrs.draw();
 

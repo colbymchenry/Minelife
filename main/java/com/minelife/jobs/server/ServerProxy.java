@@ -23,6 +23,7 @@ public class ServerProxy extends MLProxy {
         for (EnumJob enumJob : EnumJob.values()) {
             DB.query("CREATE TABLE IF NOT EXISTS " + enumJob.name().toLowerCase().replace("_", "") + " (playerID VARCHAR(36), xp LONG)");
             MinecraftForge.EVENT_BUS.register(enumJob.getListener());
+            enumJob.getHandler().setupConfig();
         }
     }
 }

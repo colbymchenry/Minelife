@@ -1,9 +1,13 @@
 package com.minelife.guns.turret;
 
+import buildcraft.core.BCCoreItems;
 import com.minelife.Minelife;
 import com.minelife.guns.GuiHandler;
 import com.minelife.guns.ModGuns;
+import com.minelife.guns.item.EnumGun;
+import com.minelife.guns.item.ItemGunPart;
 import com.minelife.util.client.MLParticleDigging;
+import ic2.core.ref.ItemName;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -12,16 +16,16 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nullable;
 
@@ -112,5 +116,13 @@ public class BlockTurret extends BlockContainer {
         return true;
     }
 
-    // TODO: Add recipe
+    public void registerRecipe() {
+        ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":turret");
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.DESERT_EAGLE.ordinal()),
+                "AAA",
+                "AGA",
+                "AAA",
+                'A', Ingredient.fromItem(ModGuns.itemGunmetal),
+                'G', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 1)));
+    }
 }

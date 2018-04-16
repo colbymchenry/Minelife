@@ -3,6 +3,8 @@ package com.minelife.util.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -131,9 +133,9 @@ public abstract class GuiScrollableContent extends Gui {
         if (scrollY < 0) scrollY = 0;
         if (Float.isNaN(scrollY)) scrollY = 0;
 
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GlStateManager.disableTexture2D();
         drawBackground();
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
 
         ScaledResolution res = new ScaledResolution(Minecraft.getMinecraft());
         double scaleW = Minecraft.getMinecraft().displayWidth / res.getScaledWidth_double();
@@ -148,12 +150,12 @@ public abstract class GuiScrollableContent extends Gui {
 
         if (!drawScrollbarOnTop && drawScrollbar) {
             drawTrack();
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glPushMatrix();
-            GL11.glTranslatef(scrollBarLeft, y + gripPosition, 0);
+            GlStateManager.disableTexture2D();
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(scrollBarLeft, y + gripPosition, 0);
             drawGrip(MathHelper.floor(gripSize));
-            GL11.glPopMatrix();
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GlStateManager.popMatrix();
+            GlStateManager.enableTexture2D();
         }
 
         // use scissoring to make the drawing seem seamless and continuous
@@ -164,8 +166,8 @@ public abstract class GuiScrollableContent extends Gui {
         // drawTickBox all of the content object by object
         int totalHeight = 0;
         for (int i = 0; i < getSize(); i++) {
-            GL11.glPushMatrix();
-            GL11.glTranslatef(x, (y + totalHeight) - scrollY, 0);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(x, (y + totalHeight) - scrollY, 0);
 
             if (selected == i) {
                 drawSelectionBox(i, width, getObjectHeight(i));
@@ -176,7 +178,7 @@ public abstract class GuiScrollableContent extends Gui {
             boolean hovering = mX > 0 && mX < listWidth && mY > 0 && mY < getObjectHeight(i);
 
             drawObject(i, mX, mY, hovering);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
             totalHeight += getObjectHeight(i);
         }
 
@@ -184,12 +186,12 @@ public abstract class GuiScrollableContent extends Gui {
 
         if (drawScrollbarOnTop && drawScrollbar) {
             drawTrack();
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glPushMatrix();
-            GL11.glTranslatef(scrollBarLeft, y + gripPosition, 0);
+            GlStateManager.disableTexture2D();
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(scrollBarLeft, y + gripPosition, 0);
             drawGrip(MathHelper.floor(gripSize));
-            GL11.glPopMatrix();
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GlStateManager.popMatrix();
+            GlStateManager.enableTexture2D();
         }
     }
 
@@ -221,34 +223,34 @@ public abstract class GuiScrollableContent extends Gui {
     }
 
     public void drawBackground() {
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4f(0f, 0f, 0f, 1f);
+        GlStateManager.disableTexture2D();
+        GlStateManager.color(0f, 0f, 0f, 1f);
         GuiHelper.drawRect(x, y, width, height);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4f(1, 1, 1, 1);
+        GlStateManager.enableTexture2D();
+        GlStateManager.color(1, 1, 1, 1);
     }
 
     public void drawGrip(int gripHeight) {
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GlStateManager.disableTexture2D();
         GL11.glColor4f(90f / 255f, 90f / 255f, 90f / 255f, 1f);
         GuiHelper.drawRect(0, 0, getGripWidth(), gripHeight);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4f(1, 1, 1, 1);
+        GlStateManager.enableTexture2D();
+        GlStateManager.color(1, 1, 1, 1);
     }
 
     public void drawSelectionBox(int index, int width, int height) {
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4f(128f / 255f, 128f / 255f, 128f / 255f, 1f);
+        GlStateManager.disableTexture2D();
+        GlStateManager.color(128f / 255f, 128f / 255f, 128f / 255f, 1f);
         GuiHelper.drawRect(0, 0, width, height);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4f(1, 1, 1, 1);
+        GlStateManager.enableTexture2D();
     }
 
     public void drawTrack() {
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glColor4f(60f / 255f, 60f / 255f, 60f / 255f, 1f);
+        GlStateManager.disableTexture2D();
+        GlStateManager.color(60f / 255f, 60f / 255f, 60f / 255f, 1f);
         GuiHelper.drawRect(x + width - getGripWidth(), y, getGripWidth(), height);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableTexture2D();
         GL11.glColor4f(1, 1, 1, 1);
     }
 

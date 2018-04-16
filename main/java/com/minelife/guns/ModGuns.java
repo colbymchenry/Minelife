@@ -66,6 +66,7 @@ public class ModGuns extends MLMod {
         itemGun.registerRecipes();
         itemAttachment.registerRecipes();
         itemAmmo.registerRecipes();
+        blockTurretBottom.registerRecipe();
 
         registerPacket(PacketSetTurretSettings.Handler.class, PacketSetTurretSettings.class, Side.SERVER);
     }

@@ -17,10 +17,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
+import net.minecraft.init.PotionTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.*;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
@@ -210,7 +213,7 @@ public class ItemGun extends Item {
 
         EnumGun gun = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
 
-        pingDelay = pingDelay > 200 ? 60 : pingDelay;
+        pingDelay = pingDelay > 100 ? 60 : pingDelay;
 
         if (ItemGun.isReloading(player.getEntityWorld(), player.getHeldItemMainhand())) return false;
 
@@ -225,7 +228,7 @@ public class ItemGun extends Item {
 
         ItemGun.addFireRate(player.getEntityWorld(), player.getHeldItemMainhand(), pingDelay);
 
-        Bullet bullet = new Bullet(player.getEntityWorld(), player.posX, player.posY + player.getEyeHeight(), player.posZ, pingDelay,
+        Bullet bullet = new Bullet(player.getEntityWorld(), player.posX, player.posY + player.getEyeHeight(), player.posZ,
                 lookVector, gun.bulletSpeed, gun.damage, player);
 
         Bullet.BULLETS.add(bullet);
@@ -283,7 +286,8 @@ public class ItemGun extends Item {
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
         EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
         if (world.isRemote) nextFire = System.currentTimeMillis() + gunType.fireRate;
-        tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate - pingDelay);
+//        tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate - pingDelay);
+        tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate);
         gunStack.setTagCompound(tagCompound);
     }
 
@@ -300,7 +304,7 @@ public class ItemGun extends Item {
 
         EnumGun gunType = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
 
-        pingDelay = pingDelay > 200 ? 60 : pingDelay;
+        pingDelay = pingDelay > 100 ? 60 : pingDelay;
 
         if (ItemGun.getClipCount(player.getHeldItemMainhand()) == gunType.clipSize) return false;
 
@@ -314,12 +318,15 @@ public class ItemGun extends Item {
         }
 
         ItemStack gunStack = player.getHeldItemMainhand();
-        ItemGun.setReloadTime(player.getEntityWorld(), gunStack, System.currentTimeMillis() + gunType.reloadTime - pingDelay);
+//        ItemGun.setReloadTime(player.getEntityWorld(), gunStack, System.currentTimeMillis() + gunType.reloadTime - pingDelay);
+        ItemGun.setReloadTime(player.getEntityWorld(), gunStack, System.currentTimeMillis() + gunType.reloadTime);
         player.setHeldItem(EnumHand.MAIN_HAND, gunStack);
 
         if (player.world.isRemote) {
             Minelife.getNetwork().sendToServer(new PacketReload());
             player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gunType.soundReload), SoundCategory.NEUTRAL, 1, 1);
+        } else {
+            player.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 20 * (gunType.reloadTime / 1000), 1));
         }
         return true;
     }

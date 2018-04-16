@@ -74,7 +74,7 @@ public class PacketBullet implements IMessage {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 EntityPlayer player = Minecraft.getMinecraft().player;
                 if (message.entityID != player.getEntityId()) {
-                    Bullet.BULLETS.add(new Bullet(Minecraft.getMinecraft().world, message.posX, message.posY, message.posZ, 0,
+                    Bullet.BULLETS.add(new Bullet(Minecraft.getMinecraft().world, message.posX, message.posY, message.posZ,
                             message.lookVec, message.speed, message.damage, (EntityLivingBase) player.getEntityWorld().getEntityByID(message.entityID)));
 
                     /**

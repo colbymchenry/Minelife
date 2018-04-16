@@ -156,13 +156,13 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
                     if (Objects.equals(estate.getOwnerID(), e.getUniqueID())) toRemove.add(e);
                     if (memberKeys.contains(e.getUniqueID())) toRemove.add(e);
                     if (ownersKeys.contains(e.getUniqueID())) toRemove.add(e);
+                }
 
-                    if (isWaitForAgroPlayer()) {
-                        if (agro) {
-                            AgroPlayers.put(e.getUniqueID(), System.currentTimeMillis() + (60000L * 5));
-                        } else {
-                            if (!AgroPlayers.containsKey(e.getUniqueID())) toRemove.add(e);
-                        }
+                if (isWaitForAgroPlayer()) {
+                    if (agro) {
+                        AgroPlayers.put(e.getUniqueID(), System.currentTimeMillis() + (60000L * 5));
+                    } else {
+                        if (!AgroPlayers.containsKey(e.getUniqueID())) toRemove.add(e);
                     }
                 }
 
@@ -185,7 +185,7 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
         for (EntityLivingBase nearbyTarget : nearbyTargets) {
             Vector vector = getLookVec(nearbyTarget);
             Vec3d vec3d = new Vec3d(vector.getX(), vector.getY(), vector.getZ());
-            Bullet bullet = new Bullet(getWorld(), getPos().getX() + 0.5, getPos().getY() + 1.5, getPos().getZ() + 0.5, 0L, vec3d, 3.5, 0, null);
+            Bullet bullet = new Bullet(getWorld(), getPos().getX() + 0.5, getPos().getY() + 1.5, getPos().getZ() + 0.5, vec3d, 3.5, 0, null);
             bulletLoop:
             for (int i = 0; i < 10; i++) {
                 Bullet.HitResult result = bullet.tick(0, true);
@@ -210,7 +210,7 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
             inventory.setInventorySlotContents(slot, stack.getCount() < 1 ? ItemStack.EMPTY : stack);
             Vector vector = getLookVec(target);
             Vec3d vec3d = new Vec3d(vector.getX(), vector.getY(), vector.getZ());
-            Bullet bullet = new Bullet(getWorld(), getPos().getX() + 0.5, getPos().getY() + 1.5, getPos().getZ() + 0.5, 0L, vec3d, 3.5, 2.5, null);
+            Bullet bullet = new Bullet(getWorld(), getPos().getX() + 0.5, getPos().getY() + 1.5, getPos().getZ() + 0.5, vec3d, 3.5, 2.5, null);
             Bullet.BULLETS.add(bullet);
             Minelife.getNetwork().sendToAllAround(new PacketBullet(EnumGun.M4A4, bullet),
                     new NetworkRegistry.TargetPoint(getWorld().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 80));

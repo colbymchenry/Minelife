@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -73,7 +74,8 @@ public class TileEntityRenderTurret extends TileEntitySpecialRenderer<TileEntity
 
             GL11.glRotatef(te.getDirection() == EnumFacing.NORTH ? -90 : te.getDirection() == EnumFacing.SOUTH ? 90 : te.getDirection() == EnumFacing.EAST ? -180 : 0, 0, 1, 0);
 
-            if (te.getWorld() != null && te.getWorld().getEntityByID(te.getTargetID()) != null) {
+            if (te.getWorld() != null && te.getWorld().getEntityByID(te.getTargetID()) != null
+                    && te.getWorld().getEntityByID(te.getTargetID()) instanceof EntityLivingBase) {
                 EntityLivingBase target = (EntityLivingBase) te.getWorld().getEntityByID(te.getTargetID());
                 Vector lookVec = te.getLookVec(target);
                 float yaw = (float) Math.atan2(lookVec.getX(), lookVec.getZ());

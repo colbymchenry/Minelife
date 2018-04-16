@@ -57,6 +57,11 @@ public class Warp extends CommandBase {
     }
 
     @Override
+    public List<String> getAliases() {
+        return Lists.newArrayList("warps");
+    }
+
+    @Override
     public String getUsage(ICommandSender sender) {
         return "/warp <name>";
     }

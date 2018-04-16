@@ -29,6 +29,9 @@ import java.util.Map;
 
 public class GuiModifyGun extends GuiScreen {
 
+    // TODO: Right clicking stack cuts in half and duplicates
+    // TODO: May not be able to replicate, wallet shift click cash into it dissapears
+
     private int gunSlot;
     private float yRot;
     private ItemStack gunStack;

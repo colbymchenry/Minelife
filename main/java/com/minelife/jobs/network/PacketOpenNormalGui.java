@@ -1,6 +1,11 @@
 package com.minelife.jobs.network;
 
 import com.minelife.jobs.EnumJob;
+import com.minelife.jobs.job.GuiJobBase;
+import com.minelife.jobs.job.farmer.GuiFarmer;
+import com.minelife.jobs.job.fisherman.GuiFisherman;
+import com.minelife.jobs.job.lumberjack.GuiLumberjack;
+import com.minelife.jobs.job.miner.GuiMiner;
 import com.minelife.jobs.job.signup.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -38,16 +43,16 @@ public class PacketOpenNormalGui implements IMessage {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 switch (message.enumJob) {
                     case FARMER:
-                        Minecraft.getMinecraft().displayGuiScreen(new GuiFarmerSignup());
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiFarmer());
                         return;
                     case FISHERMAN:
-                        Minecraft.getMinecraft().displayGuiScreen(new GuiFishermanSignup());
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiFisherman());
                         return;
                     case LUMBERJACK:
-                        Minecraft.getMinecraft().displayGuiScreen(new GuiLumberjackSignup());
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiLumberjack());
                         return;
                     case MINER:
-                        Minecraft.getMinecraft().displayGuiScreen(new GuiMinerSignup());
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiMiner());
                         return;
                     case RESTAURATEUR:
                         Minecraft.getMinecraft().displayGuiScreen(new GuiRestaurateurSignup());
