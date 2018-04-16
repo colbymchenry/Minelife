@@ -9,9 +9,11 @@ import com.minelife.util.PacketPlaySound;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.fireworks.Color;
 import com.minelife.util.fireworks.FireworkBuilder;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -52,7 +54,7 @@ public class MinerListener {
 
         if (MinerHandler.INSTANCE.superBreakerMap.containsKey(player.getUniqueID()) || MinerHandler.INSTANCE.doDoubleDrop(player)) {
             NonNullList<ItemStack> drops = NonNullList.create();
-            event.getState().getBlock().getDrops(drops, event.getWorld(), event.getPos(), event.getState(), 0);
+            event.getState().getBlock().getDrops(drops, event.getWorld(), event.getPos(), event.getState(),  EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, player.getHeldItemMainhand()));
             drops.forEach(stack -> {
                 stack.setCount(stack.getCount() + 1);
                 player.dropItem(stack, false);
@@ -122,7 +124,7 @@ public class MinerListener {
     }
 
     @SubscribeEvent
-    public void onDrop(PlayerInteractEvent.LeftClickBlock event) {
+    public void onHit(PlayerInteractEvent.LeftClickBlock event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
         if (player.getHeldItemMainhand().getItem() != Items.WOODEN_PICKAXE &&
                 player.getHeldItemMainhand().getItem() != Items.STONE_PICKAXE &&
@@ -134,12 +136,16 @@ public class MinerListener {
 
         if (!MinerHandler.INSTANCE.isProfession(player)) return;
 
+        int xp = MinerHandler.INSTANCE.getXPForBlock(event.getWorld().getBlockState(event.getPos()).getBlock());
+
+        if (xp < 1) return;
+
         if(MinerHandler.INSTANCE.superBreakerMap.containsKey(player.getUniqueID())) {
             BlockEvent.BreakEvent e = new BlockEvent.BreakEvent(event.getWorld(), event.getPos(), event.getWorld().getBlockState(event.getPos()), event.getEntityPlayer());
             MinecraftForge.EVENT_BUS.post(e);
             if(!e.isCanceled()) {
                 player.getEntityWorld().setBlockToAir(event.getPos());
-                player.getHeldItemMainhand().setItemDamage(player.getHeldItemMainhand().getItemDamage() + 1);
+                player.getHeldItemMainhand().damageItem(1, player);
                 if(player.getHeldItemMainhand().getItemDamage() >= player.getHeldItemMainhand().getMaxDamage())
                     player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
                 player.inventoryContainer.detectAndSendChanges();

@@ -40,6 +40,7 @@ public abstract class NPCHandler {
         return getLevel(player.getUniqueID());
     }
 
+    // TODO: May want to make it a little steeper to level up, happens a lot too easily
     public int getLevel(UUID playerID) {
         try {
             ResultSet result = ModJobs.getDatabase().query("SELECT * FROM " + name + " WHERE playerID='" + playerID.toString() + "'");

@@ -1,6 +1,7 @@
 package com.minelife.jobs.job.lumberjack;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.jobs.EnumJob;
 import com.minelife.jobs.ModJobs;
@@ -10,22 +11,31 @@ import com.minelife.jobs.job.bountyhunter.BountyHunterHandler;
 import com.minelife.jobs.network.PacketOpenNormalGui;
 import com.minelife.jobs.network.PacketOpenSignupGui;
 import com.minelife.jobs.server.CommandJob;
+import com.minelife.util.NumberConversions;
+import com.minelife.util.PacketPlaySound;
 import com.minelife.util.fireworks.Color;
 import com.minelife.util.fireworks.FireworkBuilder;
 import com.pam.harvestcraft.blocks.FruitRegistry;
 import com.pam.harvestcraft.blocks.growables.BlockPamSapling;
 import com.pam.harvestcraft.item.ItemRegistry;
 import ic2.core.ref.BlockName;
+import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class LumberjackHandler extends NPCHandler {
 
@@ -37,7 +47,7 @@ public class LumberjackHandler extends NPCHandler {
 
     @Override
     public void onEntityRightClick(EntityPlayer player) {
-        if(player.world.isRemote) return;
+        if (player.world.isRemote) return;
 
         if (!isProfession((EntityPlayerMP) player)) {
             Minelife.getNetwork().sendTo(new PacketOpenSignupGui(EnumJob.LUMBERJACK), (EntityPlayerMP) player);
@@ -48,7 +58,7 @@ public class LumberjackHandler extends NPCHandler {
 
     @Override
     public void joinProfession(EntityPlayer player) {
-        if(isProfession((EntityPlayerMP) player)) {
+        if (isProfession((EntityPlayerMP) player)) {
             CommandJob.sendMessage(player, EnumJob.LUMBERJACK, TextFormatting.RED + "You are already a lumberjack.");
             return;
         }
@@ -98,6 +108,48 @@ public class LumberjackHandler extends NPCHandler {
 
     @Override
     public void setupConfig() {
-        
+
     }
+
+    public int getXPForBlock(Block block, int meta) {
+        if (block == Blocks.LOG) {
+            if (meta == 0) return 70;
+            if (meta == 1) return 80;
+            if (meta == 3) return 100;
+            return 90;
+        }
+        return block == Blocks.LOG2 ? 90 : 0;
+    }
+
+    @SideOnly(Side.SERVER)
+    public void applyTreeFeller(EntityPlayerMP player) {
+        int duration = 2 + (getLevel(player) / 50);
+
+        if (player.getHeldItemMainhand().getItem() != Items.WOODEN_AXE &&
+                player.getHeldItemMainhand().getItem() != Items.STONE_AXE &&
+                player.getHeldItemMainhand().getItem() != Items.IRON_AXE &&
+                player.getHeldItemMainhand().getItem() != Items.GOLDEN_AXE &&
+                player.getHeldItemMainhand().getItem() != Items.DIAMOND_AXE) {
+            return;
+        }
+
+        if (treeFellerCooldownMap.containsKey(player.getUniqueID())) {
+            CommandJob.sendMessage(player, EnumJob.MINER, "You must wait " + TextFormatting.RED + ((treeFellerCooldownMap.get(player.getUniqueID()) - System.currentTimeMillis()) / 1000) + TextFormatting.GOLD + " seconds before reactivating Tree Feller.");
+            return;
+        }
+
+        treeFellerMap.put(player.getUniqueID(), System.currentTimeMillis() + (duration * 1000L));
+        treeFellerCooldownMap.put(player.getUniqueID(), System.currentTimeMillis() + (240 * 1000L));
+        CommandJob.sendMessage(player, EnumJob.MINER, "Tree Feller activated for " + TextFormatting.RED + duration + TextFormatting.GOLD + " seconds!");
+        Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
+    }
+
+    public boolean doDoubleDrop(EntityPlayerMP player) {
+        double chance = 1000.0D / getLevel(player);
+        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
+    }
+
+    public Map<UUID, Long> treeFellerMap = Maps.newHashMap();
+    public Map<UUID, Long> treeFellerCooldownMap = Maps.newHashMap();
+
 }
