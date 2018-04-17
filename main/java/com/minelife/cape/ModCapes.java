@@ -2,6 +2,7 @@ package com.minelife.cape;
 
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
+import com.minelife.cape.network.PacketRequestCape;
 import com.minelife.cape.network.PacketSetPixels;
 import com.minelife.cape.network.PacketUpdateCape;
 import com.minelife.cape.network.PacketUpdateCapeStatus;
@@ -21,6 +22,7 @@ public class ModCapes extends MLMod {
         registerPacket(PacketSetPixels.Handler.class, PacketSetPixels.class, Side.SERVER);
         registerPacket(PacketUpdateCape.Handler.class, PacketUpdateCape.class, Side.CLIENT);
         registerPacket(PacketUpdateCapeStatus.Handler.class, PacketUpdateCapeStatus.class, Side.CLIENT);
+        registerPacket(PacketRequestCape.Handler.class, PacketRequestCape.class, Side.SERVER);
     }
 
     @Override

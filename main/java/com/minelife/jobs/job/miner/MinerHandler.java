@@ -100,8 +100,9 @@ public class MinerHandler extends NPCHandler {
 
     @Override
     public void setupConfig() {
-        MinerHandler.INSTANCE.getConfig().addDefault("ores", Lists.newArrayList("minecraft:coal_ore;50", "minecraft:diamond_ore;50"));
-        MinerHandler.INSTANCE.getConfig().save();
+        getConfig().addDefault("MaxLevel", 1500);
+        getConfig().addDefault("ores", Lists.newArrayList("minecraft:coal_ore;50", "minecraft:diamond_ore;50"));
+        getConfig().save();
     }
 
     public int getXPForBlock(Block block) {
@@ -141,7 +142,7 @@ public class MinerHandler extends NPCHandler {
     }
 
     public boolean doDoubleDrop(EntityPlayerMP player) {
-        double chance = 1000.0D / getLevel(player);
+        double chance = getLevel(player) / getConfig().getInt("MaxLevel");
         return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
     }
 

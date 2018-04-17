@@ -59,7 +59,7 @@ public class Minelife {
     private static List<MLMod> MODS = Lists.newArrayList();
 
     public Minelife() {
-        MODS.add(new ModNetty());
+//        MODS.add(new ModNetty());
         MODS.add(new ModPermission());
         MODS.add(new ModTracker());
         MODS.add(new ModWelfare());

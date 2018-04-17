@@ -49,10 +49,10 @@ public class CommandCape extends CommandBase {
 
         boolean holdingCape = player.getHeldItemMainhand().getItem() == ModCapes.itemCape;
 
-        if(!ModNetty.hasConnection()) {
-            sendMessage(sender, TextFormatting.RED + "Cape servers are down. Try again later.");
-            return;
-        }
+//        if(!ModNetty.hasConnection()) {
+//            sendMessage(sender, TextFormatting.RED + "Cape servers are down. Try again later.");
+//            return;
+//        }
 
         if (args[0].equalsIgnoreCase("on")) {
             if (!holdingCape) {
@@ -76,7 +76,7 @@ public class CommandCape extends CommandBase {
             setCape(player, player.getHeldItemMainhand());
             player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
 
-            Minelife.getNetwork().sendToAll(new PacketUpdateCape(player.getUniqueID()));
+            Minelife.getNetwork().sendToAll(new PacketUpdateCape(player.getUniqueID(), player.getEntityId(), ModCapes.itemCape.getPixels(player)));
             Minelife.getNetwork().sendToAll(new PacketUpdateCapeStatus(player.getEntityId(), true));
         } else if (args[0].equalsIgnoreCase("off")) {
             if(player.getEntityData().hasKey("Cape") && player.getEntityData().hasKey("CapePixels")) {
@@ -102,17 +102,17 @@ public class CommandCape extends CommandBase {
 
     public static void setCape(EntityPlayerMP player, ItemStack capeStack) {
         if(capeStack == null) {
-            NettyOutbound outbound = new NettyOutbound(1);
-            outbound.write(player.getUniqueID().toString());
-            outbound.send();
+//            NettyOutbound outbound = new NettyOutbound(1);
+//            outbound.write(player.getUniqueID().toString());
+//            outbound.send();
             player.getEntityData().removeTag("Cape");
             player.writeEntityToNBT(player.getEntityData());
             ModCapes.itemCape.setPixels(player, null);
         } else {
-            NettyOutbound outbound = new NettyOutbound(0);
-            outbound.write(player.getUniqueID().toString());
-            outbound.write(ModCapes.itemCape.getPixels(capeStack));
-            outbound.send();
+//            NettyOutbound outbound = new NettyOutbound(0);
+//            outbound.write(player.getUniqueID().toString());
+//            outbound.write(ModCapes.itemCape.getPixels(capeStack));
+//            outbound.send();
             player.getEntityData().setBoolean("Cape", true);
             player.writeEntityToNBT(player.getEntityData());
             ModCapes.itemCape.setPixels(player, ModCapes.itemCape.getPixels(capeStack));

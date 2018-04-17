@@ -8,6 +8,7 @@ import com.minelife.jobs.ModJobs;
 import com.minelife.jobs.NPCHandler;
 import com.minelife.jobs.job.SellingOption;
 import com.minelife.jobs.job.bountyhunter.BountyHunterHandler;
+import com.minelife.jobs.job.miner.MinerHandler;
 import com.minelife.jobs.network.PacketOpenNormalGui;
 import com.minelife.jobs.network.PacketOpenSignupGui;
 import com.minelife.jobs.server.CommandJob;
@@ -108,7 +109,8 @@ public class LumberjackHandler extends NPCHandler {
 
     @Override
     public void setupConfig() {
-
+        getConfig().addDefault("MaxLevel", 1500);
+        getConfig().save();
     }
 
     public int getXPForBlock(Block block, int meta) {
@@ -145,7 +147,7 @@ public class LumberjackHandler extends NPCHandler {
     }
 
     public boolean doDoubleDrop(EntityPlayerMP player) {
-        double chance = 1000.0D / getLevel(player);
+        double chance = getLevel(player) / getConfig().getInt("MaxLevel");
         return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
     }
 

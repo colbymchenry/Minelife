@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.jobs.EnumJob;
+import com.minelife.jobs.job.miner.MinerHandler;
 import com.minelife.jobs.server.CommandJob;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.PlayerHelper;
@@ -59,6 +60,7 @@ public class LumberjackListener {
         CommandJob.sendMessage(player, EnumJob.LUMBERJACK, "+" + xp);
 
         if (LumberjackHandler.INSTANCE.doDoubleDrop(player)) {
+            Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
             NonNullList<ItemStack> drops = NonNullList.create();
             event.getState().getBlock().getDrops(drops, event.getWorld(), event.getPos(), event.getState(),
                     EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, player.getHeldItemMainhand()));
@@ -84,6 +86,22 @@ public class LumberjackListener {
 
     @SubscribeEvent
     public void onInteract(PlayerInteractEvent.RightClickItem event) {
+        EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
+        if (player.getHeldItemMainhand().getItem() != Items.WOODEN_AXE &&
+                player.getHeldItemMainhand().getItem() != Items.STONE_AXE &&
+                player.getHeldItemMainhand().getItem() != Items.IRON_AXE &&
+                player.getHeldItemMainhand().getItem() != Items.GOLDEN_AXE &&
+                player.getHeldItemMainhand().getItem() != Items.DIAMOND_AXE) {
+            return;
+        }
+
+        if (!LumberjackHandler.INSTANCE.isProfession(player)) return;
+
+        LumberjackHandler.INSTANCE.applyTreeFeller(player);
+    }
+
+    @SubscribeEvent
+    public void onInteract(PlayerInteractEvent.RightClickBlock event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
         if (player.getHeldItemMainhand().getItem() != Items.WOODEN_AXE &&
                 player.getHeldItemMainhand().getItem() != Items.STONE_AXE &&

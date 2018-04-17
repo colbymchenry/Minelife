@@ -3,18 +3,16 @@ package com.minelife.cape.server;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.cape.ModCapes;
+import com.minelife.cape.network.PacketUpdateCape;
 import com.minelife.cape.network.PacketUpdateCapeStatus;
 import com.minelife.util.fireworks.Color;
 import com.minelife.util.fireworks.FireworkBuilder;
 import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -26,18 +24,11 @@ public class ServerProxy extends MLProxy {
     }
 
     @SubscribeEvent
-    public void onEntityTrack(PlayerEvent.StartTracking event) {
-        if(!(event.getTarget() instanceof EntityPlayer)) return;
-        boolean on = event.getTarget().getEntityData().hasKey("Cape") ? event.getTarget().getEntityData().getBoolean("Cape") : false;
-        Minelife.getNetwork().sendTo(new PacketUpdateCapeStatus(event.getTarget().getEntityId(), on), (EntityPlayerMP) event.getEntityPlayer());
-    }
-
-    @SubscribeEvent
     public void onLogin(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent event) {
         boolean on = event.player.getEntityData().hasKey("Cape") ? event.player.getEntityData().getBoolean("Cape") : false;
         Minelife.getNetwork().sendToAll(new PacketUpdateCapeStatus(event.player.getEntityId(), on));
+        Minelife.getNetwork().sendToAll(new PacketUpdateCape(event.player.getUniqueID(), event.player.getEntityId(), ModCapes.itemCape.getPixels(event.player)));
     }
-
 
     @SubscribeEvent
     public void deathEvent(LivingDeathEvent event) {

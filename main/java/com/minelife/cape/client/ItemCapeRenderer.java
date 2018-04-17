@@ -1,6 +1,5 @@
 package com.minelife.cape.client;
 
-import codechicken.lib.model.bakedmodels.WrappedItemModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.OBJParser;
@@ -11,14 +10,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.cape.ModCapes;
-import com.minelife.util.client.render.CapeLoader;
+import com.minelife.util.client.render.CustomLayerCape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -57,7 +55,7 @@ public class ItemCapeRenderer implements IItemRenderer {
         }
 
         CCRenderState ccrs = CCRenderState.instance();
-        Minecraft.getMinecraft().getTextureManager().bindTexture(getTexture(stack) == null ? CapeLoader.defaultCape : getTexture(stack));
+        Minecraft.getMinecraft().getTextureManager().bindTexture(getTexture(stack) == null ? CustomLayerCape.defaultCape : getTexture(stack));
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
         model.render(ccrs);
         ccrs.draw();

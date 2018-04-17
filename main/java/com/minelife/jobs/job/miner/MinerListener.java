@@ -52,13 +52,17 @@ public class MinerListener {
         if (event.getWorld().getBlockState(event.getPos()).getBlock() != Blocks.STONE)
             CommandJob.sendMessage(player, EnumJob.MINER, "+" + xp);
 
-        if (MinerHandler.INSTANCE.superBreakerMap.containsKey(player.getUniqueID()) || MinerHandler.INSTANCE.doDoubleDrop(player)) {
+        boolean doubleDrop = MinerHandler.INSTANCE.doDoubleDrop(player);
+        if(doubleDrop) Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
+
+        if (MinerHandler.INSTANCE.superBreakerMap.containsKey(player.getUniqueID()) || doubleDrop) {
             NonNullList<ItemStack> drops = NonNullList.create();
             event.getState().getBlock().getDrops(drops, event.getWorld(), event.getPos(), event.getState(),  EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, player.getHeldItemMainhand()));
             drops.forEach(stack -> {
                 stack.setCount(stack.getCount() + 1);
                 player.dropItem(stack, false);
             });
+
         }
 
         if (MinerHandler.INSTANCE.getLevel(player) > level) {
@@ -77,6 +81,22 @@ public class MinerListener {
 
     @SubscribeEvent
     public void onInteract(PlayerInteractEvent.RightClickItem event) {
+        EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
+        if (player.getHeldItemMainhand().getItem() != Items.WOODEN_PICKAXE &&
+                player.getHeldItemMainhand().getItem() != Items.STONE_PICKAXE &&
+                player.getHeldItemMainhand().getItem() != Items.IRON_PICKAXE &&
+                player.getHeldItemMainhand().getItem() != Items.GOLDEN_PICKAXE &&
+                player.getHeldItemMainhand().getItem() != Items.DIAMOND_PICKAXE) {
+            return;
+        }
+
+        if (!MinerHandler.INSTANCE.isProfession(player)) return;
+
+        MinerHandler.INSTANCE.applySuperBreaker(player);
+    }
+
+    @SubscribeEvent
+    public void onInteract(PlayerInteractEvent.RightClickBlock event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
         if (player.getHeldItemMainhand().getItem() != Items.WOODEN_PICKAXE &&
                 player.getHeldItemMainhand().getItem() != Items.STONE_PICKAXE &&

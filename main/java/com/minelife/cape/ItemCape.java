@@ -54,7 +54,7 @@ public class ItemCape extends Item {
         return stack.getTagCompound().getString("pixels");
     }
 
-    public void setPixels(EntityPlayerMP player, String pixels) {
+    public void setPixels(EntityPlayer player, String pixels) {
         if (pixels == null) {
             player.getEntityData().removeTag("CapePixels");
         } else {
@@ -63,7 +63,7 @@ public class ItemCape extends Item {
         player.writeEntityToNBT(player.getEntityData());
     }
 
-    public String getPixels(EntityPlayerMP player) {
+    public String getPixels(EntityPlayer player) {
         return player.getEntityData().hasKey("CapePixels") ? player.getEntityData().getString("CapePixels") : null;
     }
 

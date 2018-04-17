@@ -1,6 +1,7 @@
 package com.minelife.jobs.job.farmer;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.jobs.EnumJob;
 import com.minelife.jobs.ModJobs;
@@ -10,6 +11,7 @@ import com.minelife.jobs.network.PacketOpenNormalGui;
 import com.minelife.jobs.network.PacketOpenSignupGui;
 import com.minelife.jobs.server.CommandJob;
 import com.minelife.util.NumberConversions;
+import com.minelife.util.PacketPlaySound;
 import com.minelife.util.fireworks.Color;
 import com.minelife.util.fireworks.FireworkBuilder;
 import com.pam.harvestcraft.blocks.BlockRegistry;
@@ -25,10 +27,15 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class FarmerHandler extends NPCHandler {
 
@@ -96,12 +103,8 @@ public class FarmerHandler extends NPCHandler {
 
     @Override
     public void setupConfig() {
-
-    }
-
-    public boolean replant(EntityPlayerMP player) {
-        double chance = getLevel(player) / config.getInt("MaxLevel");
-        return r.nextInt(100) < chance;
+        getConfig().addDefault("MaxLevel", 1500);
+        getConfig().save();
     }
 
     public int getGrowthStage(EntityPlayerMP player) {
@@ -120,6 +123,42 @@ public class FarmerHandler extends NPCHandler {
         }
         return 0;
     }
+
+    @SideOnly(Side.SERVER)
+    public void applyGreenTerra(EntityPlayerMP player) {
+        int duration = 2 + (getLevel(player) / 50);
+
+        if (player.getHeldItemMainhand().getItem() != Items.WOODEN_HOE &&
+                player.getHeldItemMainhand().getItem() != Items.STONE_HOE &&
+                player.getHeldItemMainhand().getItem() != Items.IRON_HOE &&
+                player.getHeldItemMainhand().getItem() != Items.GOLDEN_HOE &&
+                player.getHeldItemMainhand().getItem() != Items.DIAMOND_HOE) {
+            return;
+        }
+
+        if (greenTerraCooldownMap.containsKey(player.getUniqueID())) {
+            CommandJob.sendMessage(player, EnumJob.MINER, "You must wait " + TextFormatting.RED + ((greenTerraCooldownMap.get(player.getUniqueID()) - System.currentTimeMillis()) / 1000) + TextFormatting.GOLD + " seconds before reactivating Green Terra.");
+            return;
+        }
+
+        greenTerraMap.put(player.getUniqueID(), System.currentTimeMillis() + (duration * 1000L));
+        greenTerraCooldownMap.put(player.getUniqueID(), System.currentTimeMillis() + (240 * 1000L));
+        CommandJob.sendMessage(player, EnumJob.MINER, "Green Terra activated for " + TextFormatting.RED + duration + TextFormatting.GOLD + " seconds!");
+        Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
+    }
+
+    public boolean doTripleDrop(EntityPlayerMP player) {
+        double chance = getLevel(player) / getConfig().getInt("MaxLevel");
+        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
+    }
+
+    public int replantStage(EntityPlayerMP player) {
+        double chance = getLevel(player) / config.getInt("MaxLevel");
+        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D ? (int) Math.ceil(config.getInt("MaxLevel") / getLevel(player)) : 0;
+    }
+
+    public Map<UUID, Long> greenTerraMap = Maps.newHashMap();
+    public Map<UUID, Long> greenTerraCooldownMap = Maps.newHashMap();
 
 
 }
