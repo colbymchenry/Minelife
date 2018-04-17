@@ -1,6 +1,7 @@
 package com.minelife.jobs.job.bountyhunter;
 
 import com.minelife.Minelife;
+import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -26,6 +27,7 @@ public class ItemBountyCard extends Item {
 
     @SideOnly(Side.CLIENT)
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+        Minecraft.getMinecraft().displayGuiScreen(new GuiBountyCard(playerIn.getHeldItem(handIn)));
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }
 

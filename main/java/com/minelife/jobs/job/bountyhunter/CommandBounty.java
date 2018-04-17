@@ -117,6 +117,10 @@ public class CommandBounty extends MLCommand {
                 sendMessage(placer, TextFormatting.RED + "Bounty for that player not found by you.");
                 return;
             }
+
+            int amount = result.getInt("amount");
+            ModEconomy.depositATM(placer.getUniqueID(), amount, true);
+
             ModJobs.getDatabase().query("DELETE FROM bounties WHERE placer='" + placer.getUniqueID().toString() + "' AND target='" + target.toString() + "'");
         } catch (SQLException e) {
             e.printStackTrace();
