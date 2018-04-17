@@ -39,13 +39,13 @@ public class DelWarp extends CommandBase {
         String WarpName = args[0].toLowerCase();
 
         try {
-            Map<String, Location> Warps = Warp.GetWarps(Player.getUniqueID());
+            Map<String, Location> Warps = Warp.GetWarps();
             if(!Warps.containsKey(WarpName)) {
                 Player.sendMessage(new TextComponentString(TextFormatting.RED + "Warp not found."));
                 return;
             }
 
-            Warp.DeleteWarp(WarpName, Player.getUniqueID());
+            Warp.DeleteWarp(WarpName);
             Player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Warp deleted!"));
         } catch (SQLException e) {
             e.printStackTrace();
@@ -62,14 +62,11 @@ public class DelWarp extends CommandBase {
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         if(!(sender instanceof EntityPlayerMP)) return Lists.newArrayList();
 
-        EntityPlayerMP Player = (EntityPlayerMP) sender;
-
         if(args.length == 1) {
             try {
-                Map<String, Location> Warps = Warp.GetWarps(Player.getUniqueID());
+                Map<String, Location> Warps = Warp.GetWarps();
                 List<String> WarpList = Lists.newArrayList();
                 WarpList.addAll(Warps.keySet());
-                WarpList.add("list");
                 return WarpList;
             } catch (SQLException e) {
                 e.printStackTrace();

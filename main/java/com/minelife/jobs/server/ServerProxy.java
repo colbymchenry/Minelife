@@ -20,10 +20,13 @@ public class ServerProxy extends MLProxy {
         DB = new SQLite(Logger.getLogger("Minecraft"), "[Jobs]", Minelife.getDirectory().getAbsolutePath(), "jobs");
         DB.open();
 
+        DB.query("CREATE TABLE IF NOT EXISTS bounties (placer VARCHAR(36), target VARCHAR(36), amount INT)");
+
         for (EnumJob enumJob : EnumJob.values()) {
             DB.query("CREATE TABLE IF NOT EXISTS " + enumJob.name().toLowerCase().replace("_", "") + " (playerID VARCHAR(36), xp LONG)");
             MinecraftForge.EVENT_BUS.register(enumJob.getListener());
             enumJob.getHandler().setupConfig();
         }
+
     }
 }

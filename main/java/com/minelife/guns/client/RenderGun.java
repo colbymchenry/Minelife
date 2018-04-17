@@ -54,7 +54,7 @@ public class RenderGun implements IItemRenderer {
             RenderHelper.enableGUIStandardItemLighting();
             gun.shotAnimation.animate();
 
-            boolean aimingDownSight = Mouse.isButtonDown(1);
+            boolean aimingDownSight = Mouse.isButtonDown(1) && Minecraft.getMinecraft().currentScreen == null;
 
             if (aimingDownSight) {
                 gun.adsTransformations.forEach(Transformation::glApply);

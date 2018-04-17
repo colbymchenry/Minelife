@@ -18,8 +18,9 @@ public class PacketFire implements IMessage {
     public PacketFire() {
     }
 
-    public PacketFire(Vec3d lookVector) {
+    public PacketFire(Vec3d lookVector, long timeStamp) {
         this.lookVector = lookVector;
+        this.timeStamp = timeStamp;
     }
 
     @Override
@@ -30,7 +31,7 @@ public class PacketFire implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeLong(System.currentTimeMillis());
+        buf.writeLong(timeStamp);
         buf.writeDouble(lookVector.x);
         buf.writeDouble(lookVector.y);
         buf.writeDouble(lookVector.z);
@@ -38,9 +39,10 @@ public class PacketFire implements IMessage {
 
     public static class Handler implements IMessageHandler<PacketFire, IMessage> {
 
-        @SideOnly(Side.SERVER)
+        @Override
         public IMessage onMessage(PacketFire message, MessageContext ctx) {
-            FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.fire(ctx.getServerHandler().player, message.lookVector, System.currentTimeMillis() - message.timeStamp));
+            System.out.println(ctx.getServerHandler().player.ping);
+            FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.fire(ctx.getServerHandler().player, message.lookVector, ctx.getServerHandler().player.ping));
             return null;
         }
 

@@ -49,21 +49,16 @@ public class SetWarp extends CommandBase {
         if(PlayerHelper.isOp(Player)) MaxWarps = 500;
 
         try {
-            Map<String, Location> Warps = Warp.GetWarps(Player.getUniqueID());
-            if(Warps.size() + 1 > MaxWarps) {
-                Player.sendMessage(new TextComponentString(TextFormatting.RED + "You are only allowed to have " + MaxWarps + " warps."));
-                return;
-            }
-
+            Map<String, Location> Warps = Warp.GetWarps();
             if(Warps.containsKey(args[0].toLowerCase())) {
-                Player.sendMessage(new TextComponentString(TextFormatting.RED + "You already have a warp with that name."));
+                Player.sendMessage(new TextComponentString(TextFormatting.RED + "A warp with that name already exists."));
                 return;
             }
 
-            Location Location = new Location(Player.getEntityWorld().getWorldInfo().getWorldName(), Player.posX, Player.posY, Player.posZ);
+            Location Location = new Location(Player.dimension, Player.posX, Player.posY, Player.posZ);
             Location.setYaw(Player.rotationYaw);
             Location.setPitch(Player.rotationPitch);
-            Warp.CreateWarp(args[0].toLowerCase(), Location, Player.getUniqueID());
+            Warp.CreateWarp(args[0].toLowerCase(), Location);
             Player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Warp created!"));
         } catch (SQLException e) {
             e.printStackTrace();

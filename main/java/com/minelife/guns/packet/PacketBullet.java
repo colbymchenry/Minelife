@@ -74,8 +74,9 @@ public class PacketBullet implements IMessage {
             Minecraft.getMinecraft().addScheduledTask(() -> {
                 EntityPlayer player = Minecraft.getMinecraft().player;
                 if (message.entityID != player.getEntityId()) {
+                    // TODO: may need to actually add ping delay, actually will need to
                     Bullet.BULLETS.add(new Bullet(Minecraft.getMinecraft().world, message.posX, message.posY, message.posZ,
-                            message.lookVec, message.speed, message.damage, (EntityLivingBase) player.getEntityWorld().getEntityByID(message.entityID)));
+                            message.lookVec, message.speed, message.damage, 0, (EntityLivingBase) player.getEntityWorld().getEntityByID(message.entityID)));
 
                     /**
                      * Volume calculations for bullets

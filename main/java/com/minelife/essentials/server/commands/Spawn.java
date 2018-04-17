@@ -39,7 +39,7 @@ public class Spawn extends CommandBase {
     }
 
     public static void SetSpawn(Location Location) {
-        ModEssentials.getConfig().set("spawn.world", Location.getWorld());
+        ModEssentials.getConfig().set("spawn.dimension", Location.getDimension());
         ModEssentials.getConfig().set("spawn.x", Location.getX());
         ModEssentials.getConfig().set("spawn.y", Location.getY());
         ModEssentials.getConfig().set("spawn.z", Location.getZ());
@@ -50,13 +50,13 @@ public class Spawn extends CommandBase {
 
     public static Location GetSpawn() {
         if(ModEssentials.getConfig().get("spawn", null) != null) {
-            String World = ModEssentials.getConfig().getString("spawn.world");
+            int dimension = ModEssentials.getConfig().getInt("spawn.dimension");
             double X = ModEssentials.getConfig().getDouble("spawn.x");
             double Y = ModEssentials.getConfig().getDouble("spawn.y");
             double Z = ModEssentials.getConfig().getDouble("spawn.z");
             float Yaw = (float) ModEssentials.getConfig().getDouble("spawn.yaw");
             float Pitch = (float) ModEssentials.getConfig().getDouble("spawn.pitch");
-            return new Location(World, X, Y, Z, Yaw, Pitch);
+            return new Location(dimension, X, Y, Z, Yaw, Pitch);
         }
 
         return null;

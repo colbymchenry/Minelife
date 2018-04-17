@@ -24,13 +24,13 @@ public class SetSpawn extends CommandBase {
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         EntityPlayerMP Player = (EntityPlayerMP) sender;
-        String World = Player.getEntityWorld().getWorldInfo().getWorldName();
+        int dimension = Player.dimension;
         double X = Player.posX;
         double Y = Player.posY;
         double Z = Player.posZ;
         float Yaw = Player.rotationYaw;
         float Pitch = Player.rotationPitch;
-        Spawn.SetSpawn(new Location(World, X, Y, Z, Yaw, Pitch));
+        Spawn.SetSpawn(new Location(dimension, X, Y, Z, Yaw, Pitch));
         Player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Spawn set!"));
     }
 

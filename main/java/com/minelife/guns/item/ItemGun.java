@@ -213,7 +213,7 @@ public class ItemGun extends Item {
 
         EnumGun gun = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
 
-        pingDelay = pingDelay > 100 ? 60 : pingDelay;
+        pingDelay = pingDelay > 300 ? 300 : pingDelay;
 
         if (ItemGun.isReloading(player.getEntityWorld(), player.getHeldItemMainhand())) return false;
 
@@ -229,7 +229,7 @@ public class ItemGun extends Item {
         ItemGun.addFireRate(player.getEntityWorld(), player.getHeldItemMainhand(), pingDelay);
 
         Bullet bullet = new Bullet(player.getEntityWorld(), player.posX, player.posY + player.getEyeHeight(), player.posZ,
-                lookVector, gun.bulletSpeed, gun.damage, player);
+                lookVector, gun.bulletSpeed, gun.damage, pingDelay, player);
 
         Bullet.BULLETS.add(bullet);
 
@@ -239,7 +239,7 @@ public class ItemGun extends Item {
             Minelife.getNetwork().sendToAllAround(new PacketBullet(gun, bullet),
                     new NetworkRegistry.TargetPoint(player.world.provider.getDimension(), player.posX, player.posY, player.posZ, 112));
         } else {
-            Minelife.getNetwork().sendToServer(new PacketFire(lookVector));
+            Minelife.getNetwork().sendToServer(new PacketFire(lookVector, System.currentTimeMillis()));
             gun.resetAnimation();
             player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gun.soundShot), SoundCategory.NEUTRAL, 1, 1);
             initRecoil();
@@ -286,8 +286,8 @@ public class ItemGun extends Item {
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
         EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
         if (world.isRemote) nextFire = System.currentTimeMillis() + gunType.fireRate;
-//        tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate - pingDelay);
-        tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate);
+        tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate - pingDelay);
+//        tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate);
         gunStack.setTagCompound(tagCompound);
     }
 
@@ -304,7 +304,7 @@ public class ItemGun extends Item {
 
         EnumGun gunType = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
 
-        pingDelay = pingDelay > 100 ? 60 : pingDelay;
+        pingDelay = pingDelay > 300 ? 300 : pingDelay;
 
         if (ItemGun.getClipCount(player.getHeldItemMainhand()) == gunType.clipSize) return false;
 
@@ -318,12 +318,12 @@ public class ItemGun extends Item {
         }
 
         ItemStack gunStack = player.getHeldItemMainhand();
-//        ItemGun.setReloadTime(player.getEntityWorld(), gunStack, System.currentTimeMillis() + gunType.reloadTime - pingDelay);
-        ItemGun.setReloadTime(player.getEntityWorld(), gunStack, System.currentTimeMillis() + gunType.reloadTime);
+        ItemGun.setReloadTime(player.getEntityWorld(), gunStack, System.currentTimeMillis() + gunType.reloadTime - pingDelay);
+//        ItemGun.setReloadTime(player.getEntityWorld(), gunStack, System.currentTimeMillis() + gunType.reloadTime);
         player.setHeldItem(EnumHand.MAIN_HAND, gunStack);
 
         if (player.world.isRemote) {
-            Minelife.getNetwork().sendToServer(new PacketReload());
+            Minelife.getNetwork().sendToServer(new PacketReload(System.currentTimeMillis()));
             player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gunType.soundReload), SoundCategory.NEUTRAL, 1, 1);
         } else {
             player.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 20 * (gunType.reloadTime / 1000), 1));

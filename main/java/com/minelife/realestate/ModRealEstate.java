@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -62,17 +63,22 @@ public class ModRealEstate extends MLMod {
     }
 
     public static Estate getEstateAt(World world, BlockPos pos) {
+        Iterator<Estate> estates = getLoadedEstates().iterator();
         Estate closest = null;
-        for (Estate estate : getLoadedEstates()) {
-            if (estate.getWorld().equals(world) && estate.contains(pos)) {
-                if (closest == null) closest = estate;
+        while(estates.hasNext()) {
+            Estate e = estates.next();
+            if (e.getWorld() != null && e.getWorld().equals(world) && e.contains(pos)) {
+                if (closest == null) closest = e;
                 else {
-                    int distMinX = pos.getX() - estate.getMinimum().getX();
+                    int distMinX = pos.getX() - e.getMinimum().getX();
                     int distMinX1 = pos.getX() - closest.getMinimum().getX();
-                    if (distMinX < distMinX1) closest = estate;
+                    if (distMinX < distMinX1) closest = e;
                 }
             }
+
+            if(e.getWorld() == null) estates.remove();
         }
+
         return closest;
     }
 

@@ -104,6 +104,11 @@ public class ServerProxy extends MLProxy {
         try {
             Estate estate = ModRealEstate.getEstate(UUID.fromString(event.getBill().getTagCompound().getString("EstateID")));
 
+            if(estate == null) {
+                event.getBill().delete();
+                return;
+            }
+
             if (event.getBill().getAmountDue() + estate.getRentPrice() <= 0) {
                 event.getBill().setAmountDue(event.getBill().getAmountDue() + estate.getRentPrice());
                 Calendar cal = Calendar.getInstance();

@@ -166,7 +166,7 @@ public class ClientProxy extends MLProxy {
         if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
             event.setCanceled(true);
 
-            boolean aimingDownSight = Mouse.isButtonDown(1);
+            boolean aimingDownSight = Mouse.isButtonDown(1) && Minecraft.getMinecraft().currentScreen == null;
             ItemStack gunStack = Minecraft.getMinecraft().player.getHeldItemMainhand();
             EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
 
@@ -226,6 +226,7 @@ public class ClientProxy extends MLProxy {
 
     @SubscribeEvent
     public void fovUpdate(FOVUpdateEvent event) {
+        if(Minecraft.getMinecraft().currentScreen != null) return;
         if (event.getEntity().getHeldItemMainhand().getItem() == ModGuns.itemGun) {
             if (Mouse.isButtonDown(1)) {
                 EnumGun gunType = EnumGun.values()[event.getEntity().getHeldItemMainhand().getMetadata()];

@@ -9,29 +9,29 @@ import net.minecraftforge.fml.server.FMLServerHandler;
 
 public class Location {
 
-    private String world;
+    private int dimension;
     private double x, y, z;
     private float yaw, pitch;
 
-    public Location(String world, double x, double y, double z) {
-        this.world = world;
+    public Location(int dimension, double x, double y, double z) {
+        this.dimension = dimension;
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Location(String world, double x, double y, double z, float yaw, float pitch) {
-        this(world, x, y, z);
+    public Location(int dimension, double x, double y, double z, float yaw, float pitch) {
+        this(dimension, x, y, z);
         this.yaw = yaw;
         this.pitch = pitch;
     }
 
-    public String getWorld() {
-        return world;
+    public int getDimension() {
+        return dimension;
     }
 
-    public void setWorld(String world) {
-        this.world = world;
+    public void setDimension(int dimension) {
+        this.dimension = dimension;
     }
 
     public double getX() {
@@ -77,7 +77,7 @@ public class Location {
     @SideOnly(Side.SERVER)
     public World getEntityWorld() {
         for (WorldServer worldServer : FMLServerHandler.instance().getServer().worlds) {
-            if(worldServer.getWorldInfo().getWorldName().equalsIgnoreCase(world)) return worldServer;
+            if(worldServer.provider.getDimension() == getDimension()) return worldServer;
         }
         return null;
     }
@@ -88,7 +88,7 @@ public class Location {
         buf.writeDouble(z);
         buf.writeFloat(yaw);
         buf.writeFloat(pitch);
-        ByteBufUtils.writeUTF8String(buf, world);
+        buf.writeInt(dimension);
     }
 
     public static Location fromBytes(ByteBuf buf) {
@@ -97,8 +97,8 @@ public class Location {
         double z = buf.readDouble();
         float yaw = buf.readFloat();
         float pitch = buf.readFloat();
-        String world = ByteBufUtils.readUTF8String(buf);
-        return new Location(world, x, y, z, yaw, pitch);
+        int dimension = buf.readInt();
+        return new Location(dimension, x, y, z, yaw, pitch);
     }
 
 }

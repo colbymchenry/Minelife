@@ -2,6 +2,8 @@ package com.minelife.jobs;
 
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
+import com.minelife.jobs.job.bountyhunter.CommandBounty;
+import com.minelife.jobs.job.bountyhunter.ItemBountyCard;
 import com.minelife.jobs.network.PacketJoinProfession;
 import com.minelife.jobs.network.PacketOpenNormalGui;
 import com.minelife.jobs.network.PacketOpenSignupGui;
@@ -15,6 +17,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class ModJobs extends MLMod {
@@ -25,6 +28,7 @@ public class ModJobs extends MLMod {
         registerPacket(PacketOpenSignupGui.Handler.class, PacketOpenSignupGui.class, Side.CLIENT);
         registerPacket(PacketJoinProfession.Handler.class, PacketJoinProfession.class, Side.SERVER);
         registerPacket(PacketSellItemStack.Handler.class, PacketSellItemStack.class, Side.SERVER);
+        registerItem(ItemBountyCard.INSTANCE);
     }
 
     @Override
@@ -40,6 +44,7 @@ public class ModJobs extends MLMod {
     @Override
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandJob());
+        event.registerServerCommand(new CommandBounty());
     }
 
     @Override

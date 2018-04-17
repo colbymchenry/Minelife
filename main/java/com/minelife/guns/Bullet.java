@@ -35,7 +35,8 @@ public class Bullet {
     public List<EntityLivingBase> nearbyTargets;
     public EntityLivingBase shooter;
 
-    public Bullet(World world, double posX, double posY, double posZ, Vec3d lookVec, double bulletSpeed, double bulletDamage, EntityLivingBase shooter) {
+    // TODO: Add kill message for player who killed another player
+    public Bullet(World world, double posX, double posY, double posZ, Vec3d lookVec, double bulletSpeed, double bulletDamage, double pingDelay, EntityLivingBase shooter) {
         this.world = world;
         this.prevPosX = posX;
         this.prevPosY = posY;
@@ -43,12 +44,13 @@ public class Bullet {
         this.startX = posX;
         this.startY = posY;
         this.startZ = posZ;
-//        this.posX = posX + (lookVec.x * (pingDelay / 60));
-//        this.posY = posY + (lookVec.y * (pingDelay / 60));
-//        this.posZ = posZ + (lookVec.z * (pingDelay / 60));
-        this.posX = posX + (lookVec.x);
-        this.posY = posY + (lookVec.y);
-        this.posZ = posZ + (lookVec.z);
+        // TODO: May need to increase from 60 to max of 100
+        this.posX = posX + (lookVec.x * (pingDelay / 60));
+        this.posY = posY + (lookVec.y * (pingDelay / 60));
+        this.posZ = posZ + (lookVec.z * (pingDelay / 60));
+//        this.posX = posX + (lookVec.x);
+//        this.posY = posY + (lookVec.y);
+//        this.posZ = posZ + (lookVec.z);
         this.lookVec = lookVec;
         this.bulletDamage = bulletDamage;
         this.bulletSpeed = bulletSpeed;
@@ -73,10 +75,6 @@ public class Bullet {
             prevPosZ += lookVec.z * (bulletSpeed * (partialTicks + 0.5));
         }
 
-        posX += lookVec.x * bulletSpeed;
-        posY += lookVec.y * bulletSpeed;
-        posZ += lookVec.z * bulletSpeed;
-
         if(world.isRemote && !simulate) {
             world.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, prevPosX, prevPosY, prevPosZ, lookVec.x, lookVec.y, lookVec.z);
             Vector topLeft = new Vector(prevPosX, prevPosY, prevPosZ);
@@ -89,6 +87,10 @@ public class Bullet {
         double d4 = posY - startY;
         double d5 = posZ - startZ;
         double distance = Math.sqrt(d3 * d3 + d4 * d4 + d5 * d5);
+
+        posX += lookVec.x * bulletSpeed;
+        posY += lookVec.y * bulletSpeed;
+        posZ += lookVec.z * bulletSpeed;
 
         return new HitResult(distance > range);
     }

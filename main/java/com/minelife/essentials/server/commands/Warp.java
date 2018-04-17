@@ -25,14 +25,14 @@ public class Warp extends CommandBase {
 
     // TODO: These are all wrong, this is warps for the player. Need to make warps for everyone, and allow players to set multiple homes only for themselves
     public Warp() throws SQLException {
-        ModEssentials.getDB().query("CREATE TABLE IF NOT EXISTS warps (player_uuid VARCHAR(36), name VARCHAR(20), world VARCHAR(20), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT)");
+        ModEssentials.getDB().query("CREATE TABLE IF NOT EXISTS warps (name VARCHAR(20), dimension INT, x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT)");
     }
 
-    public static Map<String, Location> GetWarps(UUID PlayerUUID) throws SQLException {
+    public static Map<String, Location> GetWarps() throws SQLException {
         Map<String, Location> Warps = Maps.newHashMap();
-        ResultSet result = ModEssentials.getDB().query("SELECT * FROM warps WHERE player_uuid='" + PlayerUUID.toString() + "'");
+        ResultSet result = ModEssentials.getDB().query("SELECT * FROM warps");
         while (result.next()) {
-            Location loc = new Location(result.getString("world"), result.getDouble("x"), result.getDouble("y"), result.getDouble("z"));
+            Location loc = new Location(result.getInt("dimension"), result.getDouble("x"), result.getDouble("y"), result.getDouble("z"));
             loc.setPitch(result.getFloat("pitch"));
             loc.setYaw(result.getFloat("yaw"));
             Warps.put(result.getString("name"), loc);
@@ -41,15 +41,15 @@ public class Warp extends CommandBase {
         return Warps;
     }
 
-    public static void CreateWarp(String Name, Location Location, UUID PlayerUUID) throws SQLException {
-        ModEssentials.getDB().query("INSERT INTO warps (player_uuid, name, world, x, y, z, yaw, pitch) VALUES " +
-                "('" + PlayerUUID.toString() + "', '" + Name.toLowerCase() + "', '" + Location.getWorld() + "', " +
+    public static void CreateWarp(String Name, Location Location) throws SQLException {
+        ModEssentials.getDB().query("INSERT INTO warps (name, dimension, x, y, z, yaw, pitch) VALUES " +
+                "('" + Name.toLowerCase() + "', '" + Location.getDimension() + "', " +
                 "'" + Location.getX() + "', '" + Location.getY() + "', '" + Location.getZ() + "', '" + Location.getYaw() + "'," +
                 " '" + Location.getPitch() + "')");
     }
 
-    public static void DeleteWarp(String Name, UUID PlayerUUID) throws SQLException {
-        ModEssentials.getDB().query("DELETE FROM warps WHERE player_uuid='" + PlayerUUID.toString() + "' AND name='" + Name.toLowerCase() + "'");
+    public static void DeleteWarp(String Name) throws SQLException {
+        ModEssentials.getDB().query("DELETE FROM warps WHERE name='" + Name.toLowerCase() + "'");
     }
 
     @Override
@@ -72,19 +72,15 @@ public class Warp extends CommandBase {
         EntityPlayerMP Player = (EntityPlayerMP) sender;
 
         try {
-            Map<String, Location> Warps = GetWarps(Player.getUniqueID());
+            Map<String, Location> Warps = GetWarps();
 
             // if they type JUST /warp send them a list of their current warps
             if (args.length == 0) {
-                if(Warps.isEmpty()) {
-                    Player.sendMessage(new TextComponentString(TextFormatting.RED + "You have no warps. Type /setwarp <name> to create a warp."));
-                } else {
-                    Player.sendMessage(new TextComponentString(StringHelper.ParseFormatting("&c=-=-=-=[&6WARPS&c]=-=-=-=", '&')));
-                    int i = 1;
-                    for (String s : Warps.keySet()) {
-                        Player.sendMessage(new TextComponentString(StringHelper.ParseFormatting("&c" + i + ". &6" + s, '&')));
-                        i++;
-                    }
+                Player.sendMessage(new TextComponentString(StringHelper.ParseFormatting("&c=-=-=-=[&6WARPS&c]=-=-=-=", '&')));
+                int i = 1;
+                for (String s : Warps.keySet()) {
+                    Player.sendMessage(new TextComponentString(StringHelper.ParseFormatting("&c" + i + ". &6" + s, '&')));
+                    i++;
                 }
                 return;
             }
@@ -92,8 +88,8 @@ public class Warp extends CommandBase {
 
             String WarpName = args[0].toLowerCase();
 
-            if(!Warps.containsKey(WarpName)) {
-                Player.sendMessage(new TextComponentString(TextFormatting.RED + "Warp not found. Type '/warp' to view your warps."));
+            if (!Warps.containsKey(WarpName)) {
+                Player.sendMessage(new TextComponentString(TextFormatting.RED + "Warp not found. Type '/warps' to view warps."));
                 return;
             }
 
@@ -119,10 +115,9 @@ public class Warp extends CommandBase {
 
         if (args.length == 1) {
             try {
-                Map<String, Location> Warps = GetWarps(Player.getUniqueID());
+                Map<String, Location> Warps = GetWarps();
                 List<String> WarpList = Lists.newArrayList();
                 WarpList.addAll(Warps.keySet());
-                WarpList.add("list");
                 return WarpList;
             } catch (SQLException e) {
                 e.printStackTrace();

@@ -99,7 +99,6 @@ public class FarmerListener {
         if (player.getHeldItemMainhand().getItem() != Items.WOODEN_HOE &&
                 player.getHeldItemMainhand().getItem() != Items.STONE_HOE &&
                 player.getHeldItemMainhand().getItem() != Items.IRON_HOE &&
-                player.getHeldItemMainhand().getItem() != Items.GOLDEN_HOE &&
                 player.getHeldItemMainhand().getItem() != Items.DIAMOND_HOE) {
             return;
         }
@@ -116,7 +115,6 @@ public class FarmerListener {
         if (player.getHeldItemMainhand().getItem() != Items.WOODEN_HOE &&
                 player.getHeldItemMainhand().getItem() != Items.STONE_HOE &&
                 player.getHeldItemMainhand().getItem() != Items.IRON_HOE &&
-                player.getHeldItemMainhand().getItem() != Items.GOLDEN_HOE &&
                 player.getHeldItemMainhand().getItem() != Items.DIAMOND_HOE) {
             return;
         }

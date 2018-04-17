@@ -23,6 +23,10 @@ public class PacketReload implements IMessage {
     public PacketReload() {
     }
 
+    public PacketReload(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
     @Override
     public void fromBytes(ByteBuf buf) {
         timeStamp = buf.readLong();
@@ -30,14 +34,16 @@ public class PacketReload implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeLong(System.currentTimeMillis());
+        buf.writeLong(timeStamp);
     }
 
     public static class Handler implements IMessageHandler<PacketReload, IMessage> {
 
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketReload message, MessageContext ctx) {
-            FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.reload(ctx.getServerHandler().player, System.currentTimeMillis() - message.timeStamp));
+            long pingDelay = System.currentTimeMillis() - message.timeStamp;
+            System.out.println(ctx.getServerHandler().player.ping + "," + pingDelay + "," + System.currentTimeMillis() + "," + message.timeStamp);
+            FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.reload(ctx.getServerHandler().player, ctx.getServerHandler().player.ping));
             return null;
         }
 

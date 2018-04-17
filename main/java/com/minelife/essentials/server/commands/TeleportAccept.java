@@ -40,7 +40,7 @@ public class TeleportAccept extends CommandBase {
             Sender = (EntityPlayerMP) sender;
         }
 
-        Location PlayerLocation = new Location(Player.getEntityWorld().getWorldInfo().getWorldName(), Player.posX, Player.posY, Player.posZ, Player.rotationYaw, Player.rotationPitch);
+        Location PlayerLocation = new Location(Player.getEntityWorld().provider.getDimension(), Player.posX, Player.posY, Player.posZ, Player.rotationYaw, Player.rotationPitch);
 
         TeleportHandler.teleport(Sender, PlayerLocation);
         TeleportAsk.DeleteRequest(Player);
