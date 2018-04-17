@@ -135,19 +135,19 @@ public class LumberjackHandler extends NPCHandler {
             return;
         }
 
-        if (treeFellerCooldownMap.containsKey(player.getUniqueID())) {
-            CommandJob.sendMessage(player, EnumJob.MINER, "You must wait " + TextFormatting.RED + ((treeFellerCooldownMap.get(player.getUniqueID()) - System.currentTimeMillis()) / 1000) + TextFormatting.GOLD + " seconds before reactivating Tree Feller.");
+        if (treeFellerCooldownMap.containsKey(player.getUniqueID()) && !treeFellerMap.containsKey(player.getUniqueID())) {
+            CommandJob.sendMessage(player, EnumJob.LUMBERJACK, "You must wait " + TextFormatting.RED + ((treeFellerCooldownMap.get(player.getUniqueID()) - System.currentTimeMillis()) / 1000) + TextFormatting.GOLD + " seconds before reactivating Tree Feller.");
             return;
         }
 
         treeFellerMap.put(player.getUniqueID(), System.currentTimeMillis() + (duration * 1000L));
         treeFellerCooldownMap.put(player.getUniqueID(), System.currentTimeMillis() + (240 * 1000L));
-        CommandJob.sendMessage(player, EnumJob.MINER, "Tree Feller activated for " + TextFormatting.RED + duration + TextFormatting.GOLD + " seconds!");
+        CommandJob.sendMessage(player, EnumJob.LUMBERJACK, "Tree Feller activated for " + TextFormatting.RED + duration + TextFormatting.GOLD + " seconds!");
         Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
     }
 
     public boolean doDoubleDrop(EntityPlayerMP player) {
-        double chance = getLevel(player) / getConfig().getInt("MaxLevel");
+        double chance = (double) getLevel(player) / (double) getConfig().getInt("MaxLevel");
         return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
     }
 

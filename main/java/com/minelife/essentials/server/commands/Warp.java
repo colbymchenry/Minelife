@@ -23,6 +23,7 @@ import java.util.UUID;
 
 public class Warp extends CommandBase {
 
+    // TODO: These are all wrong, this is warps for the player. Need to make warps for everyone, and allow players to set multiple homes only for themselves
     public Warp() throws SQLException {
         ModEssentials.getDB().query("CREATE TABLE IF NOT EXISTS warps (player_uuid VARCHAR(36), name VARCHAR(20), world VARCHAR(20), x DOUBLE, y DOUBLE, z DOUBLE, yaw FLOAT, pitch FLOAT)");
     }

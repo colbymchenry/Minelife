@@ -13,15 +13,19 @@ import com.minelife.util.PacketPlaySound;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.fireworks.Color;
 import com.minelife.util.fireworks.FireworkBuilder;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -31,27 +35,29 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
 public class FarmerListener {
 
+    private static List<UpdateCrop> cropUpdates = Lists.newArrayList();
+
     @SubscribeEvent
     public void onBreak(BlockEvent.HarvestDropsEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getHarvester();
         World world = event.getWorld();
+        Block block = event.getWorld().getBlockState(event.getPos()).getBlock();
 
-        if(!(world.getBlockState(event.getPos()) instanceof BlockCrops)) return;
+        // TODO: Implement sugar cane and pumpkins and water melons
+        if(!(world.getBlockState(event.getPos()) instanceof BlockCrops) &&
+                block != Blocks.WHEAT && block != Blocks.CARROTS && block != Blocks.POTATOES) return;
 
         if(player == null) return;
 
         if(!FarmerHandler.INSTANCE.isProfession(player)) return;
 
-        FarmerHandler.INSTANCE.getConfig().set("crops", Lists.newArrayList("minelife:hemp_crop;50", "minelife:coca_crop;10", "minecraft:wheat_crop;10"));
-        FarmerHandler.INSTANCE.getConfig().save();
-
-        Estate estate = ModRealEstate.getEstateAt(world, event.getPos());
-        boolean inFarmZone = estate != null && FarmerHandler.INSTANCE.getConfig().getStringList("zones").contains(String.valueOf(estate.getUniqueID()));
+        if(event.isCanceled()) return;
 
         int level = FarmerHandler.INSTANCE.getLevel(player);
         BlockCrops blockCrop = (BlockCrops) world.getBlockState(event.getPos()).getBlock();
@@ -59,14 +65,14 @@ public class FarmerListener {
 
         if(xp < 1) return;
 
-        // auto replant
-        if(inFarmZone) {
-            if (blockCrop.getMaxAge() < world.getBlockState(event.getPos()).getValue(BlockCrops.AGE)) {
-                event.setCanceled(true);
-                return;
-            }
+        if(FarmerHandler.INSTANCE.doTripleDrop(player) ||
+                FarmerHandler.INSTANCE.greenTerraMap.containsKey(player.getUniqueID())) {
+            event.getDrops().forEach(itemStack -> itemStack.setCount(itemStack.getCount() * 3));
         }
 
+        if(blockCrop.getMaxAge() == blockCrop.getMetaFromState(world.getBlockState(event.getPos()))) {
+            cropUpdates.add(new UpdateCrop(world, player, System.currentTimeMillis() + 500, world.getBlockState(event.getPos()), blockCrop, event.getPos()));
+        }
 
         FarmerHandler.INSTANCE.addXP(player.getUniqueID(), xp);
         CommandJob.sendMessage(player, EnumJob.FARMER, "+" + xp);
@@ -85,6 +91,8 @@ public class FarmerListener {
         }
     }
 
+
+
     @SubscribeEvent
     public void onInteract(PlayerInteractEvent.RightClickItem event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
@@ -98,7 +106,8 @@ public class FarmerListener {
 
         if (!FarmerHandler.INSTANCE.isProfession(player)) return;
 
-        FarmerHandler.INSTANCE.applyGreenTerra(player);
+        FarmerHandler.INSTANCE.applyGreenTerra(player, !(event.getWorld().getBlockState(event.getPos()) instanceof BlockCrops) &&
+                event.getWorld().getBlockState(event.getPos()).getBlock() != Blocks.WHEAT);
     }
 
     @SubscribeEvent
@@ -114,18 +123,31 @@ public class FarmerListener {
 
         if (!FarmerHandler.INSTANCE.isProfession(player)) return;
 
-        if(!(event.getWorld().getBlockState(event.getPos()) instanceof BlockCrops)) return;
+        if(!(event.getWorld().getBlockState(event.getPos()) instanceof BlockCrops) ||
+                event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.GRASS) return;
 
-        FarmerHandler.INSTANCE.applyGreenTerra(player);
+        FarmerHandler.INSTANCE.applyGreenTerra(player, !(event.getWorld().getBlockState(event.getPos()) instanceof BlockCrops) &&
+                event.getWorld().getBlockState(event.getPos()).getBlock() != Blocks.WHEAT);
     }
 
     @SubscribeEvent
     public void onTick(TickEvent.ServerTickEvent event) {
         final List<UUID> toRemove = Lists.newArrayList();
 
+        Iterator<UpdateCrop> cropIterator = cropUpdates.iterator();
+        while(cropIterator.hasNext()) {
+            UpdateCrop update = cropIterator.next();
+            if(System.currentTimeMillis() >= update.updateTime) {
+                update.world.setBlockState(update.pos, update.blockState.withProperty(BlockCrops.AGE,
+                        FarmerHandler.INSTANCE.replantStage(update.player, update.blockCrops.getMaxAge())), 2);
+                cropIterator.remove();
+            }
+        }
+
         FarmerHandler.INSTANCE.greenTerraMap.forEach((player, duration) -> {
             if (System.currentTimeMillis() > duration) toRemove.add(player);
         });
+
         toRemove.forEach(player -> {
             if (PlayerHelper.getPlayer(player) != null)
                 CommandJob.sendMessage(PlayerHelper.getPlayer(player), EnumJob.FARMER, "Green Terra deactivated.");
@@ -138,8 +160,10 @@ public class FarmerListener {
         });
 
         toRemove.forEach(player -> {
-            if (PlayerHelper.getPlayer(player) != null)
+            if (PlayerHelper.getPlayer(player) != null) {
+                Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), PlayerHelper.getPlayer(player));
                 CommandJob.sendMessage(PlayerHelper.getPlayer(player), EnumJob.FARMER, "Green Terra is now available.");
+            }
             FarmerHandler.INSTANCE.greenTerraCooldownMap.remove(player);
         });
     }
@@ -149,6 +173,24 @@ public class FarmerListener {
         EntityPlayerMP player = (EntityPlayerMP) event.player;
         if (FarmerHandler.INSTANCE.greenTerraMap.containsKey(player.getUniqueID()))
             FarmerHandler.INSTANCE.greenTerraMap.remove(player.getUniqueID());
+    }
+
+    class UpdateCrop {
+        EntityPlayerMP player;
+        World world;
+        long updateTime;
+        IBlockState blockState;
+        BlockCrops blockCrops;
+        BlockPos pos;
+
+        public UpdateCrop(World world, EntityPlayerMP player, long updateTime, IBlockState blockState, BlockCrops blockCrops, BlockPos pos) {
+            this.world = world;
+            this.player = player;
+            this.updateTime = updateTime;
+            this.blockState = blockState;
+            this.blockCrops = blockCrops;
+            this.pos = pos;
+        }
     }
 
 }

@@ -135,8 +135,10 @@ public class LumberjackListener {
         });
 
         toRemove.forEach(player -> {
-            if (PlayerHelper.getPlayer(player) != null)
+            if (PlayerHelper.getPlayer(player) != null) {
+                Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), PlayerHelper.getPlayer(player));
                 CommandJob.sendMessage(PlayerHelper.getPlayer(player), EnumJob.LUMBERJACK, "Tree Feller is now available.");
+            }
             LumberjackHandler.INSTANCE.treeFellerCooldownMap.remove(player);
         });
     }
@@ -188,6 +190,8 @@ public class LumberjackListener {
                 if (player.getHeldItemMainhand().getItemDamage() >= player.getHeldItemMainhand().getMaxDamage())
                     player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
                 player.inventoryContainer.detectAndSendChanges();
+            } else {
+                return;
             }
             return;
         }
@@ -217,6 +221,8 @@ public class LumberjackListener {
                     if (player.getHeldItemMainhand().getItemDamage() >= player.getHeldItemMainhand().getMaxDamage())
                         player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
                     player.inventoryContainer.detectAndSendChanges();
+                } else {
+                    return;
                 }
             }
 

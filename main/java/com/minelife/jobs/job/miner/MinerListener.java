@@ -31,7 +31,6 @@ import java.util.UUID;
 
 public class MinerListener {
 
-    // TODO: Breaking blocks in protected estate over and over again
     @SubscribeEvent
     public void onBreak(BlockEvent.BreakEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
@@ -130,8 +129,10 @@ public class MinerListener {
         });
 
         toRemove.forEach(player -> {
-            if (PlayerHelper.getPlayer(player) != null)
+            if (PlayerHelper.getPlayer(player) != null) {
+                Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), PlayerHelper.getPlayer(player));
                 CommandJob.sendMessage(PlayerHelper.getPlayer(player), EnumJob.MINER, "Super Breaker is now available.");
+            }
             MinerHandler.INSTANCE.superBreakerCooldownMap.remove(player);
         });
     }

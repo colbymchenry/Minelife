@@ -130,7 +130,7 @@ public class MinerHandler extends NPCHandler {
             return;
         }
 
-        if(superBreakerCooldownMap.containsKey(player.getUniqueID())) {
+        if(superBreakerCooldownMap.containsKey(player.getUniqueID()) && !superBreakerMap.containsKey(player.getUniqueID())) {
             CommandJob.sendMessage(player, EnumJob.MINER, "You must wait " + TextFormatting.RED + ((superBreakerCooldownMap.get(player.getUniqueID()) - System.currentTimeMillis()) / 1000) + TextFormatting.GOLD + " seconds before reactivating Super Breaker.");
             return;
         }
@@ -142,7 +142,7 @@ public class MinerHandler extends NPCHandler {
     }
 
     public boolean doDoubleDrop(EntityPlayerMP player) {
-        double chance = getLevel(player) / getConfig().getInt("MaxLevel");
+        double chance = (double) getLevel(player) / (double) getConfig().getInt("MaxLevel");
         return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
     }
 

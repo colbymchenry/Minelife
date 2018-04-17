@@ -63,7 +63,6 @@ public abstract class GuiJobBase extends GuiScreen {
 
     public abstract String farewellMessage(EntityPlayer player);
 
-    // TODO: Convert to scrolling
     class SellingList extends GuiScrollableContent {
 
         SellingOption hoveringOption;

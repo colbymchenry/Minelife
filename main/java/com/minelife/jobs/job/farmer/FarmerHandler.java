@@ -21,6 +21,7 @@ import com.pam.harvestcraft.item.ItemRegistry;
 import com.pam.harvestcraft.item.items.ItemPamSeedFood;
 import com.sun.scenario.effect.Crop;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockCrops;
 import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -103,19 +104,32 @@ public class FarmerHandler extends NPCHandler {
 
     @Override
     public void setupConfig() {
+        // TODO
+        //Grass 	    10
+        //Vine 	        10
+        //Pumpkin 	    20
+        //Watermelon 	20
+        //Cocoa Bean 	30
+        //Sugar Cane 	30
+        //Cactus 	    30
+        //Potatos 	    50
+        //Carrot 	    50
+        //Wheat 	    50
+        //Nether Wart 	50
+        //Flowers   	100
+        //Mushrooms 	150
         getConfig().addDefault("MaxLevel", 1500);
+        getConfig().addDefault("crops", Lists.newArrayList("minelife:wheat;50", "minecraft:carrots;50", "minecraft:potatoes;50"));
         getConfig().save();
     }
 
-    public int getGrowthStage(EntityPlayerMP player) {
-        return 5 - (config.getInt("MaxLevel") / getLevel(player));
-    }
-
     public int getXPForBlock(Block block) {
+        System.out.println("CALLED");
+        System.out.println(block.getRegistryName().toString());
         for (String crops : getConfig().getStringList("crops")) {
             if (crops.contains(";")) {
                 if (NumberConversions.isInt(crops.split("\\;")[1])) {
-                    if (crops.split("\\;")[0].equalsIgnoreCase(block.getUnlocalizedName().replaceFirst("tile.", ""))) {
+                    if (crops.split("\\;")[0].equalsIgnoreCase(block.getRegistryName().toString())) {
                         return NumberConversions.toInt(crops.split("\\;")[1]);
                     }
                 }
@@ -125,7 +139,7 @@ public class FarmerHandler extends NPCHandler {
     }
 
     @SideOnly(Side.SERVER)
-    public void applyGreenTerra(EntityPlayerMP player) {
+    public void applyGreenTerra(EntityPlayerMP player, boolean sendMessage) {
         int duration = 2 + (getLevel(player) / 50);
 
         if (player.getHeldItemMainhand().getItem() != Items.WOODEN_HOE &&
@@ -136,25 +150,27 @@ public class FarmerHandler extends NPCHandler {
             return;
         }
 
-        if (greenTerraCooldownMap.containsKey(player.getUniqueID())) {
-            CommandJob.sendMessage(player, EnumJob.MINER, "You must wait " + TextFormatting.RED + ((greenTerraCooldownMap.get(player.getUniqueID()) - System.currentTimeMillis()) / 1000) + TextFormatting.GOLD + " seconds before reactivating Green Terra.");
+        if (greenTerraCooldownMap.containsKey(player.getUniqueID()) && sendMessage && !greenTerraMap.containsKey(player.getUniqueID())) {
+            CommandJob.sendMessage(player, EnumJob.FARMER, "You must wait " + TextFormatting.RED + ((greenTerraCooldownMap.get(player.getUniqueID()) - System.currentTimeMillis()) / 1000) + TextFormatting.GOLD + " seconds before reactivating Green Terra.");
             return;
         }
 
         greenTerraMap.put(player.getUniqueID(), System.currentTimeMillis() + (duration * 1000L));
         greenTerraCooldownMap.put(player.getUniqueID(), System.currentTimeMillis() + (240 * 1000L));
-        CommandJob.sendMessage(player, EnumJob.MINER, "Green Terra activated for " + TextFormatting.RED + duration + TextFormatting.GOLD + " seconds!");
+        CommandJob.sendMessage(player, EnumJob.FARMER, "Green Terra activated for " + TextFormatting.RED + duration + TextFormatting.GOLD + " seconds!");
         Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
     }
 
     public boolean doTripleDrop(EntityPlayerMP player) {
-        double chance = getLevel(player) / getConfig().getInt("MaxLevel");
+        double chance = (double) getLevel(player) / (double) getConfig().getInt("MaxLevel");
         return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
     }
 
-    public int replantStage(EntityPlayerMP player) {
-        double chance = getLevel(player) / config.getInt("MaxLevel");
-        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D ? (int) Math.ceil(config.getInt("MaxLevel") / getLevel(player)) : 0;
+    public int replantStage(EntityPlayerMP player, int maxGrowth) {
+        double chance = (double) getLevel(player) / (double) config.getInt("MaxLevel");
+        int growthStage = (int) (1 + (Math.floor(((double)getLevel(player) / (double) config.getInt("MaxLevel")) * maxGrowth)));
+        growthStage = growthStage > maxGrowth ? maxGrowth : growthStage;
+        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D ? growthStage : 0;
     }
 
     public Map<UUID, Long> greenTerraMap = Maps.newHashMap();

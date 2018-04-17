@@ -6,8 +6,12 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class TeleportAskHere extends CommandBase {
 
@@ -50,6 +54,16 @@ public class TeleportAskHere extends CommandBase {
     @Override
     public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         return sender instanceof EntityPlayerMP && ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "tpahere");
+    }
+
+    @Override
+    public boolean isUsernameIndex(String[] args, int index) {
+        return index == 1;
+    }
+
+    @Override
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        return isUsernameIndex(args, args.length) ? CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames()) : null;
     }
 
 }
