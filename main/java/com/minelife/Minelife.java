@@ -9,7 +9,6 @@ import com.minelife.essentials.ModEssentials;
 import com.minelife.guns.ModGuns;
 import com.minelife.jobs.ModJobs;
 import com.minelife.minebay.ModMinebay;
-import com.minelife.netty.ModNetty;
 import com.minelife.notifications.ModNotifications;
 import com.minelife.permission.ModPermission;
 import com.minelife.realestate.ModRealEstate;

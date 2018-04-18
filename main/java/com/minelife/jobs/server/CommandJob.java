@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.minelife.jobs.EnumJob;
 import com.minelife.jobs.job.farmer.CommandFarmer;
 import com.minelife.jobs.server.commands.CommandNPC;
+import com.minelife.jobs.server.commands.CommandStats;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -22,6 +23,7 @@ public class CommandJob extends CommandBase {
     static {
         subCommands.put("npc", new CommandNPC());
         subCommands.put("farmer", new CommandFarmer());
+        subCommands.put("stats", new CommandStats());
     }
 
     @Override
@@ -38,7 +40,10 @@ public class CommandJob extends CommandBase {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if(!(sender instanceof EntityPlayer)) return;
 
-        if(args.length == 0) return;
+        if(args.length == 0) {
+            subCommands.keySet().forEach(cmd -> sender.sendMessage(new TextComponentString("/job stats")));
+            return;
+        }
 
         if(!subCommands.containsKey(args[0].toLowerCase())) {
             return;

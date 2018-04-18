@@ -1,17 +1,12 @@
 package com.minelife.jobs.job.bountyhunter;
 
 import com.minelife.Minelife;
-import net.minecraft.client.Minecraft;
+import com.minelife.util.server.NameFetcher;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.UUID;
 
@@ -25,10 +20,9 @@ public class ItemBountyCard extends Item {
         setCreativeTab(CreativeTabs.MISC);
     }
 
-    @SideOnly(Side.CLIENT)
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        Minecraft.getMinecraft().displayGuiScreen(new GuiBountyCard(playerIn.getHeldItem(handIn)));
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+    @Override
+    public String getItemStackDisplayName(ItemStack stack) {
+        return getTarget(stack) == null ? "Bounty Card" : TextFormatting.RED + "Bounty Card: " + NameFetcher.asyncFetchClient(getTarget(stack));
     }
 
     public static void setTarget(UUID target, ItemStack stack) {

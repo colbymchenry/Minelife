@@ -1,12 +1,15 @@
 package com.minelife.guns;
 
 import com.google.common.collect.Lists;
+import com.minelife.Minelife;
+import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.render.LineRenderer;
 import com.minelife.util.client.render.Vector;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
@@ -38,12 +41,13 @@ public class Bullet {
     // TODO: Add kill message for player who killed another player
     public Bullet(World world, double posX, double posY, double posZ, Vec3d lookVec, double bulletSpeed, double bulletDamage, double pingDelay, EntityLivingBase shooter) {
         this.world = world;
-        this.prevPosX = posX;
-        this.prevPosY = posY;
-        this.prevPosZ = posZ;
         this.startX = posX;
         this.startY = posY;
         this.startZ = posZ;
+
+        this.prevPosX = posX;
+        this.prevPosY = posY;
+        this.prevPosZ = posZ;
         // TODO: May need to increase from 60 to max of 100
         this.posX = posX + (lookVec.x * (pingDelay / 60));
         this.posY = posY + (lookVec.y * (pingDelay / 60));
@@ -51,6 +55,7 @@ public class Bullet {
 //        this.posX = posX + (lookVec.x);
 //        this.posY = posY + (lookVec.y);
 //        this.posZ = posZ + (lookVec.z);
+
         this.lookVec = lookVec;
         this.bulletDamage = bulletDamage;
         this.bulletSpeed = bulletSpeed;
@@ -65,7 +70,7 @@ public class Bullet {
         HitResult hitResult = collisionTest(simulate);
         if(hitResult != null) return hitResult;
 
-        if(posX == startX && posY == startY && posZ == startZ) {
+        if(prevPosX == startX && prevPosY == startY && prevPosZ == startZ) {
             prevPosX = posX - lookVec.x;
             prevPosY = posY - lookVec.y;
             prevPosZ = posZ - lookVec.z;
@@ -99,8 +104,8 @@ public class Bullet {
         Vec3d lookNormalized = new Vec3d(lookVec.x, lookVec.y, lookVec.z).normalize();
 
         for (double distance = 0; distance < bulletSpeed; distance += bulletSpeed / 100) {
-            Vec3d newVec = new Vec3d(lookNormalized.x * distance + posX,
-                    lookNormalized.y * distance + posY, lookNormalized.z * distance + posZ);
+            Vec3d newVec = new Vec3d(lookNormalized.x * distance + prevPosX,
+                    lookNormalized.y * distance + prevPosY, lookNormalized.z * distance + prevPosZ);
 
             Block block = world.getBlockState(new BlockPos(Math.floor(newVec.x), Math.floor(newVec.y), Math.floor(newVec.z))).getBlock();
             boolean hitBlock = block != null && block != Blocks.AIR && !blackListedBlocks.contains(block);
@@ -114,7 +119,10 @@ public class Bullet {
                     if (e instanceof EntityPlayerMP && ((EntityPlayerMP) e).isCreative()) return new HitResult(null, null);
 
                     if(!simulate) {
-                        e.attackEntityFrom(DamageSource.GENERIC, (float) bulletDamage);
+                        e.attackEntityFrom(shooter != null && shooter instanceof EntityPlayerMP ? DamageSource.causePlayerDamage((EntityPlayer) shooter) : DamageSource.GENERIC, (float) bulletDamage);
+                        if(shooter != null && shooter instanceof EntityPlayerMP && e instanceof EntityPlayer) {
+                            Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.arrow.hit_player", 1, 1), (EntityPlayerMP) shooter);
+                        }
                         e.hurtResistantTime = 0;
                     }
 

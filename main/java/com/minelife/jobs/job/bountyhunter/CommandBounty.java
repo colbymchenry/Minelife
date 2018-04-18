@@ -141,4 +141,14 @@ public class CommandBounty extends MLCommand {
         return bounties;
     }
 
+    public static boolean removeBounty(UUID target) {
+        try {
+            ModJobs.getDatabase().query("DELETE FROM bounties WHERE target='" + target.toString() + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
 }

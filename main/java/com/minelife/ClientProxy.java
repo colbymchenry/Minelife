@@ -2,10 +2,12 @@ package com.minelife;
 
 import codechicken.lib.render.CCRenderEventHandler;
 import com.google.common.collect.Sets;
+import com.minelife.util.client.CustomGuiMainMenu;
 import com.minelife.util.client.render.AdjustPlayerModelEvent;
 import com.minelife.util.client.render.RenderPlayerCustom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
@@ -29,6 +31,7 @@ public class ClientProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
+        MinecraftForge.EVENT_BUS.register(new CustomGuiMainMenu());
         MinecraftForge.EVENT_BUS.register(this);
         OBJLoader.INSTANCE.addDomain(Minelife.MOD_ID);
 

@@ -47,14 +47,17 @@ public abstract class NPCHandler {
             if (result.next()) {
                 long xp = result.getLong("xp");
                 for(int lvl = config.getInt("MaxLevel"); lvl > 0; lvl--) {
-                    double xpNeeded = Math.floor(100.0D * (Math.pow(lvl, 2.0D)) - (100.0D * lvl));
-                    if(xp >= xpNeeded) return lvl;
+                    if(xp >= getXpNeeded(lvl)) return lvl;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public double getXpNeeded(int level) {
+        return Math.floor(100.0D * (Math.pow(level, 2.0D)) - (100.0D * level));
     }
 
     public long getXP(UUID playerID) {

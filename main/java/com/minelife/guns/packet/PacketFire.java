@@ -17,7 +17,7 @@ public class PacketFire implements IMessage {
 
     public PacketFire() {
     }
-
+// TODO: Take out timestamp from this and reload packet, not needed if the player.ping works
     public PacketFire(Vec3d lookVector, long timeStamp) {
         this.lookVector = lookVector;
         this.timeStamp = timeStamp;

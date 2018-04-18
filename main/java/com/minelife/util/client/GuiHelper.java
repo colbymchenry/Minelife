@@ -28,14 +28,14 @@ public class GuiHelper {
     };
 
     public static void drawImage(int x, int y, int width, int height, ResourceLocation resourceLocation) {
-        try {
-            BufferedImage bimg = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(resourceLocation).getInputStream());
-            int w = bimg.getWidth();
-            int h = bimg.getHeight();
+//        try {
+//            BufferedImage bimg = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(resourceLocation).getInputStream());
+            int w = 1920;
+            int h = 1080;
             Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, w, h, width, height, w, h);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public static void drawRect(int x, int y, int width, int height) {
