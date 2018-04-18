@@ -44,6 +44,7 @@ public class ServerProxy extends MLProxy {
         String dbName = "essentials";
         DB = new SQLite(Logger.getLogger("Minecraft"), prefix, Minelife.getDirectory().getAbsolutePath(), dbName);
         DB.open();
+        DB.query("CREATE TABLE IF NOT EXISTS mute (playerID VARCHAR(36), muted TEXT)");
     }
 
 

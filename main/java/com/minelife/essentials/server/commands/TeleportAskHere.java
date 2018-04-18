@@ -41,6 +41,11 @@ public class TeleportAskHere extends CommandBase {
             return;
         }
 
+        if(Mute.getMutedPlayers(Receiver).contains(Player.getUniqueID())) {
+            Player.sendMessage(new TextComponentString(TextFormatting.RED + "Player has muted you."));
+            return;
+        }
+
         TeleportAsk.SubmitRequest(Player, Receiver);
         Receiver.getEntityData().setBoolean("tpahere", true);
         Receiver.sendMessage(new TextComponentString(TextFormatting.GREEN +

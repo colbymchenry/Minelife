@@ -7,6 +7,7 @@ import com.minelife.permission.ModPermission;
 import com.minelife.util.PlayerHelper;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -49,6 +50,11 @@ public class Whisper extends CommandBase {
 
         if(Receiver == null) {
             sender.sendMessage(new TextComponentString(TextFormatting.RED + "Player not found."));
+            return;
+        }
+
+        if(Mute.getMutedPlayers(Receiver).contains(((EntityPlayerMP) sender).getUniqueID())) {
+            sender.sendMessage(new TextComponentString(TextFormatting.RED + "Player has muted you."));
             return;
         }
 
