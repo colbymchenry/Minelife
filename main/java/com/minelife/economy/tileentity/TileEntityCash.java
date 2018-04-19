@@ -63,29 +63,32 @@ public class TileEntityCash extends MLTileEntity {
 
     public static List<TileEntityCash> getCashPiles(UUID playerID) {
         List<TileEntityCash> list = Lists.newArrayList();
-        ResultSet result;
-        for (Estate estate : ModRealEstate.getEstates(playerID)) {
-            try {
-                result = ModEconomy.getDatabase().query("SELECT * FROM cashpiles WHERE dimension='" + estate.getWorld().provider.getDimension() + "' " +
-                        "AND x >= '" + estate.getMinimum().getX() + "' AND y >= '" + estate.getMinimum().getY() + "' " +
-                        "AND z >= '" + estate.getMinimum().getZ() + "' AND x <= '" + estate.getMaximum().getX() + "' " +
-                        "AND y <= '" + estate.getMaximum().getY() + "' AND z <= '" + estate.getMaximum().getZ() + "'");
+        for (Estate estate : ModRealEstate.getEstates(playerID)) list.addAll(getCashPiles(estate));
+        return list;
+    }
 
-                while (result.next()) {
-                    TileEntity tile = estate.getWorld().getTileEntity(new BlockPos(result.getInt("x"),
-                            result.getInt("y"), result.getInt("z")));
+    public static List<TileEntityCash> getCashPiles(Estate estate) {
+        List<TileEntityCash> list = Lists.newArrayList();
+        try {
+            ResultSet result = ModEconomy.getDatabase().query("SELECT * FROM cashpiles WHERE dimension='" + estate.getWorld().provider.getDimension() + "' " +
+                    "AND x >= '" + estate.getMinimum().getX() + "' AND y >= '" + estate.getMinimum().getY() + "' " +
+                    "AND z >= '" + estate.getMinimum().getZ() + "' AND x <= '" + estate.getMaximum().getX() + "' " +
+                    "AND y <= '" + estate.getMaximum().getY() + "' AND z <= '" + estate.getMaximum().getZ() + "'");
 
-                    if (tile != null && tile instanceof TileEntityCash) {
-                        list.add((TileEntityCash) tile);
-                    } else {
-                        ModEconomy.getDatabase().query("DELETE FROM cashpiles WHERE dimension='" + result.getInt("dimension") + "' " +
-                                "AND x='" + result.getInt("x") + "' AND y='" + result.getInt("y") + "' " +
-                                "AND z='" + result.getInt("z") + "'");
-                    }
+            while (result.next()) {
+                TileEntity tile = estate.getWorld().getTileEntity(new BlockPos(result.getInt("x"),
+                        result.getInt("y"), result.getInt("z")));
+
+                if (tile != null && tile instanceof TileEntityCash) {
+                    list.add((TileEntityCash) tile);
+                } else {
+                    ModEconomy.getDatabase().query("DELETE FROM cashpiles WHERE dimension='" + result.getInt("dimension") + "' " +
+                            "AND x='" + result.getInt("x") + "' AND y='" + result.getInt("y") + "' " +
+                            "AND z='" + result.getInt("z") + "'");
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return list;
     }

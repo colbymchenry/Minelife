@@ -1,4 +1,6 @@
 package com.minelife.gangs.client;
 
-public class ClientProxy {
+import com.minelife.MLProxy;
+
+public class ClientProxy extends MLProxy  {
 }

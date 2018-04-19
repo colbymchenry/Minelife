@@ -128,15 +128,15 @@ public class LineRenderer {
     }
 
     private static void drawRectSetUp() {
-        GlStateManager.pushAttrib();
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GlStateManager.disableLighting();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
         GL11.glLineWidth(4);
     }
 
     private static void drawRectCleanUp() {
-        GlStateManager.popAttrib();
+        GlStateManager.enableLighting();
+        GlStateManager.enableTexture2D();
     }
 
     private static void drawRectRenderRect(Vector translate, Vector length, Vector height, boolean counterClockwise, int color, boolean depth_test_faces, boolean depth_test_borders) {

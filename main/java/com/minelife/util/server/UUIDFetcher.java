@@ -37,6 +37,8 @@ public final class UUIDFetcher {
     * Up to 100 names in each request.
     */
     public static UUID get(String player) {
+        System.out.println("UURURRGGGGG");
+
         if (player == null || player.isEmpty()) return null;
 
         // search through the cached players first
@@ -44,7 +46,7 @@ public final class UUIDFetcher {
 
         if (NULL_NAMES.contains(player.toLowerCase())) return null;
 
-        String profileURL = "https://api.mojang.com/users/profiles/minecraft/" + player.toLowerCase();
+        String profileURL = "https://api.minetools.eu/uuid/" + player.toLowerCase();
 
         try {
             JSONParser jsonParser = new JSONParser();
@@ -65,6 +67,7 @@ public final class UUIDFetcher {
             CACHE.put(UUID.fromString(uuid), name);
             return UUID.fromString(uuid);
         } catch (Exception ignored) {
+//            ignored.printStackTrace();
         }
 
         NULL_NAMES.add(player.toLowerCase());

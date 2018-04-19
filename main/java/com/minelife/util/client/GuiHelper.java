@@ -21,6 +21,8 @@ import java.io.IOException;
 
 public class GuiHelper {
 
+    public static final int defaultTextColor = 4210752;
+
     private static final GuiScreen helperScreen = new GuiScreen() {
         @Override
         public void drawScreen(int mouseX, int mouseY, float partialTicks) {

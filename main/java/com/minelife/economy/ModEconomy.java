@@ -115,7 +115,11 @@ public class ModEconomy extends MLMod {
     }
 
     public static int depositCashPiles(UUID playerID, int amount) {
-        for (TileEntityCash tileCash : TileEntityCash.getCashPiles(playerID)) {
+        return depositCashPiles(TileEntityCash.getCashPiles(playerID), amount);
+    }
+
+    public static int depositCashPiles(List<TileEntityCash> cashPiles, int amount) {
+        for (TileEntityCash tileCash : cashPiles) {
             amount = tileCash.deposit(amount);
             tileCash.sendUpdates();
             if (amount <= 0) break;
@@ -167,9 +171,13 @@ public class ModEconomy extends MLMod {
     }
 
     public static int withdrawCashPiles(UUID playerID, int amount) {
+        return withdrawCashPiles(TileEntityCash.getCashPiles(playerID), amount);
+    }
+
+    public static int withdrawCashPiles(List<TileEntityCash> cashPiles, int amount) {
         WithdrawlResult result = null;
-        for (TileEntityCash tileCash : TileEntityCash.getCashPiles(playerID)) {
-             result = tileCash.withdraw(amount);
+        for (TileEntityCash tileCash : cashPiles) {
+            result = tileCash.withdraw(amount);
             tileCash.sendUpdates();
             amount -= ItemCash.getAmount(result.stacksTaken);
             if (amount <= 0) break;
@@ -217,9 +225,12 @@ public class ModEconomy extends MLMod {
     }
 
     public static long getBalanceCashPiles(UUID playerID) {
-        List<TileEntityCash> list = TileEntityCash.getCashPiles(playerID);
+        return getBalanceCashPiles(TileEntityCash.getCashPiles(playerID));
+    }
+
+    public static long getBalanceCashPiles(List<TileEntityCash> cashPiles) {
         long total = 0;
-        for (TileEntityCash tileEntityCash : list) total += tileEntityCash.getBalance();
+        for (TileEntityCash tileEntityCash : cashPiles) total += tileEntityCash.getBalance();
         return total;
     }
 

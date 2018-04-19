@@ -2,12 +2,18 @@ package com.minelife.gangs;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.minelife.economy.ModEconomy;
+import com.minelife.economy.tileentity.TileEntityCash;
 import com.minelife.essentials.Location;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.util.NBTHelper;
 import com.minelife.util.NumberConversions;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,12 +45,29 @@ public class Gang implements Comparable<Gang> {
         return GANGS.stream().filter(gang -> gang.getUniqueID().equals(gangID)).findFirst().orElse(null);
     }
 
+    public static Gang getGang(String name) {
+        return GANGS.stream().filter(gang -> gang.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+
+    public static Gang getGangForPlayer(UUID playerID) {
+        return GANGS.stream().filter(gang -> gang.getMembers().containsKey(playerID) || gang.getOwner().equals(playerID)).findFirst().orElse(null);
+    }
+
     public static void populateGangs() {
         try {
             ResultSet result = ModGangs.getDatabase().query("SELECT * FROM gangs");
             while (result.next()) {
                 GANGS.add(new Gang(UUID.fromString(result.getString("uuid")), NBTHelper.fromString(result.getString("nbt"))));
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void disband() {
+        GANGS.remove(this);
+        try {
+            ModGangs.getDatabase().query("DELETE FROM gangs WHERE uuid='" + uniqueID.toString() + "'");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -66,6 +89,35 @@ public class Gang implements Comparable<Gang> {
         return nbtTag.hasKey("Owner") ? UUID.fromString(nbtTag.getString("Owner")) : null;
     }
 
+    @SideOnly(Side.SERVER)
+    public Estate getBank() {
+        if(!nbtTag.hasKey("Bank")) return null;
+        return ModRealEstate.getEstate(UUID.fromString(nbtTag.getString("Bank")));
+    }
+
+    public void setBank(Estate estate) {
+        nbtTag.setString("Bank", estate.getUniqueID().toString());
+    }
+
+    @SideOnly(Side.SERVER)
+    public long getBalance() {
+        if(getBank() == null) return -1;
+        return ModEconomy.getBalanceCashPiles(TileEntityCash.getCashPiles(getBank()));
+    }
+
+    @SideOnly(Side.SERVER)
+    public int deposit(int amount) {
+        if(getBank() == null) return -1;
+        return ModEconomy.depositCashPiles(TileEntityCash.getCashPiles(getBank()), amount);
+    }
+
+    @SideOnly(Side.SERVER)
+    public int withdraw(int amount) {
+        if(getBank() == null) return -1;
+        return ModEconomy.withdrawCashPiles(TileEntityCash.getCashPiles(getBank()), amount);
+    }
+
+    @SideOnly(Side.SERVER)
     public Set<Estate> getClaimedEstates() {
         Set<Estate> estates = Sets.newTreeSet();
 
@@ -87,6 +139,7 @@ public class Gang implements Comparable<Gang> {
         nbtTag.setString("Estates", builder.toString());
     }
 
+    @SideOnly(Side.SERVER)
     public Set<Gang> getAlliances() {
         Set<Gang> gangs = Sets.newTreeSet();
 
@@ -108,20 +161,20 @@ public class Gang implements Comparable<Gang> {
         nbtTag.setString("Gangs", builder.toString());
     }
 
-    public Map<UUID, GangRoles> getMembers() {
-        Map<UUID, GangRoles> members = Maps.newHashMap();
+    public Map<UUID, GangRole> getMembers() {
+        Map<UUID, GangRole> members = Maps.newHashMap();
 
         if (!nbtTag.hasKey("Members")) return members;
 
         for (String member : nbtTag.getString("Members").split(";")) {
             if (!member.isEmpty() && member.contains(",")) {
-                members.put(UUID.fromString(member.split(",")[0]), GangRoles.values()[NumberConversions.toInt(member.split(",")[1])]);
+                members.put(UUID.fromString(member.split(",")[0]), GangRole.values()[NumberConversions.toInt(member.split(",")[1])]);
             }
         }
         return members;
     }
 
-    public void setMembers(Map<UUID, GangRoles> members) {
+    public void setMembers(Map<UUID, GangRole> members) {
         StringBuilder builder = new StringBuilder();
         members.forEach((uuid, role) -> builder.append(uuid.toString()).append(",").append(role.ordinal()).append(";"));
         nbtTag.setString("Members", builder.toString());
@@ -164,6 +217,26 @@ public class Gang implements Comparable<Gang> {
         deaths.forEach((uuid, deathCount) -> builder.append(uuid.toString()).append(",").append(deathCount).append(";"));
         nbtTag.setString("Deaths", builder.toString());
     }
+
+    public Map<UUID, Integer> getRep() {
+        Map<UUID, Integer> reps = Maps.newHashMap();
+
+        if (!nbtTag.hasKey("Rep")) return reps;
+
+        for (String member : nbtTag.getString("Rep").split(";")) {
+            if (!member.isEmpty() && member.contains(",")) {
+                reps.put(UUID.fromString(member.split(",")[0]), NumberConversions.toInt(member.split(",")[1]));
+            }
+        }
+        return reps;
+    }
+
+    public void setRep(Map<UUID, Integer> reps) {
+        StringBuilder builder = new StringBuilder();
+        reps.forEach((uuid, rep) -> builder.append(uuid.toString()).append(",").append(rep).append(";"));
+        nbtTag.setString("Rep", builder.toString());
+    }
+
 
     public int getFightsWon() {
         return nbtTag.hasKey("FightsWon") ? nbtTag.getInteger("FightsWon") : 0;
@@ -210,6 +283,10 @@ public class Gang implements Comparable<Gang> {
         nbtTag.setString("Homes", builder.toString());
     }
 
+    public boolean hasPermission(UUID playerID, GangPermission permission) {
+        return getOwner().equals(playerID) || (getMembers().containsKey(playerID) && getMembers().get(playerID).permissions.contains(permission));
+    }
+
     public UUID getUniqueID() {
         return uniqueID;
     }
@@ -232,5 +309,16 @@ public class Gang implements Comparable<Gang> {
     @Override
     public int compareTo(Gang o) {
         return o.uniqueID.compareTo(uniqueID);
+    }
+
+    public void toBytes(ByteBuf buf) {
+        ByteBufUtils.writeUTF8String(buf, uniqueID.toString());
+        ByteBufUtils.writeTag(buf, nbtTag);
+    }
+
+    public static Gang fromBytes(ByteBuf buf) {
+        UUID uniqueID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
+        NBTTagCompound tagCompound = ByteBufUtils.readTag(buf);
+        return new Gang(uniqueID, tagCompound);
     }
 }

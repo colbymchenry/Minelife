@@ -39,6 +39,7 @@ public class RenderGun implements IItemRenderer {
     public RenderGun() {
     }
 
+    // TODO: Fix yellow when shooting deagle
     @Override
     public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType transformType) {
         EnumGun gun = EnumGun.values()[stack.getMetadata()];
@@ -79,11 +80,11 @@ public class RenderGun implements IItemRenderer {
             gun.thirdPersonTransformations.forEach(Transformation::glApply);
 
         GlStateManager.disableCull();
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.disableBlend();
         CCRenderState ccrs = CCRenderState.instance();
         Minecraft.getMinecraft().getTextureManager().bindTexture(gun.texture);
         ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
-        GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.disableBlend();
         gun.model.render(ccrs);
         ccrs.draw();
 

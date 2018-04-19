@@ -2,6 +2,7 @@ package com.minelife.util;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -47,7 +48,9 @@ public class PacketPlaySound implements IMessage {
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketPlaySound message, MessageContext ctx) {
             EntityPlayer player = Minecraft.getMinecraft().player;
-            Minecraft.getMinecraft().addScheduledTask(() -> player.getEntityWorld().playSound(player, player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation(message.sound)), SoundCategory.MASTER, message.volume, message.pitch));
+//            Minecraft.getMinecraft().addScheduledTask(() -> player.getEntityWorld().playSound(player, player.posX, player.posY, player.posZ, new SoundEvent(new ResourceLocation(message.sound)), SoundCategory.MASTER, message.volume, message.pitch));
+            Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().getSoundHandler().
+                    playSound(PositionedSoundRecord.getRecord(new SoundEvent(new ResourceLocation(message.sound)), message.pitch, message.volume)));
             return null;
         }
     }

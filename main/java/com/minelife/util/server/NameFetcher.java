@@ -18,13 +18,15 @@ public final class NameFetcher  {
         return "Fetching...";
     }
 
+    // TODO: This is called WAY more than it needs to be, make sure to make it only call once for the ID.
     public static String get(UUID id) {
+        System.out.println("CALLLEEEDD");
         try {
             // Return cached name if it exists
             String cachedName = UUIDFetcher.CACHE.get(id);
             if (cachedName != null) return cachedName;
 
-            String profileURL = "https://sessionserver.mojang.com/session/minecraft/profile/" + id.toString().replaceAll("-", "");
+            String profileURL = "https://api.minetools.eu/uuid/" + id.toString().replaceAll("-", "");
             JSONParser jsonParser = new JSONParser();
 
             HttpURLConnection connection = (HttpURLConnection) new URL(profileURL).openConnection();
@@ -33,6 +35,7 @@ public final class NameFetcher  {
             UUIDFetcher.CACHE.put(id, (String) response.get("name"));
         } catch (Exception e) {
             UUIDFetcher.CACHE.put(id, null);
+            e.printStackTrace();
         }
 
         return UUIDFetcher.CACHE.get(id);

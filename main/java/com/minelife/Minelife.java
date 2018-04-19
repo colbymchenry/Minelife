@@ -6,6 +6,7 @@ import com.minelife.chestshop.ModChestShop;
 import com.minelife.drugs.ModDrugs;
 import com.minelife.economy.ModEconomy;
 import com.minelife.essentials.ModEssentials;
+import com.minelife.gangs.ModGangs;
 import com.minelife.guns.ModGuns;
 import com.minelife.jobs.ModJobs;
 import com.minelife.minebay.ModMinebay;
@@ -58,7 +59,6 @@ public class Minelife {
     private static List<MLMod> MODS = Lists.newArrayList();
 
     public Minelife() {
-//        MODS.add(new ModNetty());
         MODS.add(new ModPermission());
         MODS.add(new ModTracker());
         MODS.add(new ModWelfare());
@@ -72,6 +72,7 @@ public class Minelife {
         MODS.add(new ModDrugs());
         MODS.add(new ModCapes());
         MODS.add(new ModJobs());
+        MODS.add(new ModGangs());
     }
 
     @Mod.EventHandler

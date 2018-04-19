@@ -128,5 +128,11 @@
     "sounds": [
       { "name": "minelife:intro2", "stream": true }
     ]
+  },
+  "gang_created": {
+    "category": "neutral",
+    "sounds": [
+      { "name": "minelife:gang_created", "stream": true }
+    ]
   }
 }

@@ -169,15 +169,14 @@ public abstract class GuiScrollableContent extends Gui {
             GlStateManager.pushMatrix();
             GlStateManager.translate(x, (y + totalHeight) - scrollY, 0);
 
+            int mX = (mouseX - x);
+            int mY = mouseY - ((int) ((y + totalHeight) - scrollY));
+            boolean hovering = mX > 0 && mX < listWidth && mouseX < x + width && mY > 0 && mY < getObjectHeight(i) && mouseY < y + height;
+
+            drawObject(i, mX, mY, hovering);
             if (selected == i) {
                 drawSelectionBox(i, width, getObjectHeight(i));
             }
-
-            int mX = (mouseX - x);
-            int mY = mouseY - ((int) ((y + totalHeight) - scrollY));
-            boolean hovering = mX > 0 && mX < listWidth && mY > 0 && mY < getObjectHeight(i);
-
-            drawObject(i, mX, mY, hovering);
             GlStateManager.popMatrix();
             totalHeight += getObjectHeight(i);
         }
@@ -240,7 +239,8 @@ public abstract class GuiScrollableContent extends Gui {
 
     public void drawSelectionBox(int index, int width, int height) {
         GlStateManager.disableTexture2D();
-        GlStateManager.color(128f / 255f, 128f / 255f, 128f / 255f, 1f);
+        GlStateManager.enableBlend();
+        GlStateManager.color(128f / 255f, 128f / 255f, 128f / 255f, 90f/255f);
         GuiHelper.drawRect(0, 0, width, height);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GlStateManager.enableTexture2D();
