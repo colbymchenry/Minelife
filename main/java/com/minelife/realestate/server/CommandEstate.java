@@ -50,6 +50,8 @@ public class CommandEstate extends CommandBase {
         return null;
     }
 
+    // TODO: Add way to view estate land
+
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (!(sender instanceof EntityPlayer)) return;

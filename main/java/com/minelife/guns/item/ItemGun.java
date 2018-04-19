@@ -36,6 +36,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.text.WordUtils;
 
 import javax.annotation.Nullable;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -239,7 +240,7 @@ public class ItemGun extends Item {
             Minelife.getNetwork().sendToAllAround(new PacketBullet(gun, bullet),
                     new NetworkRegistry.TargetPoint(player.world.provider.getDimension(), player.posX, player.posY, player.posZ, 112));
         } else {
-            Minelife.getNetwork().sendToServer(new PacketFire(lookVector, System.currentTimeMillis()));
+            Minelife.getNetwork().sendToServer(new PacketFire(lookVector));
             gun.resetAnimation();
             player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gun.soundShot), SoundCategory.NEUTRAL, 1, 1);
             initRecoil();
@@ -323,7 +324,7 @@ public class ItemGun extends Item {
         player.setHeldItem(EnumHand.MAIN_HAND, gunStack);
 
         if (player.world.isRemote) {
-            Minelife.getNetwork().sendToServer(new PacketReload(System.currentTimeMillis()));
+            Minelife.getNetwork().sendToServer(new PacketReload());
             player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gunType.soundReload), SoundCategory.NEUTRAL, 1, 1);
         } else {
             player.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 20 * (gunType.reloadTime / 1000), 1));

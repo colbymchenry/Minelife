@@ -53,9 +53,9 @@ public class Bullet {
         this.prevPosY = posY;
         this.prevPosZ = posZ;
         // TODO: May need to increase from 60 to max of 100, still doesn't feel PERFECT. May still have to take into account how long it takes for packet to reach server.
-        this.posX = posX + ((lookVec.x * bulletSpeed) * (pingDelay / 60));
-        this.posY = posY + ((lookVec.y * bulletSpeed) * (pingDelay / 60));
-        this.posZ = posZ + ((lookVec.z * bulletSpeed) * (pingDelay / 60));
+        this.posX = posX + ((lookVec.x * bulletSpeed) + ((lookVec.x * bulletSpeed) * (pingDelay / 60)));
+        this.posY = posY + ((lookVec.y * bulletSpeed) + ((lookVec.y * bulletSpeed) * (pingDelay / 60)));
+        this.posZ = posZ + ((lookVec.z * bulletSpeed) + ((lookVec.z * bulletSpeed) * (pingDelay / 60)));
 //        this.posX = posX + (lookVec.x);
 //        this.posY = posY + (lookVec.y);
 //        this.posZ = posZ + (lookVec.z);

@@ -10,28 +10,26 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
+import java.util.Calendar;
+
 public class PacketFire implements IMessage {
 
-    private long timeStamp;
     private Vec3d lookVector;
 
     public PacketFire() {
     }
-// TODO: Take out timestamp from this and reload packet, not needed if the player.ping works
-    public PacketFire(Vec3d lookVector, long timeStamp) {
+
+    public PacketFire(Vec3d lookVector) {
         this.lookVector = lookVector;
-        this.timeStamp = timeStamp;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        timeStamp = buf.readLong();
         lookVector = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeLong(timeStamp);
         buf.writeDouble(lookVector.x);
         buf.writeDouble(lookVector.y);
         buf.writeDouble(lookVector.z);

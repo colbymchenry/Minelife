@@ -18,23 +18,16 @@ import net.minecraftforge.fml.server.FMLServerHandler;
 
 public class PacketReload implements IMessage {
 
-    private long timeStamp;
-
     public PacketReload() {
-    }
-
-    public PacketReload(long timeStamp) {
-        this.timeStamp = timeStamp;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        timeStamp = buf.readLong();
+
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeLong(timeStamp);
     }
 
     public static class Handler implements IMessageHandler<PacketReload, IMessage> {
