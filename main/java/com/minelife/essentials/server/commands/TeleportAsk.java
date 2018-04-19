@@ -1,5 +1,6 @@
 package com.minelife.essentials.server.commands;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.permission.ModPermission;
 import com.minelife.util.PlayerHelper;
@@ -72,7 +73,7 @@ public class TeleportAsk extends CommandBase {
 
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
-        return isUsernameIndex(args, args.length) ? CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames()) : null;
+        return isUsernameIndex(args, args.length) ? CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames()) : Lists.newArrayList();
     }
 
     public static void SubmitRequest(EntityPlayerMP Sender, EntityPlayerMP Receiver) {

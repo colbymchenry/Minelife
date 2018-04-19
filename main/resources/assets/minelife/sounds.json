@@ -114,22 +114,19 @@
   "intro0": {
     "category": "neutral",
     "sounds": [
-      "minelife:intro0"
-    ],
-    "stream": true
+      { "name": "minelife:intro0", "stream": true }
+    ]
   },
   "intro1": {
     "category": "neutral",
     "sounds": [
-      "minelife:intro1"
-    ],
-    "stream": true
+      { "name": "minelife:intro1", "stream": true }
+    ]
   },
   "intro2": {
     "category": "neutral",
     "sounds": [
-      "minelife:intro2"
-    ],
-    "stream": true
+      { "name": "minelife:intro2", "stream": true }
+    ]
   }
 }

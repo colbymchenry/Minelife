@@ -41,8 +41,6 @@ public class PacketReload implements IMessage {
 
         @SideOnly(Side.SERVER)
         public IMessage onMessage(PacketReload message, MessageContext ctx) {
-            long pingDelay = System.currentTimeMillis() - message.timeStamp;
-            System.out.println(ctx.getServerHandler().player.ping + "," + pingDelay + "," + System.currentTimeMillis() + "," + message.timeStamp);
             FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.reload(ctx.getServerHandler().player, ctx.getServerHandler().player.ping));
             return null;
         }

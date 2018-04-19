@@ -35,7 +35,6 @@ public class CustomGuiMainMenu extends GuiMainMenu {
     private float scale = 1, fade = 255;
     private int image = 0;
     private int songLoop = -1;
-    private static boolean loadedSongs = false;
 
     public CustomGuiMainMenu() {
         songLoop = new Random().nextInt(introSongs.length);
@@ -86,7 +85,7 @@ public class CustomGuiMainMenu extends GuiMainMenu {
         GlStateManager.color(1, 1, 1, 1);
         mc.getTextureManager().bindTexture(minelifeLogo);
         GlStateManager.pushMatrix();
-        GuiHelper.drawImage((this.width - 178) / 2, (this.height / 2) - 80, 178, 45, minelifeLogo);
+        GuiHelper.drawImage((this.width - 178) / 2, ((this.height - 45) / 2) - 60, 178, 45, minelifeLogo);
         GlStateManager.popMatrix();
 
         this.buttonList.forEach(btn -> btn.drawButton(mc, mouseX, mouseY, partialTicks));
@@ -103,14 +102,6 @@ public class CustomGuiMainMenu extends GuiMainMenu {
         if(multiplayerBtn != null) {
             GuiButton modsBtn = this.buttonList.stream().filter(btn -> btn.id == 6).findFirst().orElse(null);
             modsBtn.width = multiplayerBtn.width;
-        }
-
-        if(!loadedSongs) {
-            for (ResourceLocation introSong : introSongs) {
-                mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(new SoundEvent(introSong), 0.000001F, 0.000001F));
-            }
-            mc.getSoundHandler().stopSounds();
-            loadedSongs = true;
         }
     }
 

@@ -1,18 +1,23 @@
 package com.minelife.essentials.server.commands;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.util.server.MLCommand;
 import com.minelife.util.server.UUIDFetcher;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
+import javax.annotation.Nullable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -29,15 +34,25 @@ public class Mute extends MLCommand {
     }
 
     @Override
-    public synchronized void runAsync(MinecraftServer server, ICommandSender sender, String[] args) throws Exception {
-        if(!(sender instanceof EntityPlayerMP)) return;
+    public boolean isUsernameIndex(String[] args, int index) {
+        return index == 1;
+    }
 
-        if(args.length == 0) {
+    @Override
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        return isUsernameIndex(args, args.length) ? CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames()) : Lists.newArrayList();
+    }
+
+    @Override
+    public synchronized void runAsync(MinecraftServer server, ICommandSender sender, String[] args) throws Exception {
+        if (!(sender instanceof EntityPlayerMP)) return;
+
+        if (args.length == 0) {
             sender.sendMessage(new TextComponentString(getUsage(sender)));
             return;
         }
         UUID playerID = UUIDFetcher.get(args[0]);
-        if(playerID == null) {
+        if (playerID == null) {
             sender.sendMessage(new TextComponentString(TextFormatting.RED + "Player not found."));
             return;
         }
@@ -48,9 +63,10 @@ public class Mute extends MLCommand {
 
     public static void addMutedPlayer(EntityPlayerMP player, UUID toMute) {
         try {
+            ResultSet result = ModEssentials.getDB().query("SELECT * FROM mute WHERE playerID='" + player.getUniqueID().toString() + "'");
             Set<UUID> mutedPlayers = getMutedPlayers(player);
-            if(mutedPlayers != null) {
-                if(mutedPlayers.contains(toMute)) return;
+            if (result.next()) {
+                if (mutedPlayers.contains(toMute)) return;
                 StringBuilder builder = new StringBuilder();
                 mutedPlayers.forEach(uuid -> builder.append(uuid.toString() + ","));
                 builder.append(toMute.toString() + ",");
@@ -65,8 +81,9 @@ public class Mute extends MLCommand {
 
     public static void removeMutedPlayer(EntityPlayerMP player, UUID toMute) {
         try {
+            ResultSet result = ModEssentials.getDB().query("SELECT * FROM mute WHERE playerID='" + player.getUniqueID().toString() + "'");
             Set<UUID> mutedPlayers = getMutedPlayers(player);
-            if(mutedPlayers != null) {
+            if (result.next()) {
                 mutedPlayers.remove(toMute);
                 StringBuilder builder = new StringBuilder();
                 mutedPlayers.forEach(uuid -> builder.append(uuid.toString() + ","));
@@ -81,12 +98,10 @@ public class Mute extends MLCommand {
         Set<UUID> mutedPlayers = Sets.newTreeSet();
         try {
             ResultSet result = ModEssentials.getDB().query("SELECT * FROM mute WHERE playerID='" + player.getUniqueID().toString() + "'");
-            if(result.next()) {
+            if (result.next()) {
                 for (String muted : result.getString("muted").split(",")) {
-                    if(!muted.isEmpty()) mutedPlayers.add(UUID.fromString(muted));
+                    if (!muted.isEmpty()) mutedPlayers.add(UUID.fromString(muted));
                 }
-            } else {
-                return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();

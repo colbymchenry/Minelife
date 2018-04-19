@@ -48,6 +48,16 @@ public class Spawn extends CommandBase {
         ModEssentials.getConfig().save();
     }
 
+    public static void SetNewSpawn(Location Location) {
+        ModEssentials.getConfig().set("spawn.new.dimension", Location.getDimension());
+        ModEssentials.getConfig().set("spawn.new.x", Location.getX());
+        ModEssentials.getConfig().set("spawn.new.y", Location.getY());
+        ModEssentials.getConfig().set("spawn.new.z", Location.getZ());
+        ModEssentials.getConfig().set("spawn.new.yaw", Location.getYaw());
+        ModEssentials.getConfig().set("spawn.new.pitch", Location.getPitch());
+        ModEssentials.getConfig().save();
+    }
+
     public static Location GetSpawn() {
         if(ModEssentials.getConfig().get("spawn", null) != null) {
             int dimension = ModEssentials.getConfig().getInt("spawn.dimension");

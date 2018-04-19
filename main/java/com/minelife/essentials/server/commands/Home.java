@@ -11,6 +11,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
@@ -48,7 +49,7 @@ public class Home extends CommandBase {
 
         String id = args.length == 0 ? "default" : args[0].toLowerCase();
 
-        if(!homes.containsKey(id)) {
+        if (!homes.containsKey(id)) {
             Player.sendMessage(new TextComponentString(TextFormatting.RED + "Home '" + id + "' not found."));
             return;
         }
@@ -60,6 +61,23 @@ public class Home extends CommandBase {
     public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         return sender instanceof EntityPlayerMP && ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "home");
     }
+
+    @Override
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
+        if (!(sender instanceof EntityPlayerMP)) return Lists.newArrayList();
+
+        EntityPlayerMP Player = (EntityPlayerMP) sender;
+
+        if (args.length == 1) {
+            Map<String, Location> Homes = GetHomes(Player.getUniqueID());
+            List<String> WarpList = Lists.newArrayList();
+            WarpList.addAll(Homes.keySet());
+            return WarpList;
+        }
+
+        return Lists.newArrayList();
+    }
+
 
     public static void SetHome(String name, Location Location, UUID playerID) throws SQLException {
         ModEssentials.getDB().query("INSERT INTO homes (player, name, dimension, x, y, z, yaw, pitch) VALUES (" +
