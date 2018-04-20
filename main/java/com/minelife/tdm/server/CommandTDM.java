@@ -1,9 +1,13 @@
 package com.minelife.tdm.server;
 
+import com.google.common.collect.Maps;
+import com.minelife.Minelife;
 import com.minelife.permission.ModPermission;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.tdm.Arena;
+import com.minelife.tdm.Match;
+import com.minelife.tdm.network.PacketOpenMatchSearch;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -14,6 +18,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class CommandTDM extends CommandBase {
 
@@ -28,18 +33,26 @@ public class CommandTDM extends CommandBase {
         sendMessage(sender, "/tdm delete <name>");
         sendMessage(sender, "/tdm setspawn1");
         sendMessage(sender, "/tdm setspawn2");
-        sendMessage(sender, "/tdm setexit <arena>");
+        sendMessage(sender, "/tdm setlobbyspawn");
+        sendMessage(sender, "/tdm setexitspawn <arena>");
         return null;
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+        EntityPlayerMP player = (EntityPlayerMP) sender;
+
         if(args.length == 0) {
-            getUsage(sender);
+            Map<String, Match> arenas = Maps.newHashMap();
+            Map<String, String> arenaPixels = Maps.newHashMap();
+            Arena.ARENAS.forEach(arena -> {
+                arenas.put(arena.getName(), arena.getCurrentMatch());
+                arenaPixels.put(arena.getName(), arena.getPixels());
+            });
+            Minelife.getNetwork().sendTo(new PacketOpenMatchSearch(arenas, arenaPixels), player);
             return;
         }
 
-        EntityPlayerMP player = (EntityPlayerMP) sender;
         Estate estate = ModRealEstate.getEstateAt(player.getEntityWorld(), player.getPosition());
 
         switch (args[0].toLowerCase()) {
@@ -124,7 +137,24 @@ public class CommandTDM extends CommandBase {
                 sendMessage(sender, "Spawn for team 2 set.");
                 break;
             }
-            case "setexit": {
+            case "setlobbyspawn": {
+                if(estate == null) {
+                    sendMessage(sender, TextFormatting.RED + "There is no arena here.");
+                    return;
+                }
+
+                Arena arena = Arena.ARENAS.stream().filter(a -> a.getEstate().equals(estate)).findFirst().orElse(null);
+
+                if(arena == null) {
+                    sendMessage(sender, TextFormatting.RED + "There is no arena here.");
+                    return;
+                }
+
+                arena.setLobbySpawn(player.getPosition());
+                sendMessage(sender, "Lobby spawn set.");
+                break;
+            }
+            case "setexitspawn": {
                 if(args.length != 2) {
                     getUsage(sender);
                     return;
@@ -141,6 +171,7 @@ public class CommandTDM extends CommandBase {
                 sendMessage(sender, "Exit spawn set.");
                 break;
             }
+            default: getUsage(sender); break;
         }
     }
 
@@ -150,7 +181,7 @@ public class CommandTDM extends CommandBase {
     }
 
     public static void sendMessage(ICommandSender sender, String msg) {
-        sender.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "["));
+        sender.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[TDM] " + TextFormatting.GOLD + msg));
     }
 
 }

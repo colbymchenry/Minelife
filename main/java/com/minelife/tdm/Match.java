@@ -7,11 +7,13 @@ import com.minelife.essentials.Location;
 import com.minelife.essentials.TeleportHandler;
 import com.minelife.essentials.server.commands.Heal;
 import com.minelife.util.PlayerHelper;
+import com.minelife.util.configuration.InvalidConfigurationException;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,10 +24,11 @@ public class Match implements Comparable<Match> {
     public static final Set<Match> ACTIVE_MATCHES = Sets.newTreeSet();
 
     private Arena arena;
-    private int countdownStart, countdownBetweenRounds;
+    private int countdownStart, countdownBetweenRounds, team1MaxSize, team2MaxSize;
+    private long startTime;
     private Set<UUID> team1, team2;
     private Map<UUID, List<ItemStack>> playerLoadouts = Maps.newHashMap();
-    private Map<UUID, List<Object[]>> previousInventory = Maps.newHashMap();
+    private Map<UUID, SavedInventory> previousInventory = Maps.newHashMap();
     private int rounds, team1Wins, team2Wins;
 
     private Match() {
@@ -49,6 +52,17 @@ public class Match implements Comparable<Match> {
     public Match setTeam2(UUID... uuids) {
         this.team2 = Sets.newTreeSet();
         this.team2.addAll(Lists.newArrayList(uuids));
+        return this;
+    }
+
+    public Match setTeam1MaxSize(int size) {
+        this.team1MaxSize = size;
+        return this;
+    }
+
+
+    public Match setTeam2MaxSize(int size) {
+        this.team2MaxSize = size;
         return this;
     }
 
@@ -79,8 +93,17 @@ public class Match implements Comparable<Match> {
         playerLoadouts.put(player, Lists.newArrayList(items));
     }
 
-    public void setPreviousInventory(UUID player, Object[]... items) {
-        previousInventory.put(player, Lists.newArrayList(items));
+    public void setPreviousInventory(EntityPlayerMP player) {
+        SavedInventory savedInventory = null;
+        try {
+            savedInventory = new SavedInventory(player.getUniqueID());
+            savedInventory.setItems(player.inventory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+        previousInventory.put(player.getUniqueID(), savedInventory);
     }
 
     public void setTeam1Wins(int wins) {
@@ -92,16 +115,16 @@ public class Match implements Comparable<Match> {
     }
 
     public boolean canBegin() {
-        if(team1.size() > 0 && team2.size() > 0 && team1.size() - team2.size() < 3) {
+        if (team1.size() > 0 && team2.size() > 0 && team1.size() - team2.size() < 3) {
             int notReady = 0;
             for (UUID uuid : team1) {
-                if(!playerLoadouts.containsKey(uuid)) notReady++;
+                if (!playerLoadouts.containsKey(uuid)) notReady++;
             }
             for (UUID uuid : team2) {
-                if(!playerLoadouts.containsKey(uuid)) notReady++;
+                if (!playerLoadouts.containsKey(uuid)) notReady++;
             }
 
-            if(((team1.size() + team2.size()) - notReady) / (team1.size() + team2.size()) >= 0.9) return true;
+            if (((team1.size() + team2.size()) - notReady) / (team1.size() + team2.size()) >= 0.9) return true;
         }
         return false;
     }
@@ -138,20 +161,12 @@ public class Match implements Comparable<Match> {
         this.team2 = team2;
     }
 
-    public Map<UUID, List<ItemStack>> getPlayerLoadouts() {
-        return playerLoadouts;
+    public List<ItemStack> getPlayerLoadout(UUID playerID) {
+        return playerLoadouts.get(playerID);
     }
 
-    public void setPlayerLoadouts(Map<UUID, List<ItemStack>> playerLoadouts) {
-        this.playerLoadouts = playerLoadouts;
-    }
-
-    public Map<UUID, List<Object[]>> getPreviousInventory() {
-        return previousInventory;
-    }
-
-    public void setPreviousInventory(Map<UUID, List<Object[]>> previousInventory) {
-        this.previousInventory = previousInventory;
+    public SavedInventory getPreviousInventory(UUID playerID) {
+        return previousInventory.get(playerID);
     }
 
     public int getRounds() {
@@ -166,38 +181,72 @@ public class Match implements Comparable<Match> {
         return team2Wins;
     }
 
+    public int getTeam1MaxSize() {
+        return team1MaxSize;
+    }
+
+    public int getTeam2MaxSize() {
+        return team2MaxSize;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void addTeam1(UUID player) {
+        team1.add(player);
+    }
+
+    public void addTeam2(UUID player) {
+        team2.add(player);
+    }
+
     public void end() {
-        getTeam1().forEach(playerID -> {
-            EntityPlayerMP player = PlayerHelper.getPlayer(playerID);
-            if(player != null) {
-                TeleportHandler.teleport(player, new Location(arena.getEstate().getWorld().provider.getDimension(),
-                        arena.getExitSpawn().getX(), arena.getExitSpawn().getY(), arena.getExitSpawn().getZ(),
-                        player.rotationYaw, player.rotationPitch));
-            }
-        });
-        getTeam2().forEach(playerID -> {
-            EntityPlayerMP player = PlayerHelper.getPlayer(playerID);
-            if(player != null) {
-                TeleportHandler.teleport(player, new Location(arena.getEstate().getWorld().provider.getDimension(),
-                        arena.getExitSpawn().getX(), arena.getExitSpawn().getY(), arena.getExitSpawn().getZ(),
-                        player.rotationYaw, player.rotationPitch));
-            }
-        });
-
-        previousInventory.forEach((playerID, slots) -> {
-            slots.forEach(slot -> {
-                int slotIndex = (int) slot[0];
-                ItemStack stack = (ItemStack) slot[1];
-                if(PlayerHelper.getPlayer(playerID) != null) {
-                    PlayerHelper.getPlayer(playerID).inventory.clear();
-                    PlayerHelper.getPlayer(playerID).inventory.setInventorySlotContents(slotIndex, stack);
-                    PlayerHelper.getPlayer(playerID).inventoryContainer.detectAndSendChanges();
-                    Heal.healPlayer(PlayerHelper.getPlayer(playerID));
-                }
-            });
-        });
-
+        getTeam1().forEach(playerID -> kickPlayer(PlayerHelper.getPlayer(playerID)));
+        getTeam2().forEach(playerID -> kickPlayer(PlayerHelper.getPlayer(playerID)));
         ACTIVE_MATCHES.remove(this);
+    }
+
+    public void start() {
+        team1.forEach(playerID -> {
+            EntityPlayerMP player = PlayerHelper.getPlayer(playerID);
+            if (getPlayerLoadout(playerID) != null) {
+                player.inventory.clear();
+                TeleportHandler.teleport(player, new Location(arena.getEstate().getWorld().provider.getDimension(), arena.getTeam1Spawn().getX(), arena.getTeam1Spawn().getY() + 0.3, arena.getTeam1Spawn().getZ(), player.rotationYaw, player.rotationPitch), 0);
+                for (int i = 0; i < getPlayerLoadout(playerID).size(); i++)
+                    player.inventory.setInventorySlotContents(i, getPlayerLoadout(playerID).get(i));
+            } else {
+                kickPlayer(player);
+            }
+        });
+        team2.forEach(playerID -> {
+            EntityPlayerMP player = PlayerHelper.getPlayer(playerID);
+            if (getPlayerLoadout(playerID) != null) {
+                player.inventory.clear();
+                TeleportHandler.teleport(player, new Location(arena.getEstate().getWorld().provider.getDimension(), arena.getTeam2Spawn().getX(), arena.getTeam2Spawn().getY() + 0.3, arena.getTeam2Spawn().getZ(), player.rotationYaw, player.rotationPitch), 0);
+                for (int i = 0; i < getPlayerLoadout(playerID).size(); i++)
+                    player.inventory.setInventorySlotContents(i, getPlayerLoadout(playerID).get(i));
+            } else {
+                kickPlayer(player);
+            }
+        });
+
+    }
+
+    public void kickPlayer(EntityPlayerMP player) {
+        if (player != null) {
+            TeleportHandler.teleport(player, new Location(arena.getEstate().getWorld().provider.getDimension(),
+                    arena.getExitSpawn().getX(), arena.getExitSpawn().getY(), arena.getExitSpawn().getZ(),
+                    player.rotationYaw, player.rotationPitch));
+            player.inventory.clear();
+            getPreviousInventory(player.getUniqueID()).getItems().forEach((slot, stack) -> player.inventory.setInventorySlotContents(slot, stack));
+            Heal.healPlayer(player);
+            getPreviousInventory(player.getUniqueID()).delete();
+            previousInventory.remove(player.getUniqueID());
+            team1.remove(player.getUniqueID());
+            team2.remove(player.getUniqueID());
+            playerLoadouts.remove(player.getUniqueID());
+        }
     }
 
     @Override
@@ -213,26 +262,12 @@ public class Match implements Comparable<Match> {
         team1.forEach(uuid -> ByteBufUtils.writeUTF8String(buf, uuid.toString()));
         buf.writeInt(team2.size());
         team2.forEach(uuid -> ByteBufUtils.writeUTF8String(buf, uuid.toString()));
-        buf.writeInt(playerLoadouts.size());
-        playerLoadouts.forEach(((uuid, itemStacks) -> {
-            ByteBufUtils.writeUTF8String(buf, uuid.toString());
-            buf.writeInt(itemStacks.size());
-            itemStacks.forEach(itemStack -> ByteBufUtils.writeItemStack(buf, itemStack));
-        }));
-
         buf.writeInt(rounds);
         buf.writeInt(team1Wins);
         buf.writeInt(team2Wins);
-
-        buf.writeInt(previousInventory.size());
-        previousInventory.forEach(((uuid, objects) -> {
-            ByteBufUtils.writeUTF8String(buf, uuid.toString());
-            buf.writeInt(objects.size());
-            objects.forEach(slot -> {
-                buf.writeInt((Integer) slot[0]);
-                ByteBufUtils.writeItemStack(buf, (ItemStack) slot[1]);
-            });
-        }));
+        buf.writeLong(startTime);
+        buf.writeInt(team1MaxSize);
+        buf.writeInt(team2MaxSize);
     }
 
     public static Match fromBytes(ByteBuf buf) {
@@ -245,18 +280,28 @@ public class Match implements Comparable<Match> {
         Set<UUID> team2 = Sets.newTreeSet();
         int team2Size = buf.readInt();
         for (int i = 0; i < team2Size; i++) team2.add(UUID.fromString(ByteBufUtils.readUTF8String(buf)));
-        Map<UUID, List<ItemStack>> playerLoadouts = Maps.newHashMap();
-        int playerLoadoutSize = buf.readInt();
-        for (int i = 0; i < playerLoadoutSize; i++) {
-            UUID playerID = UUID.fromString(ByteBufUtils.readUTF8String(buf));
-            List<ItemStack> items = Lists.newArrayList();
-            int itemsSize = buf.readInt();
-            for (int i1 = 0; i1 < itemsSize; i1++) items.add(ByteBufUtils.readItemStack(buf));
-            playerLoadouts.put(playerID, items);
-        }
         int rounds = buf.readInt();
         int team1wins = buf.readInt();
         int team2wins = buf.readInt();
-        return null;
+        Match match = null;
+        try {
+            match = Match.builder().setArena(new Arena(arenaName)).setStartCountdown(countDownStart).setCountdownBetweenRounds(countdownBetweenRounds);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+        match.setTeam1(team1);
+        match.setTeam2(team2);
+        match.setRounds(rounds);
+        match.setTeam1Wins(team1wins);
+        match.setTeam2Wins(team2wins);
+        match.startTime = buf.readLong();
+        match.setTeam1MaxSize(buf.readInt());
+        match.setTeam2MaxSize(buf.readInt());
+        return match;
     }
+
+    // TODO: For syncing startTime etc may need to either sync via ping or when player connects to a server go ahead and sync the
+    // TODO: time by immediately finding the difference between their System.currentTimeMillis.
 }
