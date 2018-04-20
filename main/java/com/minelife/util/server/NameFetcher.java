@@ -20,11 +20,14 @@ public final class NameFetcher  {
 
     // TODO: This is called WAY more than it needs to be, make sure to make it only call once for the ID.
     public static String get(UUID id) {
-        System.out.println("CALLLEEEDD");
+
         try {
             // Return cached name if it exists
             String cachedName = UUIDFetcher.CACHE.get(id);
             if (cachedName != null) return cachedName;
+            if(id == null) return null;
+
+            UUIDFetcher.CACHE.put(id, "Fetching...");
 
             String profileURL = "https://api.minetools.eu/uuid/" + id.toString().replaceAll("-", "");
             JSONParser jsonParser = new JSONParser();

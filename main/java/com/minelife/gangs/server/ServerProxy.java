@@ -13,6 +13,7 @@ public class ServerProxy extends MLProxy {
 
     public static Database DB;
 
+    // TODO: Implement things to give rep
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         DB = new SQLite(Logger.getLogger("Minecraft"), "[Gangs]", Minelife.getDirectory().getAbsolutePath(), "gangs");

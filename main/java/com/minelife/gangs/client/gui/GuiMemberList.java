@@ -1,6 +1,5 @@
 package com.minelife.gangs.client.gui;
 
-import com.minelife.gangs.Gang;
 import com.minelife.gangs.GangRole;
 import com.minelife.util.SkinHelper;
 import com.minelife.util.client.GuiHelper;
@@ -18,18 +17,18 @@ import java.util.UUID;
 
 public class GuiMemberList extends GuiScrollableContent {
 
-    private Gang gang;
+    private GuiGangMenu previousScreen;
     public Map<UUID, GangRole> members;
-    public Map<UUID, Integer> kills, deaths, rep;
+    public Map<UUID, Long> kills, deaths, rep;
     public UUID hoveringPlayer;
 
-    public GuiMemberList(Minecraft mc, int x, int y, int width, int height, Gang gang) {
+    public GuiMemberList(Minecraft mc, int x, int y, int width, int height, GuiGangMenu previousScreen) {
         super(mc, x, y, width, height);
-        this.gang = gang;
-        this.members = gang.getMembers();
-        this.kills = gang.getKills();
-        this.deaths = gang.getDeaths();
-        this.rep = gang.getRep();
+        this.previousScreen = previousScreen;
+        this.members = previousScreen.gang.getMembers();
+        this.kills = previousScreen.gang.getKills();
+        this.deaths = previousScreen.gang.getDeaths();
+        this.rep = previousScreen.gang.getRep();
     }
 
     @Override
@@ -78,6 +77,8 @@ public class GuiMemberList extends GuiScrollableContent {
 
     @Override
     public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
-
+        if(doubleClick) {
+            mc.displayGuiScreen(new GuiManageMember((UUID) members.keySet().toArray()[index], previousScreen));
+        }
     }
 }

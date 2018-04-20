@@ -3,7 +3,12 @@ package com.minelife.tdm;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.minelife.essentials.Location;
+import com.minelife.essentials.TeleportHandler;
+import com.minelife.essentials.server.commands.Heal;
+import com.minelife.util.PlayerHelper;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
@@ -99,6 +104,100 @@ public class Match implements Comparable<Match> {
             if(((team1.size() + team2.size()) - notReady) / (team1.size() + team2.size()) >= 0.9) return true;
         }
         return false;
+    }
+
+    public Arena getArena() {
+        return arena;
+    }
+
+    public int getCountdownStart() {
+        return countdownStart;
+    }
+
+    public void setCountdownStart(int countdownStart) {
+        this.countdownStart = countdownStart;
+    }
+
+    public int getCountdownBetweenRounds() {
+        return countdownBetweenRounds;
+    }
+
+    public Set<UUID> getTeam1() {
+        return team1;
+    }
+
+    public void setTeam1(Set<UUID> team1) {
+        this.team1 = team1;
+    }
+
+    public Set<UUID> getTeam2() {
+        return team2;
+    }
+
+    public void setTeam2(Set<UUID> team2) {
+        this.team2 = team2;
+    }
+
+    public Map<UUID, List<ItemStack>> getPlayerLoadouts() {
+        return playerLoadouts;
+    }
+
+    public void setPlayerLoadouts(Map<UUID, List<ItemStack>> playerLoadouts) {
+        this.playerLoadouts = playerLoadouts;
+    }
+
+    public Map<UUID, List<Object[]>> getPreviousInventory() {
+        return previousInventory;
+    }
+
+    public void setPreviousInventory(Map<UUID, List<Object[]>> previousInventory) {
+        this.previousInventory = previousInventory;
+    }
+
+    public int getRounds() {
+        return rounds;
+    }
+
+    public int getTeam1Wins() {
+        return team1Wins;
+    }
+
+    public int getTeam2Wins() {
+        return team2Wins;
+    }
+
+    public void end() {
+        getTeam1().forEach(playerID -> {
+            EntityPlayerMP player = PlayerHelper.getPlayer(playerID);
+            if(player != null) {
+                TeleportHandler.teleport(player, new Location(arena.getEstate().getWorld().provider.getDimension(),
+                        arena.getExitSpawn().getX(), arena.getExitSpawn().getY(), arena.getExitSpawn().getZ(),
+                        player.rotationYaw, player.rotationPitch));
+            }
+        });
+        getTeam2().forEach(playerID -> {
+            EntityPlayerMP player = PlayerHelper.getPlayer(playerID);
+            if(player != null) {
+                TeleportHandler.teleport(player, new Location(arena.getEstate().getWorld().provider.getDimension(),
+                        arena.getExitSpawn().getX(), arena.getExitSpawn().getY(), arena.getExitSpawn().getZ(),
+                        player.rotationYaw, player.rotationPitch));
+            }
+        });
+
+        previousInventory.forEach((playerID, slots) -> {
+            slots.forEach(slot -> {
+                int slotIndex = (int) slot[0];
+                ItemStack stack = (ItemStack) slot[1];
+                if(PlayerHelper.getPlayer(playerID) != null) {
+                    PlayerHelper.getPlayer(playerID).inventory.clear();
+                    PlayerHelper.getPlayer(playerID).inventory.setInventorySlotContents(slotIndex, stack);
+                    PlayerHelper.getPlayer(playerID).inventoryContainer.detectAndSendChanges();
+                    Heal.healPlayer(PlayerHelper.getPlayer(playerID));
+                }
+            });
+        });
+
+        ACTIVE_MATCHES.remove(this);
     }
 
     @Override

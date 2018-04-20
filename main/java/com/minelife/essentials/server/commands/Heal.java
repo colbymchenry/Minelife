@@ -32,12 +32,10 @@ public class Heal extends CommandBase {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         if(args.length == 1) {
             if(PlayerHelper.getPlayer(args[0]) != null) {
-                PlayerHelper.getPlayer(args[0]).setHealth((PlayerHelper.getPlayer(args[0])).getMaxHealth());
-                PlayerHelper.getPlayer(args[0]).getFoodStats().setFoodLevel(20);
+                healPlayer(PlayerHelper.getPlayer(args[0]));
             }
         } else if(args.length < 1 && sender instanceof EntityPlayerMP) {
-            ((EntityPlayerMP) sender).setHealth(((EntityPlayerMP) sender).getMaxHealth());
-            ((EntityPlayerMP) sender).getFoodStats().setFoodLevel(20);
+            healPlayer((EntityPlayerMP) sender);
         } else {
             getUsage(sender);
         }
@@ -56,5 +54,10 @@ public class Heal extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         return isUsernameIndex(args, args.length) ? CommandBase.getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames()) : Lists.newArrayList();
+    }
+
+    public static void healPlayer(EntityPlayerMP player) {
+        player.setHealth(player.getMaxHealth());
+        player.getFoodStats().setFoodLevel(20);
     }
 }

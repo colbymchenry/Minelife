@@ -43,7 +43,6 @@ public class Bullet {
 
     // TODO: Add kill message for player who killed another player
     public Bullet(World world, double posX, double posY, double posZ, Vec3d lookVec, double bulletSpeed, double bulletDamage, double pingDelay, EntityLivingBase shooter) {
-        System.out.println("SPAWN BULLET");
         this.world = world;
         this.startX = posX;
         this.startY = posY;

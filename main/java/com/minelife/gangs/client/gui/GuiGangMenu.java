@@ -24,9 +24,8 @@ public class GuiGangMenu extends GuiScreen {
     private Rectangle ownerBounds;
     protected Gang gang;
     private GuiMemberList memberList;
-    private GuiAllianceList allianceList;
     private long balance;
-    private List<Gang> alliances;
+    public List<Gang> alliances;
 
     public GuiGangMenu(Gang gang, long balance, List<Gang> alliances) {
         this.gang = gang;
@@ -49,6 +48,19 @@ public class GuiGangMenu extends GuiScreen {
         fontRenderer.drawString(TextFormatting.BOLD + gang.getName(), 0, 0, 0xef8228);
         GlStateManager.popMatrix();
 
+        // draw stash balance
+        int yOffset = 10;
+        fontRenderer.drawString("Stash:", guiLeft + 70, guiTop + 10 + yOffset, GuiHelper.defaultTextColor);
+        fontRenderer.drawString("$" + NumberConversions.format(balance < 0 ? 0 : balance), guiLeft + 150, guiTop + 10 + yOffset, GuiHelper.defaultTextColor);
+        long kills = gang.getKills().values().stream().mapToLong(Long::valueOf).sum();
+        fontRenderer.drawString("Total Kills:", guiLeft + 70, guiTop + 20 + yOffset, GuiHelper.defaultTextColor);
+        fontRenderer.drawString("" + kills, guiLeft + 150, guiTop + 20 + yOffset, GuiHelper.defaultTextColor);
+        fontRenderer.drawString("Total Deaths:", guiLeft + 70, guiTop + 30 + yOffset, GuiHelper.defaultTextColor);
+        long deaths = gang.getDeaths().values().stream().mapToLong(Long::valueOf).sum();
+        fontRenderer.drawString("" + deaths, guiLeft + 150, guiTop + 30 + yOffset, GuiHelper.defaultTextColor);
+        fontRenderer.drawString("Total K/D:", guiLeft + 70, guiTop + 40 + yOffset, GuiHelper.defaultTextColor);
+        fontRenderer.drawString("" + (kills / (deaths == 0 ? 1 : deaths)), guiLeft + 150, guiTop + 40 + yOffset, GuiHelper.defaultTextColor);
+
         int dWheel = Mouse.getDWheel();
 
         GlStateManager.color(1, 1, 1, 1);
@@ -56,14 +68,14 @@ public class GuiGangMenu extends GuiScreen {
         GlStateManager.color(1, 1, 1, 1);
         memberList.draw(mouseX, mouseY, dWheel);
 
-        fontRenderer.drawString("Gang Balance: $" + NumberConversions.format(balance < 0 ? 0 : balance), memberList.x + 1, memberList.y - 12, GuiHelper.defaultTextColor);
+        fontRenderer.drawString(TextFormatting.UNDERLINE + "Members", memberList.x + 1, memberList.y - 12, GuiHelper.defaultTextColor);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         if(memberList.hoveringPlayer != null) {
-            int rep = memberList.rep.containsKey(memberList.hoveringPlayer) ? memberList.rep.get(memberList.hoveringPlayer) : 0;
-            int kills = memberList.kills.containsKey(memberList.hoveringPlayer) ? memberList.kills.get(memberList.hoveringPlayer) : 0;
-            int deaths = memberList.deaths.containsKey(memberList.hoveringPlayer) ? memberList.deaths.get(memberList.hoveringPlayer) : 0;
+            long rep = memberList.rep.containsKey(memberList.hoveringPlayer) ? memberList.rep.get(memberList.hoveringPlayer) : 0;
+            kills = memberList.kills.containsKey(memberList.hoveringPlayer) ? memberList.kills.get(memberList.hoveringPlayer) : 0;
+            deaths = memberList.deaths.containsKey(memberList.hoveringPlayer) ? memberList.deaths.get(memberList.hoveringPlayer) : 0;
             drawHoveringText(Lists.newArrayList(
                     TextFormatting.GOLD + "Rep: " + rep,
                     TextFormatting.RED + "Kills: " + kills,
@@ -76,19 +88,25 @@ public class GuiGangMenu extends GuiScreen {
         GlStateManager.disableLighting();
 
         if (gang.getOwner() != null) {
+            kills = memberList.kills.containsKey(gang.getOwner()) ? memberList.kills.get(gang.getOwner()) : 0;
+            deaths = memberList.deaths.containsKey(gang.getOwner()) ? memberList.deaths.get(gang.getOwner()) : 0;
             this.mc.getTextureManager().bindTexture(mc.player.getLocationSkin());
             Gui.drawScaledCustomSizeModalRect(ownerBounds.getX(), ownerBounds.getY(), 8.0F, 8, 8, 8,
                     ownerBounds.getWidth(), ownerBounds.getHeight(), 64.0F, 64.0F);
             Gui.drawScaledCustomSizeModalRect(ownerBounds.getX(), ownerBounds.getY(), 40.0F, 8, 8, 8,
                     ownerBounds.getWidth(), ownerBounds.getHeight(), 64.0F, 64.0F);
             if(ownerBounds.contains(mouseX, mouseY)) {
-                drawHoveringText(TextFormatting.DARK_RED + TextFormatting.ITALIC.toString() + NameFetcher.asyncFetchClient(gang.getOwner()), mouseX, mouseY);
+                drawHoveringText(Lists.newArrayList(
+                        TextFormatting.DARK_RED + TextFormatting.ITALIC.toString() + NameFetcher.asyncFetchClient(gang.getOwner()),
+                        TextFormatting.RED + "Kills: " + kills,
+                        TextFormatting.GOLD + "Deaths: " + deaths,
+                        TextFormatting.YELLOW + "K/D: " + (kills / (deaths == 0 ? 1 : deaths))),
+                        mouseX, mouseY);
             }
         }
 
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableLighting();
-        allianceList.draw(mouseX, mouseY, dWheel);
     }
 
     @Override
@@ -106,6 +124,10 @@ public class GuiGangMenu extends GuiScreen {
         super.actionPerformed(button);
         if(button.id == 0) {
             mc.displayGuiScreen(new GuiAddMember(this));
+        } else if (button.id == 2) {
+            mc.displayGuiScreen(new GuiGangAlliances(this));
+        } else if(button.id == 3) {
+            mc.displayGuiScreen(new GuiSetupChallenge(this));
         }
     }
 
@@ -115,11 +137,14 @@ public class GuiGangMenu extends GuiScreen {
         this.guiLeft = (this.width - guiWidth) / 2;
         this.guiTop = (this.height - guiHeight + 20) / 2;
         this.ownerBounds = new Rectangle(this.guiLeft + 15, this.guiTop + 25, 32, 32);
-        this.memberList = new GuiMemberList(mc, this.guiLeft + 5, this.guiTop + guiHeight / 2 + 15, guiWidth - 10, guiHeight / 2 - 20, gang);
-        this.allianceList = new GuiAllianceList(mc, this.guiLeft + guiWidth - 40, this.guiTop + 15, 40, guiHeight / 2 - 20, alliances);
+        this.memberList = new GuiMemberList(mc, this.guiLeft + 5, this.guiTop + guiHeight / 2 + 15, guiWidth - 10, guiHeight / 2 - 20, this);
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(0, memberList.x + memberList.width - 21, memberList.y - 22, 20, 20, "+"));
+        this.buttonList.add(new GuiButton(1, guiLeft - 22, guiTop + 2, 20, 20, "<"));
+        this.buttonList.add(new GuiButton(2, guiLeft + guiWidth + 2, guiTop + 2, 20, 20, ">"));
+        this.buttonList.add(new GuiButton(3, memberList.x + memberList.width - 85, memberList.y - 22, 60, 20, TextFormatting.YELLOW + "Challenge"));
         this.buttonList.get(0).enabled = gang.hasPermission(mc.player.getUniqueID(), GangPermission.INVITE);
+        this.buttonList.get(1).enabled = false;
     }
 
 

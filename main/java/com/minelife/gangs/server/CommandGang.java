@@ -1,12 +1,18 @@
 package com.minelife.gangs.server;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.gangs.Gang;
+import com.minelife.gangs.GangPermission;
 import com.minelife.gangs.GangRole;
 import com.minelife.gangs.network.PacketOpenGangGui;
+import com.minelife.gangs.network.PacketRequestAlliance;
 import com.minelife.util.PacketPlaySound;
+import com.minelife.util.PlayerHelper;
+import com.minelife.util.StringHelper;
 import com.minelife.util.fireworks.Color;
 import com.minelife.util.fireworks.FireworkBuilder;
 import net.minecraft.command.CommandBase;
@@ -20,7 +26,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,11 +41,18 @@ public class CommandGang extends CommandBase  {
     }
 
     @Override
+    public List<String> getAliases() {
+        return Lists.newArrayList("g");
+    }
+
+    @Override
     public String getUsage(ICommandSender sender) {
         sendMessage(sender, "/gang - To open gang GUI");
         sendMessage(sender, "/gang create <name> - To create a gang");
         sendMessage(sender, "/gang leave - To leave your gang");
         sendMessage(sender, "/gang disband - To destroy your gang");
+        sendMessage(sender, "/gang accept|deny");
+        sendMessage(sender, "/gang ally accept|deny");
         return null;
     }
 
@@ -68,14 +83,11 @@ public class CommandGang extends CommandBase  {
             }
 
             if(args[1].length() > 20) {
-                sendMessage(sender, TextFormatting.RED + "Name contains too many characters.");
+                sendMessage(sender, TextFormatting.RED + "Name contains too many characters. Max 20.");
                 return;
             }
 
-            Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
-            Matcher m = p.matcher(args[1]);
-
-            if(m.find()) {
+            if(StringHelper.containsSpecialChar(args[1])) {
                 sendMessage(sender, TextFormatting.RED + "Name cannot contain special characters.");
                 return;
             }
@@ -122,6 +134,46 @@ public class CommandGang extends CommandBase  {
 
             playerGang.disband();
             sendMessage(sender, "Gang disbanded.");
+        } else if(args[0].equalsIgnoreCase("ally")) {
+            if(args.length < 2) {
+                getUsage(sender);
+                return;
+            }
+
+            if(!playerGang.hasPermission(player.getUniqueID(), GangPermission.MANAGE_ALLIANCES)) {
+                sendMessage(player, TextFormatting.RED + "You are not authorized to manage alliances.");
+                return;
+            }
+
+            if(!PacketRequestAlliance.ALLY_REQUESTS.containsKey(playerGang)) {
+                sendMessage(player, TextFormatting.RED + "You do not have any pending alliances.");
+                return;
+            }
+
+            if(args[1].equalsIgnoreCase("accept")) {
+                Set<Gang> allies = playerGang.getAlliances();
+                allies.add(PacketRequestAlliance.ALLY_REQUESTS.get(playerGang));
+                playerGang.setAlliances(allies);
+                allies = PacketRequestAlliance.ALLY_REQUESTS.get(playerGang).getAlliances();
+                allies.add(playerGang);
+                PacketRequestAlliance.ALLY_REQUESTS.get(playerGang).setAlliances(allies);
+                playerGang.writeToDatabase();
+                PacketRequestAlliance.ALLY_REQUESTS.get(playerGang).writeToDatabase();
+
+                Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:gang_created", 0.1F, 1F), player);
+                ModEssentials.sendTitle(TextFormatting.RED.toString() + TextFormatting.BOLD.toString() + "Alliance Formed", TextFormatting.GOLD.toString() + "You formed an alliance with " + TextFormatting.RED + PacketRequestAlliance.ALLY_REQUESTS.get(playerGang).getName() + TextFormatting.GOLD + "!", 12, player);
+
+                if(PlayerHelper.getPlayer(PacketRequestAlliance.ALLY_REQUESTS.get(playerGang).getOwner()) != null) {
+                    Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:gang_created", 0.1F, 1F), PlayerHelper.getPlayer(PacketRequestAlliance.ALLY_REQUESTS.get(playerGang).getOwner()));
+                    ModEssentials.sendTitle(TextFormatting.RED.toString() + TextFormatting.BOLD.toString() + "Alliance Formed", TextFormatting.GOLD.toString() + "You formed an alliance with " + TextFormatting.RED + playerGang.getName() + TextFormatting.GOLD + "!", 12, PlayerHelper.getPlayer(PacketRequestAlliance.ALLY_REQUESTS.get(playerGang).getOwner()));
+                }
+
+                PacketRequestAlliance.ALLY_REQUESTS.remove(playerGang);
+            } else if(args[1].equalsIgnoreCase("deny")) {
+                PacketRequestAlliance.ALLY_REQUESTS.remove(playerGang);
+            } else {
+                getUsage(sender);
+            }
         }
     }
 

@@ -18,7 +18,7 @@ public class SetSpawn extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/setspawn\n/setspawn new";
+        return "/setspawn";
     }
 
     @Override
@@ -31,13 +31,6 @@ public class SetSpawn extends CommandBase {
         double Z = Player.posZ;
         float Yaw = Player.rotationYaw;
         float Pitch = Player.rotationPitch;
-
-        if(args.length == 1) {
-            Spawn.SetNewSpawn(new Location(dimension, X, Y, Z, Yaw, Pitch));
-            Player.getServerWorld().setSpawnPoint(Player.getPosition());
-            Player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Spawn for new players set!"));
-            return;
-        }
 
         Spawn.SetSpawn(new Location(dimension, X, Y, Z, Yaw, Pitch));
         Player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Spawn set!"));

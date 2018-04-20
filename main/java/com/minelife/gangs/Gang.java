@@ -158,7 +158,7 @@ public class Gang implements Comparable<Gang> {
     public void setAlliances(Set<Gang> alliances) {
         StringBuilder builder = new StringBuilder();
         alliances.forEach(gang -> builder.append(gang.getUniqueID().toString()).append(","));
-        nbtTag.setString("Gangs", builder.toString());
+        nbtTag.setString("Alliances", builder.toString());
     }
 
     public Map<UUID, GangRole> getMembers() {
@@ -168,7 +168,7 @@ public class Gang implements Comparable<Gang> {
 
         for (String member : nbtTag.getString("Members").split(";")) {
             if (!member.isEmpty() && member.contains(",")) {
-                members.put(UUID.fromString(member.split(",")[0]), GangRole.values()[NumberConversions.toInt(member.split(",")[1])]);
+                members.put(UUID.fromString(member.split(",")[0]), GangRole.valueOf(member.split(",")[1]));
             }
         }
         return members;
@@ -176,62 +176,62 @@ public class Gang implements Comparable<Gang> {
 
     public void setMembers(Map<UUID, GangRole> members) {
         StringBuilder builder = new StringBuilder();
-        members.forEach((uuid, role) -> builder.append(uuid.toString()).append(",").append(role.ordinal()).append(";"));
+        members.forEach((uuid, role) -> builder.append(uuid.toString()).append(",").append(role.name()).append(";"));
         nbtTag.setString("Members", builder.toString());
     }
 
-    public Map<UUID, Integer> getKills() {
-        Map<UUID, Integer> kills = Maps.newHashMap();
+    public Map<UUID, Long> getKills() {
+        Map<UUID, Long> kills = Maps.newHashMap();
 
         if (!nbtTag.hasKey("Kills")) return kills;
 
         for (String member : nbtTag.getString("Kills").split(";")) {
             if (!member.isEmpty() && member.contains(",")) {
-                kills.put(UUID.fromString(member.split(",")[0]), NumberConversions.toInt(member.split(",")[1]));
+                kills.put(UUID.fromString(member.split(",")[0]), NumberConversions.toLong(member.split(",")[1]));
             }
         }
         return kills;
     }
 
-    public void setKills(Map<UUID, Integer> kills) {
+    public void setKills(Map<UUID, Long> kills) {
         StringBuilder builder = new StringBuilder();
         kills.forEach((uuid, killCount) -> builder.append(uuid.toString()).append(",").append(killCount).append(";"));
         nbtTag.setString("Kills", builder.toString());
     }
 
-    public Map<UUID, Integer> getDeaths() {
-        Map<UUID, Integer> deaths = Maps.newHashMap();
+    public Map<UUID, Long> getDeaths() {
+        Map<UUID, Long> deaths = Maps.newHashMap();
 
         if (!nbtTag.hasKey("Deaths")) return deaths;
 
         for (String member : nbtTag.getString("Deaths").split(";")) {
             if (!member.isEmpty() && member.contains(",")) {
-                deaths.put(UUID.fromString(member.split(",")[0]), NumberConversions.toInt(member.split(",")[1]));
+                deaths.put(UUID.fromString(member.split(",")[0]), NumberConversions.toLong(member.split(",")[1]));
             }
         }
         return deaths;
     }
 
-    public void setDeaths(Map<UUID, Integer> deaths) {
+    public void setDeaths(Map<UUID, Long> deaths) {
         StringBuilder builder = new StringBuilder();
         deaths.forEach((uuid, deathCount) -> builder.append(uuid.toString()).append(",").append(deathCount).append(";"));
         nbtTag.setString("Deaths", builder.toString());
     }
 
-    public Map<UUID, Integer> getRep() {
-        Map<UUID, Integer> reps = Maps.newHashMap();
+    public Map<UUID, Long> getRep() {
+        Map<UUID, Long> reps = Maps.newHashMap();
 
         if (!nbtTag.hasKey("Rep")) return reps;
 
         for (String member : nbtTag.getString("Rep").split(";")) {
             if (!member.isEmpty() && member.contains(",")) {
-                reps.put(UUID.fromString(member.split(",")[0]), NumberConversions.toInt(member.split(",")[1]));
+                reps.put(UUID.fromString(member.split(",")[0]), NumberConversions.toLong(member.split(",")[1]));
             }
         }
         return reps;
     }
 
-    public void setRep(Map<UUID, Integer> reps) {
+    public void setRep(Map<UUID, Long> reps) {
         StringBuilder builder = new StringBuilder();
         reps.forEach((uuid, rep) -> builder.append(uuid.toString()).append(",").append(rep).append(";"));
         nbtTag.setString("Rep", builder.toString());

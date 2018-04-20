@@ -2,6 +2,7 @@ package com.minelife.util.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.util.client.PacketRequestUUID;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -14,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,19 +34,24 @@ public final class UUIDFetcher {
     protected static final Map<UUID, String> CACHE = Maps.newHashMap();
     protected static final List<String> NULL_NAMES = Lists.newArrayList();
 
+    private static final Set<String> fetching = Sets.newTreeSet();
     /*
     * 600 requests per 10 minutes for username -> UUID.
     * Up to 100 names in each request.
     */
     public static UUID get(String player) {
-        System.out.println("UURURRGGGGG");
-
         if (player == null || player.isEmpty()) return null;
 
         // search through the cached players first
         for (UUID id : CACHE.keySet()) if (CACHE.get(id) != null && CACHE.get(id).equalsIgnoreCase(player)) return id;
 
         if (NULL_NAMES.contains(player.toLowerCase())) return null;
+
+        if(fetching.contains(player)) return null;
+
+        fetching.add(player);
+
+        System.out.println("URRGGG");
 
         String profileURL = "https://api.minetools.eu/uuid/" + player.toLowerCase();
 
@@ -82,7 +89,7 @@ public final class UUIDFetcher {
     public static UUID asyncFetchClient(String name) {
         if(CACHE.containsValue(name)) {
             for (UUID uuid : CACHE.keySet()) {
-                if(CACHE.get(uuid).equals(name)) return uuid;
+                if(CACHE.get(uuid) != null && CACHE.get(uuid).equals(name)) return uuid;
             }
         }
         Minelife.getNetwork().sendToServer(new PacketRequestUUID(name));

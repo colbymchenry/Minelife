@@ -6,6 +6,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -23,11 +24,11 @@ public class ServerProxy extends MLProxy {
         IBlockState blockState = event.getState();
 
         if(blockState.getBlock() == Blocks.TALLGRASS) {
-            if(event.getWorld().rand.nextInt(100) > 95) {
+            if(MathHelper.nextDouble(event.getWorld().rand, 0, 100) > 99) {
                 EntityItem entityItem = new EntityItem(event.getWorld(), event.getPos().getX(), event.getPos().getY() + 0.5, event.getPos().getZ(), new ItemStack(ModDrugs.itemHempSeed, 2));
                 event.getWorld().spawnEntity(entityItem);
             }
-            if(event.getWorld().rand.nextInt(100) > 97) {
+            if(MathHelper.nextDouble(event.getWorld().rand, 0, 100) > 99.5) {
                 EntityItem entityItem = new EntityItem(event.getWorld(), event.getPos().getX(), event.getPos().getY() + 0.5, event.getPos().getZ(), new ItemStack(ModDrugs.itemCocaSeed, 2));
                 event.getWorld().spawnEntity(entityItem);
             }
