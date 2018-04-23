@@ -91,17 +91,17 @@ public class EstateListener {
         Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());
 
         if (estate == null) return;
+
         if (estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.INTERACT)) return;
 
-        int blockID = Block.getIdFromBlock(player.getEntityWorld().getBlockState(event.getPos()).getBlock());
-
-        if (!ModRealEstate.getConfig().getIntegerList("BlackListedInteractBlocks").contains(blockID)) return;
+        // TODO: Implement locks
 
         player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " You are " + TextFormatting.RED + "not" + TextFormatting.GOLD + " authorized to interact here."));
         event.setCanceled(true);
     }
 
     // TODO: Add fire spread protection
+    // TODO: cannot interact with cars, but can interact with containers
 
     @SubscribeEvent
     public void onHurt(LivingHurtEvent event) {

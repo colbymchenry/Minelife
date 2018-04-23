@@ -9,6 +9,7 @@ import com.minelife.essentials.ModEssentials;
 import com.minelife.gangs.ModGangs;
 import com.minelife.guns.ModGuns;
 import com.minelife.jobs.ModJobs;
+import com.minelife.locks.ModLocks;
 import com.minelife.minebay.ModMinebay;
 import com.minelife.notifications.ModNotifications;
 import com.minelife.permission.ModPermission;
@@ -75,6 +76,7 @@ public class Minelife {
         MODS.add(new ModJobs());
         MODS.add(new ModGangs());
         MODS.add(new ModTDM());
+        MODS.add(new ModLocks());
     }
 
     @Mod.EventHandler
