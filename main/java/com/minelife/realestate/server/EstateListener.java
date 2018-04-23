@@ -22,6 +22,7 @@ import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -61,7 +62,7 @@ public class EstateListener {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onBreak(BlockEvent.BreakEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
         Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());
@@ -85,7 +86,7 @@ public class EstateListener {
         event.setCanceled(true);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onInteract(PlayerInteractEvent.RightClickBlock event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
         Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());

@@ -48,7 +48,7 @@ public class ItemLock extends Item {
 
         ItemStack stack = player.getHeldItem(hand);
         LockType type = LockType.values()[getMetadata(stack)];
-        if(!ModLocks.addLock(worldIn, pos, type)) {
+        if(!ModLocks.addLock(worldIn, pos, type, player.getUniqueID())) {
             player.sendMessage(new TextComponentString(TextFormatting.RED + "An error occurred."));
             return EnumActionResult.FAIL;
         }

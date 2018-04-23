@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class ModLocks extends MLMod {
 
@@ -48,11 +49,25 @@ public class ModLocks extends MLMod {
         return null;
     }
 
-    public static boolean addLock(World world, BlockPos pos, LockType type) {
+    public static UUID getLockPlacer(World world, BlockPos pos) {
+        try {
+            ResultSet result = getDatabase().query("SELECT * FROM locks WHERE dimension='" + world.provider.getDimension() + "' " +
+                    "AND x='" + pos.getX() + "' AND y='" + pos.getY() + "' AND z='" + pos.getZ() + "'");
+            if (result.next()) {
+                return UUID.fromString(result.getString("placer"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public static boolean addLock(World world, BlockPos pos, LockType type, UUID player) {
         if (getLock(world, pos) == null) {
             try {
-                getDatabase().query("INSERT INTO locks (dimension, x, y, z, type, blockName) VALUES ('" + world.provider.getDimension() + "', " +
-                        "'" + pos.getX() + "', '" + pos.getY() + "', '" + pos.getZ() + "', '" + type.name() + "', '" + world.getBlockState(pos).getBlock().getRegistryName() + "')");
+                getDatabase().query("INSERT INTO locks (dimension, x, y, z, type, blockName, placer) VALUES ('" + world.provider.getDimension() + "', " +
+                        "'" + pos.getX() + "', '" + pos.getY() + "', '" + pos.getZ() + "', '" + type.name() + "', '" + world.getBlockState(pos).getBlock().getRegistryName() + "', '" + player.toString() + "')");
             } catch (SQLException e) {
                 e.printStackTrace();
             }

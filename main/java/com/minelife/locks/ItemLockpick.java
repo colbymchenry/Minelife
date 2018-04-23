@@ -1,6 +1,7 @@
 package com.minelife.locks;
 
 import com.minelife.Minelife;
+import com.minelife.permission.ModPermission;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.realestate.PlayerPermission;
@@ -19,6 +20,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Objects;
 
 public class ItemLockpick extends Item {
 
@@ -45,14 +48,15 @@ public class ItemLockpick extends Item {
 
         Estate estate = ModRealEstate.getEstateAt(worldIn, pos);
 
-        if ((estate != null && estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.BREAK_LOCKS)) || lockType.tryToUnlock()) {
+        if (ModPermission.hasPermission(player.getUniqueID(), "locks.override")
+                || (estate != null && estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.BREAK_LOCKS))
+                || Objects.equals(ModLocks.getLockPlacer(worldIn, pos), player.getUniqueID()) || lockType.tryToUnlock()) {
             ModLocks.deleteLock(worldIn, pos);
             player.dropItem(toDrop, false);
             Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:lock_unlocked", 1, 1), (EntityPlayerMP) player);
         } else {
             Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:lock_pick_use", 1, 1), (EntityPlayerMP) player);
         }
-
 
         if (stack.getCount() == 1) {
             player.setHeldItem(hand, ItemStack.EMPTY);
