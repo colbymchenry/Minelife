@@ -53,16 +53,14 @@ public class ClientProxy extends MLProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         MinecraftForge.EVENT_BUS.register(this);
-
         ModGuns.itemAmmo.registerModels();
+        ModGuns.itemGunPart.registerModels();
+        registerBlockRenderer(TileEntityTurret.class, new TileEntityRenderTurret());
+
 
         EnumGun.registerModels();
+        EnumAttachment.registerModels();
         BlockTurret.registerModels();
-
-        registerItemRenderer(ModGuns.itemAttachment, new RenderAttachment());
-        ModGuns.itemGunPart.registerModels();
-
-        registerBlockRenderer(TileEntityTurret.class, new TileEntityRenderTurret());
     }
 
     @Override
@@ -74,8 +72,6 @@ public class ClientProxy extends MLProxy {
         ModGuns.itemZincIngot.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
         ModGuns.itemGunmetal.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
 
-        EnumGun.registerModels();
-        BlockTurret.registerModels();
     }
 
     @SubscribeEvent
@@ -241,9 +237,9 @@ public class ClientProxy extends MLProxy {
                 EnumGun gunType = EnumGun.values()[event.getEntity().getHeldItemMainhand().getMetadata()];
                 EnumAttachment attachment = ItemGun.getAttachment(event.getEntity().getHeldItemMainhand());
                 if (attachment != null) {
-                    if (attachment == EnumAttachment.HOLOGRAPHIC) {
-                        event.setNewfov(0.7F);
-                    }
+//                    if (attachment == EnumAttachment.HOLOGRAPHIC) {
+//                        event.setNewfov(0.7F);
+//                    }
                 }
 
                 event.setNewfov(gunType == EnumGun.AWP || gunType == EnumGun.BARRETT ? 0.2F : 0.9F);

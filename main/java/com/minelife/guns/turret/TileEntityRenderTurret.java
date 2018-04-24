@@ -14,8 +14,10 @@ import net.minecraft.util.EnumFacing;
 
 public class TileEntityRenderTurret extends TileEntitySpecialRenderer<TileEntityTurret> {
 
-    private static ItemStack legs = new ItemStack(ModGuns.itemTurret);
-    private static ItemStack head = new ItemStack(ModGuns.itemTurret, 1, 1);
+    private static ItemStack legs_empty = new ItemStack(ModGuns.itemTurret, 1, BlockTurret.Type.STAND_EMPTY.ordinal());
+    private static ItemStack legs_full = new ItemStack(ModGuns.itemTurret, 1, BlockTurret.Type.STAND.ordinal());
+    private static ItemStack head_empty = new ItemStack(ModGuns.itemTurret, 1, BlockTurret.Type.HEAD_EMPTY.ordinal());
+    private static ItemStack head_full = new ItemStack(ModGuns.itemTurret, 1, BlockTurret.Type.HEAD.ordinal());
 
     public TileEntityRenderTurret() {
     }
@@ -27,7 +29,10 @@ public class TileEntityRenderTurret extends TileEntitySpecialRenderer<TileEntity
         GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
         GlStateManager.rotate(te.getDirection() == EnumFacing.NORTH ? 180 : te.getDirection() == EnumFacing.SOUTH ? 0 : te.getDirection() == EnumFacing.EAST ? 90 : -90, 0, 1, 0);
         GlStateManager.scale(2, 2, 2);
-        GuiFakeInventory.renderItem(Minecraft.getMinecraft(), legs, ItemCameraTransforms.TransformType.FIXED);
+
+        boolean hasAmmo = !te.getAmmo().isEmpty();
+
+        GuiFakeInventory.renderItem(Minecraft.getMinecraft(), !hasAmmo ? legs_empty : legs_full, ItemCameraTransforms.TransformType.FIXED);
 
         if (te.getWorld() != null && te.getWorld().getEntityByID(te.getTargetID()) != null
                 && te.getWorld().getEntityByID(te.getTargetID()) instanceof EntityLivingBase) {
@@ -56,7 +61,7 @@ public class TileEntityRenderTurret extends TileEntitySpecialRenderer<TileEntity
         } else {
             GlStateManager.rotate(te.rotationYaw, 0, 1, 0);
         }
-        GuiFakeInventory.renderItem(Minecraft.getMinecraft(), head, ItemCameraTransforms.TransformType.FIXED);
+        GuiFakeInventory.renderItem(Minecraft.getMinecraft(), !hasAmmo ? head_empty : head_full, ItemCameraTransforms.TransformType.FIXED);
         GlStateManager.popMatrix();
     }
 }

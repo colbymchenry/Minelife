@@ -2,6 +2,7 @@ package com.minelife.guns.packet;
 
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumAttachment;
+import com.minelife.guns.item.ItemAttachment;
 import com.minelife.guns.item.ItemGun;
 import com.minelife.util.client.PacketPopup;
 import io.netty.buffer.ByteBuf;
@@ -76,6 +77,8 @@ public class PacketAttachment implements IMessage {
                     return;
                 }
 
+                // TODO: It takes entire stack instead of 1
+
                 ItemStack attachmentStack = player.inventory.getStackInSlot(message.slotAttachment);
 
                 if (attachmentStack == null || attachmentStack.getItem() != ModGuns.itemAttachment) {
@@ -84,7 +87,6 @@ public class PacketAttachment implements IMessage {
                 }
 
                 ItemGun.setAttachment(gunStack, EnumAttachment.values()[attachmentStack.getMetadata()]);
-
 
                 if (currentAttachment != null) {
                     EntityItem entity_item = player.dropItem(currentAttachment, false);

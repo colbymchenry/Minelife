@@ -12,6 +12,7 @@ import codechicken.lib.vec.Translation;
 import com.google.common.collect.Lists;
 import com.minelife.guns.item.EnumAttachment;
 import com.minelife.guns.item.EnumGun;
+import com.minelife.guns.item.ItemAttachment;
 import com.minelife.guns.item.ItemGun;
 import com.minelife.util.client.GuiHelper;
 import net.minecraft.block.state.IBlockState;
@@ -43,6 +44,7 @@ public class RenderGun extends WrappedItemModel implements IItemRenderer {
     @Override
     public void renderItem(ItemStack itemStack, ItemCameraTransforms.TransformType transformType) {
         EnumGun gun = EnumGun.values()[itemStack.getMetadata()];
+        EnumAttachment attachment = ItemGun.getAttachment(itemStack);
         GlStateManager.pushMatrix();
 
         if (transformType == ItemCameraTransforms.TransformType.GUI) {
@@ -57,8 +59,8 @@ public class RenderGun extends WrappedItemModel implements IItemRenderer {
 
             if (aimingDownSight) {
                 gun.adsTransformations.forEach(Transformation::glApply);
-//                if (attachment != null && attachment.gunADSTransformation.get(gun) != null)
-//                    attachment.gunADSTransformation.get(gun).transformations.forEach(Transformation::glApply);
+                if (attachment != null && attachment.gunADSTransformation.get(gun) != null)
+                    attachment.gunADSTransformation.get(gun).transformations.forEach(Transformation::glApply);
             } else {
                 gun.firstPersonTransformations.forEach(Transformation::glApply);
             }
@@ -78,8 +80,22 @@ public class RenderGun extends WrappedItemModel implements IItemRenderer {
             gun.thirdPersonTransformations.forEach(Transformation::glApply);
         }
 
+        if(transformType == ItemCameraTransforms.TransformType.FIXED) {
+            GlStateManager.scale(3, 3, 3);
+            GlStateManager.translate(-0.3, -0.3, -0.3);
+        }
+
         renderWrapped(itemStack);
+
+        // draw attachment
+        if (attachment != null && attachment.transformations.get(gun) != null) {
+//            GuiHelper.renderItem(attachment.stack, transformType);
+            RenderAttachment.INSTANCE.renderItem(attachment.stack, transformType, gun);
+        }
+
         GlStateManager.popMatrix();
+
+
     }
 
     @Override

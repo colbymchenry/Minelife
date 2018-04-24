@@ -32,6 +32,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
+import static com.minelife.guns.turret.BlockTurret.Type.*;
+
 public class BlockTurret extends BlockContainer {
 
     private boolean bottom;
@@ -132,12 +134,14 @@ public class BlockTurret extends BlockContainer {
 
     @SideOnly(Side.CLIENT)
     public static void registerModels() {
-        ModelResourceLocation model = new ModelResourceLocation("minelife:turret_stand", "inventory");
-        ModelLoader.setCustomModelResourceLocation(ModGuns.itemTurret, 0, model);
-        ModelRegistryHelper.register(model, new ItemRenderTurret(() -> model));
+        for (Type type : Type.values()) {
+            ModelResourceLocation model = new ModelResourceLocation("minelife:turret_" + type.name().toLowerCase(), "inventory");
+            ModelLoader.setCustomModelResourceLocation(ModGuns.itemTurret, type.ordinal(), model);
+            ModelRegistryHelper.register(model, new ItemRenderTurret(() -> model));
+        }
+    }
 
-        ModelResourceLocation model1 = new ModelResourceLocation("minelife:turret_head", "inventory");
-        ModelLoader.setCustomModelResourceLocation(ModGuns.itemTurret, 1, model1);
-        ModelRegistryHelper.register(model1, new ItemRenderTurret(() -> model1));
+    public enum Type {
+        FULL, STAND, HEAD, STAND_EMPTY, HEAD_EMPTY
     }
 }
