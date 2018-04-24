@@ -59,6 +59,8 @@ public class RenderAttachment extends WrappedItemModel implements IItemRenderer 
 
         GlStateManager.translate(0.5, 0.5, 0.5);
         GlStateManager.scale(4, 4, 4);
+
+        // reddot
         attachment.transformations = EnumAttachment.TransformationList.newList(
                 new EnumAttachment.AttachmentTransformations(EnumGun.AK47, new Scale(0.1, 0.1, 0.1), new Translation(-0.1, 0.24, 0.018), new Rotation(3.14, 0, 1, 0)),
                 new EnumAttachment.AttachmentTransformations(EnumGun.M4A4, new Scale(0.15, 0.15, 0.15), new Translation(-0.01, 0.16, -0.001), new Rotation(0, 0, 1, 0)),
@@ -68,6 +70,8 @@ public class RenderAttachment extends WrappedItemModel implements IItemRenderer 
 //        , new Translation(-1.9, 1.30, 0.18), new Rotation(3.85, 0, 1, 0)
 
         if (gun != null) {
+
+            // reddot
             attachment.transformations.get(gun).transformations.forEach(Transformation::glApply);
 
             attachment.gunADSTransformation = EnumAttachment.TransformationList.newList(
