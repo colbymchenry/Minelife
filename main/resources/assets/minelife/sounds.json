@@ -23,6 +23,30 @@
     "category": "neutral",
     "sounds": ["minelife:guns/m4a4_reload"]
   },
+  "guns.m4a4_blazze.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/m4a4_blazze"]
+  },
+  "guns.m4a4_blazze.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/m4a4_reload"]
+  },
+  "guns.m4a4_pineapple.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/m4a4"]
+  },
+  "guns.m4a4_pineapple.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/m4a4_reload"]
+  },
+  "guns.m4a4_bumblebee.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/m4a4"]
+  },
+  "guns.m4a4_bumblebee.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/m4a4_reload"]
+  },
   "guns.barrett.shot": {
     "category": "neutral",
     "sounds": ["minelife:guns/barrett"]
@@ -47,6 +71,14 @@
     "category": "neutral",
     "sounds": ["minelife:guns/ak47_reload"]
   },
+  "guns.ak47_bloodbath.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/ak47"]
+  },
+  "guns.ak47_bloodbath.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/ak47_reload"]
+  },
   "guns.magnum.shot": {
     "category": "neutral",
     "sounds": ["minelife:guns/magnum"]
@@ -55,11 +87,27 @@
     "category": "neutral",
     "sounds": ["minelife:guns/magnum_reload"]
   },
+  "guns.magnum_black_mesa.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/magnum"]
+  },
+  "guns.magnum_black_mesa.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/magnum_reload"]
+  },
   "guns.desert_eagle.shot": {
     "category": "neutral",
     "sounds": ["minelife:guns/desert_eagle"]
   },
   "guns.desert_eagle.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/desert_eagle_reload"]
+  },
+  "guns.desert_eagle_shock.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/desert_eagle"]
+  },
+  "guns.desert_eagle_shock.reload": {
     "category": "neutral",
     "sounds": ["minelife:guns/desert_eagle_reload"]
   },

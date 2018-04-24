@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
-import com.minelife.drugs.ModDrugs;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumGun;
@@ -20,6 +19,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -122,7 +122,6 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
 
         if (ammo.isEmpty()) return;
 
-
         target = null;
         targetID = -1;
 
@@ -192,7 +191,7 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
                 if (result.getBlockState() != null) {
                     target = null;
                     targetID = -1;
-                    break targetLoop;
+                    break bulletLoop;
                 }
                 if (result.getEntity() != null) {
                     target = result.getEntity();
@@ -303,5 +302,10 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
         }
 
         return false;
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return INFINITE_EXTENT_AABB;
     }
 }

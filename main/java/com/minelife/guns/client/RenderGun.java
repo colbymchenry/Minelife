@@ -1,5 +1,6 @@
 package com.minelife.guns.client;
 
+import codechicken.lib.model.bakedmodels.WrappedItemModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.texture.TextureUtils;
@@ -15,12 +16,10 @@ import com.minelife.guns.item.ItemGun;
 import com.minelife.util.client.GuiHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -30,39 +29,39 @@ import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Supplier;
 
-public class RenderGun implements IItemRenderer {
+public class RenderGun extends WrappedItemModel implements IItemRenderer {
 
     public static boolean recoilProcess = false;
     public static float recoilYaw, recoilPitch;
 
-    public RenderGun() {
+    public RenderGun(Supplier<ModelResourceLocation> wrappedModel) {
+        super(wrappedModel);
     }
 
-    // TODO: Fix yellow when shooting deagle
     @Override
-    public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType transformType) {
-        EnumGun gun = EnumGun.values()[stack.getMetadata()];
-        EnumAttachment attachment = ItemGun.getAttachment(stack);
-
+    public void renderItem(ItemStack itemStack, ItemCameraTransforms.TransformType transformType) {
+        EnumGun gun = EnumGun.values()[itemStack.getMetadata()];
         GlStateManager.pushMatrix();
-        GlStateManager.pushAttrib();
 
-        if (transformType == ItemCameraTransforms.TransformType.GUI)
-            gun.guiTransformations.forEach(Transformation::glApply);
+        if (transformType == ItemCameraTransforms.TransformType.GUI) {
+            GlStateManager.scale(1.5, 1.5, 1.5);
+            GlStateManager.translate(-0.2, -0.1, -0.2);
+        }
 
         if (transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND) {
-            RenderHelper.enableGUIStandardItemLighting();
             gun.shotAnimation.animate();
 
             boolean aimingDownSight = Mouse.isButtonDown(1) && Minecraft.getMinecraft().currentScreen == null;
 
             if (aimingDownSight) {
                 gun.adsTransformations.forEach(Transformation::glApply);
-                if (attachment != null && attachment.gunADSTransformation.get(gun) != null)
-                    attachment.gunADSTransformation.get(gun).transformations.forEach(Transformation::glApply);
-            } else
+//                if (attachment != null && attachment.gunADSTransformation.get(gun) != null)
+//                    attachment.gunADSTransformation.get(gun).transformations.forEach(Transformation::glApply);
+            } else {
                 gun.firstPersonTransformations.forEach(Transformation::glApply);
+            }
 
             GlStateManager.translate(gun.shotAnimation.posX(), gun.shotAnimation.posY(), gun.shotAnimation.posZ());
             GlStateManager.rotate(gun.shotAnimation.rotX(), 1, 0, 0);
@@ -70,34 +69,16 @@ public class RenderGun implements IItemRenderer {
             GlStateManager.rotate(gun.shotAnimation.rotZ(), 0, 0, 1);
 
             if (aimingDownSight && (gun == EnumGun.AWP || gun == EnumGun.BARRETT)) {
-                GlStateManager.popAttrib();
                 GlStateManager.popMatrix();
                 return;
             }
         }
 
-        if (transformType == ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND)
+        if (transformType == ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND) {
             gun.thirdPersonTransformations.forEach(Transformation::glApply);
-
-        GlStateManager.disableCull();
-        GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.disableBlend();
-        CCRenderState ccrs = CCRenderState.instance();
-        Minecraft.getMinecraft().getTextureManager().bindTexture(gun.texture);
-        ccrs.startDrawing(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION_TEX_NORMAL);
-        gun.model.render(ccrs);
-        ccrs.draw();
-
-        // draw attachment
-        if (attachment != null && attachment.transformations.get(gun) != null) {
-            GlStateManager.pushMatrix();
-            attachment.transformations.get(gun).transformations.forEach(Transformation::glApply);
-            GuiHelper.renderItem(attachment.stack, ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND);
-            GlStateManager.popMatrix();
         }
 
-        GlStateManager.enableCull();
-        GlStateManager.popAttrib();
+        renderWrapped(itemStack);
         GlStateManager.popMatrix();
     }
 
@@ -113,12 +94,12 @@ public class RenderGun implements IItemRenderer {
 
     @Override
     public boolean isAmbientOcclusion() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isGui3d() {
-        return true;
+        return false;
     }
 
     @Override

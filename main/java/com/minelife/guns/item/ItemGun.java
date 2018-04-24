@@ -14,11 +14,9 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
-import net.minecraft.init.PotionTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -36,7 +34,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.text.WordUtils;
 
 import javax.annotation.Nullable;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -114,12 +111,12 @@ public class ItemGun extends Item {
 
     public static long getReloadTime(World world, ItemStack gunStack) {
         if (gunStack.getItem() != ModGuns.itemGun) return 0;
-        if(world.isRemote) return reloadTime;
+        if (world.isRemote) return reloadTime;
         return gunStack.hasTagCompound() && gunStack.getTagCompound().hasKey("ReloadTime") ? gunStack.getTagCompound().getLong("ReloadTime") : 0;
     }
 
     public static void setReloadTime(World world, ItemStack gunStack, long time) {
-        if(world.isRemote) reloadTime = time;
+        if (world.isRemote) reloadTime = time;
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
         tagCompound.setLong("ReloadTime", time);
         gunStack.setTagCompound(tagCompound);
@@ -127,34 +124,7 @@ public class ItemGun extends Item {
 
     public static void reload(EntityPlayer player, ItemStack gunStack) {
         if (gunStack.getItem() != ModGuns.itemGun) return;
-
-        EnumGun gun = EnumGun.values()[gunStack.getMetadata()];
-
-        Map<Integer, ItemStack> sniperRounds = ItemAmmo.getSniperAmmo(player);
-        Map<Integer, ItemStack> assaultRounds = ItemAmmo.getAssaultAmmo(player);
-        Map<Integer, ItemStack> pistolRounds = ItemAmmo.getPistolAmmo(player);
-
-
-        switch (gun) {
-            case AWP:
-                doReload(player, gunStack, sniperRounds);
-                break;
-            case BARRETT:
-                doReload(player, gunStack, sniperRounds);
-                break;
-            case MAGNUM:
-                doReload(player, gunStack, pistolRounds);
-                break;
-            case DESERT_EAGLE:
-                doReload(player, gunStack, pistolRounds);
-                break;
-            case AK47:
-                doReload(player, gunStack, assaultRounds);
-                break;
-            case M4A4:
-                doReload(player, gunStack, assaultRounds);
-                break;
-        }
+        doReload(player, gunStack, ItemAmmo.getAmmoCount(player, gunStack));
     }
 
     private static void doReload(EntityPlayer player, ItemStack gunStack, Map<Integer, ItemStack> ammo) {
@@ -205,7 +175,7 @@ public class ItemGun extends Item {
     }
 
     public static boolean isReloading(World world, ItemStack stack) {
-        if(world.isRemote) return reloadTime > System.currentTimeMillis();
+        if (world.isRemote) return reloadTime > System.currentTimeMillis();
         return stack.hasTagCompound() && stack.getTagCompound().hasKey("ReloadTime");
     }
 
@@ -288,7 +258,6 @@ public class ItemGun extends Item {
         EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
         if (world.isRemote) nextFire = System.currentTimeMillis() + gunType.fireRate;
         tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate - pingDelay);
-//        tagCompound.setLong("NextFire", System.currentTimeMillis() + gunType.fireRate);
         gunStack.setTagCompound(tagCompound);
     }
 
@@ -311,7 +280,7 @@ public class ItemGun extends Item {
 
         if (ItemGun.isReloading(player.getEntityWorld(), player.getHeldItemMainhand())) return false;
 
-        if (ItemAmmo.getAmmoCount(player, player.getHeldItemMainhand()) <= 0) {
+        if (ItemAmmo.getAmmoCount(player, player.getHeldItemMainhand()).values().stream().mapToInt(ItemStack::getCount).sum() <= 0) {
             if (player.world.isRemote) {
                 player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Guns] " + TextFormatting.GOLD + "Out of ammo."));
             }
@@ -320,7 +289,6 @@ public class ItemGun extends Item {
 
         ItemStack gunStack = player.getHeldItemMainhand();
         ItemGun.setReloadTime(player.getEntityWorld(), gunStack, System.currentTimeMillis() + gunType.reloadTime - pingDelay);
-//        ItemGun.setReloadTime(player.getEntityWorld(), gunStack, System.currentTimeMillis() + gunType.reloadTime);
         player.setHeldItem(EnumHand.MAIN_HAND, gunStack);
 
         if (player.world.isRemote) {

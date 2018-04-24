@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "normal": { "model": "minelife:turret_stand" },
+        "inventory": { "model": "minelife:turret_stand" }
+    }
+}

@@ -2,11 +2,16 @@ package com.minelife.guns.client;
 
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
+import com.minelife.drugs.ModDrugs;
+import com.minelife.drugs.client.render.ItemLeafMulcherRenderer;
+import com.minelife.drugs.client.render.TileEntityLeafMulcherRenderer;
+import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumAttachment;
 import com.minelife.guns.item.EnumGun;
 import com.minelife.guns.item.ItemGun;
+import com.minelife.guns.turret.BlockTurret;
 import com.minelife.guns.turret.ItemRenderTurret;
 import com.minelife.guns.turret.TileEntityRenderTurret;
 import com.minelife.guns.turret.TileEntityTurret;
@@ -15,6 +20,7 @@ import com.minelife.util.client.render.AdjustPlayerModelEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -25,6 +31,7 @@ import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -49,14 +56,13 @@ public class ClientProxy extends MLProxy {
 
         ModGuns.itemAmmo.registerModels();
 
-        registerItemRenderer(ModGuns.itemGun, new RenderGun());
-        registerItemRenderer(ModGuns.itemAttachment, new RenderAttachment());
+        EnumGun.registerModels();
+        BlockTurret.registerModels();
 
+        registerItemRenderer(ModGuns.itemAttachment, new RenderAttachment());
         ModGuns.itemGunPart.registerModels();
 
-        TileEntityRenderTurret renderTurret;
-        registerBlockRenderer(TileEntityTurret.class, renderTurret = new TileEntityRenderTurret());
-        registerItemRenderer(ModGuns.itemTurret, new ItemRenderTurret(renderTurret));
+        registerBlockRenderer(TileEntityTurret.class, new TileEntityRenderTurret());
     }
 
     @Override
@@ -67,6 +73,9 @@ public class ClientProxy extends MLProxy {
         ModGuns.itemZincPlate.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
         ModGuns.itemZincIngot.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
         ModGuns.itemGunmetal.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
+
+        EnumGun.registerModels();
+        BlockTurret.registerModels();
     }
 
     @SubscribeEvent
@@ -219,14 +228,14 @@ public class ClientProxy extends MLProxy {
                 bulletIterator.remove();
         }
 
-        if(Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() == ModGuns.itemGun) {
+        if (Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() == ModGuns.itemGun) {
             RenderGun.handleRecoil(EnumGun.values()[Minecraft.getMinecraft().player.getHeldItemMainhand().getMetadata()]);
         }
     }
 
     @SubscribeEvent
     public void fovUpdate(FOVUpdateEvent event) {
-        if(Minecraft.getMinecraft().currentScreen != null) return;
+        if (Minecraft.getMinecraft().currentScreen != null) return;
         if (event.getEntity().getHeldItemMainhand().getItem() == ModGuns.itemGun) {
             if (Mouse.isButtonDown(1)) {
                 EnumGun gunType = EnumGun.values()[event.getEntity().getHeldItemMainhand().getMetadata()];

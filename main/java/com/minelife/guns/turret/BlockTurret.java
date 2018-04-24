@@ -1,22 +1,22 @@
 package com.minelife.guns.turret;
 
-import buildcraft.core.BCCoreItems;
+import codechicken.lib.model.ModelRegistryHelper;
 import com.minelife.Minelife;
 import com.minelife.guns.GuiHandler;
 import com.minelife.guns.ModGuns;
+import com.minelife.guns.client.RenderGun;
 import com.minelife.guns.item.EnumGun;
-import com.minelife.guns.item.ItemGunPart;
 import com.minelife.util.client.MLParticleDigging;
 import ic2.core.ref.ItemName;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tileentity.TileEntity;
@@ -25,7 +25,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -38,17 +41,18 @@ public class BlockTurret extends BlockContainer {
         this.bottom = bottom;
         setUnlocalizedName(Minelife.MOD_ID + ":turret_" + bottom);
         setRegistryName(Minelife.MOD_ID, "turret_" + bottom);
-        setCreativeTab(CreativeTabs.MISC);
         setHardness(3);
         setResistance(15);
+        setLightLevel(1);
+        if(bottom) setCreativeTab(CreativeTabs.MISC);
     }
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if(worldIn.isRemote) return true;
+        if (worldIn.isRemote) return true;
 
         TileEntityTurret tileEntityTurret = (TileEntityTurret) (bottom ? worldIn.getTileEntity(pos) : worldIn.getTileEntity(pos.add(0, -1, 0)));
-        if(tileEntityTurret != null && tileEntityTurret.hasPermissionToModifySettings((EntityPlayerMP) playerIn)) {
+        if (tileEntityTurret != null && tileEntityTurret.hasPermissionToModifySettings((EntityPlayerMP) playerIn)) {
             playerIn.openGui(Minelife.getInstance(), GuiHandler.TURRET, worldIn, tileEntityTurret.getPos().getX(),
                     tileEntityTurret.getPos().getY(), tileEntityTurret.getPos().getZ());
         }
@@ -57,7 +61,7 @@ public class BlockTurret extends BlockContainer {
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-        if(!bottom) return;
+        if (!bottom) return;
         int l = MathHelper.floor((double) (placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
         TileEntityTurret tileTurret = (TileEntityTurret) worldIn.getTileEntity(pos);
         tileTurret.setDirection(l == 0 ? EnumFacing.NORTH : l == 1 ? EnumFacing.EAST : l == 2 ? EnumFacing.SOUTH : EnumFacing.WEST);
@@ -124,5 +128,16 @@ public class BlockTurret extends BlockContainer {
                 "AAA",
                 'A', Ingredient.fromItem(ModGuns.itemGunmetal),
                 'G', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 1)));
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void registerModels() {
+        ModelResourceLocation model = new ModelResourceLocation("minelife:turret_stand", "inventory");
+        ModelLoader.setCustomModelResourceLocation(ModGuns.itemTurret, 0, model);
+        ModelRegistryHelper.register(model, new ItemRenderTurret(() -> model));
+
+        ModelResourceLocation model1 = new ModelResourceLocation("minelife:turret_head", "inventory");
+        ModelLoader.setCustomModelResourceLocation(ModGuns.itemTurret, 1, model1);
+        ModelRegistryHelper.register(model1, new ItemRenderTurret(() -> model1));
     }
 }

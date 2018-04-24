@@ -1,63 +1,102 @@
 package com.minelife.guns.item;
 
+import codechicken.lib.model.ModelRegistryHelper;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.OBJParser;
+import codechicken.lib.render.item.CCRenderItem;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
+import com.minelife.guns.ModGuns;
+import com.minelife.guns.client.RenderGun;
 import com.minelife.util.client.Animation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 public enum EnumGun {
 
-    AK47(70, 6, 30, 2500, 6, 7, 387, 2.8, true,
-            Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.8, -0.5, 0.2)),
-            Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -1.6, -0.6)),
-            Lists.newArrayList(new Rotation(-44.77, 0, 1, 0), new Rotation(0.03, 1, 0, 0), new Translation(-1.34, -0.32, 0.2)),
+    AK47(70, 8, 30, 2500, 6, 7, 387, 2.8, true,
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.68, 0, 1, 0), new Translation(-0.9, -0.05, -0.58)),
+            Lists.newArrayList(new Scale(5, 5, 5), new Rotation(0.9, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.2, 1, 0, 0), new Translation(-0.5, -0.6, -0.35)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.785, 0, 1, 0), new Translation(-0.9, -0.03, -0.735)),
+            Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(1.1, 0.1, 0))),
+
+    AK47_BLOODBATH(70, 8, 30, 2500, 6, 7, 387, 2.8, true,
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.68, 0, 1, 0), new Translation(-0.9, -0.05, -0.58)),
+            Lists.newArrayList(new Scale(5, 5, 5), new Rotation(0.9, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.2, 1, 0, 0), new Translation(-0.5, -0.6, -0.35)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.785, 0, 1, 0), new Translation(-0.9, -0.03, -0.735)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(1.1, 0.1, 0))),
 
     M4A4(70, 4, 40, 1300, 8, 8, 386, 2.8, true,
-            Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-1, 0.4, 0.7)),
-            Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -0.9, -0.3)),
-            Lists.newArrayList(new Rotation(-44.77, 0, 1, 0), new Rotation(0.02, 1, 0, 0), new Translation(-1.34, 0.48, 0.2)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.85, 0, 1, 0), new Translation(-0.15, -0.05, -0.45)),
+            Lists.newArrayList(new Scale(5, 5, 5), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.5, -0.6, -0.65)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.15, -0.05, -0.274)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(0.8, 0.5, 0))),
 
-    AWP(1200, 15, 5, 3100, 8, 7, 389, 4.8, false,
-            Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.8, 0, 0.2)),
-            Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -1.5, -0.1)),
+    M4A4_BLAZZE(70, 4, 40, 1300, 8, 8, 386, 2.8, true,
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.85, 0, 1, 0), new Translation(-0.15, -0.05, -0.45)),
+            Lists.newArrayList(new Scale(5, 5, 5), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.5, -0.6, -0.65)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.15, -0.05, -0.274)),
+            Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(0.8, 0.5, 0))),
+
+    M4A4_BUMBLEBEE(70, 4, 40, 1300, 8, 8, 386, 2.8, true,
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.85, 0, 1, 0), new Translation(-0.15, -0.05, -0.45)),
+            Lists.newArrayList(new Scale(5, 5, 5), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.5, -0.6, -0.65)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.15, -0.05, -0.274)),
+            Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(0.8, 0.5, 0))),
+
+    M4A4_PINEAPPLE(70, 4, 40, 1300, 8, 8, 386, 2.8, true,
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.85, 0, 1, 0), new Translation(-0.15, -0.05, -0.45)),
+            Lists.newArrayList(new Scale(5, 5, 5), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.5, -0.6, -0.65)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.15, -0.05, -0.274)),
+            Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(0.8, 0.5, 0))),
+
+    AWP(1200, 35, 5, 3100, 8, 7, 389, 4.8, false,
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.71, 0, 1, 0), new Translation(-0.7, -0.02, -0.58)),
+            Lists.newArrayList(new Scale(6, 6, 6), new Rotation(0.9, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.2, 1, 0, 0), new Translation(-0.4, -0.53, -0.38)),
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.8, -0.5, 0.2)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.3), new Translation(1.2, 0.5, 0))),
 
-    BARRETT(400, 20, 5, 20, 6, 8, 392, 3.8, false,
-            Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.6, -0.5, 0.2)),
-            Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -1.5, 0.3)),
+    BARRETT(400, 25, 5, 20, 6, 8, 392, 3.8, false,
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.71, 0, 1, 0), new Translation(-0.7, -0.02, -0.58)),
+            Lists.newArrayList(new Scale(6, 6, 6), new Rotation(0.9, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.2, 1, 0, 0), new Translation(-0.4, -0.55, -0.38)),
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.8, -0.5, 0.2)),
-            Lists.newArrayList(new Scale(0.5, 0.5, 0.35), new Translation(1.9, 0.6, 0))),
+            Lists.newArrayList(new Scale(0.5, 0.5, 0.3), new Translation(1.2, 0.5, 0))),
 
     DESERT_EAGLE(50, 7, 10, 2400, 5, 7, 385, 2.8, false,
-            Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.4, -0.5, -0.5)),
-            Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -1.6, 0.3)),
-            Lists.newArrayList(new Rotation(-44.77, 0, 1, 0), new Rotation(0.04, 1, 0, 0), new Translation(-1.34, -0.12, 0.2)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.8, 0, 1, 0), new Translation(-0.5, -0.2, -0.58)),
+            Lists.newArrayList(new Scale(2, 2, 2), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.3, -0.7, -0.9)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.4, -0.12, -0.275)),
+            Lists.newArrayList(new Translation(0.2, -0.65, 0))),
+
+    DESERT_EAGLE_SHOCK(50, 7, 10, 2400, 5, 7, 385, 2.8, false,
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.8, 0, 1, 0), new Translation(-0.5, -0.2, -0.58)),
+            Lists.newArrayList(new Scale(2, 2, 2), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.3, -0.7, -0.9)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.4, -0.12, -0.275)),
             Lists.newArrayList(new Translation(0.2, -0.65, 0))),
 
     MAGNUM(100, 5, 6, 20, 6, 9, 380, 2.8, false,
-            Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.65, -0.1, -0.1)),
-            Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-44.75, 0, 1, 0), new Rotation(5, 1, 0, 0), new Translation(0.2, -1.4, 0.1)),
-            Lists.newArrayList(new Rotation(-44.77, 0, 1, 0), new Rotation(0.02, 1, 0, 0), new Translation(-1.34, 0.18, 0.2)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.8, 0, 1, 0), new Translation(-0.5, -0.3, -0.58)),
+            Lists.newArrayList(new Scale(2, 2, 2), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.3, -0.7, -0.9)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Rotation(0.01, 0, 0, 1), new Translation(-0.4, -0.185, -0.275)),
+            Lists.newArrayList(new Translation(-0.1, -0.6, 0))),
+
+    MAGNUM_BLACK_MESA(100, 5, 6, 20, 6, 9, 380, 2.8, false,
+           Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.8, 0, 1, 0), new Translation(-0.5, -0.3, -0.58)),
+            Lists.newArrayList(new Scale(2, 2, 2), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.3, -0.7, -0.9)),
+            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Rotation(0.01, 0, 0, 1), new Translation(-0.4, -0.185, -0.275)),
             Lists.newArrayList(new Translation(-0.1, -0.6, 0)));
 
-    public ResourceLocation texture, soundShot, soundReload, soundEmpty, guiTexture;
+    public ResourceLocation texture, soundShot, soundReload, soundEmpty;
     public CCModel model;
     public final int fireRate, damage, clipSize, reloadTime;
     public final double bulletSpeed;
@@ -73,7 +112,6 @@ public enum EnumGun {
             List<Transformation> firstPersonTransformations, List<Transformation> thirdPersonTransformations,
             List<Transformation> adsTransformations,
             List<Transformation> guiTransformations) {
-        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) loadClientStuff();
         this.fireRate = fireRate;
         this.damage = damage;
         this.clipSize = clipSize;
@@ -94,43 +132,70 @@ public enum EnumGun {
     }
 
     @SideOnly(Side.CLIENT)
-    private void loadClientStuff() {
-        texture = new ResourceLocation(Minelife.MOD_ID, "textures/item/guns/" + name() + ".png");
-        guiTexture = new ResourceLocation(Minelife.MOD_ID, "textures/item/guns/" + name() + "_gui_icon.png");
-        Map<String, CCModel> map = OBJParser.parseModels(new ResourceLocation(Minelife.MOD_ID, "models/guns/" + name() + ".obj"));
-        model = CCModel.combine(map.values());
-        model.apply(new Scale(0.3, 0.3, 0.3));
-        model.apply(new Translation(0.5, 0.5, 0.5));
-        model.computeNormals();
+    public static void registerModels() {
+        for (int i = 0; i < EnumGun.values().length; i++) {
+            ModelResourceLocation model = new ModelResourceLocation("minelife:" + EnumGun.values()[i].name(), "inventory");
+            ModelLoader.setCustomModelResourceLocation(ModGuns.itemGun, i, model);
+            ModelRegistryHelper.register(model, new RenderGun(() -> model));
+        }
     }
 
     public void resetAnimation() {
-        int side = ThreadLocalRandom.current().nextInt(-1, 1 + 1);
         boolean mouseDown = Mouse.isButtonDown(1);
         switch (this) {
             case AK47:
                 if (mouseDown)
-                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 32f) * side, (float) (Math.random() / 32f) * side, 0.2F, 0.05f).translateTo(0, 0, 0f, 0.2f);
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
                 else
-                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 7f), 2, 0.2f).translateTo(0, 0, 0f, 0.2f);
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
+                break;
+            case AK47_BLOODBATH:
+                if (mouseDown)
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
+                else
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
                 break;
             case M4A4:
                 if (mouseDown)
-                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 32f) * side, (float) (Math.random() / 32f) * side, 0.1F, 0.02f).translateTo(0, 0, 0f, 0.2f);
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
                 else
-                    this.shotAnimation = new Animation(0, 0, 0f).translateTo((float) (Math.random() / 7f), (float) (Math.random() / 32f), 0.5F, 0.05f).translateTo(0, 0, 0f, 0.2f);
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
+                break;
+            case M4A4_BLAZZE:
+                if (mouseDown)
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
+                else
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
+                break;
+            case M4A4_PINEAPPLE:
+                if (mouseDown)
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
+                else
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
+                break;
+            case M4A4_BUMBLEBEE:
+                if (mouseDown)
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
+                else
+                    this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.09f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
                 break;
             case AWP:
-                this.shotAnimation = new Animation(0, 0, 0).translateTo(0, 0.2f, 1.2f, 0.1f).translateTo(0, 0f, 0, 0.08f);
+                this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.6f, 0, 0, 0.05f).translateTo(0, 0, 0f, 0.05f);
                 break;
             case BARRETT:
-                this.shotAnimation = new Animation(0, 0, 0).translateTo(0, 0.2f, 1.2f, 0.1f).translateTo(0, 0f, 0, 0.08f);
+                this.shotAnimation = new Animation(0, 0, 0f).translateTo(-0.4f, 0, 0, 0.03f).translateTo(0, 0, 0f, 0.03f);
                 break;
             case MAGNUM:
-                this.shotAnimation = new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.x, 35, 3.5f).rotateTo(Animation.EnumRotation.x, 0, 4.5f);
+                this.shotAnimation = new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.z, -35, 3.5f).rotateTo(Animation.EnumRotation.z, 0, 4.5f);
+                break;
+            case MAGNUM_BLACK_MESA:
+                this.shotAnimation = new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.z, -35, 3.5f).rotateTo(Animation.EnumRotation.z, 0, 4.5f);
                 break;
             case DESERT_EAGLE:
-                this.shotAnimation = new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.x, 35, 3.5f).rotateTo(Animation.EnumRotation.x, 0, 4.5f);
+                this.shotAnimation = new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.z, -35, 3.5f).rotateTo(Animation.EnumRotation.z, 0, 4.5f);
+                break;
+            case DESERT_EAGLE_SHOCK:
+                this.shotAnimation = new Animation(0, 0, 0).rotateTo(Animation.EnumRotation.z, -35, 3.5f).rotateTo(Animation.EnumRotation.z, 0, 4.5f);
                 break;
         }
     }
@@ -140,16 +205,28 @@ public enum EnumGun {
         switch (this) {
             case AK47:
                 return !aimingDownSight ? new int[]{10, 20} : new int[]{1, 5};
+            case AK47_BLOODBATH:
+                return !aimingDownSight ? new int[]{10, 20} : new int[]{1, 5};
             case AWP:
                 return new int[]{1, 10};
             case BARRETT:
                 return new int[]{5, 10};
             case DESERT_EAGLE:
                 return new int[]{1, 10};
+            case DESERT_EAGLE_SHOCK:
+                return new int[]{1, 10};
             case M4A4:
                 return !aimingDownSight ? new int[]{10, 20} : new int[]{2, 8};
+            case M4A4_BLAZZE:
+                return !aimingDownSight ? new int[]{10, 20} : new int[]{2, 8};
+            case M4A4_BUMBLEBEE:
+                return !aimingDownSight ? new int[]{10, 20} : new int[]{2, 8};
+            case M4A4_PINEAPPLE:
+                return !aimingDownSight ? new int[]{10, 20} : new int[]{2, 8};
             case MAGNUM:
-                return new int[]{1, 10};
+                return new int[]{10, 20};
+            case MAGNUM_BLACK_MESA:
+                return new int[]{10, 20};
         }
         return new int[]{0, 0};
     }
@@ -158,17 +235,29 @@ public enum EnumGun {
         boolean aimingDownSight = Mouse.isButtonDown(1);
         switch (this) {
             case AK47:
-                return !aimingDownSight ? new int[]{5, 20} : new int[]{1, 10};
+                return !aimingDownSight ? new int[]{10, 20} : new int[]{5, 10};
+            case AK47_BLOODBATH:
+                return !aimingDownSight ? new int[]{10, 20} : new int[]{5, 10};
             case AWP:
                 return new int[]{20, 60};
             case BARRETT:
                 return new int[]{20, 90};
             case DESERT_EAGLE:
-                return new int[]{20, 60};
+                return new int[]{150, 200};
+            case DESERT_EAGLE_SHOCK:
+                return new int[]{150, 200};
             case M4A4:
-                return !aimingDownSight ? new int[]{1, 20} : new int[]{1, 4};
+                return !aimingDownSight ? new int[]{1, 10} : new int[]{1, 4};
+            case M4A4_BLAZZE:
+                return !aimingDownSight ? new int[]{1, 10} : new int[]{1, 4};
+            case M4A4_BUMBLEBEE:
+                return !aimingDownSight ? new int[]{1, 10} : new int[]{1, 4};
+            case M4A4_PINEAPPLE:
+                return !aimingDownSight ? new int[]{1, 10} : new int[]{1, 4};
             case MAGNUM:
-                return new int[]{20, 60};
+                return new int[]{150, 200};
+            case MAGNUM_BLACK_MESA:
+                return new int[]{150, 200};
         }
         return new int[]{0, 0};
     }
@@ -177,15 +266,27 @@ public enum EnumGun {
         switch (this) {
             case AK47:
                 return 8;
+            case AK47_BLOODBATH:
+                return 8;
             case AWP:
                 return 8;
             case BARRETT:
                 return 8;
             case DESERT_EAGLE:
                 return 2;
+            case DESERT_EAGLE_SHOCK:
+                return 2;
             case M4A4:
                 return 8;
+            case M4A4_BLAZZE:
+                return 8;
+            case M4A4_BUMBLEBEE:
+                return 8;
+            case M4A4_PINEAPPLE:
+                return 8;
             case MAGNUM:
+                return 2;
+            case MAGNUM_BLACK_MESA:
                 return 2;
         }
         return 10;

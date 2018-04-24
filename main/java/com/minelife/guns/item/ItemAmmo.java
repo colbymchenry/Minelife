@@ -3,12 +3,10 @@ package com.minelife.guns.item;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.guns.ModGuns;
-import ic2.core.item.ItemIC2;
 import ic2.core.ref.ItemName;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -101,38 +99,41 @@ public class ItemAmmo extends Item {
         return ammo;
     }
 
-    public static int getAmmoCount(EntityPlayer player, ItemStack gunStack) {
+    public static Map<Integer, ItemStack> getAmmoCount(EntityPlayer player, ItemStack gunStack) {
         EnumGun gun = EnumGun.values()[gunStack.getMetadata()];
 
         Map<Integer, ItemStack> sniperRounds = ItemAmmo.getSniperAmmo(player);
         Map<Integer, ItemStack> assaultRounds = ItemAmmo.getAssaultAmmo(player);
         Map<Integer, ItemStack> pistolRounds = ItemAmmo.getPistolAmmo(player);
 
-        int sniperCount = 0;
-        for (ItemStack stack : sniperRounds.values()) sniperCount += stack.getCount();
-
-        int assaultCount = 0;
-        for (ItemStack stack : assaultRounds.values()) assaultCount += stack.getCount();
-
-        int pistolCount = 0;
-        for (ItemStack stack : pistolRounds.values()) pistolCount += stack.getCount();
-
         switch (gun) {
             case AWP:
-                return sniperCount;
+                return sniperRounds;
             case BARRETT:
-                return sniperCount;
+                return sniperRounds;
             case MAGNUM:
-                return pistolCount;
+                return pistolRounds;
+            case MAGNUM_BLACK_MESA:
+                return pistolRounds;
             case DESERT_EAGLE:
-                return pistolCount;
+                return pistolRounds;
+            case DESERT_EAGLE_SHOCK:
+                return pistolRounds;
             case AK47:
-                return assaultCount;
+                return assaultRounds;
+            case AK47_BLOODBATH:
+                return assaultRounds;
             case M4A4:
-                return assaultCount;
+                return assaultRounds;
+            case M4A4_BLAZZE:
+                return assaultRounds;
+            case M4A4_BUMBLEBEE:
+                return assaultRounds;
+            case M4A4_PINEAPPLE:
+                return assaultRounds;
         }
 
-        return 0;
+        return Maps.newHashMap();
     }
 
     public void registerRecipes() {
