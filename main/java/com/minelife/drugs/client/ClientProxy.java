@@ -19,10 +19,10 @@ public class ClientProxy extends MLProxy {
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         ModelResourceLocation model = new ModelResourceLocation("minelife:coca_leaf", "inventory");
         ModelRegistryHelper.register(model, new ItemCocaLeafRenderer(() -> model));
-        registerItemRenderer(ModDrugs.itemLeafMulcherBlock, new ItemLeafMulcherRenderer());
-        registerBlockRenderer(TileEntityLeafMulcher.class, new TileEntityLeafMulcherRenderer());
-        registerItemRenderer(ModDrugs.itemCementMixerBlock, new ItemCementMixerRenderer());
-        registerBlockRenderer(TileEntityCementMixer.class, new TileEntityCementMixerRenderer());
+//        registerItemRenderer(ModDrugs.itemLeafMulcherBlock, new ItemLeafMulcherRenderer());
+//        registerBlockRenderer(TileEntityLeafMulcher.class, new TileEntityLeafMulcherRenderer());
+//        registerItemRenderer(ModDrugs.itemCementMixerBlock, new ItemCementMixerRenderer());
+//        registerBlockRenderer(TileEntityCementMixer.class, new TileEntityCementMixerRenderer());
     }
 
     @Override
@@ -55,8 +55,8 @@ public class ClientProxy extends MLProxy {
         ModDrugs.blockPyrolusiteOre.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
         ModDrugs.blockPotash.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
         ModDrugs.blockLimestone.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
-        ModDrugs.blockVacuum.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
-        ModDrugs.blockPresser.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
+//        ModDrugs.blockVacuum.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
+//        ModDrugs.blockPresser.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
     }
 
     private void registerRenderer(Item item) {

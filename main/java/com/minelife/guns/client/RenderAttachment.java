@@ -60,39 +60,9 @@ public class RenderAttachment extends WrappedItemModel implements IItemRenderer 
         GlStateManager.translate(0.5, 0.5, 0.5);
         GlStateManager.scale(4, 4, 4);
 
-        // reddot
-        attachment.transformations = EnumAttachment.TransformationList.newList(
-                new EnumAttachment.AttachmentTransformations(EnumGun.AK47, new Scale(0.1, 0.1, 0.1), new Translation(-0.1, 0.24, 0.018), new Rotation(3.14, 0, 1, 0)),
-                new EnumAttachment.AttachmentTransformations(EnumGun.M4A4, new Scale(0.15, 0.15, 0.15), new Translation(-0.01, 0.16, -0.001), new Rotation(0, 0, 1, 0)),
-                new EnumAttachment.AttachmentTransformations(EnumGun.DESERT_EAGLE, new Scale(0.25, 0.25, 0.25), new Translation(-0.26, 0.18, -0.005), new Rotation(0, 0, 1, 0))
-        );
-
-//        , new Translation(-1.9, 1.30, 0.18), new Rotation(3.85, 0, 1, 0)
-
-        if (gun != null) {
-
-            // reddot
+        if (gun != null)
             attachment.transformations.get(gun).transformations.forEach(Transformation::glApply);
 
-            attachment.gunADSTransformation = EnumAttachment.TransformationList.newList(
-                    new EnumAttachment.AttachmentTransformations(EnumGun.MAGNUM, new Translation(0, -0.238, 0.5)),
-                    new EnumAttachment.AttachmentTransformations(EnumGun.AK47, new Translation(0, -0.01, 0)),
-                    new EnumAttachment.AttachmentTransformations(EnumGun.M4A4, new Translation(0, -0.01, 0)),
-                    new EnumAttachment.AttachmentTransformations(EnumGun.DESERT_EAGLE, new Translation(0, -0.07, 0)));
-        }
-
-//        attachment.transformations = EnumAttachment.TransformationList.newList(
-//                new EnumAttachment.AttachmentTransformations(EnumGun.DESERT_EAGLE, new Scale(1.1, 1.1, 1.1), new Translation(0.33, 1.81, 0), new Rotation(-0.03, 0, 1, 0)),
-//                new EnumAttachment.AttachmentTransformations(EnumGun.MAGNUM, new Scale(1, 1, 1), new Translation(0.39, 1.67, 0.3), new Rotation(-0.4, 0, 1, 0)),
-//                new EnumAttachment.AttachmentTransformations(EnumGun.AK47, new Scale(0.4, 0.4, 0.4), new Translation(-1.3, 1.295, 1.4675), new Rotation(2.35, 0, 1, 0), new Rotation(1, 0, 1, 0)),
-//                new EnumAttachment.AttachmentTransformations(EnumGun.M4A4, new Scale(1, 1, 1), new Translation(0.39, 1.25, 0.7), new Rotation(-0.03, 0, 1, 0))
-//        );
-//        attachment.gunADSTransformation = EnumAttachment.TransformationList.newList(
-//                new EnumAttachment.AttachmentTransformations(EnumGun.DESERT_EAGLE, new Translation(0.002, -0.28, 0.5)),
-//                new EnumAttachment.AttachmentTransformations(EnumGun.MAGNUM, new Translation(0, -0.238, 0.5)),
-//                new EnumAttachment.AttachmentTransformations(EnumGun.AK47, new Translation(0, 0, 0)),
-//                new EnumAttachment.AttachmentTransformations(EnumGun.M4A4, new Translation(0, -0.112, 0.3))
-//        );
 //        if (transformType == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND) {
 //            attachment.firstPersonTransformations.forEach(Transformation::glApply);
 //        }
@@ -113,7 +83,6 @@ public class RenderAttachment extends WrappedItemModel implements IItemRenderer 
             double scale = 0.005;
             double w = (70 * scale), h = (86 * scale), l = (111.2 * scale);
             GlStateManager.translate(w, h, l);
-            attachment.reticleTransformations = Lists.newArrayList(new Scale(scale, scale, scale), new Translation(40, 4, -38), new Rotation(-90f, 0, 1, 0));
             attachment.reticleTransformations.forEach(Transformation::glApply);
             GlStateManager.translate(-w, -h, -l);
             GlStateManager.disableLighting();
@@ -129,8 +98,6 @@ public class RenderAttachment extends WrappedItemModel implements IItemRenderer 
         }
 
         GlStateManager.popMatrix();
-
-
     }
 
     @Override

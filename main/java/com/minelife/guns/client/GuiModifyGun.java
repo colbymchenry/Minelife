@@ -59,12 +59,11 @@ public class GuiModifyGun extends GuiScreen {
         if (this.gunStack == null) return;
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(this.guiLeft + 50, this.guiTop + 50, 0);
-        GlStateManager.translate(this.gunType.width, this.gunType.height, this.gunType.length);
-        GlStateManager.rotate(yRot += 1, 0, 1, 0);
-        GlStateManager.rotate(30, 1, 0, 0);
-        GlStateManager.scale(3, 3, 3);
-        GlStateManager.translate(-this.gunType.width, -this.gunType.height, -this.gunType.length);
+        GlStateManager.translate(this.guiLeft + 45, this.guiTop + 60, zLevel - 2200);
+        GlStateManager.translate(8,8, 0);
+        double scale = 8;
+        GlStateManager.scale(scale, scale, scale);
+        GlStateManager.translate(-8, -8, 0);
         GuiFakeInventory.renderItemInventory(this.gunStack, 0, 0, true);
         GlStateManager.popMatrix();
         GlStateManager.disableLighting();

@@ -1,6 +1,5 @@
 package com.minelife.guns.item;
 
-import buildcraft.core.BCCoreItems;
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.guns.Bullet;
@@ -332,60 +331,60 @@ public class ItemGun extends Item {
 
     public void registerRecipes() {
         ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.AK47.ordinal());
-        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.AK47.ordinal()),
-                "LLL",
-                "SFS",
-                "TTT",
-                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.PLANKS)),
-                'S', Ingredient.fromItem(BCCoreItems.gearIron),
-                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.RIFLE_FRAME.ordinal())),
-                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
-
-        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.AWP.ordinal());
-        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.AWP.ordinal()),
-                "LLL",
-                "SFS",
-                "TTT",
-                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.GOLD_BLOCK)),
-                'S', Ingredient.fromItem(BCCoreItems.gearGold),
-                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.SNIPER_FRAME.ordinal())),
-                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
-
-        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.BARRETT.ordinal());
-        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.BARRETT.ordinal()),
-                "LLL",
-                "SFS",
-                "TTT",
-                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.DIAMOND_BLOCK)),
-                'S', Ingredient.fromItem(BCCoreItems.gearDiamond),
-                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.SNIPER_FRAME.ordinal())),
-                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
-
-        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.DESERT_EAGLE.ordinal());
-        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.DESERT_EAGLE.ordinal()),
-                "LLL",
-                "SFS",
-                "LLL",
-                'L', Ingredient.fromItem(Items.IRON_INGOT),
-                'S', Ingredient.fromItem(BCCoreItems.gearIron),
-                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.PISTOL_FRAME.ordinal())));
-
-        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.M4A4.ordinal());
-        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.M4A4.ordinal()),
-                "LLL",
-                "SFS",
-                "TTT",
-                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)),
-                'S', Ingredient.fromItem(BCCoreItems.gearIron),
-                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.RIFLE_FRAME.ordinal())),
-                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
-
-        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.MAGNUM.ordinal());
-        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.MAGNUM.ordinal()),
-                "SFS",
-                "TTT",
-                'S', Ingredient.fromItem(BCCoreItems.gearIron),
-                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.PISTOL_FRAME.ordinal())),
-                'T', Ingredient.fromItem(Items.IRON_INGOT));
+//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.AK47.ordinal()),
+//                "LLL",
+//                "SFS",
+//                "TTT",
+//                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.PLANKS)),
+//                'S', Ingredient.fromItem(BCCoreItems.gearIron),
+//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.RIFLE_FRAME.ordinal())),
+//                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
+//
+//        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.AWP.ordinal());
+//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.AWP.ordinal()),
+//                "LLL",
+//                "SFS",
+//                "TTT",
+//                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.GOLD_BLOCK)),
+//                'S', Ingredient.fromItem(BCCoreItems.gearGold),
+//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.SNIPER_FRAME.ordinal())),
+//                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
+//
+//        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.BARRETT.ordinal());
+//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.BARRETT.ordinal()),
+//                "LLL",
+//                "SFS",
+//                "TTT",
+//                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.DIAMOND_BLOCK)),
+//                'S', Ingredient.fromItem(BCCoreItems.gearDiamond),
+//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.SNIPER_FRAME.ordinal())),
+//                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
+//
+//        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.DESERT_EAGLE.ordinal());
+//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.DESERT_EAGLE.ordinal()),
+//                "LLL",
+//                "SFS",
+//                "LLL",
+//                'L', Ingredient.fromItem(Items.IRON_INGOT),
+//                'S', Ingredient.fromItem(BCCoreItems.gearIron),
+//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.PISTOL_FRAME.ordinal())));
+//
+//        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.M4A4.ordinal());
+//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.M4A4.ordinal()),
+//                "LLL",
+//                "SFS",
+//                "TTT",
+//                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)),
+//                'S', Ingredient.fromItem(BCCoreItems.gearIron),
+//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.RIFLE_FRAME.ordinal())),
+//                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
+//
+//        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.MAGNUM.ordinal());
+//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.MAGNUM.ordinal()),
+//                "SFS",
+//                "TTT",
+//                'S', Ingredient.fromItem(BCCoreItems.gearIron),
+//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.PISTOL_FRAME.ordinal())),
+//                'T', Ingredient.fromItem(Items.IRON_INGOT));
     }
 }

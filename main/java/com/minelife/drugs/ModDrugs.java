@@ -1,11 +1,5 @@
 package com.minelife.drugs;
 
-import buildcraft.core.BCCoreBlocks;
-import buildcraft.core.BCCoreItems;
-import buildcraft.energy.BCEnergyBlocks;
-import buildcraft.energy.BCEnergyItems;
-import buildcraft.factory.BCFactoryBlocks;
-import buildcraft.lib.BCLibItems;
 import com.minelife.AbstractGuiHandler;
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
@@ -14,15 +8,8 @@ import com.minelife.drugs.block.*;
 import com.minelife.drugs.item.ItemGrinder;
 import com.minelife.drugs.item.ItemJoint;
 import com.minelife.drugs.item.ItemProcessedCocaine;
-import com.minelife.drugs.tileentity.TileEntityCementMixer;
-import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
-import com.minelife.drugs.tileentity.TileEntityPresser;
-import com.minelife.drugs.tileentity.TileEntityVacuum;
-import com.minelife.guns.item.EnumGun;
 import com.minelife.util.MLFluid;
 import com.minelife.util.MLFluidBlock;
-import ic2.core.ref.BlockName;
-import ic2.core.ref.ItemName;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -57,17 +44,17 @@ public class ModDrugs extends MLMod {
     public static BlockPyrolusiteOre blockPyrolusiteOre;
     public static BlockPotash blockPotash;
     public static BlockLimestone blockLimestone;
-    public static ItemBlock itemSulfurOre, itemPyrolusiteOre, itemPotashBlock, itemLimestoneBlock, itemVacuumBlock,
-            itemLeafMulcherBlock, itemPresserBlock, itemCementMixerBlock;
+    public static ItemBlock itemSulfurOre, itemPyrolusiteOre, itemPotashBlock, itemLimestoneBlock;
+//            itemVacuumBlock, itemLeafMulcherBlock, itemPresserBlock, itemCementMixerBlock;
     public static ItemJoint itemJoint;
     public static ItemSeeds itemHempSeed, itemLimeSeed, itemCocaSeed;
     public static Item itemCalciumHydroxide, itemCalciumOxide, itemHempBuds, itemHempShredded, itemCocaLeafShredded, itemCocaPaste, itemLime,
             itemPotassiumHydroxide, itemPotassiumManganate, itemPyrolusite, itemSalt, itemSulfur, itemPotassiumHydroxidePyrolusiteMixture,
             itemWaxyCocaine, itemHeatedCocaine, itemPressedCocaine, itemPurpleCocaine, itemCocaLeaf, itemProcessedCocaine, itemGrinder;
-    public static BlockVacuum blockVacuum;
-    public static BlockLeafMulcher blockLeafMulcher;
-    public static BlockPresser blockPresser;
-    public static BlockCementMixer blockCementMixer;
+//    public static BlockVacuum blockVacuum;
+//    public static BlockLeafMulcher blockLeafMulcher;
+//    public static BlockPresser blockPresser;
+//    public static BlockCementMixer blockCementMixer;
 
     public static MLFluidBlock blockAmmonia, blockPotassiumPermanganate, blockSulfuricAcid;
     public static MLFluid fluidAmmonia, fluidPotassiumPermanganate, fluidSulfuricAcid;
@@ -97,25 +84,25 @@ public class ModDrugs extends MLMod {
         registerBlock(blockPotash = new BlockPotash());
         registerBlock(blockLimestone = new BlockLimestone());
 
-        registerBlock(blockVacuum = new BlockVacuum());
-        registerTileEntity(TileEntityVacuum.class, "vacuum");
-        registerItem(itemVacuumBlock = (ItemBlock) new ItemBlock(blockVacuum).setRegistryName(Minelife.MOD_ID, "vacuum")
-                .setUnlocalizedName(Minelife.MOD_ID + ":vacuum").setCreativeTab(CreativeTabs.MISC));
-
-        registerBlock(blockPresser = new BlockPresser());
-        registerTileEntity(TileEntityPresser.class, "presser");
-        registerItem(itemPresserBlock = (ItemBlock) new ItemBlock(blockPresser).setRegistryName(Minelife.MOD_ID, "presser")
-                .setUnlocalizedName(Minelife.MOD_ID + ":presser").setCreativeTab(CreativeTabs.MISC));
-
-        registerBlock(blockLeafMulcher = new BlockLeafMulcher());
-        registerTileEntity(TileEntityLeafMulcher.class, "leaf_mulcher");
-        registerItem(itemLeafMulcherBlock = (ItemBlock) new ItemBlock(blockLeafMulcher).setRegistryName(Minelife.MOD_ID, "leaf_mulcher")
-                .setUnlocalizedName(Minelife.MOD_ID + ":leaf_mulcher").setCreativeTab(CreativeTabs.MISC));
-
-        registerBlock(blockCementMixer = new BlockCementMixer());
-        registerTileEntity(TileEntityCementMixer.class, "cement_mixer");
-        registerItem(itemCementMixerBlock = (ItemBlock) new ItemBlock(blockCementMixer).setRegistryName(Minelife.MOD_ID, "cement_mixer")
-                .setUnlocalizedName(Minelife.MOD_ID + ":cement_mixer").setCreativeTab(CreativeTabs.MISC));
+//        registerBlock(blockVacuum = new BlockVacuum());
+//        registerTileEntity(TileEntityVacuum.class, "vacuum");
+//        registerItem(itemVacuumBlock = (ItemBlock) new ItemBlock(blockVacuum).setRegistryName(Minelife.MOD_ID, "vacuum")
+//                .setUnlocalizedName(Minelife.MOD_ID + ":vacuum").setCreativeTab(CreativeTabs.MISC));
+//
+//        registerBlock(blockPresser = new BlockPresser());
+//        registerTileEntity(TileEntityPresser.class, "presser");
+//        registerItem(itemPresserBlock = (ItemBlock) new ItemBlock(blockPresser).setRegistryName(Minelife.MOD_ID, "presser")
+//                .setUnlocalizedName(Minelife.MOD_ID + ":presser").setCreativeTab(CreativeTabs.MISC));
+//
+//        registerBlock(blockLeafMulcher = new BlockLeafMulcher());
+//        registerTileEntity(TileEntityLeafMulcher.class, "leaf_mulcher");
+//        registerItem(itemLeafMulcherBlock = (ItemBlock) new ItemBlock(blockLeafMulcher).setRegistryName(Minelife.MOD_ID, "leaf_mulcher")
+//                .setUnlocalizedName(Minelife.MOD_ID + ":leaf_mulcher").setCreativeTab(CreativeTabs.MISC));
+//
+//        registerBlock(blockCementMixer = new BlockCementMixer());
+//        registerTileEntity(TileEntityCementMixer.class, "cement_mixer");
+//        registerItem(itemCementMixerBlock = (ItemBlock) new ItemBlock(blockCementMixer).setRegistryName(Minelife.MOD_ID, "cement_mixer")
+//                .setUnlocalizedName(Minelife.MOD_ID + ":cement_mixer").setCreativeTab(CreativeTabs.MISC));
 
         registerItem(itemSulfurOre = (ItemBlock) new ItemBlock(blockSulfurOre).setRegistryName(Minelife.MOD_ID, "sulfur_ore")
                 .setUnlocalizedName(Minelife.MOD_ID + ":sulfur_ore").setCreativeTab(CreativeTabs.MISC));
@@ -204,40 +191,40 @@ public class ModDrugs extends MLMod {
     // TODO: Make marijuana need torches near them to grow and make plants need a certain altitude to grow and maybe fans for air
     private void registerRecipes() {
         ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":leaf_mulcher");
-        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemLeafMulcherBlock),
-                "AAA",
-                "ABA",
-                "ACA",
-                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 3)),
-                'B', Ingredient.fromStacks(new ItemStack(Item.getItemFromBlock(BCCoreBlocks.engine), 1, 2)),
-                'C', Ingredient.fromStacks(new ItemStack(ItemName.block_cutting_blade.getInstance(), 1, 0)));
-
-        name = new ResourceLocation(Minelife.MOD_ID + ":cement_mixer");
-        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemCementMixerBlock),
-                "AAA",
-                "ABA",
-                "ACA",
-                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 3)),
-                'B', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 6)),
-                'C', Ingredient.fromStacks(new ItemStack(Item.getItemFromBlock(BCFactoryBlocks.tank))));
-
-        name = new ResourceLocation(Minelife.MOD_ID + ":vacuum");
-        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemVacuumBlock),
-                "AAA",
-                "ABA",
-                "ACA",
-                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 15)),
-                'B', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 2)),
-                'C', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 6)));
-
-        name = new ResourceLocation(Minelife.MOD_ID + ":presser");
-        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemPresserBlock),
-                "AAA",
-                "ABA",
-                "ACA",
-                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 15)),
-                'B', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 2)),
-                'C', Ingredient.fromStacks(new ItemStack(Item.getItemFromBlock(BCCoreBlocks.engine), 1, 0)));
+//        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemLeafMulcherBlock),
+//                "AAA",
+//                "ABA",
+//                "ACA",
+//                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 3)),
+//                'B', Ingredient.fromStacks(new ItemStack(Item.getItemFromBlock(BCCoreBlocks.engine), 1, 2)),
+//                'C', Ingredient.fromStacks(new ItemStack(ItemName.block_cutting_blade.getInstance(), 1, 0)));
+//
+//        name = new ResourceLocation(Minelife.MOD_ID + ":cement_mixer");
+//        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemCementMixerBlock),
+//                "AAA",
+//                "ABA",
+//                "ACA",
+//                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 3)),
+//                'B', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 6)),
+//                'C', Ingredient.fromStacks(new ItemStack(Item.getItemFromBlock(BCFactoryBlocks.tank))));
+//
+//        name = new ResourceLocation(Minelife.MOD_ID + ":vacuum");
+//        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemVacuumBlock),
+//                "AAA",
+//                "ABA",
+//                "ACA",
+//                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 15)),
+//                'B', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 2)),
+//                'C', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 6)));
+//
+//        name = new ResourceLocation(Minelife.MOD_ID + ":presser");
+//        GameRegistry.addShapedRecipe(name, null, new ItemStack(itemPresserBlock),
+//                "AAA",
+//                "ABA",
+//                "ACA",
+//                'A', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 15)),
+//                'B', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 2)),
+//                'C', Ingredient.fromStacks(new ItemStack(Item.getItemFromBlock(BCCoreBlocks.engine), 1, 0)));
 
         name = new ResourceLocation(Minelife.MOD_ID + ":calcium_hydroxide");
         GameRegistry.addShapelessRecipe(name, null, new ItemStack(itemCalciumHydroxide), Ingredient.fromItem(Items.WATER_BUCKET), Ingredient.fromItem(ModDrugs.itemCalciumOxide));

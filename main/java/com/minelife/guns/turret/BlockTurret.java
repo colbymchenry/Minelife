@@ -4,10 +4,8 @@ import codechicken.lib.model.ModelRegistryHelper;
 import com.minelife.Minelife;
 import com.minelife.guns.GuiHandler;
 import com.minelife.guns.ModGuns;
-import com.minelife.guns.client.RenderGun;
 import com.minelife.guns.item.EnumGun;
 import com.minelife.util.client.MLParticleDigging;
-import ic2.core.ref.ItemName;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -122,14 +120,15 @@ public class BlockTurret extends BlockContainer {
         return true;
     }
 
+    // TODO
     public void registerRecipe() {
         ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":turret");
-        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.DESERT_EAGLE.ordinal()),
-                "AAA",
-                "AGA",
-                "AAA",
-                'A', Ingredient.fromItem(ModGuns.itemGunmetal),
-                'G', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 1)));
+//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.DESERT_EAGLE.ordinal()),
+//                "AAA",
+//                "AGA",
+//                "AAA",
+//                'A', Ingredient.fromItem(ModGuns.itemGunmetal),
+//                'G', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 1)));
     }
 
     @SideOnly(Side.CLIENT)

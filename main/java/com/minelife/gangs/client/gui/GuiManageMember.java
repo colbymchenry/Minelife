@@ -1,13 +1,11 @@
 package com.minelife.gangs.client.gui;
 
-import buildcraft.lib.misc.WorldUtil;
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.gangs.GangPermission;
 import com.minelife.gangs.GangRole;
 import com.minelife.gangs.network.PacketRemoveMember;
 import com.minelife.gangs.network.PacketSetMemberRole;
-import com.minelife.jobs.EnumJob;
 import com.minelife.util.client.GuiHelper;
 import com.minelife.util.server.NameFetcher;
 import net.minecraft.client.gui.GuiButton;

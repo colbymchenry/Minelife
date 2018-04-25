@@ -28,22 +28,33 @@ import java.util.Map;
 public enum EnumAttachment {
 
     RED_DOT(new ItemStack(ModGuns.itemAttachment, 1, 0),
-            Lists.newArrayList(new Scale(2f, 0.01f, 0.01f), new Translation(-42, 52, 150)),
+            Lists.newArrayList(new Scale(0.005, 0.005, 0.005), new Translation(40, 4, -38), new Rotation(-90f, 0, 1, 0)),
             Lists.newArrayList(new Scale(2, 0.8, 0.8), new Rotation(-3.9, 0, 1, 0), new Translation(-1.6, 0.4, -0.2)),
             Lists.newArrayList(new Scale(2, 0.5, 2), new Rotation(-3.3, 0, 1, 0), new Translation(-0.5, 1, -1)),
             Lists.newArrayList(new Scale(2, 2, 2), new Translation(1.3, 0.7, -0.2)),
             TransformationList.newList(
-                    new EnumAttachment.AttachmentTransformations(EnumGun.DESERT_EAGLE, new Scale(1.1, 1.1, 1.1), new Translation(0.33, 1.81, 0), new Rotation(-0.03, 0, 1, 0)),
-                    new EnumAttachment.AttachmentTransformations(EnumGun.MAGNUM, new Scale(1, 1, 1), new Translation(0.39, 1.67, 0.3), new Rotation(-0.03, 0, 1, 0)),
-                    new EnumAttachment.AttachmentTransformations(EnumGun.AK47, new Scale(1, 1, 1), new Translation(0.39, 2.15, 0.7), new Rotation(-0.03, 0, 1, 0)),
-                    new EnumAttachment.AttachmentTransformations(EnumGun.M4A4, new Scale(1, 1, 1), new Translation(0.39, 1.25, 0.7), new Rotation(-0.03, 0, 1, 0))
+                    new EnumAttachment.AttachmentTransformations(EnumGun.AK47, new Scale(0.1, 0.1, 0.1), new Translation(-0.1, 0.24, 0.018), new Rotation(3.14, 0, 1, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.AK47_BLOODBATH, new Scale(0.1, 0.1, 0.1), new Translation(-0.1, 0.24, 0.018), new Rotation(3.14, 0, 1, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.M4A4, new Scale(0.15, 0.15, 0.15), new Translation(-0.01, 0.16, -0.001), new Rotation(0, 0, 1, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.M4A4_BLAZZE, new Scale(0.15, 0.15, 0.15), new Translation(-0.01, 0.16, -0.001), new Rotation(0, 0, 1, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.M4A4_PINEAPPLE, new Scale(0.15, 0.15, 0.15), new Translation(-0.01, 0.16, -0.001), new Rotation(0, 0, 1, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.M4A4_BUMBLEBEE, new Scale(0.15, 0.15, 0.15), new Translation(-0.01, 0.16, -0.001), new Rotation(0, 0, 1, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.DESERT_EAGLE, new Scale(0.25, 0.25, 0.25), new Translation(-0.26, 0.18, -0.005), new Rotation(0, 0, 1, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.DESERT_EAGLE_SHOCK, new Scale(0.25, 0.25, 0.25), new Translation(-0.26, 0.18, -0.005), new Rotation(0, 0, 1, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.MAGNUM, new Scale(0.25, 0.25, 0.25), new Translation(-0.26, 0.23, -0.005), new Rotation(0, 0, 1, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.MAGNUM_BLACK_MESA, new Scale(0.25, 0.25, 0.25), new Translation(-0.26, 0.23, -0.005), new Rotation(0, 0, 1, 0))
             ),
             TransformationList.newList(
-                    new EnumAttachment.AttachmentTransformations(EnumGun.DESERT_EAGLE, new Translation(0.002, -0.28, 0.5)),
-                    new EnumAttachment.AttachmentTransformations(EnumGun.MAGNUM, new Translation(0, -0.238, 0.5)),
-                    new EnumAttachment.AttachmentTransformations(EnumGun.AK47, new Translation(0, -0.202, 0.3)),
-                    new EnumAttachment.AttachmentTransformations(EnumGun.M4A4, new Translation(0, -0.112, 0.3))
-            ));
+                    new EnumAttachment.AttachmentTransformations(EnumGun.MAGNUM, new Translation(0, -0.05, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.MAGNUM_BLACK_MESA, new Translation(0, -0.05, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.AK47, new Translation(0, -0.01, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.AK47_BLOODBATH, new Translation(0, -0.01, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.M4A4, new Translation(0, -0.01, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.M4A4_BLAZZE, new Translation(0, -0.01, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.M4A4_PINEAPPLE, new Translation(0, -0.01, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.M4A4_BUMBLEBEE, new Translation(0, -0.01, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.DESERT_EAGLE, new Translation(0, -0.07, 0)),
+                    new EnumAttachment.AttachmentTransformations(EnumGun.DESERT_EAGLE_SHOCK, new Translation(0, -0.07, 0))));
 //    HOLOGRAPHIC(new ItemStack(ModGuns.itemAttachment, 1, 1),
 //            Lists.newArrayList(new Scale(0.005f, 0.005f, 0.005f), new Translation(49, 206, 120)),
 //            Lists.newArrayList(new Scale(0.8, 0.8, 0.8), new Rotation(-0.7, 0, 1, 0), new Translation(0.2, 0.4, -0.2)),
@@ -94,6 +105,10 @@ public enum EnumAttachment {
     public static class TransformationList extends ArrayList<AttachmentTransformations> {
         public AttachmentTransformations get(EnumGun gun) {
             return this.stream().filter(attachmentTransformation -> attachmentTransformation.gunType.equals(gun)).findFirst().orElse(null);
+        }
+
+        public boolean contains(EnumGun gun) {
+            return get(gun) != null;
         }
 
         public static TransformationList newList(AttachmentTransformations... objects) {
