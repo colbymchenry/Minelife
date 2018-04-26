@@ -13,6 +13,7 @@ import com.minelife.util.MLTileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
 import java.sql.ResultSet;
@@ -24,9 +25,12 @@ public class TileEntityCash extends MLTileEntity {
 
     private MLInventory inventory = new MLInventory(54, null, 64);
 
+    private EnumFacing facing = EnumFacing.NORTH;
+
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         compound.setTag("Inventory", this.inventory.writeToNBT(new NBTTagCompound()));
+        compound.setInteger("Facing", this.facing.ordinal());
         return super.writeToNBT(compound);
     }
 
@@ -34,6 +38,15 @@ public class TileEntityCash extends MLTileEntity {
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         this.inventory.readFromNBT((NBTTagCompound) compound.getTag("Inventory"));
+        if(compound.hasKey("Facing")) this.facing = EnumFacing.values()[compound.getInteger("Facing")];
+    }
+
+    public EnumFacing getFacing() {
+        return facing;
+    }
+
+    public void setFacing(EnumFacing facing) {
+        this.facing = facing;
     }
 
     public MLInventory getInventory() {

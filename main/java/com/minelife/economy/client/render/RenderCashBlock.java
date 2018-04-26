@@ -9,6 +9,10 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+
+import static net.minecraft.util.EnumFacing.NORTH;
+import static net.minecraft.util.EnumFacing.WEST;
 
 public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
 
@@ -30,7 +34,7 @@ public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
 
         ItemStack lastStack = null;
         int hitMaxY = 0, hitMaxZ = 0;
-        double xOffset = 0, yOffset = 0, zOffset = 0;
+        double yOffset = 0, zOffset = 0;
         for (int i = 0; i < te.getInventory().getSizeInventory(); i++) {
             if (te.getInventory().getStackInSlot(i).getItem() != Items.AIR) {
                 yOffset += 0.032;
@@ -42,7 +46,6 @@ public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
 
                 if (zOffset >= 0.45) {
                     zOffset = 0;
-                    xOffset -= 0.45;
                     hitMaxZ++;
                 }
 
@@ -51,6 +54,9 @@ public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
         }
 
         if (lastStack == null) return;
+
+        // TODO: Implement rotation rendering
+//        GlStateManager.rotate(te.getFacing() == EnumFacing.EAST ? 90 : te.getFacing() == WEST ? 270 : te.getFacing() == NORTH ? 180 : 0, 0, 1, 0);
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(x + 0.5, y + 0.08, z + 0.28);
@@ -65,7 +71,7 @@ public class RenderCashBlock extends TileEntitySpecialRenderer<TileEntityCash> {
             GlStateManager.pushMatrix();
             GlStateManager.translate(x + 0.5, y + 0.08, z + 0.28 + 0.44);
             GlStateManager.translate(0, -0.03, 0);
-            GlStateManager.scale(0.8, (hitMaxY > 1 ? 15 : 0) + 0.4, 0.8);
+            GlStateManager.scale(0.8, (hitMaxY > 1 ? 15 : 0) + 0.4 + ((yOffset * 15)), 0.8);
             GlStateManager.translate(0, 0.03, 0);
             GlStateManager.rotate(90, 1, 0, 0);
             GuiFakeInventory.renderItem(Minecraft.getMinecraft(), lastStack, ItemCameraTransforms.TransformType.FIXED);

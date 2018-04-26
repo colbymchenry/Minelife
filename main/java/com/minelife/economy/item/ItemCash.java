@@ -17,6 +17,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
@@ -87,6 +88,8 @@ public class ItemCash extends Item {
         worldIn.setBlockState(pos, ModEconomy.blockCash.getDefaultState());
         TileEntityCash tile = (TileEntityCash) worldIn.getTileEntity(pos);
         tile.deposit(player.getHeldItem(hand));
+        int l = MathHelper.floor((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+        tile.setFacing(l == 0 ? EnumFacing.NORTH : l == 1 ? EnumFacing.EAST : l == 2 ? EnumFacing.SOUTH : EnumFacing.WEST);
         tile.sendUpdates();
         player.setHeldItem(hand, ItemStack.EMPTY);
         return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);

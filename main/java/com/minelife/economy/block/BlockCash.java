@@ -3,6 +3,7 @@ package com.minelife.economy.block;
 import com.minelife.Minelife;
 import com.minelife.economy.GuiHandler;
 import com.minelife.economy.ModEconomy;
+import com.minelife.economy.tileentity.TileEntityATM;
 import com.minelife.economy.tileentity.TileEntityCash;
 import com.minelife.util.client.MLParticleDigging;
 import net.minecraft.block.BlockContainer;
@@ -11,12 +12,15 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -57,6 +61,17 @@ public class BlockCash extends BlockContainer {
                     || playerIn.getHeldItemMainhand().getItem() != ModEconomy.itemCash)
             playerIn.openGui(Minelife.getInstance(), GuiHandler.CASH_BLOCK_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+    }
+
+    @Override
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        if (worldIn.isRemote) return;
+
+        int l = MathHelper.floor((double) (placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+
+        TileEntityCash tile = (TileEntityCash) worldIn.getTileEntity(pos);
+        tile.setFacing(l == 0 ? EnumFacing.NORTH : l == 1 ? EnumFacing.EAST : l == 2 ? EnumFacing.SOUTH : EnumFacing.WEST);
+        tile.sendUpdates();
     }
 
     @Nullable
