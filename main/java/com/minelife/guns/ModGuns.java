@@ -6,10 +6,7 @@ import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.guns.block.BlockZincOre;
 import com.minelife.guns.item.*;
-import com.minelife.guns.packet.PacketAttachment;
-import com.minelife.guns.packet.PacketBullet;
-import com.minelife.guns.packet.PacketFire;
-import com.minelife.guns.packet.PacketReload;
+import com.minelife.guns.packet.*;
 import com.minelife.guns.turret.BlockTurret;
 import com.minelife.guns.turret.PacketSetTurretSettings;
 import com.minelife.guns.turret.TileEntityTurret;
@@ -61,10 +58,16 @@ public class ModGuns extends MLMod {
         registerItem(itemGunPart = new ItemGunPart());
         registerItem(itemDynamite = new ItemDynamite());
         MinecraftForge.EVENT_BUS.register(this);
+
         registerPacket(PacketFire.Handler.class, PacketFire.class, Side.SERVER);
         registerPacket(PacketBullet.Handler.class, PacketBullet.class, Side.CLIENT);
         registerPacket(PacketReload.Handler.class, PacketReload.class, Side.SERVER);
         registerPacket(PacketAttachment.Handler.class, PacketAttachment.class, Side.SERVER);
+        registerPacket(PacketChangeSkin.Handler.class, PacketChangeSkin.class, Side.SERVER);
+        registerPacket(PacketOpenModifyGUI.Handler.class, PacketOpenModifyGUI.class, Side.CLIENT);
+        registerPacket(PacketRequestModifyGUI.Handler.class, PacketRequestModifyGUI.class, Side.SERVER);
+        registerPacket(PacketChangeSkinResponse.Handler.class, PacketChangeSkinResponse.class, Side.CLIENT);
+
         GameRegistry.registerWorldGenerator(new BlockZincOre.Generator(), 0);
         itemZincIngot.registerSmeltingRecipe();
         itemZincPlate.registerRecipe();
@@ -72,6 +75,7 @@ public class ModGuns extends MLMod {
         itemGunPart.registerRecipes();
         itemGun.registerRecipes();
         itemAttachment.registerRecipes();
+        itemDynamite.registerRecipe();
 //        itemAmmo.registerRecipes();
 
         registerPacket(PacketSetTurretSettings.Handler.class, PacketSetTurretSettings.class, Side.SERVER);

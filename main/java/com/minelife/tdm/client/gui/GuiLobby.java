@@ -1,6 +1,5 @@
 package com.minelife.tdm.client.gui;
 
-import com.minelife.tdm.Arena;
 import com.minelife.tdm.Match;
 import com.minelife.util.client.GuiDropDown;
 import com.minelife.util.client.GuiHelper;
@@ -47,6 +46,7 @@ public class GuiLobby extends GuiScreen {
         super.initGui();
         guiLeft = (this.width - guiWidth) / 2;
         guiTop = (this.height - guiHeight) / 2;
+
 
     }
 }

@@ -24,73 +24,73 @@ import java.util.List;
 
 public enum EnumGun {
 
-    AK47(70, 8, 30, 2500, 6, 7, 387, 2.8, true,
+    AK47(null, 70, 8, 30, 2500, 6, 7, 387, 2.8, true,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.68, 0, 1, 0), new Translation(-0.9, -0.05, -0.58)),
             Lists.newArrayList(new Scale(5, 5, 5), new Rotation(0.9, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.2, 1, 0, 0), new Translation(-0.5, -0.6, -0.35)),
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.785, 0, 1, 0), new Translation(-0.9, -0.03, -0.735)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(1.1, 0.1, 0))),
 
-    AK47_BLOODBATH(70, 8, 30, 2500, 6, 7, 387, 2.8, true,
+    AK47_BLOODBATH(AK47, 70, 8, 30, 2500, 6, 7, 387, 2.8, true,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.68, 0, 1, 0), new Translation(-0.9, -0.05, -0.58)),
             Lists.newArrayList(new Scale(5, 5, 5), new Rotation(0.9, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.2, 1, 0, 0), new Translation(-0.5, -0.6, -0.35)),
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.785, 0, 1, 0), new Translation(-0.9, -0.03, -0.735)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(1.1, 0.1, 0))),
 
-    M4A4(70, 4, 40, 1300, 8, 8, 386, 2.8, true,
+    M4A4(null, 70, 4, 40, 1300, 8, 8, 386, 2.8, true,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.85, 0, 1, 0), new Translation(-0.15, -0.05, -0.45)),
             Lists.newArrayList(new Scale(5, 5, 5), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.5, -0.6, -0.65)),
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.15, -0.05, -0.274)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(0.8, 0.5, 0))),
 
-    M4A4_BLAZZE(70, 4, 40, 1300, 8, 8, 386, 2.8, true,
+    M4A4_BLAZZE(M4A4, 70, 4, 40, 1300, 8, 8, 386, 2.8, true,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.85, 0, 1, 0), new Translation(-0.15, -0.05, -0.45)),
             Lists.newArrayList(new Scale(5, 5, 5), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.5, -0.6, -0.65)),
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.15, -0.05, -0.274)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(0.8, 0.5, 0))),
 
-    M4A4_BUMBLEBEE(70, 4, 40, 1300, 8, 8, 386, 2.8, true,
+    M4A4_BUMBLEBEE(M4A4, 70, 4, 40, 1300, 8, 8, 386, 2.8, true,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.85, 0, 1, 0), new Translation(-0.15, -0.05, -0.45)),
             Lists.newArrayList(new Scale(5, 5, 5), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.5, -0.6, -0.65)),
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.15, -0.05, -0.274)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(0.8, 0.5, 0))),
 
-    M4A4_PINEAPPLE(70, 4, 40, 1300, 8, 8, 386, 2.8, true,
+    M4A4_PINEAPPLE(M4A4, 70, 4, 40, 1300, 8, 8, 386, 2.8, true,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.85, 0, 1, 0), new Translation(-0.15, -0.05, -0.45)),
             Lists.newArrayList(new Scale(5, 5, 5), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.5, -0.6, -0.65)),
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.15, -0.05, -0.274)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.4), new Translation(0.8, 0.5, 0))),
 
-    AWP(1200, 35, 5, 3100, 8, 7, 389, 4.8, false,
+    AWP(null, 1200, 35, 5, 3100, 8, 7, 389, 4.8, false,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.71, 0, 1, 0), new Translation(-0.7, -0.02, -0.58)),
             Lists.newArrayList(new Scale(6, 6, 6), new Rotation(0.9, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.2, 1, 0, 0), new Translation(-0.4, -0.53, -0.38)),
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.8, -0.5, 0.2)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.3), new Translation(1.2, 0.5, 0))),
 
-    BARRETT(400, 25, 5, 20, 6, 8, 392, 3.8, false,
+    BARRETT(null, 400, 25, 5, 20, 6, 8, 392, 3.8, false,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.71, 0, 1, 0), new Translation(-0.7, -0.02, -0.58)),
             Lists.newArrayList(new Scale(6, 6, 6), new Rotation(0.9, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.2, 1, 0, 0), new Translation(-0.4, -0.55, -0.38)),
             Lists.newArrayList(new Rotation(-44.75, 0, 1, 0), new Translation(-0.8, -0.5, 0.2)),
             Lists.newArrayList(new Scale(0.5, 0.5, 0.3), new Translation(1.2, 0.5, 0))),
 
-    DESERT_EAGLE(50, 7, 10, 2400, 5, 7, 385, 2.8, false,
+    DESERT_EAGLE(null, 50, 7, 10, 2400, 5, 7, 385, 2.8, false,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.8, 0, 1, 0), new Translation(-0.5, -0.2, -0.58)),
             Lists.newArrayList(new Scale(2, 2, 2), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.3, -0.7, -0.9)),
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.4, -0.12, -0.275)),
             Lists.newArrayList(new Translation(0.2, -0.65, 0))),
 
-    DESERT_EAGLE_SHOCK(50, 7, 10, 2400, 5, 7, 385, 2.8, false,
+    DESERT_EAGLE_SHOCK(DESERT_EAGLE, 50, 7, 10, 2400, 5, 7, 385, 2.8, false,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.8, 0, 1, 0), new Translation(-0.5, -0.2, -0.58)),
             Lists.newArrayList(new Scale(2, 2, 2), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.3, -0.7, -0.9)),
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Translation(-0.4, -0.12, -0.275)),
             Lists.newArrayList(new Translation(0.2, -0.65, 0))),
 
-    MAGNUM(100, 5, 6, 20, 6, 9, 380, 2.8, false,
+    MAGNUM(null, 100, 5, 6, 20, 6, 9, 380, 2.8, false,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.8, 0, 1, 0), new Translation(-0.5, -0.3, -0.58)),
             Lists.newArrayList(new Scale(2, 2, 2), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.3, -0.7, -0.9)),
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Rotation(0.01, 0, 0, 1), new Translation(-0.4, -0.185, -0.275)),
             Lists.newArrayList(new Translation(-0.1, -0.6, 0))),
 
-    MAGNUM_BLACK_MESA(100, 5, 6, 20, 6, 9, 380, 2.8, false,
+    MAGNUM_BLACK_MESA(MAGNUM, 100, 5, 6, 20, 6, 9, 380, 2.8, false,
            Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.8, 0, 1, 0), new Translation(-0.5, -0.3, -0.58)),
             Lists.newArrayList(new Scale(2, 2, 2), new Rotation(1.4, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.6, 1, 0, 0), new Rotation(3, 0, 1, 0), new Translation(-0.3, -0.7, -0.9)),
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(3.925, 0, 1, 0), new Rotation(0.01, 0, 0, 1), new Translation(-0.4, -0.185, -0.275)),
@@ -107,11 +107,13 @@ public enum EnumGun {
     public List<Transformation> guiTransformations;
     public Animation shotAnimation;
     public double width, height, length;
+    public EnumGun defaultSkin;
 
-    EnumGun(int fireRate, int damage, int clipSize, int reloadTime, double width, double height, double length, double bulletSpeed, boolean isFullAuto,
+    EnumGun(EnumGun defaultSkin, int fireRate, int damage, int clipSize, int reloadTime, double width, double height, double length, double bulletSpeed, boolean isFullAuto,
             List<Transformation> firstPersonTransformations, List<Transformation> thirdPersonTransformations,
             List<Transformation> adsTransformations,
             List<Transformation> guiTransformations) {
+        this.defaultSkin = defaultSkin;
         this.fireRate = fireRate;
         this.damage = damage;
         this.clipSize = clipSize;

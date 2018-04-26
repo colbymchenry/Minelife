@@ -8,11 +8,17 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ItemDynamite extends ItemBow {
 
@@ -48,7 +54,8 @@ public class ItemDynamite extends ItemBow {
     }
 
     public void registerRecipe() {
-
+        ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":dynamite");
+        GameRegistry.addShapelessRecipe(name, null, new ItemStack(this, 2), Ingredient.fromItem(Item.getItemFromBlock(Blocks.TNT)), Ingredient.fromItem(Items.STRING));
     }
 
 }

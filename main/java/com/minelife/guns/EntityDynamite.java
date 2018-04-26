@@ -23,7 +23,7 @@ public class EntityDynamite extends EntityArrow {
             if (timeInGround > 20 * 3) {
                 world.removeEntity(this);
                 if (!world.isRemote)
-                    world.createExplosion(this, posX, posY, posZ, 2, true);
+                    world.createExplosion(this, posX, posY, posZ, 4, true);
             }
         }
     }

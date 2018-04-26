@@ -13,6 +13,7 @@ import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumAttachment;
 import com.minelife.guns.item.EnumGun;
 import com.minelife.guns.item.ItemGun;
+import com.minelife.guns.packet.PacketRequestModifyGUI;
 import com.minelife.guns.turret.BlockTurret;
 import com.minelife.guns.turret.ItemRenderTurret;
 import com.minelife.guns.turret.TileEntityRenderTurret;
@@ -127,9 +128,9 @@ public class ClientProxy extends MLProxy {
 
         EntityPlayer player = Minecraft.getMinecraft().player;
 
-        System.out.println(player.getHeldItemMainhand().getItem().getRegistryName().toString());
-        System.out.println(player.getHeldItemMainhand().getItem().getClass().getName());
-        System.out.println(player.getHeldItemMainhand().getMetadata());
+//        System.out.println(player.getHeldItemMainhand().getItem().getRegistryName().toString());
+//        System.out.println(player.getHeldItemMainhand().getItem().getClass().getName());
+//        System.out.println(player.getHeldItemMainhand().getMetadata());
 //        System.out.println(Block.getBlockFromItem(player.getHeldItemMainhand().getItem()).getClass().getName());
 //        if (player.getHeldItemMainhand().getTagCompound() != null)
 //            System.out.println(player.getHeldItemMainhand().getTagCompound().toString());
@@ -175,7 +176,7 @@ public class ClientProxy extends MLProxy {
         }
 
         if (modifyKey.isPressed() && Minecraft.getMinecraft().player.getHeldItemMainhand().getItem() == ModGuns.itemGun) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiModifyGun(Minecraft.getMinecraft().player.inventory.currentItem));
+            Minelife.getNetwork().sendToServer(new PacketRequestModifyGUI(Minecraft.getMinecraft().player.inventory.currentItem));
         }
     }
 

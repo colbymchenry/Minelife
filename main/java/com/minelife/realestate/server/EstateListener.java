@@ -77,6 +77,12 @@ public class EstateListener {
     @SubscribeEvent
     public void onPlace(BlockEvent.PlaceEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
+
+        if(event.getPlacedBlock().getBlock() == Blocks.PISTON || event.getPlacedBlock().getBlock() == Blocks.STICKY_PISTON) {
+            player.sendMessage(new TextComponentString(TextFormatting.RED + "Pistons are disabled due to the lag they may cause in a server."));
+            event.setCanceled(true);
+        }
+
         Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());
 
         if (estate == null) return;

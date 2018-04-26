@@ -9,6 +9,7 @@ import com.minelife.guns.item.EnumAttachment;
 import com.minelife.guns.item.EnumGun;
 import com.minelife.guns.item.ItemGun;
 import com.minelife.guns.packet.PacketAttachment;
+import com.minelife.guns.packet.PacketChangeSkin;
 import com.minelife.util.client.GuiFakeInventory;
 import com.minelife.util.client.GuiHelper;
 import com.minelife.util.client.GuiScrollableContent;
@@ -24,6 +25,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -33,16 +35,19 @@ public class GuiModifyGun extends GuiScreen {
     // TODO: May not be able to replicate, wallet shift click cash into it dissapears
 
     private int gunSlot;
-    private float yRot;
-    private ItemStack gunStack;
-    private EnumGun gunType;
+    public ItemStack gunStack;
+    public EnumGun gunType;
     private AttachmentScrollList attachmentScrollList;
+    private SkinScrollList skinScrollList;
     private GuiTextField nameField;
     private int guiLeft, guiTop, xSize = 246, ySize = 186;
+    private List<EnumGun> availableSkins;
 
-    public GuiModifyGun(int gunSlot) {
+    public GuiModifyGun(int gunSlot, List<EnumGun> availableSkins) {
         this.gunSlot = gunSlot;
         this.gunStack = Minecraft.getMinecraft().player.inventory.getStackInSlot(gunSlot);
+        this.gunType = EnumGun.values()[gunStack.getMetadata()];
+        this.availableSkins = availableSkins;
     }
 
     @Override
@@ -60,7 +65,7 @@ public class GuiModifyGun extends GuiScreen {
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(this.guiLeft + 45, this.guiTop + 60, zLevel - 2200);
-        GlStateManager.translate(8,8, 0);
+        GlStateManager.translate(8, 8, 0);
         double scale = 8;
         GlStateManager.scale(scale, scale, scale);
         GlStateManager.translate(-8, -8, 0);
@@ -68,15 +73,13 @@ public class GuiModifyGun extends GuiScreen {
         GlStateManager.popMatrix();
         GlStateManager.disableLighting();
 
-
-        drawCenteredString(fontRenderer, "Current Site: " +
-                        WordUtils.capitalizeFully(ItemGun.getAttachment(gunStack) == null ? "None" : ItemGun.getAttachment(gunStack).name()),
-                guiLeft + 180, guiTop + 10, 0xFFFFFF);
-
         this.nameField.drawTextBox();
-        fontRenderer.drawString(TextFormatting.UNDERLINE + "Inventory", this.attachmentScrollList.x, this.attachmentScrollList.y - 14, 0xFFFFFF);
+        fontRenderer.drawString(TextFormatting.UNDERLINE + "Available Sites", this.attachmentScrollList.x, this.attachmentScrollList.y - 14, 0xFFFFFF);
+        fontRenderer.drawString(TextFormatting.UNDERLINE + "Available Skins", this.skinScrollList.x, this.skinScrollList.y - 14, 0xFFFFFF);
         fontRenderer.drawString(TextFormatting.UNDERLINE + "Name", this.nameField.x, this.nameField.y - 14, 0xFFFFFF);
-        this.attachmentScrollList.draw(mouseX, mouseY, Mouse.getDWheel());
+        int dWheel = Mouse.getDWheel();
+        this.attachmentScrollList.draw(mouseX, mouseY, dWheel);
+        this.skinScrollList.draw(mouseX, mouseY, dWheel);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -95,12 +98,7 @@ public class GuiModifyGun extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
-        if (button.id == 0) {
-            if (mc.player.inventory.getStackInSlot(attachmentScrollList.getSelectedSlot()).getItem() == ModGuns.itemAttachment) {
-                ItemGun.setAttachment(gunStack, EnumAttachment.values()[mc.player.inventory.getStackInSlot(attachmentScrollList.getSelectedSlot()).getMetadata()]);
-                Minelife.getNetwork().sendToServer(new PacketAttachment(attachmentScrollList.getSelectedSlot(), gunSlot, nameField.getText()));
-            }
-        } else if (button.id == 1) {
+        if (button.id == 1) {
             Minelife.getNetwork().sendToServer(new PacketAttachment(-2, gunSlot, nameField.getText()));
         } else if (button.id == 2) {
             ItemGun.setAttachment(gunStack, null);
@@ -113,22 +111,19 @@ public class GuiModifyGun extends GuiScreen {
         super.initGui();
         this.guiLeft = (this.width - xSize) / 2;
         this.guiTop = (this.height - ySize) / 2;
-        this.gunType = EnumGun.values()[gunStack.getMetadata()];
-        this.attachmentScrollList = new AttachmentScrollList(mc, guiLeft + 140, guiTop + 46, 80, 80, getAttachmentsFromInventory());
+        this.attachmentScrollList = new AttachmentScrollList(mc, guiLeft + 120, guiTop + 24, 80, 80);
+        this.skinScrollList = new SkinScrollList(mc, guiLeft + 145, guiTop + 136, 90, 40);
         this.nameField = new GuiTextField(0, fontRenderer, this.guiLeft + 10, this.guiTop + 130, 70, 15);
         if (ItemGun.getCustomName(gunStack) != null) this.nameField.setText(ItemGun.getCustomName(gunStack));
         this.buttonList.clear();
-        this.buttonList.add(new GuiButton(0, this.attachmentScrollList.x + 25, this.attachmentScrollList.y + this.attachmentScrollList.height + 2, 50, 20, "Apply"));
         this.buttonList.add(new GuiButton(1, this.nameField.x + this.nameField.width + 3, this.nameField.y - 2, 50, 20, "Rename"));
-        this.buttonList.add(new GuiButton(2, this.guiLeft + (xSize - 120) / 2, this.guiTop + ySize - 30, 120, 20, "Remove Current Site"));
-        this.buttonList.get(0).enabled = false;
-        this.buttonList.get(2).enabled = false;
+        this.buttonList.add(new GuiButton(2, this.guiLeft + 9, this.guiTop + ySize - 30, 120, 20, "Remove Current Site"));
+        this.buttonList.get(1).enabled = false;
     }
 
     @Override
     public void updateScreen() {
-        this.buttonList.get(0).enabled = this.attachmentScrollList.selected != -1;
-        this.buttonList.get(2).enabled = gunStack != null && ItemGun.getAttachment(gunStack) != null;
+        this.buttonList.get(1).enabled = gunStack != null && ItemGun.getAttachment(gunStack) != null;
         this.nameField.updateCursorCounter();
     }
 
@@ -143,11 +138,8 @@ public class GuiModifyGun extends GuiScreen {
 
     class AttachmentScrollList extends GuiScrollableContent {
 
-        private Map<Integer, ItemStack> attachments;
-
-        public AttachmentScrollList(Minecraft mc, int x, int y, int width, int height, Map<Integer, ItemStack> attachments) {
+        public AttachmentScrollList(Minecraft mc, int x, int y, int width, int height) {
             super(mc, x, y, width, height);
-            this.attachments = attachments;
         }
 
         @Override
@@ -157,24 +149,59 @@ public class GuiModifyGun extends GuiScreen {
 
         @Override
         public void drawObject(int index, int mouseX, int mouseY, boolean isHovering) {
-            ItemStack attachmentStack = (ItemStack) attachments.values().toArray()[index];
+            ItemStack attachmentStack = (ItemStack) getAttachmentsFromInventory().values().toArray()[index];
             fontRenderer.drawString(WordUtils.capitalizeFully(EnumAttachment.values()[attachmentStack.getMetadata()].name().replace("_", " ")), 2, 2, 0xFFFFFF);
         }
 
         @Override
         public int getSize() {
-            return attachments.size();
+            return getAttachmentsFromInventory().size();
         }
 
         @Override
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
-
+            if (doubleClick) {
+                if (mc.player.inventory.getStackInSlot(getSelectedSlot()).getItem() == ModGuns.itemAttachment) {
+                    ItemGun.setAttachment(gunStack, EnumAttachment.values()[mc.player.inventory.getStackInSlot(getSelectedSlot()).getMetadata()]);
+                    Minelife.getNetwork().sendToServer(new PacketAttachment(getSelectedSlot(), gunSlot, nameField.getText()));
+                }
+            }
         }
 
         public int getSelectedSlot() {
             if (selected == -1) return -1;
-            int slot = (int) attachments.keySet().toArray()[selected];
+            int slot = (int) getAttachmentsFromInventory().keySet().toArray()[selected];
             return slot;
+        }
+
+    }
+
+    class SkinScrollList extends GuiScrollableContent {
+
+        public SkinScrollList(Minecraft mc, int x, int y, int width, int height) {
+            super(mc, x, y, width, height);
+        }
+
+        @Override
+        public int getObjectHeight(int index) {
+            return 12;
+        }
+
+        @Override
+        public void drawObject(int index, int mouseX, int mouseY, boolean isHovering) {
+            fontRenderer.drawString(WordUtils.capitalizeFully(availableSkins.get(index).name().replace("_", " ")), 2, 2, 0xFFFFFF);
+        }
+
+        @Override
+        public int getSize() {
+            return availableSkins.size();
+        }
+
+        @Override
+        public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
+            if (doubleClick) {
+                Minelife.getNetwork().sendToServer(new PacketChangeSkin(availableSkins.get(index)));
+            }
         }
 
     }

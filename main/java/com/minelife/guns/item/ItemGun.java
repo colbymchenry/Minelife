@@ -55,6 +55,7 @@ public class ItemGun extends Item {
         setHasSubtypes(true);
     }
 
+
     @Override
     public String getUnlocalizedName(ItemStack stack) {
         return super.getUnlocalizedName() + "." + stack.getMetadata();
