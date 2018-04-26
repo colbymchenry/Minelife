@@ -85,6 +85,11 @@ public class RenderGun extends WrappedItemModel implements IItemRenderer {
             GlStateManager.translate(-0.3, -0.3, -0.3);
         }
 
+        if(transformType == ItemCameraTransforms.TransformType.GROUND) {
+            GlStateManager.scale(3, 3, 3);
+            GlStateManager.translate(-0.3, -0.3, -0.3);
+        }
+
         renderWrapped(itemStack);
 
         if (attachment != null && attachment.transformations.contains(gun))
