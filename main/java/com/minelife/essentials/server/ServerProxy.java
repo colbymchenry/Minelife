@@ -5,6 +5,7 @@ import com.minelife.Minelife;
 import com.minelife.essentials.Location;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.essentials.TeleportHandler;
+import com.minelife.essentials.server.commands.Kit;
 import com.minelife.essentials.server.commands.Spawn;
 import com.minelife.util.MLConfig;
 import com.minelife.util.StringHelper;
@@ -52,17 +53,24 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent
     public void onJoin(PlayerEvent.PlayerLoggedInEvent event) throws SQLException, IOException {
-        if(isNewPlayer(event.player.getUniqueID())) {
-            if(Spawn.GetSpawn() != null) {
+        if (isNewPlayer(event.player.getUniqueID())) {
+            if (Spawn.GetNewSpawn() != null) {
+                Location spawn = Spawn.GetNewSpawn();
+                ((EntityPlayerMP) event.player).connection.setPlayerLocation(spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
+            } else if (Spawn.GetSpawn() != null) {
                 Location spawn = Spawn.GetSpawn();
                 ((EntityPlayerMP) event.player).connection.setPlayerLocation(spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
             }
+
+            if(Kit.getKit("default") != null) {
+                Kit.giveKit((EntityPlayerMP) event.player, "default");
+            }
         }
 
-        if(!fileMOTD.exists()) fileMOTD.createNewFile();
+        if (!fileMOTD.exists()) fileMOTD.createNewFile();
 
         Scanner scanner = new Scanner(fileMOTD);
-        while(scanner.hasNextLine())
+        while (scanner.hasNextLine())
             event.player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(scanner.nextLine(), '&')));
     }
 

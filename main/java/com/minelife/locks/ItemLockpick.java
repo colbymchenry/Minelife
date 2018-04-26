@@ -1,6 +1,7 @@
 package com.minelife.locks;
 
 import com.minelife.Minelife;
+import com.minelife.drugs.ModDrugs;
 import com.minelife.permission.ModPermission;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.ModRealEstate;
@@ -10,14 +11,18 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -68,5 +73,11 @@ public class ItemLockpick extends Item {
         player.inventoryContainer.detectAndSendChanges();
 
         return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+    }
+
+    public void registerRecipe() {
+        ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":lockpick");
+        GameRegistry.addShapelessRecipe(name, null, new ItemStack(this), Ingredient.fromItem(Items.IRON_NUGGET));
+
     }
 }

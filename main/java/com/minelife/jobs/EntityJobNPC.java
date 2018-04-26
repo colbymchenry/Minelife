@@ -24,6 +24,8 @@ public class EntityJobNPC extends EntityCreature {
         this(world, 0);
     }
 
+    // TODO: Does not face correct direction or follow players
+
     public EntityJobNPC(World world, int profession) {
         super(world);
         this.setProfession(profession);

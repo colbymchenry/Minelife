@@ -7,6 +7,7 @@ import com.minelife.essentials.network.PacketTitleMsg;
 import com.minelife.essentials.server.ServerProxy;
 import com.minelife.essentials.server.commands.*;
 import com.minelife.util.MLConfig;
+import com.minelife.util.configuration.InvalidConfigurationException;
 import lib.PatPeter.SQLibrary.Database;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class ModEssentials extends MLMod {
@@ -57,7 +59,8 @@ public class ModEssentials extends MLMod {
             event.registerServerCommand(new Homes());
             event.registerServerCommand(new Mute());
             event.registerServerCommand(new Unmute());
-        } catch (SQLException e) {
+            event.registerServerCommand(new Kit());
+        } catch (SQLException | InvalidConfigurationException | IOException e) {
             e.printStackTrace();
         }
     }

@@ -1,6 +1,10 @@
 package com.minelife.locks;
 
+import blusunrize.immersiveengineering.common.IEContent;
 import com.minelife.Minelife;
+import com.minelife.guns.ModGuns;
+import com.minelife.guns.item.EnumGun;
+import com.minelife.guns.item.ItemGunPart;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.realestate.PlayerPermission;
@@ -11,15 +15,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -78,6 +81,17 @@ public class ItemLock extends Item {
         if(tab != CreativeTabs.MISC) return;
         for (int i = 0; i < LockType.values().length; i++) {
             items.add(new ItemStack(this, 1, i));
+        }
+    }
+
+    public void registerRecipes() {
+        for (LockType lockType : LockType.values()) {
+            ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":lock_" + lockType.name());
+            GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, lockType.ordinal()),
+                    " X ",
+                    "XXX",
+                    "XXX",
+                    'X', Ingredient.fromItem(lockType.itemResource));
         }
     }
 

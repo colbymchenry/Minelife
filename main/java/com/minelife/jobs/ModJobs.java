@@ -52,9 +52,9 @@ public class ModJobs extends MLMod {
         event.getRegistry().register(
                 EntityEntryBuilder.create()
                         .entity(EntityJobNPC.class)
-                        .id(new ResourceLocation("minecraft", "job_npc"), 33)
+                        .id(new ResourceLocation("minecraft", "job_npc"), 77)
                         .name("JobNPC")
-                        .tracker(160, 2, false)
+                        .tracker(64, 20, false)
                         .build()
         );
     }

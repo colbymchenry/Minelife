@@ -7,19 +7,18 @@ import com.minelife.Minelife;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumGun;
+import com.minelife.guns.item.ItemGun;
 import com.minelife.guns.packet.PacketBullet;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.util.MLInventory;
 import com.minelife.util.MLTileEntity;
 import com.minelife.util.client.render.Vector;
-import ic2.core.ref.ItemName;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -41,7 +40,7 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
     private UUID owner;
     private boolean waitForAgroPlayer = false;
 
-    public float rotationYaw, rotationPitch;
+    public float rotationYaw;
 
     public TileEntityTurret() {
         inventory = new MLInventory(54, "turret", 64);
@@ -147,9 +146,12 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
                 if (((EntityPlayerMP) e).isCreative()) toRemove.add(e);
                 if (owner != null && owner.equals(e.getUniqueID())) toRemove.add(e);
 
-                boolean agro = e.getHeldItemMainhand().getItem() == ModGuns.itemGun
-                        || e.getHeldItemMainhand().getItem() == ItemName.dynamite.getInstance()
-                        || e.getHeldItemMainhand().getItem() == ItemName.dynamite_sticky.getInstance();
+                // TODO
+//                boolean agro = e.getHeldItemMainhand().getItem() == ModGuns.itemGun
+//                        || e.getHeldItemMainhand().getItem() == ItemName.dynamite.getInstance()
+//                        || e.getHeldItemMainhand().getItem() == ItemName.dynamite_sticky.getInstance();
+
+                boolean agro = false;
 
                 if (estate != null) {
                     if (Objects.equals(estate.getOwnerID(), e.getUniqueID())) toRemove.add(e);
@@ -213,6 +215,7 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
             Bullet.BULLETS.add(bullet);
             Minelife.getNetwork().sendToAllAround(new PacketBullet(EnumGun.M4A4, bullet),
                     new NetworkRegistry.TargetPoint(getWorld().provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 80));
+            ItemGun.addCasings(inventory, 1);
             sendUpdates();
         }
     }
@@ -262,14 +265,7 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
     }
 
     public Map<Integer, ItemStack> getAmmo() {
-        Map<Integer, ItemStack> ammo = Maps.newHashMap();
-
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            if (inventory.getStackInSlot(i).getItem() == ModGuns.itemAmmo)
-                ammo.put(i, inventory.getStackInSlot(i));
-        }
-
-        return ammo;
+        return ItemGun.getAmmo(inventory);
     }
 
     public void setWaitForAgroPlayer(boolean waitForAgroPlayer) {

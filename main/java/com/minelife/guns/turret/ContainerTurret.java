@@ -1,5 +1,6 @@
 package com.minelife.guns.turret;
 
+import blusunrize.immersiveengineering.common.IEContent;
 import com.minelife.guns.ModGuns;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -73,7 +74,7 @@ public class ContainerTurret extends Container {
 
         @Override
         public boolean isItemValid(ItemStack stack) {
-            return stack.getItem() == ModGuns.itemAmmo && stack.getMetadata() == 0;
+            return stack.getItem() == IEContent.itemBullet && (stack.getMetadata() == 0 || stack.getMetadata() == 2);
         }
     }
 

@@ -23,62 +23,62 @@ public class DrugsGuiHandler extends AbstractGuiHandler {
     @Nullable
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
+//        TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 
-        if(ID == VACUUM_GUI) {
-            if(tileEntity != null && tileEntity instanceof TileEntityVacuum) {
-                return new ContainerVacuum(player, (TileEntityVacuum) tileEntity);
-            }
-        }
-
-        if(ID == LEAF_MULCHER_GUI) {
-            if(tileEntity != null && tileEntity instanceof TileEntityLeafMulcher) {
-                return new ContainerLeafMulcher(player, (TileEntityLeafMulcher) tileEntity);
-            }
-        }
-
-        if(ID == PRESSER_GUI) {
-            if(tileEntity != null && tileEntity instanceof TileEntityPresser) {
-                return new ContainerPresser(player, (TileEntityPresser) tileEntity);
-            }
-        }
-
-        if(ID == CEMENT_MIXER_GUI) {
-            if(tileEntity != null && tileEntity instanceof TileEntityCementMixer) {
-                return new ContainerCementMixer(player, (TileEntityCementMixer) tileEntity);
-            }
-        }
+//        if(ID == VACUUM_GUI) {
+//            if(tileEntity != null && tileEntity instanceof TileEntityVacuum) {
+//                return new ContainerVacuum(player, (TileEntityVacuum) tileEntity);
+//            }
+//        }
+//
+//        if(ID == LEAF_MULCHER_GUI) {
+//            if(tileEntity != null && tileEntity instanceof TileEntityLeafMulcher) {
+//                return new ContainerLeafMulcher(player, (TileEntityLeafMulcher) tileEntity);
+//            }
+//        }
+//
+//        if(ID == PRESSER_GUI) {
+//            if(tileEntity != null && tileEntity instanceof TileEntityPresser) {
+//                return new ContainerPresser(player, (TileEntityPresser) tileEntity);
+//            }
+//        }
+//
+//        if(ID == CEMENT_MIXER_GUI) {
+//            if(tileEntity != null && tileEntity instanceof TileEntityCementMixer) {
+//                return new ContainerCementMixer(player, (TileEntityCementMixer) tileEntity);
+//            }
+//        }
         return null;
     }
 
     @Nullable
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
-
-        if(ID == VACUUM_GUI) {
-            if(tileEntity != null && tileEntity instanceof TileEntityVacuum) {
-                return new GuiVacuum(player, (TileEntityVacuum) tileEntity);
-            }
-        }
-
-        if(ID == LEAF_MULCHER_GUI) {
-            if(tileEntity != null && tileEntity instanceof TileEntityLeafMulcher) {
-                return new GuiLeafMulcher(player, (TileEntityLeafMulcher) tileEntity);
-            }
-        }
-
-        if(ID == PRESSER_GUI) {
-            if(tileEntity != null && tileEntity instanceof TileEntityPresser) {
-                return new GuiPresser(player, (TileEntityPresser) tileEntity);
-            }
-        }
-
-        if(ID == CEMENT_MIXER_GUI) {
-            if(tileEntity != null && tileEntity instanceof TileEntityCementMixer) {
-                return new GuiCementMixer(player, (TileEntityCementMixer) tileEntity);
-            }
-        }
+//        TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
+//
+//        if(ID == VACUUM_GUI) {
+//            if(tileEntity != null && tileEntity instanceof TileEntityVacuum) {
+//                return new GuiVacuum(player, (TileEntityVacuum) tileEntity);
+//            }
+//        }
+//
+//        if(ID == LEAF_MULCHER_GUI) {
+//            if(tileEntity != null && tileEntity instanceof TileEntityLeafMulcher) {
+//                return new GuiLeafMulcher(player, (TileEntityLeafMulcher) tileEntity);
+//            }
+//        }
+//
+//        if(ID == PRESSER_GUI) {
+//            if(tileEntity != null && tileEntity instanceof TileEntityPresser) {
+//                return new GuiPresser(player, (TileEntityPresser) tileEntity);
+//            }
+//        }
+//
+//        if(ID == CEMENT_MIXER_GUI) {
+//            if(tileEntity != null && tileEntity instanceof TileEntityCementMixer) {
+//                return new GuiCementMixer(player, (TileEntityCementMixer) tileEntity);
+//            }
+//        }
         return null;
     }
 }

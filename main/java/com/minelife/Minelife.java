@@ -39,8 +39,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.File;
 import java.util.List;
-
-@Mod(modid = Minelife.MOD_ID, name = Minelife.NAME, version = Minelife.VERSION, dependencies = "required-after:ic2;required-after:buildcraftcore;")
+//dependencies = "required-after:ic2;"
+@Mod(modid = Minelife.MOD_ID, name = Minelife.NAME, version = Minelife.VERSION, dependencies = "required-after:immersiveengineering;")
 public class Minelife {
 
     public static final String MOD_ID = "minelife", VERSION = "3.0", NAME = "Minelife";

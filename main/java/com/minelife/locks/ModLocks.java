@@ -20,6 +20,8 @@ public class ModLocks extends MLMod {
     public void preInit(FMLPreInitializationEvent event) {
         registerItem(itemLock = new ItemLock());
         registerItem(itemLockpick = new ItemLockpick());
+        itemLockpick.registerRecipe();
+        itemLock.registerRecipes();
     }
 
     public static Database getDatabase() {

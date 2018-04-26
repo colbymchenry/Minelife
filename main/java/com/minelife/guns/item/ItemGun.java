@@ -1,6 +1,10 @@
 package com.minelife.guns.item;
 
+import blusunrize.immersiveengineering.common.IEContent;
+import codechicken.lib.inventory.InventoryRange;
+import codechicken.lib.inventory.InventoryUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
@@ -12,10 +16,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -123,7 +130,7 @@ public class ItemGun extends Item {
 
     public static void reload(EntityPlayer player, ItemStack gunStack) {
         if (gunStack.getItem() != ModGuns.itemGun) return;
-        doReload(player, gunStack, ItemAmmo.getAmmoCount(player, gunStack));
+        doReload(player, gunStack, getAmmo(player.inventory));
     }
 
     private static void doReload(EntityPlayer player, ItemStack gunStack, Map<Integer, ItemStack> ammo) {
@@ -204,10 +211,17 @@ public class ItemGun extends Item {
         Bullet.BULLETS.add(bullet);
 
         ItemGun.decreaseAmmo(player.getHeldItemMainhand());
+        int didNotFit = ItemGun.addCasings(new InventoryRange(player.inventory, 0, 36), 1);
+        player.inventoryContainer.detectAndSendChanges();
 
         if (!player.world.isRemote) {
             Minelife.getNetwork().sendToAllAround(new PacketBullet(gun, bullet),
                     new NetworkRegistry.TargetPoint(player.world.provider.getDimension(), player.posX, player.posY, player.posZ, 112));
+            if (didNotFit > 0) {
+                ItemStack ammoStack = new ItemStack(IEContent.itemBullet);
+                EntityItem entityItem = new EntityItem(player.world, player.posX, player.posY + 0.5, player.posZ, ammoStack);
+                player.world.spawnEntity(entityItem);
+            }
         } else {
             Minelife.getNetwork().sendToServer(new PacketFire(lookVector));
             gun.resetAnimation();
@@ -279,7 +293,7 @@ public class ItemGun extends Item {
 
         if (ItemGun.isReloading(player.getEntityWorld(), player.getHeldItemMainhand())) return false;
 
-        if (ItemAmmo.getAmmoCount(player, player.getHeldItemMainhand()).values().stream().mapToInt(ItemStack::getCount).sum() <= 0) {
+        if (getAmmoCount(player.inventory) <= 0) {
             if (player.world.isRemote) {
                 player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Guns] " + TextFormatting.GOLD + "Out of ammo."));
             }
@@ -329,62 +343,96 @@ public class ItemGun extends Item {
         gun.setTagCompound(tagCompound);
     }
 
+    public static Map<Integer, ItemStack> getAmmo(IInventory inventory) {
+        Map<Integer, ItemStack> ammo = Maps.newHashMap();
+        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+            if (inventory.getStackInSlot(i).getItem() == IEContent.itemBullet && inventory.getStackInSlot(i).getMetadata() == 2 &&
+                    inventory.getStackInSlot(i).hasTagCompound() && inventory.getStackInSlot(i).getTagCompound().hasKey("bullet") &&
+                    inventory.getStackInSlot(i).getTagCompound().getString("bullet").equalsIgnoreCase("casull")) {
+                ammo.put(i, inventory.getStackInSlot(i));
+            }
+        }
+        return ammo;
+    }
+
+    public static int getAmmoCount(IInventory inventory) {
+        return getAmmo(inventory).values().stream().mapToInt(ItemStack::getCount).sum();
+    }
+
+    public static int addCasings(IInventory inventory, int amount) {
+        int didNotFit = 0;
+        int stacks = amount / 64;
+        int dust = amount % 64;
+        for (int i = 0; i < stacks; i++)
+            didNotFit += InventoryUtils.insertItem(inventory, new ItemStack(IEContent.itemBullet, 64), false);
+        if (dust > 0)
+            didNotFit += InventoryUtils.insertItem(inventory, new ItemStack(IEContent.itemBullet, dust), false);
+
+        return didNotFit;
+    }
+
+    public static int addCasings(InventoryRange inventoryRange, int amount) {
+        int didNotFit = 0;
+        int stacks = amount / 64;
+        int dust = amount % 64;
+        for (int i = 0; i < stacks; i++)
+            didNotFit += InventoryUtils.insertItem(inventoryRange, new ItemStack(IEContent.itemBullet, 64), false);
+        if (dust > 0)
+            didNotFit += InventoryUtils.insertItem(inventoryRange, new ItemStack(IEContent.itemBullet, dust), false);
+
+        return didNotFit;
+    }
+
     public void registerRecipes() {
         ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.AK47.ordinal());
-//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.AK47.ordinal()),
-//                "LLL",
-//                "SFS",
-//                "TTT",
-//                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.PLANKS)),
-//                'S', Ingredient.fromItem(BCCoreItems.gearIron),
-//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.RIFLE_FRAME.ordinal())),
-//                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
-//
-//        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.AWP.ordinal());
-//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.AWP.ordinal()),
-//                "LLL",
-//                "SFS",
-//                "TTT",
-//                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.GOLD_BLOCK)),
-//                'S', Ingredient.fromItem(BCCoreItems.gearGold),
-//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.SNIPER_FRAME.ordinal())),
-//                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
-//
-//        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.BARRETT.ordinal());
-//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.BARRETT.ordinal()),
-//                "LLL",
-//                "SFS",
-//                "TTT",
-//                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.DIAMOND_BLOCK)),
-//                'S', Ingredient.fromItem(BCCoreItems.gearDiamond),
-//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.SNIPER_FRAME.ordinal())),
-//                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
-//
-//        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.DESERT_EAGLE.ordinal());
-//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.DESERT_EAGLE.ordinal()),
-//                "LLL",
-//                "SFS",
-//                "LLL",
-//                'L', Ingredient.fromItem(Items.IRON_INGOT),
-//                'S', Ingredient.fromItem(BCCoreItems.gearIron),
-//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.PISTOL_FRAME.ordinal())));
-//
-//        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.M4A4.ordinal());
-//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.M4A4.ordinal()),
-//                "LLL",
-//                "SFS",
-//                "TTT",
-//                'L', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)),
-//                'S', Ingredient.fromItem(BCCoreItems.gearIron),
-//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.RIFLE_FRAME.ordinal())),
-//                'T', Ingredient.fromItem(Item.getItemFromBlock(Blocks.IRON_BLOCK)));
-//
-//        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.MAGNUM.ordinal());
-//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.MAGNUM.ordinal()),
-//                "SFS",
-//                "TTT",
-//                'S', Ingredient.fromItem(BCCoreItems.gearIron),
-//                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.PISTOL_FRAME.ordinal())),
-//                'T', Ingredient.fromItem(Items.IRON_INGOT));
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.AK47.ordinal()),
+                "SSS",
+                "SFS",
+                "SSS",
+                'S', Ingredient.fromStacks(new ItemStack(IEContent.itemMetal, 1, 38)),
+                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.RIFLE_FRAME.ordinal())));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.AWP.ordinal());
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.AWP.ordinal()),
+                "SSS",
+                "XFX",
+                "SSS",
+                'S', Ingredient.fromStacks(new ItemStack(IEContent.itemMetal, 1, 38)),
+                'X', Ingredient.fromStacks(new ItemStack(IEContent.itemMetal, 1, 40)),
+                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.SNIPER_FRAME.ordinal())));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.BARRETT.ordinal());
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.BARRETT.ordinal()),
+                "SSS",
+                "SFS",
+                "SSS",
+                'S', Ingredient.fromStacks(new ItemStack(IEContent.itemMetal, 1, 38)),
+                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.SNIPER_FRAME.ordinal())));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.DESERT_EAGLE.ordinal());
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.DESERT_EAGLE.ordinal()),
+                "SSS",
+                "XFX",
+                "SSS",
+                'S', Ingredient.fromStacks(new ItemStack(IEContent.itemMetal, 1, 38)),
+                'X', Ingredient.fromStacks(new ItemStack(IEContent.itemMetal, 1, 40)),
+                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.PISTOL_FRAME.ordinal())));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.M4A4.ordinal());
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.M4A4.ordinal()),
+                "SSS",
+                "XFX",
+                "SSS",
+                'S', Ingredient.fromStacks(new ItemStack(IEContent.itemMetal, 1, 38)),
+                'X', Ingredient.fromStacks(new ItemStack(IEContent.itemMetal, 1, 40)),
+                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.RIFLE_FRAME.ordinal())));
+
+        name = new ResourceLocation(Minelife.MOD_ID + ":gun_" + EnumGun.MAGNUM.ordinal());
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.MAGNUM.ordinal()),
+                "SSS",
+                "SFS",
+                "SSS",
+                'S', Ingredient.fromStacks(new ItemStack(IEContent.itemMetal, 1, 38)),
+                'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.PISTOL_FRAME.ordinal())));
     }
 }

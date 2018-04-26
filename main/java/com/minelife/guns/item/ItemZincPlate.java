@@ -1,8 +1,8 @@
 package com.minelife.guns.item;
 
+import blusunrize.immersiveengineering.common.IEContent;
 import com.minelife.Minelife;
 import com.minelife.guns.ModGuns;
-import ic2.core.ref.ItemName;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -34,7 +34,7 @@ public class ItemZincPlate extends Item {
     public void registerRecipe() {
         ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":zinc_plate");
         ResourceLocation group = null;
-        GameRegistry.addShapelessRecipe(name, group, new ItemStack(this), Ingredient.fromItem(ItemName.forge_hammer.getInstance()), Ingredient.fromItem(ModGuns.itemZincIngot));
+        GameRegistry.addShapelessRecipe(name, group, new ItemStack(this), Ingredient.fromStacks(new ItemStack(IEContent.itemTool, 1, 0)), Ingredient.fromItem(ModGuns.itemZincIngot));
     }
 
 }

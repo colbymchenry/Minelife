@@ -1,5 +1,6 @@
 package com.minelife.guns.client;
 
+import blusunrize.immersiveengineering.common.IEContent;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.drugs.ModDrugs;
@@ -7,6 +8,7 @@ import com.minelife.drugs.client.render.ItemLeafMulcherRenderer;
 import com.minelife.drugs.client.render.TileEntityLeafMulcherRenderer;
 import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
 import com.minelife.guns.Bullet;
+import com.minelife.guns.EntityDynamite;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumAttachment;
 import com.minelife.guns.item.EnumGun;
@@ -15,11 +17,16 @@ import com.minelife.guns.turret.BlockTurret;
 import com.minelife.guns.turret.ItemRenderTurret;
 import com.minelife.guns.turret.TileEntityRenderTurret;
 import com.minelife.guns.turret.TileEntityTurret;
+import com.minelife.jobs.EntityJobNPC;
+import com.minelife.jobs.client.RenderEntityJobNPC;
+import com.minelife.util.client.GuiFakeInventory;
 import com.minelife.util.client.GuiHelper;
 import com.minelife.util.client.render.AdjustPlayerModelEvent;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,6 +34,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -34,6 +42,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -53,10 +62,11 @@ public class ClientProxy extends MLProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         MinecraftForge.EVENT_BUS.register(this);
-        ModGuns.itemAmmo.registerModels();
+//        ModGuns.itemAmmo.registerModels();
         ModGuns.itemGunPart.registerModels();
         registerBlockRenderer(TileEntityTurret.class, new TileEntityRenderTurret());
-
+        RenderingRegistry.registerEntityRenderingHandler(EntityDynamite.class, RenderDynamite::new);
+        ModGuns.itemDynamite.registerModel();
 
         EnumGun.registerModels();
         EnumAttachment.registerModels();
@@ -117,6 +127,13 @@ public class ClientProxy extends MLProxy {
 
         EntityPlayer player = Minecraft.getMinecraft().player;
 
+        System.out.println(player.getHeldItemMainhand().getItem().getRegistryName().toString());
+        System.out.println(player.getHeldItemMainhand().getItem().getClass().getName());
+        System.out.println(player.getHeldItemMainhand().getMetadata());
+//        System.out.println(Block.getBlockFromItem(player.getHeldItemMainhand().getItem()).getClass().getName());
+//        if (player.getHeldItemMainhand().getTagCompound() != null)
+//            System.out.println(player.getHeldItemMainhand().getTagCompound().toString());
+
         if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
 
         if (Minecraft.getMinecraft().currentScreen != null) return;
@@ -174,6 +191,12 @@ public class ClientProxy extends MLProxy {
             boolean aimingDownSight = Mouse.isButtonDown(1) && Minecraft.getMinecraft().currentScreen == null;
             ItemStack gunStack = Minecraft.getMinecraft().player.getHeldItemMainhand();
             EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
+
+            GuiFakeInventory.renderItemInventory(new ItemStack(IEContent.itemBullet, 1, 2),
+                    event.getResolution().getScaledWidth() - 24, event.getResolution().getScaledHeight() - 30, false);
+            int stringWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(TextFormatting.YELLOW.toString() + "(" + ItemGun.getClipCount(gunStack) + "/" + gunType.clipSize + ")");
+            Minecraft.getMinecraft().fontRenderer.drawString(TextFormatting.YELLOW.toString() + "(" + ItemGun.getClipCount(gunStack) + "/" + gunType.clipSize + ")",
+                    event.getResolution().getScaledWidth() - 24 - stringWidth, event.getResolution().getScaledHeight() - 23, 0xFFFFFF);
 
             GlStateManager.disableTexture2D();
             GlStateManager.enableBlend();

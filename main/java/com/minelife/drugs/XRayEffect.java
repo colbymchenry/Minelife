@@ -1,18 +1,14 @@
 package com.minelife.drugs;
 
+import blusunrize.immersiveengineering.common.blocks.BlockTypes_Ore;
+import blusunrize.immersiveengineering.common.blocks.ItemBlockIEBase;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.guns.ModGuns;
 import com.minelife.util.client.render.LineRenderer;
 import com.minelife.util.client.render.Vector;
-import ic2.core.block.state.EnumProperty;
-import ic2.core.block.state.MaterialProperty;
-import ic2.core.block.type.ResourceBlock;
-import ic2.core.item.type.OreResourceType;
-import ic2.core.ref.BlockName;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -76,10 +72,11 @@ public class XRayEffect extends Potion {
         whitelist.put(Blocks.LAPIS_ORE.getDefaultState(), new Color(0, 1, 255, 50));
         whitelist.put(Blocks.REDSTONE_ORE.getDefaultState(), new Color(255, 0, 1, 50));
         whitelist.put(Blocks.EMERALD_ORE.getDefaultState(), new Color(7, 255, 0, 50));
-        whitelist.put(BlockName.resource.getBlockState(ResourceBlock.copper_ore), new Color(165, 93, 53, 50));
-        whitelist.put(BlockName.resource.getBlockState(ResourceBlock.tin_ore), new Color(211, 212, 213, 50));
-        whitelist.put(BlockName.resource.getBlockState(ResourceBlock.uranium_ore), new Color(93, 165, 116, 50));
-        whitelist.put(BlockName.resource.getBlockState(ResourceBlock.lead_ore), new Color(132, 116, 90, 50));
+        // TODO: Work with immersive engineering
+//        whitelist.put(Block.getBlockFromName("immersiveengineering:ore").getDefaultState().withProperty(BlockTypes_Ore, BlockTypes_Ore.ALUMINUM), new Color(165, 93, 53, 50));
+//        whitelist.put(BlockName.resource.getBlockState(ResourceBlock.tin_ore), new Color(211, 212, 213, 50));
+//        whitelist.put(BlockName.resource.getBlockState(ResourceBlock.uranium_ore), new Color(93, 165, 116, 50));
+//        whitelist.put(BlockName.resource.getBlockState(ResourceBlock.lead_ore), new Color(132, 116, 90, 50));
         whitelist.put(ModGuns.blockZincOre.getDefaultState(), new Color(186, 196, 200, 50));
 //        whitelist.put(MLBlocks.sulfur_ore, new Color(163, 165, 66, 50));
 //        whitelist.put(MLBlocks.pyrolusite_ore, new Color(26, 27, 27, 50));

@@ -1,5 +1,6 @@
 package com.minelife.guns.turret;
 
+import blusunrize.immersiveengineering.common.IEContent;
 import codechicken.lib.model.ModelRegistryHelper;
 import com.minelife.Minelife;
 import com.minelife.guns.GuiHandler;
@@ -15,6 +16,8 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tileentity.TileEntity;
@@ -120,15 +123,18 @@ public class BlockTurret extends BlockContainer {
         return true;
     }
 
-    // TODO
     public void registerRecipe() {
         ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":turret");
-//        GameRegistry.addShapedRecipe(name, null, new ItemStack(this, 1, EnumGun.DESERT_EAGLE.ordinal()),
-//                "AAA",
-//                "AGA",
-//                "AAA",
-//                'A', Ingredient.fromItem(ModGuns.itemGunmetal),
-//                'G', Ingredient.fromStacks(new ItemStack(ItemName.crafting.getInstance(), 1, 1)));
+        GameRegistry.addShapedRecipe(name, null, new ItemStack(this),
+                "MAM",
+                "MCM",
+                "YJW",
+                'A', Ingredient.fromStacks(new ItemStack(IEContent.itemToolUpgrades, 1, 8)),
+                'Y', Ingredient.fromStacks(new ItemStack(IEContent.itemToolUpgrades, 1, 5)),
+                'J', Ingredient.fromStacks(new ItemStack(IEContent.blockWoodenDevice0, 1, 6)),
+                'W', Ingredient.fromStacks(new ItemStack(IEContent.blockMetalDecoration0, 1, 3)),
+                'C', Ingredient.fromStacks(new ItemStack(IEContent.itemMaterial, 1, 27)),
+                'M', Ingredient.fromStacks(new ItemStack(IEContent.itemMetal, 1, 38)));
     }
 
     @SideOnly(Side.CLIENT)

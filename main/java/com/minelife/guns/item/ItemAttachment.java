@@ -1,15 +1,13 @@
 package com.minelife.guns.item;
 
+import blusunrize.immersiveengineering.common.IEContent;
 import com.minelife.Minelife;
 import com.minelife.guns.ModGuns;
-import ic2.core.item.ItemIC2;
-import ic2.core.ref.ItemName;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -65,7 +63,7 @@ public class ItemAttachment extends Item {
                 "ABA",
                 'A', Ingredient.fromItem(ModGuns.itemGunmetal),
                 'G', Ingredient.fromItem(Item.getItemFromBlock(Blocks.GLASS_PANE)),
-                'B', new ItemStack(ItemName.crafting.getInstance(), 1, 1));
+                'B', new ItemStack(IEContent.itemMaterial, 1, 27));
     }
 
 }

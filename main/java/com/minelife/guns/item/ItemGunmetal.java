@@ -1,8 +1,8 @@
 package com.minelife.guns.item;
 
+import blusunrize.immersiveengineering.common.IEContent;
 import com.minelife.Minelife;
 import com.minelife.guns.ModGuns;
-import ic2.core.ref.ItemName;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -31,9 +31,11 @@ public class ItemGunmetal extends Item {
     }
 
     public void registerRecipe() {
+        ItemStack aluminum = new ItemStack(IEContent.itemMetal, 1, 1);
+        ItemStack copper = new ItemStack(IEContent.itemMetal, 1, 0);
         ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":gunmetal");
         ResourceLocation group = null;
-        GameRegistry.addShapedRecipe(name, group, new ItemStack(this), "CCC", "ZZZ", "TTT", 'C', new ItemStack(ItemName.plate.getInstance(), 1, 1), 'Z', ModGuns.itemZincPlate, 'T', new ItemStack(ItemName.plate.getInstance(), 1, 8));
+        GameRegistry.addShapedRecipe(name, group, new ItemStack(this), "CCC", "ZZZ", "TTT", 'C', copper, 'Z', ModGuns.itemZincPlate, 'T', aluminum);
     }
 
 }
