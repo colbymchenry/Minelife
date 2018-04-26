@@ -83,22 +83,7 @@ public class LumberjackListener {
                     TextFormatting.YELLOW + "New Level: " + TextFormatting.BLUE + LumberjackHandler.INSTANCE.getLevel(player), 5, player);
         }
     }
-
-    @SubscribeEvent
-    public void onInteract(PlayerInteractEvent.RightClickItem event) {
-        EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
-        if (player.getHeldItemMainhand().getItem() != Items.WOODEN_AXE &&
-                player.getHeldItemMainhand().getItem() != Items.STONE_AXE &&
-                player.getHeldItemMainhand().getItem() != Items.IRON_AXE &&
-                player.getHeldItemMainhand().getItem() != Items.GOLDEN_AXE &&
-                player.getHeldItemMainhand().getItem() != Items.DIAMOND_AXE) {
-            return;
-        }
-
-        if (!LumberjackHandler.INSTANCE.isProfession(player)) return;
-
-        LumberjackHandler.INSTANCE.applyTreeFeller(player);
-    }
+    // TODO: Can place blocks and farm them... same with the miner
 
     @SubscribeEvent
     public void onInteract(PlayerInteractEvent.RightClickBlock event) {

@@ -7,6 +7,7 @@ import com.minelife.realestate.ModRealEstate;
 import com.minelife.util.MLConfig;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -57,9 +58,10 @@ public class Arena implements Comparable<Arena> {
         ARENAS.add(this);
     }
 
-    public Arena(String name) throws IOException, InvalidConfigurationException {
+    public Arena(String name, boolean server) throws IOException, InvalidConfigurationException {
         config = new MLConfig(new File(Minelife.getDirectory(), "arenas"), name.toLowerCase());
-        estate = ModRealEstate.getEstate(UUID.fromString(config.getString("estate")));
+        if (server)
+            estate = ModRealEstate.getEstate(UUID.fromString(config.getString("estate")));
         if (config.contains("team1spawn"))
             team1Spawn = new BlockPos(config.getInt("team1spawn.x"), config.getInt("team1spawn.y"), config.getInt("team1spawn.z"));
         if (config.contains("team2spawn"))
@@ -79,7 +81,7 @@ public class Arena implements Comparable<Arena> {
     public static void initArenas() throws IOException, InvalidConfigurationException {
         File file = new File(Minelife.getDirectory(), "arenas");
         for (File file1 : file.listFiles()) {
-            new Arena(file1.getName().replace(".yml", ""));
+            new Arena(file1.getName().replace(".yml", ""), true);
         }
     }
 

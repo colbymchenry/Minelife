@@ -45,6 +45,7 @@ public class CommandTDM extends CommandBase {
         if(args.length == 0) {
             Map<String, Match> arenas = Maps.newHashMap();
             Map<String, String> arenaPixels = Maps.newHashMap();
+            System.out.println(Arena.ARENAS.size());
             Arena.ARENAS.forEach(arena -> {
                 arenas.put(arena.getName(), arena.getCurrentMatch());
                 arenaPixels.put(arena.getName(), arena.getPixels());

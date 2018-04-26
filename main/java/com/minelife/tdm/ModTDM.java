@@ -2,6 +2,8 @@ package com.minelife.tdm;
 
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
+import com.minelife.tdm.network.PacketJoinGame;
+import com.minelife.tdm.network.PacketOpenLobby;
 import com.minelife.tdm.network.PacketOpenMatchSearch;
 import com.minelife.tdm.server.CommandTDM;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -13,6 +15,8 @@ public class ModTDM extends MLMod {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         registerPacket(PacketOpenMatchSearch.Handler.class, PacketOpenMatchSearch.class, Side.CLIENT);
+        registerPacket(PacketJoinGame.Handler.class, PacketJoinGame.class, Side.SERVER);
+        registerPacket(PacketOpenLobby.Handler.class, PacketOpenLobby.class, Side.CLIENT);
     }
 
     @Override

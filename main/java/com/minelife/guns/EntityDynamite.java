@@ -22,8 +22,9 @@ public class EntityDynamite extends EntityArrow {
 
             if (timeInGround > 20 * 3) {
                 world.removeEntity(this);
+                // Power won't matter as the EstateListener.class overrides the power of any and all explosions
                 if (!world.isRemote)
-                    world.createExplosion(this, posX, posY, posZ, 4, true);
+                    world.createExplosion(this, posX, posY, posZ, 2.0F, true);
             }
         }
     }

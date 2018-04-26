@@ -25,9 +25,10 @@ public class ServerProxy extends MLProxy {
     @SubscribeEvent
     public void serverTick(TickEvent.ServerTickEvent event) {
         ListIterator<Bullet> bulletIterator = Bullet.BULLETS.listIterator();
-        while(bulletIterator.hasNext()) {
+        while (bulletIterator.hasNext()) {
             Bullet.HitResult hitResult = bulletIterator.next().tick(0, false);
-            if(hitResult.isTooFar() || hitResult.getBlockState() != null || hitResult.getEntity() != null) bulletIterator.remove();
+            if (hitResult.isTooFar() || hitResult.getBlockState() != null || hitResult.getEntity() != null)
+                bulletIterator.remove();
         }
     }
 
@@ -37,17 +38,17 @@ public class ServerProxy extends MLProxy {
     public void playerTick(TickEvent.PlayerTickEvent event) {
         tick++;
 
-        if(tick < 60) return;
+        if (tick < 60) return;
 
         tick = 0;
 
         EntityPlayerMP player = (EntityPlayerMP) event.player;
-        if(player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
+        if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
 
         ItemStack gunStack = player.getHeldItemMainhand();
         EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
-        if(!ModPermission.hasPermission(player.getUniqueID(), "gun.skin." + EnumGun.values()[gunStack.getMetadata()].name().toLowerCase())) {
-            if(gunType.defaultSkin != null) {
+        if (gunType.defaultSkin != null) {
+            if (!ModPermission.hasPermission(player.getUniqueID(), "gun.skin." + EnumGun.values()[gunStack.getMetadata()].name().toLowerCase())) {
                 gunStack.setItemDamage(gunType.defaultSkin.ordinal());
                 player.inventoryContainer.detectAndSendChanges();
             }

@@ -12,6 +12,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
 import java.util.List;
@@ -285,7 +286,7 @@ public class Match implements Comparable<Match> {
         int team2wins = buf.readInt();
         Match match = null;
         try {
-            match = Match.builder().setArena(new Arena(arenaName)).setStartCountdown(countDownStart).setCountdownBetweenRounds(countdownBetweenRounds);
+            match = Match.builder().setArena(new Arena(arenaName, false)).setStartCountdown(countDownStart).setCountdownBetweenRounds(countdownBetweenRounds);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InvalidConfigurationException e) {

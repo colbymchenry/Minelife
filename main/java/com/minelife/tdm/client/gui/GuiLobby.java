@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class GuiLobby extends GuiScreen {
 
-    private int guiLeft, guiTop, guiWidth = 250, guiHeight = 250;
+    private int guiLeft, guiTop, guiWidth = 250, guiHeight = 230;
     private GuiDropDown primaryDropDown, secondaryDropDown, primarySightDropDown, secondarySightDropDown;
     private Match match;
     private String arena;
@@ -29,6 +29,10 @@ public class GuiLobby extends GuiScreen {
 
         GlStateManager.color(1, 1, 1, 1);
         GuiHelper.drawDefaultBackground(guiLeft, guiTop, guiWidth, guiHeight);
+        primaryDropDown.draw(mc, mouseX, mouseY);
+        secondaryDropDown.draw(mc, mouseX, mouseY);
+        primarySightDropDown.draw(mc, mouseX, mouseY);
+        secondarySightDropDown.draw(mc, mouseX, mouseY);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -46,7 +50,9 @@ public class GuiLobby extends GuiScreen {
         super.initGui();
         guiLeft = (this.width - guiWidth) / 2;
         guiTop = (this.height - guiHeight) / 2;
-
-
+        primaryDropDown = new GuiDropDown(guiLeft, guiTop, 80, 15, "M4A4", "AK47", "AWP", "BARRETT");
+        primarySightDropDown = new GuiDropDown(guiLeft, guiTop, 80, 15, "REDDOT", "HOLOGRAPHIC");
+        secondaryDropDown = new GuiDropDown(guiLeft, guiTop, 80, 15, "DESERT_EAGLE", "MAGNUM");
+        secondarySightDropDown = new GuiDropDown(guiLeft, guiTop, 80, 15, "REDDOT", "HOLOGRAPHIC");
     }
 }

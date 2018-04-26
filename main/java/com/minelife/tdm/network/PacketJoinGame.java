@@ -1,5 +1,6 @@
 package com.minelife.tdm.network;
 
+import com.minelife.Minelife;
 import com.minelife.essentials.Location;
 import com.minelife.essentials.TeleportHandler;
 import com.minelife.tdm.Arena;
@@ -66,7 +67,9 @@ public class PacketJoinGame implements IMessage {
 
                 Location lobbySpawn = new Location(match.getArena().getEstate().getWorld().provider.getDimension(), match.getArena().getLobbySpawn().getX(), match.getArena().getLobbySpawn().getY(), match.getArena().getLobbySpawn().getZ());
                 match.setPreviousInventory(player);
+                player.inventory.clear();
                 TeleportHandler.teleport(player, lobbySpawn, 0);
+                Minelife.getNetwork().sendTo(new PacketOpenLobby(match, arena.getName()), player);
             });
             return null;
         }

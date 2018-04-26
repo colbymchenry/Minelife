@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.tdm.Match;
+import com.minelife.tdm.network.PacketJoinGame;
 import com.minelife.util.client.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -99,8 +100,8 @@ public class GuiMatchSearch extends GuiScreen {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+    protected void actionPerformed(GuiButton button) throws IOException {
+        Minelife.getNetwork().sendToServer(new PacketJoinGame((String) arenas.keySet().toArray()[button.id]));
     }
 
     @Override
