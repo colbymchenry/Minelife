@@ -33,7 +33,7 @@ public class ModGuns extends MLMod {
     public static BlockTurret blockTurretBottom, blockTurretTop;
     public static ItemZincOre itemZincOre;
     public static ItemZincIngot itemZincIngot;
-    public static ItemZincPlate itemZincPlate;
+//    public static ItemZincPlate itemZincPlate;
     public static ItemGunmetal itemGunmetal;
     public static ItemGunPart itemGunPart;
     public static ItemBlock itemTurret;
@@ -53,7 +53,7 @@ public class ModGuns extends MLMod {
         registerBlock(blockZincOre = new BlockZincOre());
         registerItem(itemZincOre = new ItemZincOre(blockZincOre));
         registerItem(itemZincIngot = new ItemZincIngot());
-        registerItem(itemZincPlate = new ItemZincPlate());
+//        registerItem(itemZincPlate = new ItemZincPlate());
         registerItem(itemGunmetal = new ItemGunmetal());
         registerItem(itemGunPart = new ItemGunPart());
         registerItem(itemDynamite = new ItemDynamite());
@@ -70,7 +70,7 @@ public class ModGuns extends MLMod {
 
         GameRegistry.registerWorldGenerator(new BlockZincOre.Generator(), 0);
         itemZincIngot.registerSmeltingRecipe();
-        itemZincPlate.registerRecipe();
+//        itemZincPlate.registerRecipe();
         itemGunmetal.registerRecipe();
         itemGunPart.registerRecipes();
         itemGun.registerRecipes();

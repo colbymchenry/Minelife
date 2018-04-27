@@ -16,6 +16,7 @@ import com.minelife.permission.ModPermission;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.tdm.ModTDM;
 import com.minelife.tracker.ModTracker;
+import com.minelife.tutorial.ModTutorial;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.PacketPopup;
 import com.minelife.util.client.PacketRequestName;
@@ -75,8 +76,9 @@ public class Minelife {
         MODS.add(new ModCapes());
         MODS.add(new ModJobs());
         MODS.add(new ModGangs());
-        MODS.add(new ModTDM());
+//        MODS.add(new ModTDM());
         MODS.add(new ModLocks());
+        MODS.add(new ModTutorial());
     }
 
     @Mod.EventHandler

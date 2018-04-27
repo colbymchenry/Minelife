@@ -3,21 +3,23 @@ package com.minelife.realestate;
 import com.google.common.collect.Sets;
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
+import com.minelife.Minelife;
+import com.minelife.jobs.EntityJobNPC;
 import com.minelife.realestate.network.*;
 import com.minelife.realestate.server.CommandEstate;
 import com.minelife.realestate.server.ServerProxy;
 import com.minelife.util.MLConfig;
 import lib.PatPeter.SQLibrary.Database;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class ModRealEstate extends MLMod {
 
@@ -32,7 +34,9 @@ public class ModRealEstate extends MLMod {
         registerPacket(PacketPurchaseEstate.Handler.class, PacketPurchaseEstate.class, Side.SERVER);
         registerPacket(PacketModifyMember.Handler.class, PacketModifyMember.class, Side.SERVER);
         registerPacket(PacketUpdatedMember.Handler.class, PacketUpdatedMember.class, Side.CLIENT);
+        registerPacket(PacketOpenReceptionistGUI.Handler.class, PacketOpenReceptionistGUI.class, Side.CLIENT);
         registerPacket(PacketAddMember.Handler.class, PacketAddMember.class, Side.SERVER);
+        EntityRegistry.registerModEntity(new ResourceLocation(Minelife.MOD_ID, "receptionist"), EntityReceptionist.class, "receptionist", 2, Minelife.getInstance(), 77, 1, true);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.util.PlayerHelper;
+import com.minelife.util.StringHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -53,6 +54,13 @@ public class Estate implements Comparable<Estate> {
 
     public void setOwnerID(UUID uniqueID) {
         this.tagCompound.setString("Owner", uniqueID.toString());
+    }
+
+    public void setIdentifier(String identifier) { this.tagCompound.setString("Identifier", identifier); }
+
+    public String getIdentifier() {
+        if(!this.tagCompound.hasKey("Identifier")) return "No Identifier";
+        return this.tagCompound.getString("Identifier");
     }
 
     public BlockPos getMaximum() {

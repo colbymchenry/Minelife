@@ -1,7 +1,10 @@
 package com.minelife.realestate.network;
 
+import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
 import com.minelife.economy.server.CommandEconomy;
+import com.minelife.notifications.Notification;
+import com.minelife.notifications.NotificationType;
 import com.minelife.realestate.BillHandler;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.ModRealEstate;
@@ -11,6 +14,8 @@ import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.PacketPopup;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -67,7 +72,7 @@ public class PacketPurchaseEstate implements IMessage {
 
                 UUID estateOwnerID = estate.getOwnerID();
 
-                if(message.rent) {
+                if (message.rent) {
                     estate.setRenterID(player.getUniqueID());
                     try {
                         BillHandler.createRentBill(player.getUniqueID(), estate);
@@ -98,10 +103,22 @@ public class PacketPurchaseEstate implements IMessage {
                 }
                 didNotFit = ModEconomy.depositCashPiles(estateOwnerID, message.rent ? estate.getRentPrice() : estate.getPurchasePrice());
                 if (didNotFit > 0) {
-                    if(PlayerHelper.getPlayer(estateOwnerID) != null) {
+                    if (PlayerHelper.getPlayer(estateOwnerID) != null) {
                         CommandEconomy.sendMessage(PlayerHelper.getPlayer(estateOwnerID), "$" + NumberConversions.format(didNotFit) + " was deposited to your ATM.");
                     }
                     ModEconomy.depositATM(estateOwnerID, didNotFit, true);
+                }
+
+
+                Notification rentNotification = new Notification(estateOwnerID, TextFormatting.DARK_GRAY + "Estate: " + estate.getIdentifier() + " has been rented!", new ResourceLocation(Minelife.MOD_ID, "textures/gui/notification/house-icon.png"), NotificationType.EDGED, 10, 0xFFFFFF);
+                if (PlayerHelper.getPlayer(estateOwnerID) != null) {
+                    rentNotification.sendTo(PlayerHelper.getPlayer(estateOwnerID),true, true, false);
+                } else {
+                    try {
+                        rentNotification.save();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 player.closeScreen();

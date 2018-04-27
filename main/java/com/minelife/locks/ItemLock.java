@@ -25,6 +25,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.text.WordUtils;
 
 public class ItemLock extends Item {
 
@@ -66,6 +67,11 @@ public class ItemLock extends Item {
         player.inventoryContainer.detectAndSendChanges();
         player.sendMessage(new TextComponentString("Lock placed! There is a " + (100.0D - type.chance) + "% of lockpick success."));
         return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+    }
+
+    @Override
+    public String getItemStackDisplayName(ItemStack stack) {
+        return WordUtils.capitalizeFully(LockType.values()[stack.getMetadata()].name().replace("_", " ")) + " Lock";
     }
 
     @SideOnly(Side.CLIENT)

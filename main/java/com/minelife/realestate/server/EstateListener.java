@@ -77,6 +77,7 @@ public class EstateListener {
     @SubscribeEvent
     public void onPlace(BlockEvent.PlaceEvent event) {
         System.out.println("CALLED");
+        // TODO: Disable mirror placement
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
 
         if(event.getPlacedBlock().getBlock() == Blocks.PISTON || event.getPlacedBlock().getBlock() == Blocks.STICKY_PISTON) {

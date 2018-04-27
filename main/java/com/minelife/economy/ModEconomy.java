@@ -23,6 +23,7 @@ import com.minelife.economy.tileentity.TileEntityATM;
 import com.minelife.economy.tileentity.TileEntityCash;
 import com.minelife.notifications.Notification;
 import com.minelife.notifications.NotificationType;
+import com.minelife.realestate.Estate;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.PlayerHelper;
 import lib.PatPeter.SQLibrary.Database;
@@ -116,6 +117,10 @@ public class ModEconomy extends MLMod {
 
     public static int depositCashPiles(UUID playerID, int amount) {
         return depositCashPiles(TileEntityCash.getCashPiles(playerID), amount);
+    }
+
+    public static int depositEstate(Estate estate, int amount) {
+        return depositCashPiles(TileEntityCash.getCashPiles(estate), amount);
     }
 
     public static int depositCashPiles(List<TileEntityCash> cashPiles, int amount) {

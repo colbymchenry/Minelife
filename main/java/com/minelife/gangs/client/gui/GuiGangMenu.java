@@ -142,7 +142,7 @@ public class GuiGangMenu extends GuiScreen {
         this.buttonList.add(new GuiButton(0, memberList.x + memberList.width - 21, memberList.y - 22, 20, 20, "+"));
         this.buttonList.add(new GuiButton(1, guiLeft - 22, guiTop + 2, 20, 20, "<"));
         this.buttonList.add(new GuiButton(2, guiLeft + guiWidth + 2, guiTop + 2, 20, 20, ">"));
-        this.buttonList.add(new GuiButton(3, memberList.x + memberList.width - 85, memberList.y - 22, 60, 20, TextFormatting.YELLOW + "Challenge"));
+//        this.buttonList.add(new GuiButton(3, memberList.x + memberList.width - 85, memberList.y - 22, 60, 20, TextFormatting.YELLOW + "Challenge"));
         this.buttonList.get(0).enabled = gang.hasPermission(mc.player.getUniqueID(), GangPermission.INVITE);
         this.buttonList.get(1).enabled = false;
     }

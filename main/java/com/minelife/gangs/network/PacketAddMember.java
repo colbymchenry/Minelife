@@ -1,13 +1,18 @@
 package com.minelife.gangs.network;
 
+import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.GangPermission;
 import com.minelife.gangs.GangRole;
+import com.minelife.notifications.Notification;
+import com.minelife.notifications.NotificationType;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.PacketPopup;
 import com.minelife.util.server.UUIDFetcher;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -20,6 +25,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public class PacketAddMember implements IMessage {
+
+    public static Map<UUID, Gang> GANG_INVITES = Maps.newHashMap();
 
     private UUID gangID;
     private String name;
@@ -51,29 +58,34 @@ public class PacketAddMember implements IMessage {
             EntityPlayerMP player = ctx.getServerHandler().player;
             Gang gang = Gang.getGang(message.gangID);
 
-            if(gang == null) {
+            if (gang == null) {
                 PacketPopup.sendPopup("Gang not found", player);
                 return null;
             }
 
-            if(gang.hasPermission(player.getUniqueID(), GangPermission.INVITE)) {
+            if (gang.hasPermission(player.getUniqueID(), GangPermission.INVITE)) {
                 UUID playerID = UUIDFetcher.get(message.name);
-                System.out.println(message.name);
-                if(playerID == null) {
+
+                if (playerID == null) {
                     PacketPopup.sendPopup("Player not found", player);
                     return null;
                 }
 
-                if(Gang.getGangForPlayer(playerID) != null) {
+
+                if (Gang.getGangForPlayer(playerID) != null) {
                     PacketPopup.sendPopup("Player already belongs to a gang", player);
                     return null;
                 }
 
-                Map<UUID, GangRole> members = gang.getMembers();
-                members.put(playerID, GangRole.TEENIE);
-                gang.setMembers(members);
-                gang.writeToDatabase();
-                Minelife.getNetwork().sendTo(new PacketOpenGangGui(gang), player);
+                if (PlayerHelper.getPlayer(playerID) == null) {
+                    PacketPopup.sendPopup("Player not online.", player);
+                    return null;
+                }
+
+                GANG_INVITES.put(playerID, gang);
+
+                Notification notification = new Notification(playerID, TextFormatting.DARK_RED + gang.getName() + TextFormatting.DARK_GRAY + " invited you to join them.\n/g accept\n/g deny", NotificationType.EDGED, 7, 0xFFFFFF);
+                notification.sendTo(PlayerHelper.getPlayer(playerID), true, true, false);
             } else {
                 PacketPopup.sendPopup("You do not have permission to invite players.", player);
             }

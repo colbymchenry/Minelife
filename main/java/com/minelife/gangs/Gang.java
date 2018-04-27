@@ -91,29 +91,37 @@ public class Gang implements Comparable<Gang> {
 
     @SideOnly(Side.SERVER)
     public Estate getBank() {
-        if(!nbtTag.hasKey("Bank")) return null;
-        return ModRealEstate.getEstate(UUID.fromString(nbtTag.getString("Bank")));
+        if (!nbtTag.hasKey("Bank")) return null;
+        Estate e = ModRealEstate.getEstate(UUID.fromString(nbtTag.getString("Bank")));
+        if (e == null) {
+            setBank(null);
+            return null;
+        }
+        return e;
     }
 
     public void setBank(Estate estate) {
-        nbtTag.setString("Bank", estate.getUniqueID().toString());
+        if (estate == null)
+            nbtTag.removeTag("Bank");
+        else
+            nbtTag.setString("Bank", estate.getUniqueID().toString());
     }
 
     @SideOnly(Side.SERVER)
     public long getBalance() {
-        if(getBank() == null) return -1;
+        if (getBank() == null) return -1;
         return ModEconomy.getBalanceCashPiles(TileEntityCash.getCashPiles(getBank()));
     }
 
     @SideOnly(Side.SERVER)
     public int deposit(int amount) {
-        if(getBank() == null) return -1;
+        if (getBank() == null) return -1;
         return ModEconomy.depositCashPiles(TileEntityCash.getCashPiles(getBank()), amount);
     }
 
     @SideOnly(Side.SERVER)
     public int withdraw(int amount) {
-        if(getBank() == null) return -1;
+        if (getBank() == null) return -1;
         return ModEconomy.withdrawCashPiles(TileEntityCash.getCashPiles(getBank()), amount);
     }
 
@@ -254,33 +262,25 @@ public class Gang implements Comparable<Gang> {
         nbtTag.setInteger("FightsLost", fightsLost);
     }
 
-    public Map<String, Location> getHomes() {
-        Map<String, Location> homes = Maps.newHashMap();
+    public Location getHome() {
+        if (!nbtTag.hasKey("Home")) return null;
+        String[] data = nbtTag.getString("Home").split(",");
+        int dimension = NumberConversions.toInt(data[0]);
+        double x = NumberConversions.toDouble(data[1]);
+        double y = NumberConversions.toDouble(data[2]);
+        double z = NumberConversions.toDouble(data[3]);
+        float yaw = NumberConversions.toFloat(data[4]);
+        float pitch = NumberConversions.toFloat(data[5]);
 
-        if (!nbtTag.hasKey("Homes")) return homes;
-
-        for (String home : nbtTag.getString("Homes").split(";")) {
-            if (!home.isEmpty() && home.contains(",")) {
-                String[] data = home.split(",");
-                String name = data[0];
-                int dimension = NumberConversions.toInt(data[0]);
-                int x = NumberConversions.toInt(data[1]);
-                int y = NumberConversions.toInt(data[2]);
-                int z = NumberConversions.toInt(data[3]);
-                float yaw = NumberConversions.toFloat(data[4]);
-                float pitch = NumberConversions.toFloat(data[5]);
-                homes.put(name, new Location(dimension, x, y, z, yaw, pitch));
-            }
-        }
-        return homes;
+        return new Location(dimension, x, y, z, yaw, pitch);
     }
 
-    public void setHomes(Map<String, Location> homes) {
-        StringBuilder builder = new StringBuilder();
-        homes.forEach((name, home) -> builder.append(name).append(",").append(home.getDimension()).append(",")
-                .append(home.getX()).append(",").append(home.getY()).append(",").append(home.getZ()).append(",")
-                .append(home.getYaw()).append(",").append(home.getPitch()).append(";"));
-        nbtTag.setString("Homes", builder.toString());
+    public void setHome(Location location) {
+        if(location == null) {
+            nbtTag.removeTag("Home");
+            return;
+        }
+        nbtTag.setString("Home", location.getDimension() + "," + location.getX() + "," + location.getY() + "," + location.getZ() + "," + location.getYaw() + "," + location.getPitch());
     }
 
     public boolean hasPermission(UUID playerID, GangPermission permission) {

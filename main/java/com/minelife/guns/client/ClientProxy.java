@@ -79,7 +79,7 @@ public class ClientProxy extends MLProxy {
         ClientRegistry.registerKeyBinding(reloadKey);
         ClientRegistry.registerKeyBinding(modifyKey);
         ModGuns.blockZincOre.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
-        ModGuns.itemZincPlate.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
+//        ModGuns.itemZincPlate.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
         ModGuns.itemZincIngot.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
         ModGuns.itemGunmetal.registerModel(Minecraft.getMinecraft().getRenderItem().getItemModelMesher());
 

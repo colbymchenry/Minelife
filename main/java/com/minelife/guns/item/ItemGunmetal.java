@@ -35,7 +35,7 @@ public class ItemGunmetal extends Item {
         ItemStack copper = new ItemStack(IEContent.itemMetal, 1, 0);
         ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":gunmetal");
         ResourceLocation group = null;
-        GameRegistry.addShapedRecipe(name, group, new ItemStack(this), "CCC", "ZZZ", "TTT", 'C', copper, 'Z', ModGuns.itemZincPlate, 'T', aluminum);
+        GameRegistry.addShapedRecipe(name, group, new ItemStack(this), "CCC", "ZZZ", "TTT", 'C', copper, 'Z', ModGuns.itemZincIngot, 'T', aluminum);
     }
 
 }

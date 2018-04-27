@@ -1,16 +1,20 @@
 package com.minelife.realestate.network;
 
 import com.minelife.Minelife;
+import com.minelife.economy.ModEconomy;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateProperty;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.realestate.PlayerPermission;
 import com.minelife.realestate.server.CommandEstate;
 import com.minelife.realestate.server.SelectionListener;
+import com.minelife.util.NumberConversions;
+import com.minelife.util.StringHelper;
 import com.minelife.util.client.PacketPopup;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -58,6 +62,18 @@ public class PacketCreateEstate implements IMessage {
 
                 if (!CommandEstate.creationCheck(player, false, true)) return;
 
+                BlockPos min = SelectionListener.getMinimum(player), max = SelectionListener.getMaximum(player);
+                long width = Math.abs(max.getX() - min.getX());
+                long length = Math.abs(max.getZ() - min.getZ());
+                long height = Math.abs(max.getY() - min.getY());
+                long area = width * length * height;
+                long price = area * ModRealEstate.getConfig().getInt("price_per_block", 2);
+
+                if(ModEconomy.getBalanceInventory(player) < price) {
+                    PacketPopup.sendPopup(TextFormatting.RED + "Insufficient funds! Price: " + TextFormatting.DARK_RED + "$" + NumberConversions.format(price), player);
+                    return;
+                }
+
                 if (message.estate.getRentPrice() > 0 && message.estate.getRentPeriod() < 1) {
                     PacketPopup.sendPopup("Rent period must be greater than 1 if rent price is greater than 1.", player);
                     return;
@@ -94,6 +110,7 @@ public class PacketCreateEstate implements IMessage {
                 }
                 message.estate.setGlobalPermissions(globalPermissions);
                 message.estate.setRenterPermissions(renterPermissions);
+                message.estate.setIdentifier(StringHelper.randomAlphaNumeric(5));
 
                 try {
                     message.estate.save();
@@ -103,6 +120,8 @@ public class PacketCreateEstate implements IMessage {
                     return;
                 }
 
+
+                ModEconomy.withdrawInventory(player, (int) price);
                 ModRealEstate.getLoadedEstates().add(message.estate);
                 player.closeScreen();
                 player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " Estate created!"));
