@@ -12,8 +12,11 @@ import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.client.RenderGun;
+import com.minelife.permission.ModPermission;
 import com.minelife.util.client.Animation;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
@@ -292,6 +295,21 @@ public enum EnumGun {
                 return 2;
         }
         return 10;
+    }
+
+    public static List<EnumGun> getGunSkins(EntityPlayerMP player, ItemStack gunStack) {
+        if(gunStack.getItem() != ModGuns.itemGun) return Lists.newArrayList();
+
+        List<EnumGun> availableSkins = Lists.newArrayList();
+        EnumGun gunType = EnumGun.values()[gunStack.getMetadata()];
+
+        for (EnumGun gun : EnumGun.values()) {
+            boolean sameGunType = gunType.name().contains(gun.name().contains("_") ? gun.name().split("_")[0] : gun.name());
+            if(sameGunType && (gun.defaultSkin == null || (gun.defaultSkin != null && ModPermission.hasPermission(player.getUniqueID(), "gun.skin." + gun.name().toLowerCase()))))
+                availableSkins.add(gun);
+        }
+
+        return availableSkins;
     }
 
 }

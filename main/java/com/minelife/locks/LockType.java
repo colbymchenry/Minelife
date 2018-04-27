@@ -3,6 +3,7 @@ package com.minelife.locks;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Random;
 
@@ -25,6 +26,6 @@ public enum LockType {
     }
 
     public boolean tryToUnlock() {
-        return rand.nextInt(100) > this.chance;
+        return MathHelper.nextDouble(rand, 0.0D, 100.0D) > this.chance;
     }
 }

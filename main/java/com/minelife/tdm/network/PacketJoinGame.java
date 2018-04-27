@@ -1,14 +1,19 @@
 package com.minelife.tdm.network;
 
+import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.essentials.Location;
 import com.minelife.essentials.TeleportHandler;
+import com.minelife.guns.ModGuns;
+import com.minelife.guns.item.EnumGun;
 import com.minelife.tdm.Arena;
 import com.minelife.tdm.Match;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.PacketPopup;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -16,6 +21,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
+import java.util.List;
 import java.util.UUID;
 
 public class PacketJoinGame implements IMessage {
@@ -46,13 +52,17 @@ public class PacketJoinGame implements IMessage {
             FMLServerHandler.instance().getServer().addScheduledTask(() -> {
                 EntityPlayerMP player = ctx.getServerHandler().player;
                 Arena arena = Arena.getArena(message.arena);
-                Match match = arena.getCurrentMatch();
+                Match m = arena.getCurrentMatch();
 
-                if (match == null) {
-                    match = Match.builder().setArena(arena).setTeam1(player.getUniqueID()).setTeam2(new UUID[]{})
-                            .setCountdownBetweenRounds(5).setStartCountdown(120).setRounds(5).setTeam1MaxSize(12).setTeam2MaxSize(12);
+                if (m == null) {
+                    m = Match.builder().setArena(arena).setTeam1(player.getUniqueID()).setTeam2(new UUID[]{})
+                            .setCountdownBetweenRounds(5).setStartCountdown(10).setRounds(5).setTeam1MaxSize(12).setTeam2MaxSize(12).build();
+                    m.setStartTime(System.currentTimeMillis() + m.getCountdownStart() * 1000L);
                 }
 
+                final Match match = m;
+
+                if(!Match.ACTIVE_MATCHES.contains(match)) Match.ACTIVE_MATCHES.add(match);
 
                 if (!match.getTeam1().contains(player.getUniqueID()) && !match.getTeam2().contains(player.getUniqueID())) {
                     if (match.getTeam1().size() >= match.getTeam2().size() && match.getTeam2().size() + 1 < match.getTeam2MaxSize()) {
@@ -69,7 +79,16 @@ public class PacketJoinGame implements IMessage {
                 match.setPreviousInventory(player);
                 player.inventory.clear();
                 TeleportHandler.teleport(player, lobbySpawn, 0);
-                Minelife.getNetwork().sendTo(new PacketOpenLobby(match, arena.getName()), player);
+                List<EnumGun> gunSkins = Lists.newArrayList();
+                gunSkins.addAll(EnumGun.getGunSkins(player, new ItemStack(ModGuns.itemGun, 1, EnumGun.M4A4.ordinal())));
+                gunSkins.addAll(EnumGun.getGunSkins(player, new ItemStack(ModGuns.itemGun, 1, EnumGun.AK47.ordinal())));
+                gunSkins.addAll(EnumGun.getGunSkins(player, new ItemStack(ModGuns.itemGun, 1, EnumGun.AWP.ordinal())));
+                gunSkins.addAll(EnumGun.getGunSkins(player, new ItemStack(ModGuns.itemGun, 1, EnumGun.BARRETT.ordinal())));
+                gunSkins.addAll(EnumGun.getGunSkins(player, new ItemStack(ModGuns.itemGun, 1, EnumGun.MAGNUM.ordinal())));
+                gunSkins.addAll(EnumGun.getGunSkins(player, new ItemStack(ModGuns.itemGun, 1, EnumGun.DESERT_EAGLE.ordinal())));
+                Minelife.getNetwork().sendTo(new PacketOpenLobby(match, arena.getName(), gunSkins), player);
+
+                match.sendUpdatesToLobby();
             });
             return null;
         }

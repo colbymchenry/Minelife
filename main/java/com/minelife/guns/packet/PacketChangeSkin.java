@@ -45,7 +45,7 @@ public class PacketChangeSkin implements IMessage {
                 EntityPlayerMP player = ctx.getServerHandler().player;
                 ItemStack heldItem = player.getHeldItemMainhand();
 
-                if(!ModPermission.hasPermission(player.getUniqueID(), "gun.skin." + message.gunSkin.name().toLowerCase())) {
+                if(message.gunSkin.defaultSkin != null && !ModPermission.hasPermission(player.getUniqueID(), "gun.skin." + message.gunSkin.name().toLowerCase())) {
                     PacketPopup.sendPopup("You do not have permission to use that skin.", player);
                     return;
                 }

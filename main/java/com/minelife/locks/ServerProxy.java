@@ -65,6 +65,7 @@ public class ServerProxy extends MLProxy {
         }
     }
 
+    // TODO: Can open two block doors and probably two block chests
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent.RightClickBlock event) {
         Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());

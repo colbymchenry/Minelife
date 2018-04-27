@@ -2,11 +2,17 @@ package com.minelife.tdm;
 
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
+import com.minelife.essentials.Location;
+import com.minelife.essentials.TeleportHandler;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.util.MLConfig;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.configuration.InvalidConfigurationException;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import javax.imageio.ImageIO;
@@ -197,5 +203,25 @@ public class Arena implements Comparable<Arena> {
     @Override
     public int compareTo(Arena o) {
         return o.getName().compareTo(getName());
+    }
+
+    public static class ArenaTicker {
+        int tick = 0;
+
+        @SubscribeEvent
+        public void playerTick(TickEvent.PlayerTickEvent event) {
+            tick++;
+            if (tick < 60) return;
+            tick = 0;
+            Estate estateAtPlayer = ModRealEstate.getEstateAt(event.player.getEntityWorld(), event.player.getPosition());
+            if (estateAtPlayer != null) {
+                Arena arena = Arena.ARENAS.stream().filter(a -> a.getEstate().equals(estateAtPlayer)).findFirst().orElse(null);
+                if (arena != null) {
+                    if (PlayerHelper.isOp((EntityPlayerMP) event.player)) return;
+                    if (arena.getCurrentMatch() == null || (arena.getCurrentMatch().getTeam1().contains(event.player.getUniqueID()) && arena.getCurrentMatch().getTeam2().contains(event.player.getUniqueID())))
+                        TeleportHandler.teleport((EntityPlayerMP) event.player, new Location(estateAtPlayer.getWorld().provider.getDimension(), arena.getExitSpawn().getX(), arena.getExitSpawn().getY(), arena.getExitSpawn().getZ()), 0);
+                }
+            }
+        }
     }
 }

@@ -82,6 +82,7 @@ public class GuiDropDown extends Gui {
                         }
                     }
                 }
+                return true;
             }
         }
 

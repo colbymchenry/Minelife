@@ -4,9 +4,11 @@ import com.google.common.collect.Sets;
 import com.minelife.essentials.server.EventTeleport;
 import com.minelife.util.SoundTrack;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.Teleporter;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -23,27 +25,31 @@ public class TeleportHandler {
     public void serverTick(TickEvent.ServerTickEvent event) {
         tick++;
 
-        if(tick >= 40) {
+        if (tick >= 40) {
             toRemove.clear();
             teleportQue.forEach(que -> {
                 que.seconds--;
-                if(que.seconds <= 0) {
+                if (que.seconds <= 0) {
                     EventTeleport eventTeleport = new EventTeleport(que.location, que.player);
                     MinecraftForge.EVENT_BUS.post(eventTeleport);
 
-                    if(!eventTeleport.isCanceled()) {
+                    if (!eventTeleport.isCanceled()) {
                         // transfer to the location's world
                         if (que.player.getEntityWorld().provider.getDimension() != que.location.getEntityWorld().provider.getDimension()) {
                             que.player.mcServer.getPlayerList().transferPlayerToDimension(que.player, que.location.getEntityWorld().provider.getDimension(), new Teleporter(que.player.getServerWorld()));
                         }
-                        que.player.connection.setPlayerLocation(que.location.getX(), que.location.getY(), que.location.getZ(), que.location.getYaw(), que.location.getPitch());
+
+                        MinecraftServer s = FMLCommonHandler.instance().getMinecraftServerInstance();
+                        s.getCommandManager().executeCommand(s, "/tp " + que.player.getName() + " " + que.location.getX() + " " + que.location.getY() + " " + que.location.getZ());
+                        que.player.rotationYaw = que.location.getYaw();
+                        que.player.rotationPitch = que.location.getPitch();
                     }
 
                     toRemove.add(que);
                 } else {
                     ModEssentials.sendTitle(TextFormatting.YELLOW.toString() + TextFormatting.BOLD.toString() + que.seconds, null, 1, que.player);
                     SoundTrack soundTrack = new SoundTrack();
-                    if(que.seconds == 1) {
+                    if (que.seconds == 1) {
                         soundTrack.addPart("minecraft:block.note.pling", 0L, 1, 1.5F);
                     } else {
                         soundTrack.addPart("minecraft:block.note.pling", 0L, 1, 1);

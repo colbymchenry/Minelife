@@ -3,14 +3,28 @@ package com.minelife.tdm;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.minelife.Minelife;
+import com.minelife.drugs.XRayEffect;
+import com.minelife.drugs.item.ItemJoint;
 import com.minelife.essentials.Location;
+import com.minelife.essentials.ModEssentials;
 import com.minelife.essentials.TeleportHandler;
 import com.minelife.essentials.server.commands.Heal;
+import com.minelife.tdm.network.PacketSendSecondsTillStart;
+import com.minelife.tdm.network.PacketUpdateLobby;
 import com.minelife.util.PlayerHelper;
+import com.minelife.util.SoundTrack;
 import com.minelife.util.configuration.InvalidConfigurationException;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -26,13 +40,17 @@ public class Match implements Comparable<Match> {
 
     private Arena arena;
     private int countdownStart, countdownBetweenRounds, team1MaxSize, team2MaxSize;
-    private long startTime;
+    private long startTime, startRoundTime;
     private Set<UUID> team1, team2;
     private Map<UUID, List<ItemStack>> playerLoadouts = Maps.newHashMap();
     private Map<UUID, SavedInventory> previousInventory = Maps.newHashMap();
     private int rounds, team1Wins, team2Wins;
 
     private Match() {
+    }
+
+    public static Match getMatch(EntityPlayer player) {
+        return ACTIVE_MATCHES.stream().filter(match -> match.getTeam1().contains(player.getUniqueID()) || match.getTeam2().contains(player.getUniqueID())).findFirst().orElse(null);
     }
 
     public static Match builder() {
@@ -88,6 +106,10 @@ public class Match implements Comparable<Match> {
         if (this.team2 == null) return null;
         if (this.arena == null) return null;
         return this;
+    }
+
+    public boolean started() {
+        return System.currentTimeMillis() > getStartTime();
     }
 
     public void setLoadout(UUID player, ItemStack... items) {
@@ -190,6 +212,10 @@ public class Match implements Comparable<Match> {
         return team2MaxSize;
     }
 
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
     public long getStartTime() {
         return startTime;
     }
@@ -209,10 +235,16 @@ public class Match implements Comparable<Match> {
     }
 
     public void start() {
+//        if(!canBegin()) {
+//            end();
+//            return;
+//        }
+        startRoundTime = getCountdownBetweenRounds();
         team1.forEach(playerID -> {
             EntityPlayerMP player = PlayerHelper.getPlayer(playerID);
             if (getPlayerLoadout(playerID) != null) {
                 player.inventory.clear();
+                player.closeScreen();
                 TeleportHandler.teleport(player, new Location(arena.getEstate().getWorld().provider.getDimension(), arena.getTeam1Spawn().getX(), arena.getTeam1Spawn().getY() + 0.3, arena.getTeam1Spawn().getZ(), player.rotationYaw, player.rotationPitch), 0);
                 for (int i = 0; i < getPlayerLoadout(playerID).size(); i++)
                     player.inventory.setInventorySlotContents(i, getPlayerLoadout(playerID).get(i));
@@ -224,6 +256,7 @@ public class Match implements Comparable<Match> {
             EntityPlayerMP player = PlayerHelper.getPlayer(playerID);
             if (getPlayerLoadout(playerID) != null) {
                 player.inventory.clear();
+                player.closeScreen();
                 TeleportHandler.teleport(player, new Location(arena.getEstate().getWorld().provider.getDimension(), arena.getTeam2Spawn().getX(), arena.getTeam2Spawn().getY() + 0.3, arena.getTeam2Spawn().getZ(), player.rotationYaw, player.rotationPitch), 0);
                 for (int i = 0; i < getPlayerLoadout(playerID).size(); i++)
                     player.inventory.setInventorySlotContents(i, getPlayerLoadout(playerID).get(i));
@@ -231,14 +264,17 @@ public class Match implements Comparable<Match> {
                 kickPlayer(player);
             }
         });
+    }
 
+    public boolean roundStarted() {
+        return startRoundTime <= 0;
     }
 
     public void kickPlayer(EntityPlayerMP player) {
         if (player != null) {
             TeleportHandler.teleport(player, new Location(arena.getEstate().getWorld().provider.getDimension(),
                     arena.getExitSpawn().getX(), arena.getExitSpawn().getY(), arena.getExitSpawn().getZ(),
-                    player.rotationYaw, player.rotationPitch));
+                    player.rotationYaw, player.rotationPitch), 0);
             player.inventory.clear();
             getPreviousInventory(player.getUniqueID()).getItems().forEach((slot, stack) -> player.inventory.setInventorySlotContents(slot, stack));
             Heal.healPlayer(player);
@@ -247,7 +283,38 @@ public class Match implements Comparable<Match> {
             team1.remove(player.getUniqueID());
             team2.remove(player.getUniqueID());
             playerLoadouts.remove(player.getUniqueID());
+            sendUpdatesToLobby();
         }
+    }
+
+    public void sendUpdatesToLobby() {
+        getTeam1().forEach(playerID -> {
+            if (PlayerHelper.getPlayer(playerID) != null) {
+                Minelife.getNetwork().sendTo(new PacketUpdateLobby(getTeam1(), getTeam2()), PlayerHelper.getPlayer(playerID));
+            }
+        });
+        getTeam2().forEach(playerID -> {
+            if (PlayerHelper.getPlayer(playerID) != null) {
+                Minelife.getNetwork().sendTo(new PacketUpdateLobby(getTeam1(), getTeam2()), PlayerHelper.getPlayer(playerID));
+            }
+        });
+    }
+
+    public void sendSecondsTillStart() {
+        getTeam1().forEach(playerID -> {
+            if (PlayerHelper.getPlayer(playerID) != null) {
+                Minelife.getNetwork().sendTo(new PacketSendSecondsTillStart(getSecondsTillStart()), PlayerHelper.getPlayer(playerID));
+            }
+        });
+        getTeam2().forEach(playerID -> {
+            if (PlayerHelper.getPlayer(playerID) != null) {
+                Minelife.getNetwork().sendTo(new PacketSendSecondsTillStart(getSecondsTillStart()), PlayerHelper.getPlayer(playerID));
+            }
+        });
+    }
+
+    public int getSecondsTillStart() {
+        return (int) ((getStartTime() - System.currentTimeMillis()) / 1000L);
     }
 
     @Override
@@ -305,4 +372,52 @@ public class Match implements Comparable<Match> {
 
     // TODO: For syncing startTime etc may need to either sync via ping or when player connects to a server go ahead and sync the
     // TODO: time by immediately finding the difference between their System.currentTimeMillis.
+    public static class MatchTicker {
+        long lastSec = 0;
+
+        @SubscribeEvent
+        public void serverTick(TickEvent.ServerTickEvent event) {
+            long sec = System.currentTimeMillis() / 1000;
+            if (sec == lastSec) return;
+            lastSec = sec;
+
+            for (Match match : Match.ACTIVE_MATCHES) {
+                if (!match.started()) {
+                    if (match.getSecondsTillStart() < 1) {
+//                        if(match.canBegin()) {
+                        match.start();
+//                        } else {
+//
+//                        }
+                    } else {
+                        match.sendSecondsTillStart();
+                    }
+                } else {
+//                    if (match.team1.isEmpty() || match.team2.isEmpty()) match.end();
+                    if (!match.roundStarted()) {
+                        Set<UUID> players = match.team1;
+                        players.addAll(match.team2);
+
+                        for (UUID playerID : players) {
+                            EntityPlayerMP player = PlayerHelper.getPlayer(playerID);
+                            if (player != null) {
+                                player.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, (int) match.startRoundTime * 20, 10, false, false));
+                                ModEssentials.sendTitle(TextFormatting.YELLOW.toString() + TextFormatting.BOLD.toString() + match.startRoundTime, null, 1, player);
+                                SoundTrack soundTrack = new SoundTrack();
+                                if (match.startRoundTime == 1) {
+                                    soundTrack.addPart("minecraft:block.note.pling", 0L, 1, 1.5F);
+                                } else {
+                                    soundTrack.addPart("minecraft:block.note.pling", 0L, 1, 1);
+                                }
+                                soundTrack.play(player);
+                            }
+                        }
+
+                        match.startRoundTime--;
+                    }
+                }
+            }
+        }
+
+    }
 }

@@ -31,14 +31,14 @@ import java.util.*;
 
 public class CustomGuiMainMenu extends GuiMainMenu {
 
-    private static final ResourceLocation[] introSongs = new ResourceLocation[] {new ResourceLocation("minelife:intro0"),new ResourceLocation("minelife:intro1"),new ResourceLocation("minelife:intro2")};
-    private static final ResourceLocation[] introImages = new ResourceLocation[] {
+    private static final ResourceLocation[] introSongs = new ResourceLocation[]{new ResourceLocation("minelife:intro0"), new ResourceLocation("minelife:intro1"), new ResourceLocation("minelife:intro2")};
+    private static final ResourceLocation[] introImages = new ResourceLocation[]{
             new ResourceLocation("minelife:textures/gui/title/background/background0.png"),
             new ResourceLocation("minelife:textures/gui/title/background/background1.png"),
             new ResourceLocation("minelife:textures/gui/title/background/background2.png"),
             new ResourceLocation("minelife:textures/gui/title/background/background3.png"),
             new ResourceLocation("minelife:textures/gui/title/background/background4.png"),
-            new ResourceLocation("minelife:textures/gui/title/background/background5.png") };
+            new ResourceLocation("minelife:textures/gui/title/background/background5.png")};
     private static final ResourceLocation minelifeLogo = new ResourceLocation("minelife:textures/gui/title/background/minelife_logo.png");
     private static final ResourceLocation javaDownload = new ResourceLocation("minelife:textures/gui/title/ram/javadownload.png");
     private static final ResourceLocation launcherHome = new ResourceLocation("minelife:textures/gui/title/ram/launcherhome.png");
@@ -54,16 +54,16 @@ public class CustomGuiMainMenu extends GuiMainMenu {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         long total = Runtime.getRuntime().maxMemory();
-        if((total / (1024 * 1024)) < 3000) {
+        if ((total / (1024 * 1024)) < 3000) {
             mc.getTextureManager().bindTexture(javaDownload);
             GuiHelper.drawImage(0, 0, this.width / 2, this.height / 2, javaDownload);
             mc.getTextureManager().bindTexture(launcherHome);
             GuiHelper.drawImage(this.width / 2, 0, this.width / 2, this.height / 2, launcherHome);
             mc.getTextureManager().bindTexture(launcherSettings);
             GuiHelper.drawImage(0, this.height / 2, this.width / 2, this.height / 2, launcherSettings);
-            drawCenteredString(fontRenderer, "You need to allocate more RAM!", (this.width / 2) +  (this.width / 4), (this.height / 2) + (this.height / 4) - 20, 0xFFFFFF);
+            drawCenteredString(fontRenderer, "You need to allocate more RAM!", (this.width / 2) + (this.width / 4), (this.height / 2) + (this.height / 4) - 20, 0xFFFFFF);
             drawCenteredString(fontRenderer, "Allocate at least 3 GB", (this.width / 2) + (this.width / 4), (this.height / 2) + (this.height / 4), 0xFFFFFF);
-            int x =(this.width / 2) + (this.width / 4), y = (this.height / 2) + (this.height / 4) + 20;
+            int x = (this.width / 2) + (this.width / 4), y = (this.height / 2) + (this.height / 4) + 20;
             int stringWidth = fontRenderer.getStringWidth("Click Here to download Java");
             boolean hover = (mouseX >= x - (stringWidth / 2) && mouseX <= x + (stringWidth / 2) && mouseY >= y && mouseY <= y + 9);
             drawCenteredString(fontRenderer, (hover ? TextFormatting.YELLOW : "") + "Click Here to download Java", x, y, 0xFFFFFF);
@@ -122,7 +122,7 @@ public class CustomGuiMainMenu extends GuiMainMenu {
         GuiButton realmsBtn = this.buttonList.stream().filter(btn -> btn.id == 14).findFirst().orElse(null);
         if (realmsBtn != null) realmsBtn.visible = false;
         GuiButton multiplayerBtn = this.buttonList.stream().filter(btn -> btn.id == 2).findFirst().orElse(null);
-        if(multiplayerBtn != null) {
+        if (multiplayerBtn != null) {
             GuiButton modsBtn = this.buttonList.stream().filter(btn -> btn.id == 6).findFirst().orElse(null);
             modsBtn.width = multiplayerBtn.width;
         }
@@ -138,31 +138,34 @@ public class CustomGuiMainMenu extends GuiMainMenu {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        int x =(this.width / 2) + (this.width / 4), y = (this.height / 2) + (this.height / 4) + 20;
-        int stringWidth = fontRenderer.getStringWidth("Click Here to download Java");
-        boolean hover = (mouseX >= x - (stringWidth / 2) && mouseX <= x + (stringWidth / 2) && mouseY >= y && mouseY <= y + 9);
-        if(hover) {
-            try
-            {
-                Class<?> oclass = Class.forName("java.awt.Desktop");
-                Object object = oclass.getMethod("getDesktop").invoke((Object)null);
-                oclass.getMethod("browse", URI.class).invoke(object, new URI("http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html"));
+        long total = Runtime.getRuntime().maxMemory();
+        if ((total / (1024 * 1024)) < 3000) {
+            int x = (this.width / 2) + (this.width / 4), y = (this.height / 2) + (this.height / 4) + 20;
+            int stringWidth = fontRenderer.getStringWidth("Click Here to download Java");
+            boolean hover = (mouseX >= x - (stringWidth / 2) && mouseX <= x + (stringWidth / 2) && mouseY >= y && mouseY <= y + 9);
+            if (hover) {
+                try {
+                    Class<?> oclass = Class.forName("java.awt.Desktop");
+                    Object object = oclass.getMethod("getDesktop").invoke((Object) null);
+                    oclass.getMethod("browse", URI.class).invoke(object, new URI("http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html"));
+                } catch (Throwable throwable1) {
+                }
             }
-            catch (Throwable throwable1)
-            {
-            }
+        } else {
+            super.mouseClicked(mouseX, mouseY, mouseButton);
         }
     }
 
     @SubscribeEvent
     public void onGui(GuiOpenEvent event) {
-        if (event.getGui() != null && event.getGui().getClass() == GuiMainMenu.class) event.setGui(new CustomGuiMainMenu());
+        if (event.getGui() != null && event.getGui().getClass() == GuiMainMenu.class)
+            event.setGui(new CustomGuiMainMenu());
     }
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         Minecraft mc = Minecraft.getMinecraft();
-        if(mc.player == null && (mc.currentScreen instanceof CustomGuiMainMenu || mc.currentScreen instanceof GuiMultiplayer
+        if (mc.player == null && (mc.currentScreen instanceof CustomGuiMainMenu || mc.currentScreen instanceof GuiMultiplayer
                 || mc.currentScreen instanceof GuiOptions || mc.currentScreen instanceof GuiLanguage || mc.currentScreen instanceof GuiModList)) {
             boolean foundMusic = false;
             SoundManager mng = ReflectionHelper.getPrivateValue(SoundHandler.class, mc.getSoundHandler(), "sndManager", "field_147694_f");
@@ -182,15 +185,15 @@ public class CustomGuiMainMenu extends GuiMainMenu {
                 PositionedSound ps = (PositionedSound) playingSounds.get(it.next());
                 ResourceLocation reloc = ReflectionHelper.getPrivateValue(PositionedSound.class, ps, "positionedSoundLocation", "field_147664_a");
                 for (ResourceLocation introSong : introSongs) {
-                    if(reloc.getResourcePath().equals(introSong.getResourcePath())) {
+                    if (reloc.getResourcePath().equals(introSong.getResourcePath())) {
                         foundMusic = true;
                         break;
                     }
                 }
             }
 
-            if(!foundMusic) {
-                if(songLoop > introSongs.length - 1) songLoop = 0;
+            if (!foundMusic) {
+                if (songLoop > introSongs.length - 1) songLoop = 0;
                 mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(new SoundEvent(introSongs[songLoop]), 1, 0.03F));
                 songLoop++;
             }
