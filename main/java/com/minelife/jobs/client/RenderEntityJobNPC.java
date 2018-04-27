@@ -25,6 +25,7 @@ public class RenderEntityJobNPC extends RenderBiped {
     private ResourceLocation lumberjackTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/lumberjack.png");
     private ResourceLocation minerTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/miner.png");
     private ResourceLocation policeTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/police.png");
+    private ResourceLocation drugProducerTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/drug_producer.png");
 
     public RenderEntityJobNPC(RenderManager renderManager) {
         super(renderManager, new ModelPlayer(0.0F, false), 0.5F);
@@ -76,7 +77,6 @@ public class RenderEntityJobNPC extends RenderBiped {
             }
             GL11.glPopMatrix();
         }
-
     }
 
     @Override
@@ -97,6 +97,8 @@ public class RenderEntityJobNPC extends RenderBiped {
                 return lumberjackTex;
             case 6:
                 return policeTex;
+            case 7:
+                return drugProducerTex;
         }
         return null;
     }

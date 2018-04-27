@@ -76,6 +76,7 @@ public class EstateListener {
 
     @SubscribeEvent
     public void onPlace(BlockEvent.PlaceEvent event) {
+        System.out.println("CALLED");
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
 
         if(event.getPlacedBlock().getBlock() == Blocks.PISTON || event.getPlacedBlock().getBlock() == Blocks.STICKY_PISTON) {
@@ -92,20 +93,18 @@ public class EstateListener {
         event.setCanceled(true);
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onInteract(PlayerInteractEvent.RightClickBlock event) {
-        EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
-        Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());
-
-        if (estate == null) return;
-
-        if (estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.INTERACT)) return;
-
-        // TODO: Implement locks
-
-        player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " You are " + TextFormatting.RED + "not" + TextFormatting.GOLD + " authorized to interact here."));
-        event.setCanceled(true);
-    }
+//    @SubscribeEvent(priority = EventPriority.HIGH)
+//    public void onInteract(PlayerInteractEvent.RightClickBlock event) {
+//        EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
+//        Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());
+//
+//        if (estate == null) return;
+//
+//        if (estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.INTERACT)) return;
+//
+//        player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " You are " + TextFormatting.RED + "not" + TextFormatting.GOLD + " authorized to interact here."));
+//        event.setCanceled(true);
+//    }
 
     // TODO: Add fire spread protection
     // TODO: cannot interact with cars, but can interact with containers

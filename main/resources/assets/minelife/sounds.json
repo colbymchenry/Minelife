@@ -179,8 +179,10 @@
   },
   "gang_created": {
     "category": "neutral",
-    "sounds": [
-      { "name": "minelife:gang_created", "stream": true }
-    ]
+    "sounds": ["minelife:gang_created"]
+  },
+  "drug_level_up": {
+    "category": "neutral",
+    "sounds": ["minelife:drug_level_up"]
   }
 }

@@ -1,46 +1,23 @@
 package com.minelife.drugs.block;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.drugs.ModDrugs;
-import com.minelife.util.server.MLCommand;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockDoor;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nullable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class BlockHempCrop extends BlockCrops {
@@ -60,7 +37,7 @@ public class BlockHempCrop extends BlockCrops {
 
     @Override
     protected int getBonemealAgeIncrease(World worldIn) {
-        return 1;
+        return 0;
     }
 
     @Override
@@ -77,6 +54,7 @@ public class BlockHempCrop extends BlockCrops {
         worldIn.setBlockState(pos, state.withProperty(AGE, i), 2);
     }
 
+    // can be used for bonemeal in the RightClickBlockEvent if we decide to enable it
     public int getGrowValue(World worldIn, BlockPos pos, IBlockState state) {
         int i = this.getAge(state) + this.getBonemealAgeIncrease(worldIn);
         int j = this.getMaxAge();
@@ -110,7 +88,6 @@ public class BlockHempCrop extends BlockCrops {
         boolean alreadyFemale = state.getValue(FEMALE) == 1;
         if (getAge(state) == 0) {
             boolean female = worldIn.rand.nextInt(100) > 79;
-            if (female) System.out.println("FEMALE");
             worldIn.setBlockState(pos, this.withAge(0).withProperty(FEMALE, female || alreadyFemale ? 1 : 0));
         } else {
             worldIn.setBlockState(pos, state.withProperty(FEMALE, alreadyFemale ? 1 : 0));
@@ -129,7 +106,6 @@ public class BlockHempCrop extends BlockCrops {
     @Override
     public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state) {
         IBlockState soil = worldIn.getBlockState(pos.down());
-        System.out.println("CAN BLOCK STACK " + isBlockValid(worldIn, pos));
         return isBlockValid(worldIn, pos) && soil.getBlock().canSustainPlant(soil, worldIn, pos.down(), net.minecraft.util.EnumFacing.UP, this);
     }
 
@@ -182,14 +158,17 @@ public class BlockHempCrop extends BlockCrops {
         "Auto-flowering" marijuana strains pretty much ignore how much light they get each day. Generally you don't run into these unless you buy them particularly from a cannabis seed bank.
      */
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void interact(PlayerInteractEvent.RightClickBlock event) {
         if (event.getWorld().getBlockState(event.getPos()).getBlock() != this) return;
 
-        event.setCanceled(true);
-        int oldGrowthStage = event.getWorld().getBlockState(event.getPos()).getValue(AGE);
+        boolean isCancelled = event.isCanceled();
 
-        System.out.println(event.getWorld().getLightBrightness(event.getPos()));
+        event.setCanceled(true);
+
+        if(isCancelled) return;
+
+        int oldGrowthStage = event.getWorld().getBlockState(event.getPos()).getValue(AGE);
 
         if(oldGrowthStage == 7) {
             NonNullList<ItemStack> drops = NonNullList.create();
@@ -197,7 +176,14 @@ public class BlockHempCrop extends BlockCrops {
             drops.forEach(stack ->   spawnAsEntity(event.getWorld(), event.getPos(), stack));
         }
 
-        int growthStage = oldGrowthStage == 7 ? random.nextInt(1) : getGrowValue(event.getWorld(), event.getPos(), event.getWorld().getBlockState(event.getPos()));
+        boolean holdingHoe = event.getEntityPlayer().getHeldItem(event.getHand()).getItem().getRegistryName().toString().contains("_hoe");
+
+        int growthStage = oldGrowthStage == 7 || holdingHoe ? random.nextInt(1) : oldGrowthStage;
         event.getWorld().setBlockState(event.getPos(), this.withAge(growthStage).withProperty(FEMALE, event.getWorld().getBlockState(event.getPos()).getValue(FEMALE)), 2);
+
+        if(holdingHoe && growthStage > 1) {
+            event.getEntityPlayer().getHeldItem(event.getHand()).setItemDamage(event.getEntityPlayer().getHeldItem(event.getHand()).getItemDamage() + 1);
+            event.getEntityPlayer().inventoryContainer.detectAndSendChanges();
+        }
     }
 }

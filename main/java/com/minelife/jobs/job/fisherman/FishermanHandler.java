@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 
 import java.sql.SQLException;
@@ -92,11 +93,18 @@ public class FishermanHandler extends NPCHandler {
         sellingOptions.add(new SellingOption(new ItemStack(ItemRegistry.sardinerawItem), 84));
         sellingOptions.add(new SellingOption(new ItemStack(ItemRegistry.musselrawItem), 72));
         sellingOptions.add(new SellingOption(new ItemStack(ItemRegistry.rawtofishItem), 64));
+        sellingOptions.add(new SellingOption(new ItemStack(ItemRegistry.charrrawItem), 64));
+        sellingOptions.add(new SellingOption(new ItemStack(Items.FISH), 24));
         return sellingOptions;
     }
 
     @Override
     public void setupConfig() {
 
+    }
+
+    public boolean doDoubleDrop(EntityPlayerMP player) {
+        double chance = (double) getLevel(player) / (double) getConfig().getInt("MaxLevel");
+        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
     }
 }

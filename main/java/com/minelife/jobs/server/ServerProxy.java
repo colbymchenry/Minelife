@@ -16,17 +16,24 @@ public class ServerProxy extends MLProxy {
     public static Database DB;
 
     @Override
-    public void preInit(FMLPreInitializationEvent event) throws Exception {
-        DB = new SQLite(Logger.getLogger("Minecraft"), "[Jobs]", Minelife.getDirectory().getAbsolutePath(), "jobs");
-        DB.open();
+    public void preInit(FMLPreInitializationEvent event) {
+        try {
+            DB = new SQLite(Logger.getLogger("Minecraft"), "[Jobs]", Minelife.getDirectory().getAbsolutePath(), "jobs");
+            DB.open();
 
-        DB.query("CREATE TABLE IF NOT EXISTS bounties (placer VARCHAR(36), target VARCHAR(36), amount INT)");
+            DB.query("CREATE TABLE IF NOT EXISTS bounties (placer VARCHAR(36), target VARCHAR(36), amount INT)");
 
-        for (EnumJob enumJob : EnumJob.values()) {
-            DB.query("CREATE TABLE IF NOT EXISTS " + enumJob.name().toLowerCase().replace("_", "") + " (playerID VARCHAR(36), xp LONG)");
-            MinecraftForge.EVENT_BUS.register(enumJob.getListener());
-            enumJob.getHandler().setupConfig();
+            for (EnumJob enumJob : EnumJob.values()) {
+                DB.query("CREATE TABLE IF NOT EXISTS " + enumJob.name().toLowerCase().replace("_", "") + " (playerID VARCHAR(36), xp LONG)");
+                if (enumJob.getListener() != null)
+                    MinecraftForge.EVENT_BUS.register(enumJob.getListener());
+                if (enumJob.getHandler() != null)
+                    enumJob.getHandler().setupConfig();
+            }
+
+            MinecraftForge.TERRAIN_GEN_BUS.register(EnumJob.LUMBERJACK.getListener());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 }

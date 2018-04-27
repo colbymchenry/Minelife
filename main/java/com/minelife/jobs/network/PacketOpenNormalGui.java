@@ -2,6 +2,7 @@ package com.minelife.jobs.network;
 
 import com.minelife.jobs.EnumJob;
 import com.minelife.jobs.job.GuiJobBase;
+import com.minelife.jobs.job.drugproducer.GuiDrugProducer;
 import com.minelife.jobs.job.farmer.GuiFarmer;
 import com.minelife.jobs.job.fisherman.GuiFisherman;
 import com.minelife.jobs.job.lumberjack.GuiLumberjack;
@@ -54,11 +55,8 @@ public class PacketOpenNormalGui implements IMessage {
                     case MINER:
                         Minecraft.getMinecraft().displayGuiScreen(new GuiMiner());
                         return;
-                    case RESTAURATEUR:
-                        Minecraft.getMinecraft().displayGuiScreen(new GuiRestaurateurSignup());
-                        return;
-                    case BOUNTY_HUNTER:
-                        Minecraft.getMinecraft().displayGuiScreen(new GuiBountyHunterSignup());
+                    case DRUG_PRODUCER:
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiDrugProducer());
                         return;
                 }
             });

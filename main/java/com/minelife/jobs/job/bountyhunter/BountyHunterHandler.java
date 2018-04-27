@@ -1,6 +1,7 @@
 package com.minelife.jobs.job.bountyhunter;
 
 import com.minelife.Minelife;
+import com.minelife.economy.ModEconomy;
 import com.minelife.jobs.EnumJob;
 import com.minelife.jobs.ModJobs;
 import com.minelife.jobs.NPCHandler;
@@ -13,10 +14,13 @@ import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
 
+import javax.xml.soap.Text;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 public class BountyHunterHandler extends NPCHandler {
 
@@ -32,6 +36,34 @@ public class BountyHunterHandler extends NPCHandler {
 
         if(!isProfession((EntityPlayerMP) player)) {
             Minelife.getNetwork().sendTo(new PacketOpenSignupGui(EnumJob.BOUNTY_HUNTER), (EntityPlayerMP) player);
+            return;
+        }
+
+        if(player.getHeldItem(EnumHand.MAIN_HAND).getItem() == ItemBountyCard.INSTANCE) {
+            ItemStack itemStack = player.getHeldItem(EnumHand.MAIN_HAND);
+
+            if(ItemBountyCard.getTarget(itemStack) == null) {
+                CommandJob.sendMessage(player, EnumJob.BOUNTY_HUNTER, TextFormatting.RED + "There is no player bound to that bounty card.");
+                return;
+            }
+
+            Map<String, Integer> bounties = CommandBounty.getBounties(ItemBountyCard.getTarget(itemStack));
+
+            if(bounties.isEmpty()) {
+                CommandJob.sendMessage(player, EnumJob.BOUNTY_HUNTER, TextFormatting.RED + "There are no bounties out for that player.");
+                return;
+            }
+
+            int total = 0;
+            for (Integer integer : bounties.values()) total += integer;
+
+            ModEconomy.depositATM(player.getUniqueID(), total, true);
+            CommandBounty.removeBounty(ItemBountyCard.getTarget(itemStack));
+
+           player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+            ((EntityPlayerMP) player).inventoryContainer.detectAndSendChanges();
+        } else {
+            CommandJob.sendMessage(player, EnumJob.BOUNTY_HUNTER, TextFormatting.RED + "You need to hold a bounty card in your main hand.");
         }
     }
 

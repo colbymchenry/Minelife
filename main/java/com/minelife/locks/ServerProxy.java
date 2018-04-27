@@ -10,16 +10,22 @@ import com.minelife.realestate.PlayerPermission;
 import com.sk89q.worldedit.util.command.binding.Text;
 import lib.PatPeter.SQLibrary.Database;
 import lib.PatPeter.SQLibrary.SQLite;
+import net.minecraft.block.BlockDoor;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemDoor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -69,18 +75,36 @@ public class ServerProxy extends MLProxy {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent.RightClickBlock event) {
         Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());
+        EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
+        World world = event.getWorld();
+        IBlockState blockState = world.getBlockState(event.getPos());
+        LockType lock = ModLocks.getLock(world, event.getPos());
 
-        if (!ModPermission.hasPermission(event.getEntityPlayer().getUniqueID(), "locks.override")
-                && (estate == null || !estate.getPlayerPermissions(event.getEntityPlayer().getUniqueID()).contains(PlayerPermission.OPEN_LOCKS))
-                && !Objects.equals(ModLocks.getLockPlacer(event.getWorld(), event.getPos()), event.getEntityPlayer().getUniqueID())
-                && ModLocks.getLock(event.getWorld(), event.getPos()) != null) {
-            if (event.getEntityPlayer().getHeldItemMainhand().getItem() == ModLocks.itemLockpick) {
-                ModLocks.itemLockpick.onItemUse(event.getEntityPlayer(), event.getWorld(), event.getPos(), EnumHand.MAIN_HAND, event.getFace(), 0.5F, 0.5F, 0.5F);
+        if (!ModPermission.hasPermission(player.getUniqueID(), "locks.override")
+                && (estate == null || !estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.OPEN_LOCKS))
+                && !Objects.equals(ModLocks.getLockPlacer(world, event.getPos()), player.getUniqueID()) && lock != null) {
+            if (player.getHeldItemMainhand().getItem() == ModLocks.itemLockpick) {
+                ModLocks.itemLockpick.onItemUse(player, world, event.getPos(), EnumHand.MAIN_HAND, event.getFace(), 0.5F, 0.5F, 0.5F);
                 event.setCanceled(true);
+                if(blockState.getBlock().getRegistryName().toString().contains("_door"))
+                    ModLocks.cancelDoorOpen(world, blockState, event.getPos());
             } else {
                 event.setCanceled(true);
-                event.getEntityPlayer().sendMessage(new TextComponentString(TextFormatting.RED + "This block is locked with an " + TextFormatting.DARK_RED + WordUtils.capitalizeFully(ModLocks.getLock(event.getWorld(), event.getPos()).name()) + TextFormatting.RED + " lock."));
+                player.sendMessage(new TextComponentString(TextFormatting.RED + "This block is locked with an " + TextFormatting.DARK_RED + WordUtils.capitalizeFully(ModLocks.getLock(world, event.getPos()).name()) + TextFormatting.RED + " lock."));
+                if(blockState.getBlock().getRegistryName().toString().contains("_door"))
+                    ModLocks.cancelDoorOpen(world, blockState, event.getPos());
             }
+        }
+
+        if(player.getHeldItem(event.getHand()).getItem() == ModLocks.itemLock) {
+            event.setCanceled(true);
+            if(blockState.getBlock().getRegistryName().toString().contains("_door") && lock != null) {
+                ModLocks.cancelDoorOpen(world, blockState, event.getPos());
+                player.sendMessage(new TextComponentString(TextFormatting.RED + "There is already a lock on that block."));
+            } else {
+                ModLocks.itemLock.onItemUse(player, world, event.getPos(), event.getHand(), event.getFace(), 0.5f, 0.5f, 0.5f);
+            }
+            System.out.println(blockState.getBlock().getMetaFromState(blockState));
         }
     }
 

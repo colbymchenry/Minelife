@@ -14,6 +14,8 @@ import com.minelife.util.fireworks.FireworkBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -24,11 +26,14 @@ import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.terraingen.SaplingGrowTreeEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -41,6 +46,41 @@ import java.util.UUID;
 public class LumberjackListener {
 
     @SubscribeEvent
+    public void onGrow(SaplingGrowTreeEvent event) {
+        List<EntityLivingBase> livingBases = event.getWorld().getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(event.getPos().getX() - 5, event.getPos().getY() - 5, event.getPos().getZ() - 5, event.getPos().getX() + 5, event.getPos().getY() + 5, event.getPos().getZ() + 5));
+        for (EntityLivingBase livingBase : livingBases) {
+            if(livingBase instanceof EntityPlayerMP) {
+                EntityPlayerMP player = (EntityPlayerMP) livingBase;
+                if (!LumberjackHandler.INSTANCE.isProfession(player)) return;
+
+                IBlockState blockState = event.getWorld().getBlockState(event.getPos());
+                if(blockState.getBlock().getMetaFromState(blockState) == 13) return;
+
+                int meta =  blockState.getBlock().getMetaFromState(blockState) - 8;
+
+                int level = LumberjackHandler.INSTANCE.getLevel(player);
+                int xp = 5 * LumberjackHandler.INSTANCE.getXPForBlock(meta < 5 ? Blocks.LOG : Blocks.LOG2, meta);
+
+                LumberjackHandler.INSTANCE.addXP(player.getUniqueID(), xp);
+                CommandJob.sendMessage(player, EnumJob.LUMBERJACK, "+" + xp);
+
+                if (LumberjackHandler.INSTANCE.getLevel(player) > level) {
+                    Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:level_up", 1, 1), player);
+
+                    ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, FireworkBuilder.Type.LARGE_BALL,
+                            new int[]{Color.RED.asRGB(), Color.BLUE.asRGB()}, new int[]{Color.PURPLE.asRGB(), Color.WHITE.asRGB()}).getStack(1);
+
+                    EntityFireworkRocket ent = new EntityFireworkRocket(player.getEntityWorld(), player.posX, player.posY + 2, player.posZ, fireworkStack);
+                    player.getEntityWorld().spawnEntity(ent);
+
+                    ModEssentials.sendTitle(TextFormatting.YELLOW.toString() + TextFormatting.BOLD.toString() + "Level Up!",
+                            TextFormatting.YELLOW + "New Level: " + TextFormatting.BLUE + LumberjackHandler.INSTANCE.getLevel(player), 5, player);
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
     public void onBreak(BlockEvent.BreakEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
 
@@ -49,15 +89,6 @@ public class LumberjackListener {
         if (!LumberjackHandler.INSTANCE.isProfession(player)) return;
 
         if (event.isCanceled()) return;
-
-        int level = LumberjackHandler.INSTANCE.getLevel(player);
-        int xp = LumberjackHandler.INSTANCE.getXPForBlock(event.getWorld().getBlockState(event.getPos()).getBlock(),
-                event.getWorld().getBlockState(event.getPos()).getBlock().getMetaFromState(event.getWorld().getBlockState(event.getPos())));
-
-        if (xp < 1) return;
-
-        LumberjackHandler.INSTANCE.addXP(player.getUniqueID(), xp);
-        CommandJob.sendMessage(player, EnumJob.LUMBERJACK, "+" + xp);
 
         if (LumberjackHandler.INSTANCE.doDoubleDrop(player)) {
             Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
@@ -70,18 +101,6 @@ public class LumberjackListener {
             });
         }
 
-        if (LumberjackHandler.INSTANCE.getLevel(player) > level) {
-            Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:level_up", 1, 1), player);
-
-            ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, FireworkBuilder.Type.LARGE_BALL,
-                    new int[]{Color.RED.asRGB(), Color.BLUE.asRGB()}, new int[]{Color.PURPLE.asRGB(), Color.WHITE.asRGB()}).getStack(1);
-
-            EntityFireworkRocket ent = new EntityFireworkRocket(player.getEntityWorld(), player.posX, player.posY + 2, player.posZ, fireworkStack);
-            player.getEntityWorld().spawnEntity(ent);
-
-            ModEssentials.sendTitle(TextFormatting.YELLOW.toString() + TextFormatting.BOLD.toString() + "Level Up!",
-                    TextFormatting.YELLOW + "New Level: " + TextFormatting.BLUE + LumberjackHandler.INSTANCE.getLevel(player), 5, player);
-        }
     }
     // TODO: Can place blocks and farm them... same with the miner
 

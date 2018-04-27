@@ -55,6 +55,9 @@ public class PacketOpenSignupGui implements IMessage {
                     case BOUNTY_HUNTER:
                         Minecraft.getMinecraft().displayGuiScreen(new GuiBountyHunterSignup());
                         return;
+                    case DRUG_PRODUCER:
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiDrugProducerSignup());
+                        return;
                 }
             });
             return null;

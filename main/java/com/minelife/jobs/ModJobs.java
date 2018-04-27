@@ -2,6 +2,7 @@ package com.minelife.jobs;
 
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
+import com.minelife.Minelife;
 import com.minelife.jobs.job.bountyhunter.CommandBounty;
 import com.minelife.jobs.job.bountyhunter.ItemBountyCard;
 import com.minelife.jobs.network.PacketJoinProfession;
@@ -17,6 +18,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -29,6 +31,7 @@ public class ModJobs extends MLMod {
         registerPacket(PacketJoinProfession.Handler.class, PacketJoinProfession.class, Side.SERVER);
         registerPacket(PacketSellItemStack.Handler.class, PacketSellItemStack.class, Side.SERVER);
         registerItem(ItemBountyCard.INSTANCE);
+        EntityRegistry.registerModEntity(new ResourceLocation(Minelife.MOD_ID, "job_npc"), EntityJobNPC.class, "job_npc", 1, Minelife.getInstance(), 77, 1, true);
     }
 
     @Override
@@ -45,18 +48,6 @@ public class ModJobs extends MLMod {
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandJob());
         event.registerServerCommand(new CommandBounty());
-    }
-
-    @Override
-    public void entityRegistration(RegistryEvent.Register<EntityEntry> event) {
-        event.getRegistry().register(
-                EntityEntryBuilder.create()
-                        .entity(EntityJobNPC.class)
-                        .id(new ResourceLocation("minecraft", "job_npc"), 77)
-                        .name("JobNPC")
-                        .tracker(64, 20, false)
-                        .build()
-        );
     }
 
     public static Database getDatabase() {

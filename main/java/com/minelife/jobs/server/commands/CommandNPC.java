@@ -55,6 +55,10 @@ public class CommandNPC extends CommandBase {
 
         EntityJobNPC jobNPC = new EntityJobNPC(player.getEntityWorld(), NumberConversions.toInt(args[1]));
         jobNPC.setPosition(player.posX, player.posY, player.posZ);
+        jobNPC.rotationYaw = player.rotationYaw;
+        jobNPC.rotationPitch = player.rotationPitch;
+        jobNPC.renderYawOffset = player.rotationYaw;
+        jobNPC.prevRenderYawOffset = player.rotationYaw;
         player.getEntityWorld().spawnEntity(jobNPC);
     }
 

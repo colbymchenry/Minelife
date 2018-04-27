@@ -3,8 +3,10 @@ package com.minelife.jobs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.ai.EntityAIWatchClosest2;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.*;
+import net.minecraft.entity.monster.*;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -29,14 +31,13 @@ public class EntityJobNPC extends EntityCreature {
     public EntityJobNPC(World world, int profession) {
         super(world);
         this.setProfession(profession);
-        this.tasks.taskEntries.clear();
-        this.targetTasks.taskEntries.clear();
+//        this.tasks.taskEntries.clear();
+//        this.targetTasks.taskEntries.clear();
     }
 
     @Override
     protected void initEntityAI() {
-        this.tasks.addTask(1, new EntityAIWatchClosest2(this, EntityPlayer.class, 3.0F, 1.0F));
-        this.tasks.addTask(2, new EntityAIWatchClosest(this, EntityLiving.class, 8.0F));
+        this.tasks.addTask(0, new EntityAIWatchClosest2(this, EntityPlayer.class, 3.0F, 1.0F));
     }
 
     public void setProfession(int profession) {
@@ -62,11 +63,6 @@ public class EntityJobNPC extends EntityCreature {
     @Override
     public ItemStack getHeldItemMainhand() {
         return EnumJob.values()[this.getProfession()].heldStack;
-    }
-
-    @Override
-    protected boolean isMovementBlocked() {
-        return false;
     }
 
     @Override
@@ -110,6 +106,13 @@ public class EntityJobNPC extends EntityCreature {
     @Override
     public boolean getAlwaysRenderNameTag() {
         return false;
+    }
+
+    @Override
+    protected void applyEntityAttributes()
+    {
+        super.applyEntityAttributes();
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
     }
 
     @Override

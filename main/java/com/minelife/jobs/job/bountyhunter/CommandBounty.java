@@ -84,6 +84,10 @@ public class CommandBounty extends MLCommand {
 
             createBounty((EntityPlayerMP) sender, target, NumberConversions.toInt(args[2]));
         } else if (args[0].equalsIgnoreCase("remove")) {
+            if(BountyHunterListener.playerDeaths.containsKey(target) && BountyHunterListener.playerDeaths.get(target) > System.currentTimeMillis()) {
+                sendMessage(sender, "Player died recently, you cannot remove the bounty.");
+                return;
+            }
             removeBounty((EntityPlayerMP) sender, target);
         } else {
             sender.sendMessage(new TextComponentString(getUsage(sender)));
