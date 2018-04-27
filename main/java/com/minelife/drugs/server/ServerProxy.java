@@ -17,6 +17,7 @@ public class ServerProxy extends MLProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(ModDrugs.blockHempCrop);
     }
 
     @SubscribeEvent

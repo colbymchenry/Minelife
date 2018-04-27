@@ -29,6 +29,7 @@ public class ServerProxy extends MLProxy {
         MinecraftForge.EVENT_BUS.register(new Arena.ArenaTicker());
     }
 
+    // TODO: We've gotten the players in the game and the round to start, now to disable friendly fire, and implement spectating etc.
     @SubscribeEvent
     public void onJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if(SavedInventory.hasSavedInventory(event.player.getUniqueID())) {

@@ -3,6 +3,7 @@ package com.minelife.drugs.client;
 import codechicken.lib.model.ModelRegistryHelper;
 import com.minelife.MLProxy;
 import com.minelife.drugs.ModDrugs;
+import com.minelife.drugs.block.HempStateMapper;
 import com.minelife.drugs.client.render.*;
 import com.minelife.drugs.tileentity.TileEntityCementMixer;
 import com.minelife.drugs.tileentity.TileEntityLeafMulcher;
@@ -19,6 +20,7 @@ public class ClientProxy extends MLProxy {
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         ModelResourceLocation model = new ModelResourceLocation("minelife:coca_leaf", "inventory");
         ModelRegistryHelper.register(model, new ItemCocaLeafRenderer(() -> model));
+
 //        registerItemRenderer(ModDrugs.itemLeafMulcherBlock, new ItemLeafMulcherRenderer());
 //        registerBlockRenderer(TileEntityLeafMulcher.class, new TileEntityLeafMulcherRenderer());
 //        registerItemRenderer(ModDrugs.itemCementMixerBlock, new ItemCementMixerRenderer());
@@ -27,6 +29,7 @@ public class ClientProxy extends MLProxy {
 
     @Override
     public void init(FMLInitializationEvent event) throws Exception {
+        ModelLoader.setCustomStateMapper(ModDrugs.blockHempCrop, new HempStateMapper());
         registerRenderer(ModDrugs.itemHempSeed);
         registerRenderer(ModDrugs.itemCocaSeed);
         registerRenderer(ModDrugs.itemLimeSeed);

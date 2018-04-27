@@ -128,12 +128,12 @@ public class ClientProxy extends MLProxy {
 
         EntityPlayer player = Minecraft.getMinecraft().player;
 
-        System.out.println(player.getHeldItemMainhand().getItem().getRegistryName().toString());
-        System.out.println(player.getHeldItemMainhand().getItem().getClass().getName());
-        System.out.println(player.getHeldItemMainhand().getMetadata());
+//        System.out.println(player.getHeldItemMainhand().getItem().getRegistryName().toString());
+//        System.out.println(player.getHeldItemMainhand().getItem().getClass().getName());
+//        System.out.println(player.getHeldItemMainhand().getMetadata());
 //        System.out.println(Block.getBlockFromItem(player.getHeldItemMainhand().getItem()).getClass().getName());
-        if (player.getHeldItemMainhand().getTagCompound() != null)
-            System.out.println(player.getHeldItemMainhand().getTagCompound().toString());
+//        if (player.getHeldItemMainhand().getTagCompound() != null)
+//            System.out.println(player.getHeldItemMainhand().getTagCompound().toString());
 
         if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return;
 
