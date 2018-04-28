@@ -53,65 +53,65 @@ public class CustomGuiMainMenu extends GuiMainMenu {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        long total = Runtime.getRuntime().maxMemory();
-        if ((total / (1024 * 1024)) < 3000) {
-            mc.getTextureManager().bindTexture(javaDownload);
-            GuiHelper.drawImage(0, 0, this.width / 2, this.height / 2, javaDownload);
-            mc.getTextureManager().bindTexture(launcherHome);
-            GuiHelper.drawImage(this.width / 2, 0, this.width / 2, this.height / 2, launcherHome);
-            mc.getTextureManager().bindTexture(launcherSettings);
-            GuiHelper.drawImage(0, this.height / 2, this.width / 2, this.height / 2, launcherSettings);
-            drawCenteredString(fontRenderer, "You need to allocate more RAM!", (this.width / 2) + (this.width / 4), (this.height / 2) + (this.height / 4) - 20, 0xFFFFFF);
-            drawCenteredString(fontRenderer, "Allocate at least 3 GB", (this.width / 2) + (this.width / 4), (this.height / 2) + (this.height / 4), 0xFFFFFF);
-            int x = (this.width / 2) + (this.width / 4), y = (this.height / 2) + (this.height / 4) + 20;
-            int stringWidth = fontRenderer.getStringWidth("Click Here to download Java");
-            boolean hover = (mouseX >= x - (stringWidth / 2) && mouseX <= x + (stringWidth / 2) && mouseY >= y && mouseY <= y + 9);
-            drawCenteredString(fontRenderer, (hover ? TextFormatting.YELLOW : "") + "Click Here to download Java", x, y, 0xFFFFFF);
-        } else {
-            int nextImage = image == introImages.length - 1 ? 0 : image + 1;
-            mc.getTextureManager().bindTexture(introImages[nextImage]);
-            GuiHelper.drawImage(0, 0, width, height, introImages[nextImage]);
+//        long total = Runtime.getRuntime().maxMemory();
+//        if ((total / (1024 * 1024)) < 3000) {
+//            mc.getTextureManager().bindTexture(javaDownload);
+//            GuiHelper.drawImage(0, 0, this.width / 2, this.height / 2, javaDownload);
+//            mc.getTextureManager().bindTexture(launcherHome);
+//            GuiHelper.drawImage(this.width / 2, 0, this.width / 2, this.height / 2, launcherHome);
+//            mc.getTextureManager().bindTexture(launcherSettings);
+//            GuiHelper.drawImage(0, this.height / 2, this.width / 2, this.height / 2, launcherSettings);
+//            drawCenteredString(fontRenderer, "You need to allocate more RAM!", (this.width / 2) + (this.width / 4), (this.height / 2) + (this.height / 4) - 20, 0xFFFFFF);
+//            drawCenteredString(fontRenderer, "Allocate at least 3 GB", (this.width / 2) + (this.width / 4), (this.height / 2) + (this.height / 4), 0xFFFFFF);
+//            int x = (this.width / 2) + (this.width / 4), y = (this.height / 2) + (this.height / 4) + 20;
+//            int stringWidth = fontRenderer.getStringWidth("Click Here to download Java");
+//            boolean hover = (mouseX >= x - (stringWidth / 2) && mouseX <= x + (stringWidth / 2) && mouseY >= y && mouseY <= y + 9);
+//            drawCenteredString(fontRenderer, (hover ? TextFormatting.YELLOW : "") + "Click Here to download Java", x, y, 0xFFFFFF);
+//        } else {
+        int nextImage = image == introImages.length - 1 ? 0 : image + 1;
+        mc.getTextureManager().bindTexture(introImages[nextImage]);
+        GuiHelper.drawImage(0, 0, width, height, introImages[nextImage]);
 
-            mc.getTextureManager().bindTexture(introImages[image]);
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(0, 0, zLevel);
-            GlStateManager.translate(width / 2, height / 2, 0);
-            scale += 0.0005;
+        mc.getTextureManager().bindTexture(introImages[image]);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0, 0, zLevel);
+        GlStateManager.translate(width / 2, height / 2, 0);
+        scale += 0.0005;
 
-            if (scale >= 1.185) {
-                GlStateManager.enableBlend();
-                fade -= 15;
-                GlStateManager.color(1, 1, 1, fade / 255F);
-            }
-
-            GlStateManager.scale(scale, scale, scale);
-            GlStateManager.translate(-width / 2, -height / 2, 0);
-            GuiHelper.drawImage(0, 0, width, height, introImages[image]);
-            GlStateManager.popMatrix();
-
-            if (scale >= 1.19) {
-                scale = 1;
-                fade = 255;
-                image++;
-                if (image > introImages.length - 1) image = 0;
-            }
-
-            int widthCopyright = this.fontRenderer.getStringWidth("Copyright Mojang AB. Do not distribute!");
-            int widthCopyrightRest = this.width - widthCopyright - 2;
-            this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", widthCopyrightRest, this.height - 10, -1);
-
-            if (mouseX > widthCopyrightRest && mouseX < widthCopyrightRest + widthCopyright && mouseY > this.height - 10 && mouseY < this.height && Mouse.isInsideWindow()) {
-                drawRect(widthCopyrightRest, this.height - 1, widthCopyrightRest + widthCopyright, this.height, -1);
-            }
-
-            GlStateManager.color(1, 1, 1, 1);
-            mc.getTextureManager().bindTexture(minelifeLogo);
-            GlStateManager.pushMatrix();
-            GuiHelper.drawImage((this.width - 178) / 2, ((this.height - 45) / 2) - 60, 178, 45, minelifeLogo);
-            GlStateManager.popMatrix();
-
-            this.buttonList.forEach(btn -> btn.drawButton(mc, mouseX, mouseY, partialTicks));
+        if (scale >= 1.185) {
+            GlStateManager.enableBlend();
+            fade -= 15;
+            GlStateManager.color(1, 1, 1, fade / 255F);
         }
+
+        GlStateManager.scale(scale, scale, scale);
+        GlStateManager.translate(-width / 2, -height / 2, 0);
+        GuiHelper.drawImage(0, 0, width, height, introImages[image]);
+        GlStateManager.popMatrix();
+
+        if (scale >= 1.19) {
+            scale = 1;
+            fade = 255;
+            image++;
+            if (image > introImages.length - 1) image = 0;
+        }
+
+        int widthCopyright = this.fontRenderer.getStringWidth("Copyright Mojang AB. Do not distribute!");
+        int widthCopyrightRest = this.width - widthCopyright - 2;
+        this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", widthCopyrightRest, this.height - 10, -1);
+
+        if (mouseX > widthCopyrightRest && mouseX < widthCopyrightRest + widthCopyright && mouseY > this.height - 10 && mouseY < this.height && Mouse.isInsideWindow()) {
+            drawRect(widthCopyrightRest, this.height - 1, widthCopyrightRest + widthCopyright, this.height, -1);
+        }
+
+        GlStateManager.color(1, 1, 1, 1);
+        mc.getTextureManager().bindTexture(minelifeLogo);
+        GlStateManager.pushMatrix();
+        GuiHelper.drawImage((this.width - 178) / 2, ((this.height - 45) / 2) - 60, 178, 45, minelifeLogo);
+        GlStateManager.popMatrix();
+
+        this.buttonList.forEach(btn -> btn.drawButton(mc, mouseX, mouseY, partialTicks));
+//        }
     }
 
     @Override
@@ -138,22 +138,22 @@ public class CustomGuiMainMenu extends GuiMainMenu {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        long total = Runtime.getRuntime().maxMemory();
-        if ((total / (1024 * 1024)) < 3000) {
-            int x = (this.width / 2) + (this.width / 4), y = (this.height / 2) + (this.height / 4) + 20;
-            int stringWidth = fontRenderer.getStringWidth("Click Here to download Java");
-            boolean hover = (mouseX >= x - (stringWidth / 2) && mouseX <= x + (stringWidth / 2) && mouseY >= y && mouseY <= y + 9);
-            if (hover) {
-                try {
-                    Class<?> oclass = Class.forName("java.awt.Desktop");
-                    Object object = oclass.getMethod("getDesktop").invoke((Object) null);
-                    oclass.getMethod("browse", URI.class).invoke(object, new URI("http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html"));
-                } catch (Throwable throwable1) {
-                }
-            }
-        } else {
-            super.mouseClicked(mouseX, mouseY, mouseButton);
-        }
+//        long total = Runtime.getRuntime().maxMemory();
+//        if ((total / (1024 * 1024)) < 3000) {
+//            int x = (this.width / 2) + (this.width / 4), y = (this.height / 2) + (this.height / 4) + 20;
+//            int stringWidth = fontRenderer.getStringWidth("Click Here to download Java");
+//            boolean hover = (mouseX >= x - (stringWidth / 2) && mouseX <= x + (stringWidth / 2) && mouseY >= y && mouseY <= y + 9);
+//            if (hover) {
+//                try {
+//                    Class<?> oclass = Class.forName("java.awt.Desktop");
+//                    Object object = oclass.getMethod("getDesktop").invoke((Object) null);
+//                    oclass.getMethod("browse", URI.class).invoke(object, new URI("http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html"));
+//                } catch (Throwable throwable1) {
+//                }
+//            }
+//        } else {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+//        }
     }
 
     @SubscribeEvent

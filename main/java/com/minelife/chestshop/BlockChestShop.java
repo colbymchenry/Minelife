@@ -97,6 +97,11 @@ public class BlockChestShop extends BlockContainer {
                     return false;
                 }
 
+                if(!tile.canPurchaseFit((EntityPlayerMP) playerIn,1)) {
+                    playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Insufficient inventory space."));
+                    return false;
+                }
+
                 tile.doPurchase((EntityPlayerMP) playerIn, 1);
                 int didNotFitCash = ModEconomy.depositCashPiles(tile.getOwner(), tile.getPrice());
                 int didNotFitInv = ModEconomy.withdrawInventory((EntityPlayerMP) playerIn, tile.getPrice());

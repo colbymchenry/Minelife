@@ -36,6 +36,7 @@ public class ModRealEstate extends MLMod {
         registerPacket(PacketUpdatedMember.Handler.class, PacketUpdatedMember.class, Side.CLIENT);
         registerPacket(PacketOpenReceptionistGUI.Handler.class, PacketOpenReceptionistGUI.class, Side.CLIENT);
         registerPacket(PacketAddMember.Handler.class, PacketAddMember.class, Side.SERVER);
+        registerPacket(PacketRemoveMember.Handler.class, PacketRemoveMember.class, Side.SERVER);
         EntityRegistry.registerModEntity(new ResourceLocation(Minelife.MOD_ID, "receptionist"), EntityReceptionist.class, "receptionist", 2, Minelife.getInstance(), 77, 1, true);
     }
 

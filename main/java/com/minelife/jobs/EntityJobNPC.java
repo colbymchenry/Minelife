@@ -90,6 +90,26 @@ public class EntityJobNPC extends EntityCreature {
     }
 
     @Override
+    public void knockBack(Entity entityIn, float strength, double xRatio, double zRatio) {
+
+    }
+
+    @Override
+    public boolean attackable() {
+        return false;
+    }
+
+    @Override
+    public boolean hitByEntity(Entity entityIn) {
+        return false;
+    }
+
+    @Override
+    public boolean canBeAttackedWithItem() {
+        return false;
+    }
+
+    @Override
     protected boolean canDespawn() {
         return false;
     }

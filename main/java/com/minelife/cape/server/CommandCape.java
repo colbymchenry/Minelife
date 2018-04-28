@@ -4,6 +4,7 @@ import com.minelife.Minelife;
 import com.minelife.cape.ModCapes;
 import com.minelife.cape.network.PacketUpdateCape;
 import com.minelife.cape.network.PacketUpdateCapeStatus;
+import com.minelife.permission.ModPermission;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

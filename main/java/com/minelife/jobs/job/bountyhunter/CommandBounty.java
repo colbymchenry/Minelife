@@ -32,6 +32,11 @@ public class CommandBounty extends MLCommand {
     }
 
     @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return true;
+    }
+
+    @Override
     public synchronized void runAsync(MinecraftServer server, ICommandSender sender, String[] args) throws Exception {
         if(args.length < 2) {
             if(args.length == 1) {

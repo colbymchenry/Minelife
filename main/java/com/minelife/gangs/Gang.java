@@ -42,14 +42,17 @@ public class Gang implements Comparable<Gang> {
     }
 
     public static Gang getGang(UUID gangID) {
+        if(gangID == null) return null;
         return GANGS.stream().filter(gang -> gang.getUniqueID().equals(gangID)).findFirst().orElse(null);
     }
 
     public static Gang getGang(String name) {
+        if(name == null) return null;
         return GANGS.stream().filter(gang -> gang.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
     public static Gang getGangForPlayer(UUID playerID) {
+        if(playerID == null) return null;
         return GANGS.stream().filter(gang -> gang.getMembers().containsKey(playerID) || gang.getOwner().equals(playerID)).findFirst().orElse(null);
     }
 

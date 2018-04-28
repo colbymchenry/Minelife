@@ -77,6 +77,12 @@ public class PacketBuyFromShop implements IMessage {
                     return;
                 }
 
+
+                if(!tile.canPurchaseFit(player, message.amount)) {
+                    PacketPopup.sendPopup("Insufficient inventory space.", player);
+                    return;
+                }
+
                 tile.doPurchase(player, message.amount);
                 int didNotFitCash = ModEconomy.depositCashPiles(tile.getOwner(), tile.getPrice() * message.amount);
                 int didNotFitInv = ModEconomy.withdrawInventory(player, tile.getPrice() * message.amount);

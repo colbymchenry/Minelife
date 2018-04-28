@@ -1,5 +1,7 @@
 package com.minelife.chestshop;
 
+import codechicken.lib.inventory.InventoryRange;
+import codechicken.lib.inventory.InventoryUtils;
 import com.google.common.collect.Lists;
 import com.minelife.util.ItemHelper;
 import com.minelife.util.MLTileEntity;
@@ -221,10 +223,18 @@ public class TileEntityChestShop extends MLTileEntity {
             }
         }
 
+        InventoryRange range = new InventoryRange(player.inventory, 0, 36);
+
         toDrop.forEach(stack -> {
-            EntityItem entity_item = player.dropItem(stack, false);
-            entity_item.setPickupDelay(0);
+            InventoryUtils.insertItem(range, stack, false);
         });
+    }
+
+    public boolean canPurchaseFit(EntityPlayerMP player, int amount) {
+        if(getItem() == null) return false;
+        amount *= getItem().getCount();
+        InventoryRange range = new InventoryRange(player.inventory, 0, 36);
+        return InventoryUtils.getInsertibleQuantity(range, getItem()) >= amount;
     }
 
     public class Stock {

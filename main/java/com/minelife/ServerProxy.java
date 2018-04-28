@@ -3,6 +3,7 @@ package com.minelife;
 import com.minelife.util.BreakHelper;
 import com.minelife.util.SoundTrack;
 import com.minelife.util.server.MLCommand;
+import com.minelife.util.server.MobSpawnChecker;
 import com.minelife.util.server.UUIDFetcher;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -17,6 +18,7 @@ public class ServerProxy extends MLProxy {
         MinecraftForge.EVENT_BUS.register(new MLCommand.Ticker());
         MinecraftForge.EVENT_BUS.register(new SoundTrack());
         MinecraftForge.EVENT_BUS.register(new BreakHelper());
+        MinecraftForge.EVENT_BUS.register(new MobSpawnChecker());
 
         Minelife.getModList().forEach(mod -> {
             try {

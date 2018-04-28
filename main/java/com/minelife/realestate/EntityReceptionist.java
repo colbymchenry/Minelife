@@ -120,6 +120,27 @@ public class EntityReceptionist extends EntityCreature {
     }
 
     @Override
+    public void knockBack(Entity entityIn, float strength, double xRatio, double zRatio) {
+
+    }
+
+    @Override
+    public boolean attackable() {
+        return false;
+    }
+
+
+    @Override
+    public boolean hitByEntity(Entity entityIn) {
+        return false;
+    }
+
+    @Override
+    public boolean canBeAttackedWithItem() {
+        return false;
+    }
+
+    @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);

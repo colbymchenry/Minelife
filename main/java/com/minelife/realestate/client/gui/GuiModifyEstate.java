@@ -36,7 +36,7 @@ public class GuiModifyEstate extends GuiCreateEstate {
         super.initGui();
         buttonList.clear();
         buttonList.add(new GuiButton(0, guiLeft - 55, guiTop, 50, 20, "Members"));
-        buttonList.get(0).enabled = estate.getPlayerPermissions(mc.player.getUniqueID()).contains(PlayerPermission.MODIFY_MEMBERS);
+        buttonList.get(0).enabled = allowedPermissions.contains(PlayerPermission.MODIFY_MEMBERS);
 
         // override content variable to adjust for sending modify packet and not create packet
         content = new Content(mc, guiLeft, guiTop, xSize, ySize) {

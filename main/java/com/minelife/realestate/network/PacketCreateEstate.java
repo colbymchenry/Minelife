@@ -2,6 +2,7 @@ package com.minelife.realestate.network;
 
 import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
+import com.minelife.permission.ModPermission;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateProperty;
 import com.minelife.realestate.ModRealEstate;
@@ -12,6 +13,7 @@ import com.minelife.util.NumberConversions;
 import com.minelife.util.StringHelper;
 import com.minelife.util.client.PacketPopup;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -69,7 +71,7 @@ public class PacketCreateEstate implements IMessage {
                 long area = width * length * height;
                 long price = area * ModRealEstate.getConfig().getInt("price_per_block", 2);
 
-                if(ModEconomy.getBalanceInventory(player) < price) {
+                if(!ModPermission.hasPermission(player.getUniqueID(), "estate.override.price") && ModEconomy.getBalanceInventory(player) < price) {
                     PacketPopup.sendPopup(TextFormatting.RED + "Insufficient funds! Price: " + TextFormatting.DARK_RED + "$" + NumberConversions.format(price), player);
                     return;
                 }
@@ -95,7 +97,7 @@ public class PacketCreateEstate implements IMessage {
                 Set<EstateProperty> properties = message.estate.getProperties();
                 for (EstateProperty property : EstateProperty.values()) {
                     if(!CommandEstate.getEstateProperties(player.getUniqueID()).contains(property))
-                        properties.remove(property);
+                        properties.add(property);
                 }
                 message.estate.setProperties(properties);
 

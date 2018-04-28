@@ -37,7 +37,7 @@ public class BlockHempCrop extends BlockCrops {
 
     @Override
     protected int getBonemealAgeIncrease(World worldIn) {
-        return 1;
+        return 0;
     }
 
     @Override
@@ -140,7 +140,6 @@ public class BlockHempCrop extends BlockCrops {
     public boolean isBlockValid(World world, BlockPos pos) {
 //        boolean blockLeft = world.getBlockState(pos.add(-1, 0, 0)).getBlock().isOpaqueCube(world.getBlockState(pos.add(-1, 0, 0))) && world.getBlockState(pos.add(-1, 0, 0)).getBlock() != Blocks.AIR;
 //        boolean blockRight = world.getBlockState(pos.add(1, 0, 0)).getBlock().isOpaqueCube(world.getBlockState(pos.add(1, 0, 0))) && world.getBlockState(pos.add(1, 0, 0)).getBlock() != Blocks.AIR;
-        System.out.println(world.isDaytime() + "," + world.getLightBrightness(pos));
         return !world.isDaytime() ? world.getLightBrightness(pos) == 0 : world.getLightBrightness(pos) >= 0.27 ;
     }
 
@@ -176,7 +175,7 @@ public class BlockHempCrop extends BlockCrops {
         boolean holdingHoe = event.getEntityPlayer().getHeldItem(event.getHand()).getItem().getRegistryName().toString().contains("_hoe");
 
         int growthStage = oldGrowthStage == 7 || holdingHoe ? random.nextInt(1) : oldGrowthStage;
-        event.getWorld().setBlockState(event.getPos(), this.withAge(growthStage + 1).withProperty(FEMALE, event.getWorld().getBlockState(event.getPos()).getValue(FEMALE)), 2);
+        event.getWorld().setBlockState(event.getPos(), this.withAge(growthStage).withProperty(FEMALE, event.getWorld().getBlockState(event.getPos()).getValue(FEMALE)), 2);
 
         if(holdingHoe && growthStage > 1) {
             event.getEntityPlayer().getHeldItem(event.getHand()).setItemDamage(event.getEntityPlayer().getHeldItem(event.getHand()).getItemDamage() + 1);

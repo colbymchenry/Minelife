@@ -23,6 +23,7 @@ public class ModGangs extends MLMod {
         registerPacket(PacketRemoveAlliance.Handler.class, PacketRemoveAlliance.class, Side.SERVER);
         registerPacket(PacketSetMemberRole.Handler.class, PacketSetMemberRole.class, Side.SERVER);
         registerPacket(PacketRemoveMember.Handler.class, PacketRemoveMember.class, Side.SERVER);
+        registerPacket(PacketSendGangMembers.Handler.class, PacketSendGangMembers.class, Side.CLIENT);
     }
 
     @Override

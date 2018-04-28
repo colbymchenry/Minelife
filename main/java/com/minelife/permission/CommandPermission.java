@@ -7,6 +7,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
 import java.util.UUID;
@@ -66,9 +67,16 @@ public class CommandPermission extends MLCommand {
             getUsage(sender);
             return;
         }
+
+        UUID playerUUID = UUIDFetcher.get(args[1]);
+
+        if(playerUUID == null) {
+            sender.sendMessage(new TextComponentString(TextFormatting.RED + "Player not found"));
+            return;
+        }
+
         switch (args[0].toLowerCase()) {
             case "user": {
-                UUID playerUUID = UUIDFetcher.get(args[1]);
                 switch (args[2].toLowerCase()) {
                     case "prefix": {
                         ModPermission.setPlayerPrefix(playerUUID, args.length < 4 ? null : args[3]);

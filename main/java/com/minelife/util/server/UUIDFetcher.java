@@ -51,8 +51,6 @@ public final class UUIDFetcher {
 
         fetching.add(player);
 
-        System.out.println("URRGGG");
-
         String profileURL = "https://api.minetools.eu/uuid/" + player.toLowerCase();
 
         try {

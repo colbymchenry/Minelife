@@ -1,10 +1,8 @@
 package com.minelife.realestate.server;
 
 import com.google.common.collect.Maps;
-import com.minelife.realestate.Estate;
-import com.minelife.realestate.EstateProperty;
-import com.minelife.realestate.ModRealEstate;
-import com.minelife.realestate.PlayerPermission;
+import com.minelife.jobs.EntityJobNPC;
+import com.minelife.realestate.*;
 import com.minelife.util.BreakHelper;
 import com.minelife.util.StringHelper;
 import net.minecraft.block.Block;
@@ -17,6 +15,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -76,8 +76,6 @@ public class EstateListener {
 
     @SubscribeEvent
     public void onPlace(BlockEvent.PlaceEvent event) {
-        System.out.println("CALLED");
-        // TODO: Disable mirror placement
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
 
         if(event.getPlacedBlock().getBlock() == Blocks.PISTON || event.getPlacedBlock().getBlock() == Blocks.STICKY_PISTON) {
@@ -109,6 +107,79 @@ public class EstateListener {
 
     // TODO: Add fire spread protection
     // TODO: cannot interact with cars, but can interact with containers
+
+    @SubscribeEvent
+    public void onHit(LivingAttackEvent event) {
+        if(event.getEntityLiving() instanceof EntityJobNPC || event.getEntityLiving() instanceof EntityReceptionist) {
+            event.setCanceled(true);
+            return;
+        }
+
+        Estate estate = ModRealEstate.getEstateAt(event.getEntityLiving().getEntityWorld(), event.getEntityLiving().getPosition());
+
+        if (estate == null) return;
+
+        if (event.getEntityLiving() instanceof EntityMob) {
+            if (!estate.getProperties().contains(EstateProperty.MOB_DAMAGE)) {
+                event.setCanceled(true);
+                return;
+            }
+        }
+
+        if (event.getEntityLiving() instanceof EntityAnimal) {
+            if (!estate.getProperties().contains(EstateProperty.ANIMAL_DAMAGE)) {
+                event.setCanceled(true);
+                return;
+            }
+        }
+
+
+        if (event.getEntityLiving() instanceof EntityPlayer) {
+            if (!estate.getProperties().contains(EstateProperty.PLAYER_DAMAGE)) {
+                event.setCanceled(true);
+                return;
+            }
+            if (event.getSource().getTrueSource() instanceof EntityPlayer) {
+                if (!estate.getProperties().contains(EstateProperty.PVP)) {
+                    event.setCanceled(true);
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onDamage(LivingDamageEvent event) {
+        Estate estate = ModRealEstate.getEstateAt(event.getEntityLiving().getEntityWorld(), event.getEntityLiving().getPosition());
+
+        if (estate == null) return;
+
+        if (event.getEntityLiving() instanceof EntityMob) {
+            if (!estate.getProperties().contains(EstateProperty.MOB_DAMAGE)) {
+                event.setCanceled(true);
+                return;
+            }
+        }
+
+        if (event.getEntityLiving() instanceof EntityAnimal) {
+            if (!estate.getProperties().contains(EstateProperty.ANIMAL_DAMAGE)) {
+                event.setCanceled(true);
+                return;
+            }
+        }
+
+
+        if (event.getEntityLiving() instanceof EntityPlayer) {
+            if (!estate.getProperties().contains(EstateProperty.PLAYER_DAMAGE)) {
+                event.setCanceled(true);
+                return;
+            }
+            if (event.getSource().getTrueSource() instanceof EntityPlayer) {
+                if (!estate.getProperties().contains(EstateProperty.PVP)) {
+                    event.setCanceled(true);
+                }
+            }
+        }
+    }
 
     @SubscribeEvent
     public void onHurt(LivingHurtEvent event) {

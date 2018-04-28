@@ -299,6 +299,7 @@ public class ModPermission extends MLMod {
     }
 
     public static void setPlayerGroup(UUID playerID, String group) throws Exception {
+        if(playerID == null) return;
         String groupName = getGroups().stream().filter(g -> g.equalsIgnoreCase(group)).findFirst().orElse(null);
         if (groupName == null) throw new Exception("Group not found.");
         List<String> groups = Lists.newArrayList();

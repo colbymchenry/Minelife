@@ -94,6 +94,11 @@ public class Kit extends CommandBase {
         player.sendMessage(new TextComponentString(TextFormatting.GREEN + "Kit redeemed!"));
     }
 
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return sender instanceof EntityPlayerMP && ModPermission.hasPermission(((EntityPlayerMP) sender).getUniqueID(), "kit");
+    }
+
     public static void saveKit(EntityPlayerMP player, String name) {
         List<String> items = Lists.newArrayList();
         for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
@@ -103,6 +108,7 @@ public class Kit extends CommandBase {
             }
         }
         kitConfig.set(name.toLowerCase(), items);
+        kitConfig.save();
     }
 
     public static List<ItemStack> getKit(String name) {

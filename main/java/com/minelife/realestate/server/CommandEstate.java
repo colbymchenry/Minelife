@@ -81,7 +81,7 @@ public class CommandEstate extends CommandBase {
                 long area = width * length * height;
                 long price = area * ModRealEstate.getConfig().getInt("price_per_block", 2);
 
-                if(ModEconomy.getBalanceInventory(player) < price) {
+                if(!ModPermission.hasPermission(player.getUniqueID(), "estate.override.price") && ModEconomy.getBalanceInventory(player) < price) {
                     sendMessage(player, TextFormatting.RED + "Insufficient funds! Price: " + TextFormatting.DARK_RED + "$" + NumberConversions.format(price));
                     return;
                 }
@@ -94,7 +94,7 @@ public class CommandEstate extends CommandBase {
                 return;
             }
 
-            if (ModPermission.hasPermission(player.getUniqueID(), "estate.override.delete") && !Objects.equals(estateAtPos.getOwnerID(), player.getUniqueID())) {
+            if (!ModPermission.hasPermission(player.getUniqueID(), "estate.override.delete") && !Objects.equals(estateAtPos.getOwnerID(), player.getUniqueID())) {
                 sendMessage(player, TextFormatting.RED + "You are not the owner of this estate.");
                 return;
             }
@@ -112,7 +112,7 @@ public class CommandEstate extends CommandBase {
                 return;
             }
 
-            if (ModPermission.hasPermission(player.getUniqueID(), "estate.override.modify") && !Objects.equals(estateAtPos.getOwnerID(), player.getUniqueID()) && !Objects.equals(estateAtPos.getRenterID(), player.getUniqueID())) {
+            if (!ModPermission.hasPermission(player.getUniqueID(), "estate.override.modify") && !Objects.equals(estateAtPos.getOwnerID(), player.getUniqueID()) && !Objects.equals(estateAtPos.getRenterID(), player.getUniqueID())) {
                 sendMessage(player, TextFormatting.RED + "You are not authorized to modify this estate.");
                 return;
             }
@@ -217,7 +217,7 @@ public class CommandEstate extends CommandBase {
                 return;
             }
 
-            System.out.println(skinID);
+
             EntityReceptionist receptionist = new EntityReceptionist(player.getEntityWorld(), name, skinID);
             receptionist.setPosition(player.posX, player.posY, player.posZ);
             player.getEntityWorld().spawnEntity(receptionist);
@@ -261,6 +261,7 @@ public class CommandEstate extends CommandBase {
                 permissions.add(playerPermission);
             }
         }
+        permissions.addAll(Lists.newArrayList(PlayerPermission.values()));
         return permissions;
     }
 
@@ -302,7 +303,7 @@ public class CommandEstate extends CommandBase {
             if (estate.getWorld().equals(player.getEntityWorld()) && ((!estate.isInside(min, max) && estate.intersects(min, max)) ||
                     (min.getX() <= estate.getMinimum().getX() && min.getY() <= estate.getMinimum().getY() && min.getZ() <= estate.getMinimum().getZ() &&
                             max.getX() >= estate.getMaximum().getX() && max.getY() >= estate.getMaximum().getY() && max.getZ() >= estate.getMaximum().getZ())) &&
-                    !estate.getOwnerID().equals(player.getUniqueID())) {
+                    (!estate.getOwnerID().equals(player.getUniqueID()) && !ModPermission.hasPermission(player.getUniqueID(), "realestate.bypass.ownership"))) {
                 if (sendMessages)
                     player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.RED + " Selection is intersecting another estate."));
                 else if (sendPopups)
@@ -333,4 +334,8 @@ public class CommandEstate extends CommandBase {
         player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.GOLD + msg));
     }
 
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return true;
+    }
 }

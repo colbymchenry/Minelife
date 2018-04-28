@@ -1,6 +1,7 @@
 package com.minelife.gangs.network;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.minelife.Minelife;
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.GangPermission;
@@ -51,12 +52,12 @@ public class PacketRemoveMember implements IMessage {
             EntityPlayerMP player = ctx.getServerHandler().player;
             Gang playerGang = Gang.getGangForPlayer(player.getUniqueID());
 
-            if(playerGang == null) {
+            if (playerGang == null) {
                 PacketPopup.sendPopup("You do not belong to a gang.", player);
                 return null;
             }
 
-            if(!playerGang.hasPermission(player.getUniqueID(), GangPermission.KICK_MEMBERS)) {
+            if (!playerGang.hasPermission(player.getUniqueID(), GangPermission.KICK_MEMBERS)) {
                 PacketPopup.sendPopup("You do not have permission to kick members", player);
                 return null;
             }
@@ -74,8 +75,21 @@ public class PacketRemoveMember implements IMessage {
 
             Minelife.getNetwork().sendTo(new PacketOpenGangGui(playerGang), player);
 
+            playerGang.getMembers().keySet().forEach(playerID -> {
+                if (PlayerHelper.getPlayer(playerID) != null) {
+                    PacketSendGangMembers.sendMembers(playerGang, PlayerHelper.getPlayer(playerID));
+               }
+            });
+
+            PacketSendGangMembers.sendMembers(playerGang, player);
+
+            if(PlayerHelper.getPlayer(message.playerID) != null) {
+                PacketSendGangMembers.sendMembers(null, PlayerHelper.getPlayer(message.playerID));
+            }
+
             Notification notification = new Notification(message.playerID, TextFormatting.DARK_GRAY + "You were kicked from your gang.", NotificationType.EDGED, 5, 0xFFFFFF);
-            if(PlayerHelper.getPlayer(message.playerID) != null) notification.sendTo(PlayerHelper.getPlayer(message.playerID), true, true, false);
+            if (PlayerHelper.getPlayer(message.playerID) != null)
+                notification.sendTo(PlayerHelper.getPlayer(message.playerID), true, true, false);
             else {
                 try {
                     notification.save();

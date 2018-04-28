@@ -14,6 +14,7 @@ import com.minelife.gangs.GangRole;
 import com.minelife.gangs.network.PacketAddMember;
 import com.minelife.gangs.network.PacketOpenGangGui;
 import com.minelife.gangs.network.PacketRequestAlliance;
+import com.minelife.gangs.network.PacketSendGangMembers;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.realestate.PlayerPermission;
@@ -338,7 +339,7 @@ public class CommandGang extends CommandBase {
             playerGang.setRep(rep);
             sendMessage(player, "+" + NumberConversions.toInt(args[1]) + " Rep");
             Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
-        } else if(args[0].equalsIgnoreCase("accept")) {
+        } else if (args[0].equalsIgnoreCase("accept")) {
             if (playerGang != null) {
                 sendMessage(player, TextFormatting.RED + "You already belong to a gang.");
                 return;
@@ -359,8 +360,14 @@ public class CommandGang extends CommandBase {
             Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:gang_created", 0.1F, 1F), player);
             ModEssentials.sendTitle(TextFormatting.RED.toString() + TextFormatting.BOLD.toString() + "Joined Gang", TextFormatting.GOLD.toString() + "You joined gang " + TextFormatting.RED + gang.getName() + TextFormatting.GOLD + "!", 12, player);
 
+            gang.getMembers().keySet().forEach(playerID -> {
+                if (PlayerHelper.getPlayer(playerID) != null) {
+                    PacketSendGangMembers.sendMembers(gang, PlayerHelper.getPlayer(playerID));
+                }
+            });
 
-        } else if(args[0].equalsIgnoreCase("deny")) {
+            PacketSendGangMembers.sendMembers(gang, player);
+        } else if (args[0].equalsIgnoreCase("deny")) {
             if (!PacketAddMember.GANG_INVITES.containsKey(player.getUniqueID())) {
                 sendMessage(player, TextFormatting.RED + "You do not have any gang invites.");
                 return;
