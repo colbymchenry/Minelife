@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.GangPermission;
 import com.minelife.util.NumberConversions;
+import com.minelife.util.SkinHelper;
 import com.minelife.util.client.GuiHelper;
 import com.minelife.util.server.NameFetcher;
 import net.minecraft.client.gui.Gui;
@@ -90,7 +91,7 @@ public class GuiGangMenu extends GuiScreen {
         if (gang.getOwner() != null) {
             kills = memberList.kills.containsKey(gang.getOwner()) ? memberList.kills.get(gang.getOwner()) : 0;
             deaths = memberList.deaths.containsKey(gang.getOwner()) ? memberList.deaths.get(gang.getOwner()) : 0;
-            this.mc.getTextureManager().bindTexture(mc.player.getLocationSkin());
+            this.mc.getTextureManager().bindTexture(SkinHelper.loadSkin(gang.getOwner()));
             Gui.drawScaledCustomSizeModalRect(ownerBounds.getX(), ownerBounds.getY(), 8.0F, 8, 8, 8,
                     ownerBounds.getWidth(), ownerBounds.getHeight(), 64.0F, 64.0F);
             Gui.drawScaledCustomSizeModalRect(ownerBounds.getX(), ownerBounds.getY(), 40.0F, 8, 8, 8,

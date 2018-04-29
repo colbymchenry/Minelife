@@ -2,8 +2,13 @@ package com.minelife.util.server;
 
 import com.google.common.collect.Maps;
 import com.minelife.jobs.EntityJobNPC;
+import com.minelife.pvplogger.EntityPlayerTracker;
 import com.minelife.realestate.EntityReceptionist;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EntityTracker;
+import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.monster.EntityElderGuardian;
+import net.minecraft.entity.monster.EntityGuardian;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -17,22 +22,26 @@ public class MobSpawnChecker {
 
     @SubscribeEvent
     public void onJoinWorld(EntityJoinWorldEvent event) {
-        if(event.getEntity() instanceof EntityHorse || event.getEntity() instanceof EntityPlayer ||
-                event.getEntity() instanceof EntityJobNPC || event.getEntity() instanceof EntityReceptionist) return;
+        if (event.getEntity() instanceof EntityHorse || event.getEntity() instanceof EntityPlayer ||
+                event.getEntity() instanceof EntityJobNPC || event.getEntity() instanceof EntityReceptionist ||
+                event.getEntity() instanceof EntityPlayerTracker || event.getEntity() instanceof EntityGuardian
+                || event.getEntity() instanceof EntityElderGuardian ||
+                event.getEntity() instanceof EntityArmorStand) return;
 
-        if(!(event.getEntity() instanceof EntityLivingBase)) return;
+        if (!(event.getEntity() instanceof EntityLivingBase)) return;
 
         int rand = event.getWorld().rand.nextInt(100);
 
-        if(rand < 95) {
-            event.setCanceled(true);
+        if (rand < 95) {
+            event.getEntity().setDead();
             return;
         }
 
-        if(!amountSpawned.containsKey((Class<? extends EntityLivingBase>) event.getEntity().getClass())) {
+        if (!amountSpawned.containsKey((Class<? extends EntityLivingBase>) event.getEntity().getClass())) {
             amountSpawned.put((Class<? extends EntityLivingBase>) event.getEntity().getClass(), 1);
         } else {
-            if(amountSpawned.get((Class<? extends EntityLivingBase>) event.getEntity().getClass()) > 64) event.setCanceled(true);
+            if (amountSpawned.get((Class<? extends EntityLivingBase>) event.getEntity().getClass()) > 64)
+                event.getEntity().setDead();
             amountSpawned.put((Class<? extends EntityLivingBase>) event.getEntity().getClass(), amountSpawned.get((Class<? extends EntityLivingBase>) event.getEntity().getClass()) + 1);
         }
     }

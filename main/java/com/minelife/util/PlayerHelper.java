@@ -10,6 +10,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -45,6 +46,10 @@ public class PlayerHelper {
         }
 
         return null;
+    }
+
+    public static void sendMessageToAll(String msg) {
+        FMLServerHandler.instance().getServer().getPlayerList().getPlayers().forEach(entityPlayerMP -> entityPlayerMP.sendMessage(new TextComponentString(StringHelper.ParseFormatting(msg, '&'))));
     }
 
     public static TargetResult getTarget(EntityPlayer player, int range) {

@@ -124,8 +124,6 @@ public class FarmerHandler extends NPCHandler {
     }
 
     public int getXPForBlock(Block block) {
-        System.out.println("CALLED");
-        System.out.println(block.getRegistryName().toString());
         for (String crops : getConfig().getStringList("crops")) {
             if (crops.contains(";")) {
                 if (NumberConversions.isInt(crops.split("\\;")[1])) {
@@ -158,13 +156,13 @@ public class FarmerHandler extends NPCHandler {
         greenTerraMap.put(player.getUniqueID(), System.currentTimeMillis() + (duration * 1000L));
         greenTerraCooldownMap.put(player.getUniqueID(), System.currentTimeMillis() + (240 * 1000L));
         CommandJob.sendMessage(player, EnumJob.FARMER, "Green Terra activated for " + TextFormatting.RED + duration + TextFormatting.GOLD + " seconds!");
-        Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
+        Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 0.2F, 1), player);
     }
 
-    public boolean doTripleDrop(EntityPlayerMP player) {
-        double chance = (double) getLevel(player) / (double) getConfig().getInt("MaxLevel");
-        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
-    }
+//    public boolean doTripleDrop(EntityPlayerMP player) {
+//        double chance = (double) getLevel(player) / (double) getConfig().getInt("MaxLevel");
+//        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
+//    }
 
     public int replantStage(EntityPlayerMP player, int maxGrowth) {
         double chance = (double) getLevel(player) / (double) config.getInt("MaxLevel");

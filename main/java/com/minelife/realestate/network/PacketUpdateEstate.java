@@ -2,6 +2,7 @@ package com.minelife.realestate.network;
 
 import com.minelife.notifications.Notification;
 import com.minelife.notifications.NotificationType;
+import com.minelife.permission.ModPermission;
 import com.minelife.realestate.Estate;
 import com.minelife.realestate.EstateProperty;
 import com.minelife.realestate.ModRealEstate;
@@ -114,7 +115,7 @@ public class PacketUpdateEstate implements IMessage {
                 message.estate.setGlobalPermissions(globalPermissions);
                 message.estate.setRenterPermissions(renterPermissions);
 
-                if(!Objects.equals(loadedEstate.getRenterID(), player.getUniqueID()) &&
+                if(!ModPermission.hasPermission(player.getUniqueID(), "estate.override.modify") && !Objects.equals(loadedEstate.getRenterID(), player.getUniqueID()) &&
                         !Objects.equals(loadedEstate.getOwnerID(), player.getUniqueID())) {
                     PacketPopup.sendPopup(TextFormatting.DARK_RED + "You are not allowed to modify this estate.", player);
                     return;

@@ -1,6 +1,7 @@
 package com.minelife;
 
 import com.google.common.collect.Lists;
+import com.minelife.airdrop.ModAirdrop;
 import com.minelife.cape.ModCapes;
 import com.minelife.chestshop.ModChestShop;
 import com.minelife.drugs.ModDrugs;
@@ -13,6 +14,7 @@ import com.minelife.locks.ModLocks;
 import com.minelife.minebay.ModMinebay;
 import com.minelife.notifications.ModNotifications;
 import com.minelife.permission.ModPermission;
+import com.minelife.pvplogger.ModPVPLogger;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.tdm.ModTDM;
 import com.minelife.tracker.ModTracker;
@@ -79,6 +81,8 @@ public class Minelife {
 //        MODS.add(new ModTDM());
         MODS.add(new ModLocks());
         MODS.add(new ModTutorial());
+        MODS.add(new ModPVPLogger());
+        MODS.add(new ModAirdrop());
     }
 
     @Mod.EventHandler

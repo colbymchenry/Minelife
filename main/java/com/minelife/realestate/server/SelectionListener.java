@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class SelectionListener {
 
-    private static Map<EntityPlayer, BlockPos[]> SELECTIONS = Maps.newHashMap();
+    public static Map<EntityPlayer, BlockPos[]> SELECTIONS = Maps.newHashMap();
 
     @SubscribeEvent
     public void interactLeftClick(PlayerInteractEvent.LeftClickBlock event) {
@@ -42,9 +42,10 @@ public class SelectionListener {
                 return;
             }
             BlockPos[] selection = SELECTIONS.get(player);
-            if(selection[1] == null)
+            if (selection[1] == null) {
                 player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "Position 1" + TextFormatting.GOLD + " and " + TextFormatting.RED + "Position 2" + TextFormatting.GOLD + " set!"));
-            else
+                player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.GOLD + "Now type " + TextFormatting.RED + " /e create " + TextFormatting.GOLD + "!"));
+        } else
                 player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate] " + TextFormatting.RED + "Position 2" + TextFormatting.GOLD + " updated!"));
             selection[1] = event.getPos();
             SELECTIONS.put(player, selection);

@@ -18,6 +18,7 @@ import com.minelife.economy.item.ItemCashBlock;
 import com.minelife.economy.item.ItemWallet;
 import com.minelife.economy.network.*;
 import com.minelife.economy.server.CommandBalance;
+import com.minelife.economy.server.CommandBalanceTop;
 import com.minelife.economy.server.CommandEconomy;
 import com.minelife.economy.server.ServerProxy;
 import com.minelife.economy.tileentity.TileEntityATM;
@@ -89,6 +90,7 @@ public class ModEconomy extends MLMod {
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandEconomy());
         event.registerServerCommand(new CommandBalance());
+        event.registerServerCommand(new CommandBalanceTop());
     }
 
     @Override

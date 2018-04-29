@@ -81,10 +81,11 @@ public class GuiManageMember extends GuiScreen {
         this.guiTop = (this.height - guiHeight + 10) / 2;
 
         buttonList.clear();
-        for (int i = 0; i < GangRole.values().length; i++) {
+        for (int i = 0; i < GangRole.values().length - 1; i++) {
             buttonList.add(new GuiButton(i, (this.width - 75) / 2, guiTop + (25 * i) + 10, 75, 20, WordUtils.capitalizeFully(GangRole.values()[i].name())));
         }
-        buttonList.add(new GuiButton(-1, (this.width - 75) / 2, guiTop + (25 * GangRole.values().length) + 10, 75, 20, "Kick"));
-        buttonList.get(GangRole.values().length).enabled = previousScreen.gang.hasPermission(mc.player.getUniqueID(), GangPermission.KICK_MEMBERS);
+
+        buttonList.add(new GuiButton(-1, (this.width - 75) / 2, guiTop + (25 * (GangRole.values().length - 1)) + 10, 75, 20, "Kick"));
+        buttonList.get(GangRole.values().length - 1).enabled = previousScreen.gang.hasPermission(mc.player.getUniqueID(), GangPermission.KICK_MEMBERS);
     }
 }

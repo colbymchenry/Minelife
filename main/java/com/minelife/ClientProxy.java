@@ -1,6 +1,7 @@
 package com.minelife;
 
 import codechicken.lib.render.CCRenderEventHandler;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.minelife.util.client.CustomGuiMainMenu;
 import com.minelife.util.client.render.AdjustPlayerModelEvent;
@@ -22,10 +23,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class ClientProxy extends MLProxy {
 

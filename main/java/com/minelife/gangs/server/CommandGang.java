@@ -44,6 +44,8 @@ import java.util.regex.Pattern;
 
 public class CommandGang extends CommandBase {
 
+    public static List<UUID> gangChatEnabled = Lists.newArrayList();
+
     @Override
     public String getName() {
         return "gang";
@@ -65,6 +67,8 @@ public class CommandGang extends CommandBase {
         sendMessage(sender, "/gang sethome|delhome|home");
         sendMessage(sender, "/gang setbank|delbank");
         sendMessage(sender, "/gang deposit <amount>");
+        sendMessage(sender, "/gang rename <name>");
+        sendMessage(sender, "/gang chat - To enable and disable gang chat");
         return null;
     }
 
@@ -366,6 +370,7 @@ public class CommandGang extends CommandBase {
                 }
             });
 
+            if (PlayerHelper.getPlayer(gang.getOwner()) != null) PacketSendGangMembers.sendMembers(gang, PlayerHelper.getPlayer(gang.getOwner()));
             PacketSendGangMembers.sendMembers(gang, player);
         } else if (args[0].equalsIgnoreCase("deny")) {
             if (!PacketAddMember.GANG_INVITES.containsKey(player.getUniqueID())) {
@@ -374,6 +379,43 @@ public class CommandGang extends CommandBase {
             }
 
             PacketAddMember.GANG_INVITES.remove(player.getUniqueID());
+        } else if (args[0].equalsIgnoreCase("rename")) {
+            if (playerGang == null) {
+                sendMessage(sender, "You do not belong to a gang. Type " + TextFormatting.RED + "/gang create <name>" + TextFormatting.GOLD + " to create a gang.");
+                return;
+            }
+
+            if (!playerGang.getOwner().equals(player.getUniqueID())) {
+                sendMessage(sender, TextFormatting.RED + "Only the owner can change the name of the gang.");
+                return;
+            }
+
+            if (args.length != 2) {
+                getUsage(sender);
+                return;
+            }
+
+            if (Gang.getGang(args[1]) != null) {
+                sendMessage(sender, TextFormatting.RED + "There is already a gang with that name.");
+                return;
+            }
+
+            playerGang.setName(args[1]);
+            playerGang.writeToDatabase();
+            sendMessage(sender, "Gang renamed!");
+        } else if(args[0].equalsIgnoreCase("chat")) {
+            if (playerGang == null) {
+                sendMessage(sender, "You do not belong to a gang. Type " + TextFormatting.RED + "/gang create <name>" + TextFormatting.GOLD + " to create a gang.");
+                return;
+            }
+
+            if(gangChatEnabled.contains(player.getUniqueID())) {
+                sendMessage(player, "Gang chat " + TextFormatting.RED + "disabled.");
+                gangChatEnabled.remove(player.getUniqueID());
+            } else {
+                sendMessage(player, "Gang chat " + TextFormatting.GREEN + "enabled.");
+                gangChatEnabled.add(player.getUniqueID());
+            }
         } else {
             getUsage(sender);
         }

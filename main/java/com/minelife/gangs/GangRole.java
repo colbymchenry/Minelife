@@ -12,7 +12,8 @@ public enum GangRole {
     YOUNGER(TextFormatting.GREEN, GangPermission.OPEN_LOCKS, GangPermission.DEPOSIT_MONEY, GangPermission.JOIN_FIGHTS, GangPermission.TELEPORT_HOME, GangPermission.REGROUP, GangPermission.INVITE),
     ELDER(TextFormatting.GOLD, GangPermission.OPEN_LOCKS, GangPermission.DEPOSIT_MONEY, GangPermission.JOIN_FIGHTS, GangPermission.TELEPORT_HOME, GangPermission.REGROUP, GangPermission.SETHOME_DELHOME,
             GangPermission.TOGGLE_FRIENDLY_FIRE, GangPermission.LEVEL_UP, GangPermission.CHALLENGE, GangPermission.ACCEPT_CHALLENGES),
-    OLDER(TextFormatting.RED, GangPermission.values());
+    OLDER(TextFormatting.RED, GangPermission.values()),
+    OWNER(TextFormatting.DARK_RED, GangPermission.values());
 
     public List<GangPermission> permissions;
     public TextFormatting color;

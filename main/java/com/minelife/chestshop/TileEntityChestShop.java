@@ -5,6 +5,7 @@ import codechicken.lib.inventory.InventoryUtils;
 import com.google.common.collect.Lists;
 import com.minelife.util.ItemHelper;
 import com.minelife.util.MLTileEntity;
+import com.minelife.util.PlayerHelper;
 import cpw.mods.ironchest.common.blocks.chest.BlockIronChest;
 import cpw.mods.ironchest.common.tileentity.chest.TileEntityIronChest;
 import net.minecraft.block.BlockChest;
@@ -27,6 +28,7 @@ public class TileEntityChestShop extends MLTileEntity {
     private EnumFacing facing = EnumFacing.NORTH;
     private ItemStack item;
     private int price = 0;
+    private boolean serverShop = false;
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
@@ -37,6 +39,7 @@ public class TileEntityChestShop extends MLTileEntity {
         else this.item = null;
         if (tag.hasKey("Owner")) this.owner = UUID.fromString(tag.getString("Owner"));
         else this.owner = null;
+        this.serverShop = tag.getBoolean("ServerShop");
     }
 
     @Override
@@ -51,7 +54,16 @@ public class TileEntityChestShop extends MLTileEntity {
             tag.setTag("Item", itemTag);
         }
         if (this.owner != null) tag.setString("Owner", this.owner.toString());
+        tag.setBoolean("ServerShop", serverShop);
         return tag;
+    }
+
+    public boolean isServerShop() {
+        return serverShop;
+    }
+
+    public void setServerShop(boolean serverShop) {
+        this.serverShop = serverShop;
     }
 
     public UUID getOwner() {
@@ -180,46 +192,62 @@ public class TileEntityChestShop extends MLTileEntity {
     }
 
     public int getStockCount() {
+        if (serverShop) return 2048;
         int count = 0;
         for (Stock stock : getStock()) count += stock.stack.getCount();
         return count;
     }
 
     public void doPurchase(EntityPlayerMP player, int amount) {
-        if(getItem() == null) return;
+        if (getItem() == null) return;
         amount *= getItem().getCount();
 
         List<ItemStack> toDrop = Lists.newArrayList();
 
-       for (Stock stock : getStock()) {
-            if (world.getTileEntity(stock.pos) instanceof TileEntityChest) {
-                TileEntityChest tileChest = (TileEntityChest) world.getTileEntity(stock.pos);
-                if (stock.stack.getCount() <= amount) {
-                    tileChest.setInventorySlotContents(stock.slot, ItemStack.EMPTY);
-                    toDrop.add(stock.stack);
-                    amount -= stock.stack.getCount();
-                } else {
-                    stock.stack.setCount(stock.stack.getCount() - amount);
-                    ItemStack clone = stock.stack.copy();
-                    clone.setCount(amount);
-                    toDrop.add(clone);
-                    break;
+        if (serverShop) {
+            int fullStacks = amount / item.getMaxStackSize();
+            int leftOver = amount % item.getMaxStackSize();
+
+            for (int i = 0; i < fullStacks; i++) {
+                ItemStack itemStack = item.copy();
+                itemStack.setCount(item.getMaxStackSize());
+                toDrop.add(itemStack);
+            }
+
+            ItemStack itemStack = item.copy();
+            itemStack.setCount(leftOver);
+            toDrop.add(itemStack);
+        } else {
+            for (Stock stock : getStock()) {
+                if (world.getTileEntity(stock.pos) instanceof TileEntityChest) {
+                    TileEntityChest tileChest = (TileEntityChest) world.getTileEntity(stock.pos);
+                    if (stock.stack.getCount() <= amount) {
+                        tileChest.setInventorySlotContents(stock.slot, ItemStack.EMPTY);
+                        toDrop.add(stock.stack);
+                        amount -= stock.stack.getCount();
+                    } else {
+                        stock.stack.setCount(stock.stack.getCount() - amount);
+                        ItemStack clone = stock.stack.copy();
+                        clone.setCount(amount);
+                        toDrop.add(clone);
+                        break;
+                    }
+                    stock.updateChest();
+                } else if (world.getTileEntity(stock.pos) instanceof TileEntityIronChest) {
+                    TileEntityIronChest tileChest = (TileEntityIronChest) world.getTileEntity(stock.pos);
+                    if (stock.stack.getCount() <= amount) {
+                        tileChest.setInventorySlotContents(stock.slot, ItemStack.EMPTY);
+                        toDrop.add(stock.stack);
+                        amount -= stock.stack.getCount();
+                    } else {
+                        stock.stack.setCount(stock.stack.getCount() - amount);
+                        ItemStack clone = stock.stack.copy();
+                        clone.setCount(amount);
+                        toDrop.add(clone);
+                        break;
+                    }
+                    stock.updateChest();
                 }
-                stock.updateChest();
-            } else if (world.getTileEntity(stock.pos) instanceof TileEntityIronChest) {
-                TileEntityIronChest tileChest = (TileEntityIronChest) world.getTileEntity(stock.pos);
-                if (stock.stack.getCount() <= amount) {
-                    tileChest.setInventorySlotContents(stock.slot, ItemStack.EMPTY);
-                    toDrop.add(stock.stack);
-                    amount -= stock.stack.getCount();
-                } else {
-                    stock.stack.setCount(stock.stack.getCount() - amount);
-                    ItemStack clone = stock.stack.copy();
-                    clone.setCount(amount);
-                    toDrop.add(clone);
-                    break;
-                }
-                stock.updateChest();
             }
         }
 
@@ -231,7 +259,7 @@ public class TileEntityChestShop extends MLTileEntity {
     }
 
     public boolean canPurchaseFit(EntityPlayerMP player, int amount) {
-        if(getItem() == null) return false;
+        if (getItem() == null) return false;
         amount *= getItem().getCount();
         InventoryRange range = new InventoryRange(player.inventory, 0, 36);
         return InventoryUtils.getInsertibleQuantity(range, getItem()) >= amount;

@@ -70,17 +70,17 @@ public class FarmerListener {
         if(blockCrop.getMaxAge() == world.getBlockState(event.getPos()).getValue(BlockCrops.AGE)) {
             cropUpdates.add(new UpdateCrop(world, player, System.currentTimeMillis() + 500, world.getBlockState(event.getPos()), blockCrop, event.getPos()));
             FarmerHandler.INSTANCE.addXP(player.getUniqueID(), xp);
-            if(FarmerHandler.INSTANCE.doTripleDrop(player) ||
-                    FarmerHandler.INSTANCE.greenTerraMap.containsKey(player.getUniqueID())) {
-                event.getDrops().forEach(itemStack -> itemStack.setCount(itemStack.getCount() * 3));
-
-                Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
-            }
+//            if(FarmerHandler.INSTANCE.doTripleDrop(player) ||
+//                    FarmerHandler.INSTANCE.greenTerraMap.containsKey(player.getUniqueID())) {
+//                event.getDrops().forEach(itemStack -> itemStack.setCount(itemStack.getCount() * 3));
+//
+//                Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
+//            }
 
             CommandJob.sendMessage(player, EnumJob.FARMER, "+" + xp);
 
             if(FarmerHandler.INSTANCE.getLevel(player) > level) {
-                Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:level_up", 1, 1), player);
+                Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:level_up", 0.2F, 1), player);
 
                 ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, FireworkBuilder.Type.LARGE_BALL,
                         new int[]{Color.RED.asRGB(), Color.BLUE.asRGB()}, new int[]{Color.PURPLE.asRGB(), Color.WHITE.asRGB()}).getStack(1);

@@ -59,6 +59,6 @@ public class CommandBalance extends MLCommand {
 
     @Override
     public boolean isUsernameIndex(String[] args, int index) {
-        return index == 0;
+        return index == 1;
     }
 }

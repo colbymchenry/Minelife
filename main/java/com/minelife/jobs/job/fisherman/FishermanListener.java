@@ -46,7 +46,7 @@ public class FishermanListener {
         CommandJob.sendMessage(player, EnumJob.FISHERMAN, "+" + xp);
 
         if (FishermanHandler.INSTANCE.getLevel(player) > level) {
-            Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:level_up", 1, 1), player);
+            Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:level_up", 0.2F, 1), player);
 
             ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, FireworkBuilder.Type.LARGE_BALL,
                     new int[]{Color.WHITE.asRGB(), Color.BLUE.asRGB()}, new int[]{Color.NAVY.asRGB(), Color.AQUA.asRGB()}).getStack(1);

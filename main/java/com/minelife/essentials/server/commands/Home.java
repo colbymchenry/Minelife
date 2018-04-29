@@ -43,14 +43,16 @@ public class Home extends CommandBase {
         Map<String, Location> homes = GetHomes(Player.getUniqueID());
 
         if (homes.isEmpty()) {
-            Player.sendMessage(new TextComponentString(TextFormatting.RED + "You do not have any homes. Type /sethome to set your home."));
+            Player.sendMessage(new TextComponentString(TextFormatting.RED + "You do not have a home. Sleep in a bed to set your home."));
             return;
         }
 
         String id = args.length == 0 ? "default" : args[0].toLowerCase();
 
+        if(!ModPermission.hasPermission(Player.getUniqueID(), "homes.admin")) id = "default";
+
         if (!homes.containsKey(id)) {
-            Player.sendMessage(new TextComponentString(TextFormatting.RED + "Home '" + id + "' not found."));
+            Player.sendMessage(new TextComponentString(TextFormatting.RED + "You do not have a home. Sleep in a bed to set your home."));
             return;
         }
 
@@ -86,6 +88,14 @@ public class Home extends CommandBase {
 
     }
 
+    public static void DelHome(String name, UUID player) {
+        try {
+            ModEssentials.getDB().query("DELETE FROM homes WHERE name='" + name + "' AND player='" + player.toString() + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static Map<String, Location> GetHomes(UUID playerID) {
         Map<String, Location> homes = Maps.newHashMap();
         try {
@@ -103,5 +113,17 @@ public class Home extends CommandBase {
             e.printStackTrace();
         }
         return homes;
+    }
+
+    public static UUID getHomeAtLoc(int dimension, BlockPos pos) {
+        try {
+            ResultSet result = ModEssentials.getDB().query("SELECT * FROM homes WHERE dimension='" + dimension + "' AND x='" + pos.getX() + "' AND y='" + pos.getY()+ "' AND z='" + pos.getZ() + "'");
+            if(result.next()) {
+                return UUID.fromString(result.getString("player"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

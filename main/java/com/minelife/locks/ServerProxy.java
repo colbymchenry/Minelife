@@ -3,6 +3,7 @@ package com.minelife.locks;
 import com.google.common.collect.Sets;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
+import com.minelife.economy.ModEconomy;
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.GangPermission;
 import com.minelife.permission.ModPermission;
@@ -83,15 +84,14 @@ public class ServerProxy extends MLProxy {
         LockType lock = ModLocks.getLock(world, event.getPos());
         Gang gang = Gang.getGangForPlayer(ModLocks.getLockPlacer(world, event.getPos()));
 
+        if(blockState.getBlock() == ModEconomy.blockCash) return;
+
         boolean holdingLockPick = player.getHeldItem(event.getHand()).getItem() == ModLocks.itemLockpick;
         boolean holdingLock = player.getHeldItem(event.getHand()).getItem() == ModLocks.itemLock;
         boolean isLockOwner = Objects.equals(ModLocks.getLockPlacer(world, event.getPos()), player.getUniqueID());
         boolean hasLockOverride = ModPermission.hasPermission(player.getUniqueID(), "locks.override");
         boolean hasEstatePermission = estate != null ? estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.OPEN_LOCKS) : false;
         boolean hasGangPermission =  gang != null ? gang.hasPermission(player.getUniqueID(), GangPermission.OPEN_LOCKS) : false;
-
-//        true,false,false,true,true
-        System.out.println((lock != null) + "," + isLockOwner+ "," +  hasLockOverride + "," +  hasEstatePermission + "," +  hasGangPermission);
 
         if(lock != null) {
             if (isLockOwner || hasLockOverride || hasEstatePermission || hasGangPermission) {
@@ -121,23 +121,15 @@ public class ServerProxy extends MLProxy {
 
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.NORMAL)
     public void onInteract(BlockEvent.BreakEvent event) {
-        Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());
+        if(event.isCanceled()) return;
 
-        if (!ModPermission.hasPermission(event.getPlayer().getUniqueID(), "locks.override")
-                && (estate == null || (!estate.getPlayerPermissions(event.getPlayer().getUniqueID()).contains(PlayerPermission.BREAK_LOCKS)
-                && !estate.getPlayerPermissions(event.getPlayer().getUniqueID()).contains(PlayerPermission.BREAK)))
-                && !Objects.equals(ModLocks.getLockPlacer(event.getWorld(), event.getPos()), event.getPlayer().getUniqueID())
-                && ModLocks.getLock(event.getWorld(), event.getPos()) != null) {
-            event.setCanceled(true);
-            event.getPlayer().sendMessage(new TextComponentString(TextFormatting.RED + "This block is locked with an " + TextFormatting.DARK_RED + WordUtils.capitalizeFully(ModLocks.getLock(event.getWorld(), event.getPos()).name()) + TextFormatting.RED + " lock."));
-        } else {
-            if(ModLocks.getLock(event.getWorld(), event.getPos()) != null) {
-                ItemStack stack = new ItemStack(ModLocks.itemLock, 1, ModLocks.getLock(event.getWorld(), event.getPos()).ordinal());
-                event.getPlayer().dropItem(stack, false);
-                ModLocks.deleteLock(event.getWorld(), event.getPos());
-            }
+        LockType lock = ModLocks.getLock(event.getWorld(), event.getPos());
+        if(lock != null) {
+            ModLocks.deleteLock(event.getWorld(), event.getPos());
+            ItemStack stack = new ItemStack(ModLocks.itemLock, 1, lock.ordinal());
+            event.getPlayer().dropItem(stack, false);
         }
     }
 }

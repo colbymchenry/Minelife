@@ -40,7 +40,7 @@ public abstract class GuiJobBase extends GuiScreen {
         sellingList.draw(mouseX, mouseY, Mouse.getDWheel());
 
         if (this.sellingList.hoveringOption != null)
-            drawHoveringText(Lists.newArrayList(this.sellingList.hoveringOption.getStack().getDisplayName(), TextFormatting.GRAY + TextFormatting.ITALIC.toString() + "$" + NumberConversions.format(sellingList.hoveringOption.getPrice())), mouseX, mouseY);
+            drawHoveringText(Lists.newArrayList(this.sellingList.hoveringOption.getStack().getDisplayName(), TextFormatting.GRAY + TextFormatting.ITALIC.toString() + "$" + NumberConversions.format(sellingList.hoveringOption.getPrice()), TextFormatting.GRAY.toString() + TextFormatting.ITALIC + "Hold Shift to Sell All"), mouseX, mouseY);
 
     }
 
@@ -94,12 +94,14 @@ public abstract class GuiJobBase extends GuiScreen {
 
             for (int i = 0; i < sellingButtons.size(); i++) {
                 GlStateManager.disableLighting();
-                sellingButtons.get(i).drawButton(mc, mouseX, mouseY, 0);
+                GuiButton button = sellingButtons.get(i);
+                button.drawButton(mc, mouseX, mouseY, 0);
+
 
                 SellingOption option = sellingOptions.get(i);
                 GuiFakeInventory.renderItemInventory(option.getStack(), 30, (i * 30) + 10, true);
-                if (mouseX >= 30 && mouseX <= 30 + 16 && mouseY >= (i * 30) + 10 &&
-                        mouseY <= (i * 30) + 10 + 16) {
+                if ((mouseX >= 30 && mouseX <= 30 + 16 && mouseY >= (i * 30) + 10 &&
+                        mouseY <= (i * 30) + 10 + 16) || button.mousePressed(mc, mouseX, mouseY)) {
                     foundOne = true;
                     hoveringOption = option;
                 }
@@ -112,7 +114,7 @@ public abstract class GuiJobBase extends GuiScreen {
         public void elementClicked(int index, int mouseX, int mouseY, boolean doubleClick) {
             sellingButtons.forEach(btn -> {
                 if(btn.mousePressed(mc, mouseX, mouseY)) {
-                    Minelife.getNetwork().sendToServer(new PacketSellItemStack(job, sellingOptions.get(btn.id).getStack()));
+                    Minelife.getNetwork().sendToServer(new PacketSellItemStack(job, sellingOptions.get(btn.id).getStack(), Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)));
                 }
             });
         }

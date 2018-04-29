@@ -65,7 +65,7 @@ public class LumberjackListener {
                 CommandJob.sendMessage(player, EnumJob.LUMBERJACK, "+" + xp);
 
                 if (LumberjackHandler.INSTANCE.getLevel(player) > level) {
-                    Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:level_up", 1, 1), player);
+                    Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:level_up", 0.2F, 1), player);
 
                     ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, FireworkBuilder.Type.LARGE_BALL,
                             new int[]{Color.RED.asRGB(), Color.BLUE.asRGB()}, new int[]{Color.PURPLE.asRGB(), Color.WHITE.asRGB()}).getStack(1);
@@ -90,16 +90,16 @@ public class LumberjackListener {
 
         if (event.isCanceled()) return;
 
-        if (LumberjackHandler.INSTANCE.doDoubleDrop(player)) {
-            Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
-            NonNullList<ItemStack> drops = NonNullList.create();
-            event.getState().getBlock().getDrops(drops, event.getWorld(), event.getPos(), event.getState(),
-                    EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, player.getHeldItemMainhand()));
-            drops.forEach(stack -> {
-                stack.setCount(stack.getCount() + 1);
-                player.dropItem(stack, false);
-            });
-        }
+//        if (LumberjackHandler.INSTANCE.doDoubleDrop(player)) {
+//            Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
+//            NonNullList<ItemStack> drops = NonNullList.create();
+//            event.getState().getBlock().getDrops(drops, event.getWorld(), event.getPos(), event.getState(),
+//                    EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, player.getHeldItemMainhand()));
+//            drops.forEach(stack -> {
+//                stack.setCount(stack.getCount() + 1);
+//                player.dropItem(stack, false);
+//            });
+//        }
 
     }
     // TODO: Can place blocks and farm them... same with the miner

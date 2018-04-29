@@ -21,4 +21,9 @@ public class EventTeleport extends Event {
     public EntityPlayerMP getPlayer() {
         return player;
     }
+
+    @Override
+    public boolean isCancelable() {
+        return true;
+    }
 }

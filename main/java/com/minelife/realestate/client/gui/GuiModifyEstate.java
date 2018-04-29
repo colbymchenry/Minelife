@@ -28,7 +28,11 @@ public class GuiModifyEstate extends GuiCreateEstate {
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
         super.actionPerformed(button);
-        mc.displayGuiScreen(new GuiMembers(estate, allowedPermissions, allowedProperties));
+        if (button.id == 0)
+            mc.displayGuiScreen(new GuiMembers(estate, allowedPermissions, allowedProperties));
+        else {
+            content.elementClicked(1, content.createBtn.x + 2, content.createBtn.y + 2, true);
+        }
     }
 
     @Override
@@ -37,6 +41,7 @@ public class GuiModifyEstate extends GuiCreateEstate {
         buttonList.clear();
         buttonList.add(new GuiButton(0, guiLeft - 55, guiTop, 50, 20, "Members"));
         buttonList.get(0).enabled = allowedPermissions.contains(PlayerPermission.MODIFY_MEMBERS);
+        buttonList.add(new GuiButton(1, guiLeft - 55, guiTop + 22, 50, 20, "Update"));
 
         // override content variable to adjust for sending modify packet and not create packet
         content = new Content(mc, guiLeft, guiTop, xSize, ySize) {
@@ -49,7 +54,8 @@ public class GuiModifyEstate extends GuiCreateEstate {
                 this.introField.mouseClicked(mouseX, mouseY, 0);
                 this.outroField.mouseClicked(mouseX, mouseY, 0);
 
-                if (this.createBtn.mousePressed(mc, mouseX, mouseY)) {
+                if (this.createBtn.x < mouseX && this.createBtn.x + this.createBtn.width > mouseX
+                        && this.createBtn.y < mouseY && this.createBtn.y + this.createBtn.height > mouseY) {
                     int purchasePrice = 0, rentPrice = 0, rentPeriod = 0;
                     if (NumberConversions.isInt(this.purchaseField.getText()))
                         purchasePrice = NumberConversions.toInt(this.purchaseField.getText());
@@ -92,6 +98,12 @@ public class GuiModifyEstate extends GuiCreateEstate {
                     Minelife.getNetwork().sendToServer(new PacketUpdateEstate(estate));
                 }
             }
+
+            @Override
+            public int getObjectHeight(int index) {
+                return super.getObjectHeight(index) - 40;
+            }
+
         };
 
 
@@ -114,5 +126,6 @@ public class GuiModifyEstate extends GuiCreateEstate {
         }
 
         this.content.createBtn.displayString = "Update";
+        this.content.createBtn.visible = false;
     }
 }

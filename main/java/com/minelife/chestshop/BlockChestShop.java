@@ -7,7 +7,9 @@ import com.minelife.chestshop.client.gui.GuiSetupShop;
 import com.minelife.chestshop.client.render.RenderChestShopBlock;
 import com.minelife.chestshop.client.render.RenderChestShopItem;
 import com.minelife.economy.ModEconomy;
+import com.minelife.permission.ModPermission;
 import com.minelife.util.NumberConversions;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.MLParticleDigging;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.SoundType;
@@ -19,6 +21,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -65,6 +68,16 @@ public class BlockChestShop extends BlockContainer {
        if(hand != EnumHand.MAIN_HAND) return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
 
         TileEntityChestShop tile = (TileEntityChestShop) worldIn.getTileEntity(pos);
+
+        if(!worldIn.isRemote) {
+            if (playerIn.getHeldItem(hand).getItem() == Items.BLAZE_ROD && ModPermission.hasPermission(playerIn.getUniqueID(), "shop.servershop")) {
+                boolean isServerShop = tile.isServerShop();
+                tile.setServerShop(!isServerShop);
+                playerIn.sendMessage(new TextComponentString("SERVER SHOP: " + !isServerShop));
+                tile.sendUpdates();
+                return true;
+            }
+        }
 
         if (Objects.equals(tile.getOwner(), playerIn.getUniqueID())) {
             if (worldIn.isRemote) {

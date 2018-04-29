@@ -10,6 +10,7 @@ import com.minelife.realestate.*;
 import com.minelife.realestate.network.PacketBuyGui;
 import com.minelife.realestate.network.PacketCreateGui;
 import com.minelife.realestate.network.PacketModifyGui;
+import com.minelife.realestate.network.PacketSelection;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.PacketPopup;
@@ -81,7 +82,7 @@ public class CommandEstate extends CommandBase {
                 long area = width * length * height;
                 long price = area * ModRealEstate.getConfig().getInt("price_per_block", 2);
 
-                if(!ModPermission.hasPermission(player.getUniqueID(), "estate.override.price") && ModEconomy.getBalanceInventory(player) < price) {
+                if (!ModPermission.hasPermission(player.getUniqueID(), "estate.override.price") && ModEconomy.getBalanceInventory(player) < price) {
                     sendMessage(player, TextFormatting.RED + "Insufficient funds! Price: " + TextFormatting.DARK_RED + "$" + NumberConversions.format(price));
                     return;
                 }
@@ -221,7 +222,7 @@ public class CommandEstate extends CommandBase {
             EntityReceptionist receptionist = new EntityReceptionist(player.getEntityWorld(), name, skinID);
             receptionist.setPosition(player.posX, player.posY, player.posZ);
             player.getEntityWorld().spawnEntity(receptionist);
-        }else if(args[0].equalsIgnoreCase("identifier")) {
+        } else if (args[0].equalsIgnoreCase("identifier")) {
             Estate estate = ModRealEstate.getEstateAt(player.getEntityWorld(), player.getPosition());
             if (args.length < 2) {
                 getUsage(sender);
@@ -249,6 +250,54 @@ public class CommandEstate extends CommandBase {
                 e.printStackTrace();
                 sendMessage(player, TextFormatting.RED + "Something went wrong.");
             }
+        } else if (args[0].equalsIgnoreCase("expand")) {
+            if (creationCheck(player, true, false)) {
+                BlockPos min = SelectionListener.getMinimum(player), max = SelectionListener.getMaximum(player);
+                long width = Math.abs(max.getX() - min.getX());
+                long length = Math.abs(max.getZ() - min.getZ());
+                long height = Math.abs(max.getY() - min.getY());
+                long area = width * length * height;
+                long priceNewSelection = area * ModRealEstate.getConfig().getInt("price_per_block", 2);
+                width = Math.abs(estateAtPos.getMaximum().getX() - estateAtPos.getMinimum().getX());
+                length = Math.abs(estateAtPos.getMaximum().getZ() - estateAtPos.getMinimum().getZ());
+                height = Math.abs(estateAtPos.getMaximum().getY() - estateAtPos.getMinimum().getY());
+                area = width * length * height;
+                long priceCurrentEstate = area * ModRealEstate.getConfig().getInt("price_per_block", 2);
+                long price = priceNewSelection - priceCurrentEstate;
+
+                if (!ModPermission.hasPermission(player.getUniqueID(), "estate.override.price") && ModEconomy.getBalanceInventory(player) < price) {
+                    sendMessage(player, TextFormatting.RED + "Insufficient funds! Price for expansion: " + TextFormatting.DARK_RED + "$" + NumberConversions.format(price));
+                    return;
+                }
+
+                if(!ModPermission.hasPermission(player.getUniqueID(), "estate.override.price") && !estateAtPos.getOwnerID().equals(player.getUniqueID())) {
+                    sendMessage(player, TextFormatting.RED + "Only the owner can expand the estate.");
+                    return;
+                }
+
+                if(price > Integer.MAX_VALUE) {
+                    sendMessage(player, TextFormatting.RED + "Expansion too large.");
+                    return;
+                }
+
+                ModEconomy.withdrawInventory(player, (int) price);
+                estateAtPos.setMinimum(new BlockPos(Math.min(min.getX(), max.getX()), Math.min(min.getY(), max.getY()), Math.min(min.getZ(), max.getZ())));
+                estateAtPos.setMaximum(new BlockPos(Math.max(min.getX(), max.getX()), Math.max(min.getY(), max.getY()), Math.max(min.getZ(), max.getZ())));
+                sendMessage(player, "Estate expanded!");
+            }
+        } else if (args[0].equalsIgnoreCase("bounds")) {
+            if (estateAtPos == null) {
+                sendMessage(player, TextFormatting.RED + "There is no estate here.");
+                return;
+            }
+
+            BlockPos[] selection = new BlockPos[]{estateAtPos.getMinimum(), estateAtPos.getMaximum()};
+            SelectionListener.SELECTIONS.put(player, selection);
+            BlockPos pos1 = selection[0];
+            BlockPos pos2 = selection[1];
+            BlockPos min = new BlockPos(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()));
+            BlockPos max = new BlockPos(Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
+            Minelife.getNetwork().sendTo(new PacketSelection(min, max), player);
         } else {
             getUsage(sender);
         }
@@ -289,7 +338,7 @@ public class CommandEstate extends CommandBase {
         int length = Math.abs(max.getZ() - min.getZ());
         int height = Math.abs(max.getY() - min.getY());
 
-        if (!ModPermission.hasPermission(player.getUniqueID(), "realestate.bypass.size") && width * length * height < 125) {
+        if (!ModPermission.hasPermission(player.getUniqueID(), "estate.bypass.size") && width * length * height < 125) {
             if (sendMessages)
                 player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.RED + " Selection is not big enough. Must be at least 5x5x5."));
             else if (sendPopups)
@@ -300,25 +349,33 @@ public class CommandEstate extends CommandBase {
         Estate parentEstate = null;
 
         for (Estate estate : ModRealEstate.getLoadedEstates()) {
-            if (estate.getWorld().equals(player.getEntityWorld()) && ((!estate.isInside(min, max) && estate.intersects(min, max)) ||
-                    (min.getX() <= estate.getMinimum().getX() && min.getY() <= estate.getMinimum().getY() && min.getZ() <= estate.getMinimum().getZ() &&
-                            max.getX() >= estate.getMaximum().getX() && max.getY() >= estate.getMaximum().getY() && max.getZ() >= estate.getMaximum().getZ())) &&
-                    (!estate.getOwnerID().equals(player.getUniqueID()) && !ModPermission.hasPermission(player.getUniqueID(), "realestate.bypass.ownership"))) {
-                if (sendMessages)
+            boolean sameWorld = estate.getWorld().equals(player.getEntityWorld());
+            boolean insideSelection = min.getX() < estate.getMinimum().getX() && min.getY() < estate.getMinimum().getY() && min.getZ() < estate.getMinimum().getZ()
+                    && max.getX() > estate.getMaximum().getX() && max.getY() > estate.getMaximum().getY() && max.getZ() > estate.getMaximum().getZ();
+            boolean intersects = estate.intersects(min, max);
+
+            if (sameWorld) {
+                if (insideSelection) {
+                    if (!ModPermission.hasPermission(player.getUniqueID(), "estate.override.claim") && !estate.getOwnerID().equals(player.getUniqueID())) {
+                        player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.RED + " Selection is overlapping another estate."));
+                        if (sendPopups) PacketPopup.sendPopup("Selection is overlapping another estate.", player);
+                        return false;
+                    }
+                } else if (intersects) {
                     player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.RED + " Selection is intersecting another estate."));
-                else if (sendPopups)
-                    PacketPopup.sendPopup("Selection is intersecting another estate.", player);
-                return false;
+                    if (sendPopups) PacketPopup.sendPopup("Selection is intersecting another estate.", player);
+                    return false;
+                }
             }
-            if (estate.getWorld().provider.getDimension() == player.getEntityWorld().provider.getDimension() &&
-                    estate.contains(min) && estate.contains(max)) {
+
+            if (sameWorld && estate.contains(min) && estate.contains(max)) {
                 parentEstate = estate;
                 break;
             }
         }
 
         if (parentEstate != null) {
-            if (!parentEstate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.CREATE_ESTATES)) {
+            if (!ModPermission.hasPermission(player.getUniqueID(), "estate.override.claim") && !parentEstate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.CREATE_ESTATES)) {
                 if (sendMessages)
                     player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.RED + " You do not have permission to create estates here."));
                 else if (sendPopups)

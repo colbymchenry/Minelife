@@ -5,16 +5,26 @@ import com.minelife.Minelife;
 import com.minelife.essentials.Location;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.essentials.TeleportHandler;
+import com.minelife.essentials.server.commands.Home;
 import com.minelife.essentials.server.commands.Kit;
 import com.minelife.essentials.server.commands.Spawn;
 import com.minelife.util.MLConfig;
 import com.minelife.util.StringHelper;
 import lib.PatPeter.SQLibrary.Database;
 import lib.PatPeter.SQLibrary.SQLite;
+import net.minecraft.block.BlockBed;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.server.FMLServerHandler;
@@ -62,7 +72,7 @@ public class ServerProxy extends MLProxy {
                 ((EntityPlayerMP) event.player).connection.setPlayerLocation(spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
             }
 
-            if(Kit.getKit("default") != null) {
+            if (Kit.getKit("default") != null) {
                 Kit.giveKit((EntityPlayerMP) event.player, "default");
             }
         }
@@ -72,6 +82,54 @@ public class ServerProxy extends MLProxy {
         Scanner scanner = new Scanner(fileMOTD);
         while (scanner.hasNextLine())
             event.player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(scanner.nextLine(), '&')));
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onBreak(BlockEvent.BreakEvent event) {
+        UUID playerUUID = Home.getHomeAtLoc(event.getPlayer().dimension, event.getPos());
+        if (playerUUID != null) {
+            Home.DelHome("default", playerUUID);
+        } else {
+            if (event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.BED) {
+                EnumFacing facing = event.getState().getValue(BlockBed.FACING);
+                BlockPos pos = event.getPos();
+                if (event.getState().getValue(BlockBed.PART) == BlockBed.EnumPartType.HEAD) {
+                    if (facing == EnumFacing.EAST) pos = event.getPos().add(-1, 0, 0);
+                    if (facing == EnumFacing.WEST) pos = event.getPos().add(1, 0, 0);
+                    if (facing == EnumFacing.NORTH) pos = event.getPos().add(0, 0, 1);
+                    if (facing == EnumFacing.SOUTH) pos = event.getPos().add(0, 0, -1);
+                } else {
+                    if (facing == EnumFacing.EAST) pos = event.getPos().add(1, 0, 0);
+                    if (facing == EnumFacing.WEST) pos = event.getPos().add(-1, 0, 0);
+                    if (facing == EnumFacing.NORTH) pos = event.getPos().add(0, 0, -1);
+                    if (facing == EnumFacing.SOUTH) pos = event.getPos().add(0, 0, 1);
+                }
+
+                playerUUID = Home.getHomeAtLoc(event.getPlayer().dimension, pos);
+
+                if (playerUUID != null)
+                    Home.DelHome("default", playerUUID);
+            }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onInteract(PlayerInteractEvent.RightClickBlock event) throws SQLException {
+        IBlockState blockState = event.getWorld().getBlockState(event.getPos());
+        UUID playerUUID = Home.getHomeAtLoc(event.getEntityPlayer().dimension, event.getPos());
+
+        if (blockState.getBlock() == Blocks.BED) {
+            if (playerUUID != null && !playerUUID.equals(event.getEntityPlayer().getUniqueID())) {
+                event.getEntityPlayer().sendMessage(new TextComponentString(TextFormatting.RED + "Someone already has a home there."));
+                return;
+            }
+
+            Home.SetHome("default", new Location(event.getEntityPlayer().dimension, event.getPos().getX(), event.getPos().getY(),
+                    event.getPos().getZ(), event.getEntityPlayer().rotationYaw, event.getEntityPlayer().rotationPitch), event.getEntityPlayer().getUniqueID());
+            event.getEntityPlayer().sendMessage(new TextComponentString("Home set!"));
+
+            event.setCanceled(true);
+        }
     }
 
     public static boolean isNewPlayer(UUID playerID) {

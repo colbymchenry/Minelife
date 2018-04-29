@@ -136,10 +136,10 @@ public class MinerHandler extends NPCHandler {
         Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
     }
 
-    public boolean doDoubleDrop(EntityPlayerMP player) {
-        double chance = (double) getLevel(player) / (double) getConfig().getInt("MaxLevel");
-        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
-    }
+//    public boolean doDoubleDrop(EntityPlayerMP player) {
+//        double chance = (double) getLevel(player) / (double) getConfig().getInt("MaxLevel");
+//        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
+//    }
 
     public Map<UUID, Long> superBreakerMap = Maps.newHashMap();
     public Map<UUID, Long> superBreakerCooldownMap = Maps.newHashMap();

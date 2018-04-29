@@ -165,7 +165,6 @@ public class GuiItemListings extends GuiMinebay {
         }
 
         if(this.myListingsBtn.mousePressed(mc, mouseX, mouseY)) {
-            System.out.println("CALLED");
             Minelife.getNetwork().sendToServer(new PacketGetPlayerListings());
         }
     }

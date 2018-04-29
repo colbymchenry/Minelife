@@ -51,21 +51,21 @@ public class MinerListener {
         if (event.getWorld().getBlockState(event.getPos()).getBlock() != Blocks.STONE)
             CommandJob.sendMessage(player, EnumJob.MINER, "+" + xp);
 
-        boolean doubleDrop = MinerHandler.INSTANCE.doDoubleDrop(player);
-        if(doubleDrop) Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
-
-        if (MinerHandler.INSTANCE.superBreakerMap.containsKey(player.getUniqueID()) || doubleDrop) {
-            NonNullList<ItemStack> drops = NonNullList.create();
-            event.getState().getBlock().getDrops(drops, event.getWorld(), event.getPos(), event.getState(),  EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, player.getHeldItemMainhand()));
-            drops.forEach(stack -> {
-                stack.setCount(stack.getCount() + 1);
-                player.dropItem(stack, false);
-            });
-
-        }
+//        boolean doubleDrop = MinerHandler.INSTANCE.doDoubleDrop(player);
+//        if(doubleDrop) Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
+//
+//        if (MinerHandler.INSTANCE.superBreakerMap.containsKey(player.getUniqueID()) || doubleDrop) {
+//            NonNullList<ItemStack> drops = NonNullList.create();
+//            event.getState().getBlock().getDrops(drops, event.getWorld(), event.getPos(), event.getState(),  EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, player.getHeldItemMainhand()));
+//            drops.forEach(stack -> {
+//                stack.setCount(stack.getCount() + 1);
+//                player.dropItem(stack, false);
+//            });
+//
+//        }
 
         if (MinerHandler.INSTANCE.getLevel(player) > level) {
-            Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:level_up", 1, 1), player);
+            Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:level_up", 0.2F, 1), player);
 
             ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, FireworkBuilder.Type.LARGE_BALL,
                     new int[]{Color.RED.asRGB(), Color.BLUE.asRGB()}, new int[]{Color.PURPLE.asRGB(), Color.WHITE.asRGB()}).getStack(1);

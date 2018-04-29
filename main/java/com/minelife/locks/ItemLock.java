@@ -2,6 +2,7 @@ package com.minelife.locks;
 
 import blusunrize.immersiveengineering.common.IEContent;
 import com.minelife.Minelife;
+import com.minelife.economy.ModEconomy;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumGun;
 import com.minelife.guns.item.ItemGunPart;
@@ -38,6 +39,8 @@ public class ItemLock extends Item {
 
     @SideOnly(Side.SERVER)
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if(worldIn.getBlockState(pos).getBlock() == ModEconomy.blockCash) return EnumActionResult.SUCCESS;
+
         if(ModLocks.getLock(worldIn, pos) != null) {
             player.sendMessage(new TextComponentString(TextFormatting.RED + "There is already a lock on that block."));
             return EnumActionResult.FAIL;

@@ -49,6 +49,11 @@ public class CustomGuiMainMenu extends GuiMainMenu {
 
     public CustomGuiMainMenu() {
         songLoop = new Random().nextInt(introSongs.length);
+        try {
+            OptionsInitiator.init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -116,6 +121,11 @@ public class CustomGuiMainMenu extends GuiMainMenu {
 
     @Override
     public void initGui() {
+        try {
+            OptionsInitiator.init();
+        } catch (IOException e) {
+
+        }
         super.initGui();
         GuiButton singlePlayerBtn = this.buttonList.stream().filter(btn -> btn.id == 1).findFirst().orElse(null);
         if (singlePlayerBtn != null) singlePlayerBtn.visible = false;

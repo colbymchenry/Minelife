@@ -1,17 +1,24 @@
 package com.minelife.permission;
 
 import com.google.common.collect.Lists;
+import com.minelife.gangs.Gang;
+import com.minelife.gangs.ModGangs;
+import com.minelife.gangs.server.CommandGang;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class EventHandler {
@@ -19,6 +26,8 @@ public class EventHandler {
     @SideOnly(Side.SERVER)
     @SubscribeEvent
     public void onChat(ServerChatEvent event) {
+        event.setCanceled(true);
+
         UUID uuid = event.getPlayer().getUniqueID();
         String playerPrefix = ModPermission.getPrefix(uuid), playerSuffix = ModPermission.getSuffix(uuid);
         StringBuilder groupPrefix = new StringBuilder(), groupSuffix = new StringBuilder();
@@ -31,8 +40,21 @@ public class EventHandler {
         format = format.replace("{DISPLAYNAME}", displayName);
         format = format.replace("&", String.valueOf('\u00a7'));
         format = format.replace("{MESSAGE}", groupSuffix + playerSuffix + event.getMessage());
+
         if(ModPermission.hasPermission(uuid, "chat.color")) format = format.replaceAll("&", String.valueOf('\u00a7'));
         event.setComponent(new TextComponentString(format));
+
+        Gang g = Gang.getGangForPlayer(uuid);
+
+        for (EntityPlayerMP p : FMLServerHandler.instance().getServer().getPlayerList().getPlayers()) {
+            if(CommandGang.gangChatEnabled.contains(p.getUniqueID()) || CommandGang.gangChatEnabled.contains(uuid)) {
+                if(Objects.equals(Gang.getGangForPlayer(p.getUniqueID()), g)) {
+                    p.connection.sendPacket(new SPacketChat(event.getComponent(), ChatType.CHAT));
+                }
+            } else {
+                p.connection.sendPacket(new SPacketChat(event.getComponent(), ChatType.CHAT));
+            }
+        }
     }
 
     static List<String> toIgnore = Lists.newArrayList();

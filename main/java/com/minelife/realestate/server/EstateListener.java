@@ -1,11 +1,15 @@
 package com.minelife.realestate.server;
 
 import com.google.common.collect.Maps;
+import com.minelife.essentials.TeleportHandler;
 import com.minelife.jobs.EntityJobNPC;
 import com.minelife.realestate.*;
 import com.minelife.util.BreakHelper;
 import com.minelife.util.StringHelper;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockPistonBase;
+import net.minecraft.block.BlockPistonExtension;
+import net.minecraft.block.BlockPistonMoving;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +23,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
@@ -75,12 +80,38 @@ public class EstateListener {
     }
 
     @SubscribeEvent
+    public void onFill(FillBucketEvent event) {
+        EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
+        if(event.getTarget().getBlockPos() == null) return;
+        Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getTarget().getBlockPos());
+
+        if (estate == null) return;
+        if (estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.BREAK)) return;
+
+        player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " You are " + TextFormatting.RED + "not" + TextFormatting.GOLD + " authorized to build here."));
+        event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public void onEvent(BlockEvent event) {
+        if(event.getState().getBlock() instanceof BlockPistonBase) {
+            if(event.getState().getValue(BlockPistonBase.EXTENDED)) {
+                event.getWorld().setBlockToAir(event.getPos().add(0, 1, 0));
+                event.getWorld().setBlockState(event.getPos(), event.getState().withProperty(BlockPistonBase.EXTENDED, false));
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlace(BlockEvent.PlaceEvent event) {
+
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
 
-        if(event.getPlacedBlock().getBlock() == Blocks.PISTON || event.getPlacedBlock().getBlock() == Blocks.STICKY_PISTON) {
-            player.sendMessage(new TextComponentString(TextFormatting.RED + "Pistons are disabled due to the lag they may cause in a server."));
+        if (event.getPlacedBlock().getBlock().getRegistryName().toString().contains("mirror")) {
+            player.sendMessage(new TextComponentString(TextFormatting.RED + "Mirrors are disabled on this server."));
             event.setCanceled(true);
+            return;
         }
 
         Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());
@@ -88,8 +119,19 @@ public class EstateListener {
         if (estate == null) return;
         if (estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.PLACE)) return;
 
-        player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " You are " + TextFormatting.RED + "not" + TextFormatting.GOLD + " authorized to build here."));
         event.setCanceled(true);
+
+        if (player.posY > event.getPos().getY() && player.getPosition().getX() == event.getPos().getX() && player.getPosition().getZ() == event.getPos().getZ()) {
+            for (int i = 0; i < 64; i++) {
+                BlockPos pos = event.getPos().add(0, -i, 0);
+                if (player.world.getBlockState(pos).getBlock() != Blocks.AIR) {
+                    player.setPositionAndUpdate(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+                    break;
+                }
+            }
+        }
+
+        player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " You are " + TextFormatting.RED + "not" + TextFormatting.GOLD + " authorized to build here."));
     }
 
 //    @SubscribeEvent(priority = EventPriority.HIGH)
@@ -110,7 +152,7 @@ public class EstateListener {
 
     @SubscribeEvent
     public void onHit(LivingAttackEvent event) {
-        if(event.getEntityLiving() instanceof EntityJobNPC || event.getEntityLiving() instanceof EntityReceptionist) {
+        if (event.getEntityLiving() instanceof EntityJobNPC || event.getEntityLiving() instanceof EntityReceptionist) {
             event.setCanceled(true);
             return;
         }

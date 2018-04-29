@@ -10,6 +10,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -98,7 +99,7 @@ public class BlockHempCrop extends BlockCrops {
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         super.updateTick(worldIn, pos, state, rand);
         if(!canBlockStay(worldIn, pos, state)) {
-            spawnAsEntity(worldIn, pos, new ItemStack(ModDrugs.itemHempSeed));
+//            spawnAsEntity(worldIn, pos, new ItemStack(ModDrugs.itemHempSeed));
             worldIn.setBlockToAir(pos);
         }
     }
@@ -106,6 +107,7 @@ public class BlockHempCrop extends BlockCrops {
     @Override
     public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state) {
         IBlockState soil = worldIn.getBlockState(pos.down());
+//        System.out.println(isBlockValid(worldIn, pos) + "," + soil.getBlock().canSustainPlant(soil, worldIn, pos.down(), EnumFacing.UP, this));
         return isBlockValid(worldIn, pos) && soil.getBlock().canSustainPlant(soil, worldIn, pos.down(), net.minecraft.util.EnumFacing.UP, this);
     }
 
@@ -140,7 +142,8 @@ public class BlockHempCrop extends BlockCrops {
     public boolean isBlockValid(World world, BlockPos pos) {
 //        boolean blockLeft = world.getBlockState(pos.add(-1, 0, 0)).getBlock().isOpaqueCube(world.getBlockState(pos.add(-1, 0, 0))) && world.getBlockState(pos.add(-1, 0, 0)).getBlock() != Blocks.AIR;
 //        boolean blockRight = world.getBlockState(pos.add(1, 0, 0)).getBlock().isOpaqueCube(world.getBlockState(pos.add(1, 0, 0))) && world.getBlockState(pos.add(1, 0, 0)).getBlock() != Blocks.AIR;
-        return !world.isDaytime() ? world.getLightBrightness(pos) == 0 : world.getLightBrightness(pos) >= 0.27 ;
+        boolean day = world.getWorldTime() < 13665 || world.getWorldTime() > 22310L;
+        return !day  ? world.getLightBrightness(pos) == 0 : world.getLightBrightness(pos) >= 0.27 ;
     }
 
     // TODO: Implement lights: http://www.growweedeasy.com/cannabis-grow-lights

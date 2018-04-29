@@ -5,11 +5,16 @@ import com.minelife.Minelife;
 import com.minelife.economy.ModEconomy;
 import com.minelife.economy.server.CommandEconomy;
 import com.minelife.economy.tileentity.TileEntityCash;
+import com.minelife.realestate.Estate;
+import com.minelife.realestate.ModRealEstate;
+import com.minelife.realestate.PlayerPermission;
+import com.minelife.realestate.server.CommandEstate;
 import com.minelife.util.ItemHelper;
 import com.minelife.util.NumberConversions;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
@@ -18,11 +23,13 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.xml.soap.Text;
 import java.util.List;
 
 public class ItemCash extends Item {
@@ -83,6 +90,13 @@ public class ItemCash extends Item {
             case EAST:
                 pos = pos.add(1, 0, 0);
                 break;
+        }
+
+        Estate estate = ModRealEstate.getEstateAt(worldIn, pos);
+
+        if (estate != null && !estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.PLACE)) {
+            CommandEstate.sendMessage((EntityPlayerMP) player, TextFormatting.RED + "You are not authorized to build here.");
+            return EnumActionResult.FAIL;
         }
 
         worldIn.setBlockState(pos, ModEconomy.blockCash.getDefaultState());

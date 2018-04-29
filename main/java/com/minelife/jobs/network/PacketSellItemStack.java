@@ -22,25 +22,29 @@ public class PacketSellItemStack implements IMessage {
 
     private EnumJob job;
     private ItemStack stack;
+    private boolean sellAll;
 
     public PacketSellItemStack() {
     }
 
-    public PacketSellItemStack(EnumJob job, ItemStack stack) {
+    public PacketSellItemStack(EnumJob job, ItemStack stack, boolean sellAll) {
         this.job = job;
         this.stack = stack;
+        this.sellAll = sellAll;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
         job = EnumJob.valueOf(ByteBufUtils.readUTF8String(buf));
         stack = ByteBufUtils.readItemStack(buf);
+        sellAll = buf.readBoolean();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         ByteBufUtils.writeUTF8String(buf, job.name());
         ByteBufUtils.writeItemStack(buf, stack);
+        buf.writeBoolean(sellAll);
     }
 
     public static class Handler implements IMessageHandler<PacketSellItemStack, IMessage> {
@@ -57,10 +61,22 @@ public class PacketSellItemStack implements IMessage {
                             return;
                         }
 
-                        ItemHelper.removeFromPlayerInventory(player, sellingOption.getStack(), sellingOption.getStack().getCount());
-                        int didNotFit = ModEconomy.depositInventory(player, sellingOption.getPrice());
-                        if(didNotFit > 0) {
-                            PacketPopup.sendPopup(TextFormatting.RED + "$" + NumberConversions.format(didNotFit) + TextFormatting.DARK_GRAY + " did not fit in your inventory and was deposited into your ATM.", player);
+                        if(!message.sellAll) {
+                            ItemHelper.removeFromPlayerInventory(player, sellingOption.getStack(), sellingOption.getStack().getCount());
+                            int didNotFit = ModEconomy.depositInventory(player, sellingOption.getPrice());
+                            if (didNotFit > 0) {
+                                PacketPopup.sendPopup(TextFormatting.RED + "$" + NumberConversions.format(didNotFit) + TextFormatting.DARK_GRAY + " did not fit in your inventory and was deposited into your ATM.", player);
+                            }
+                        } else {
+                            int didNotFit = 0;
+                            while(ItemHelper.amountInInventory(player, message.stack) >= sellingOption.getStack().getCount()) {
+                                ItemHelper.removeFromPlayerInventory(player, sellingOption.getStack(), sellingOption.getStack().getCount());
+                                 didNotFit += ModEconomy.depositInventory(player, sellingOption.getPrice());
+                            }
+
+                            if (didNotFit > 0) {
+                                PacketPopup.sendPopup(TextFormatting.RED + "$" + NumberConversions.format(didNotFit) + TextFormatting.DARK_GRAY + " did not fit in your inventory and was deposited into your ATM.", player);
+                            }
                         }
 
                     }

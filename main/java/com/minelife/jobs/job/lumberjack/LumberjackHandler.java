@@ -81,7 +81,7 @@ public class LumberjackHandler extends NPCHandler {
         sellingOptions.add(new SellingOption(new ItemStack(Item.getItemFromBlock(Blocks.LOG), 1, 0), 32));
         sellingOptions.add(new SellingOption(new ItemStack(Item.getItemFromBlock(Blocks.LOG), 1, 1), 32));
         sellingOptions.add(new SellingOption(new ItemStack(Item.getItemFromBlock(Blocks.LOG), 1, 2), 32));
-        sellingOptions.add(new SellingOption(new ItemStack(Item.getItemFromBlock(Blocks.LOG), 1, 3), 32));
+        sellingOptions.add(new SellingOption(new ItemStack(Item.getItemFromBlock(Blocks.LOG), 1, 3), 1));
         sellingOptions.add(new SellingOption(new ItemStack(Item.getItemFromBlock(Blocks.LOG2), 1, 0), 32));
         sellingOptions.add(new SellingOption(new ItemStack(Item.getItemFromBlock(Blocks.LOG2), 1, 1), 32));
         sellingOptions.add(new SellingOption(new ItemStack(Item.getItemFromBlock(Blocks.LOG2), 1, 1), 32));
@@ -141,10 +141,10 @@ public class LumberjackHandler extends NPCHandler {
         Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.player.levelup", 1, 1), player);
     }
 
-    public boolean doDoubleDrop(EntityPlayerMP player) {
-        double chance = (double) getLevel(player) / (double) getConfig().getInt("MaxLevel");
-        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
-    }
+//    public boolean doDoubleDrop(EntityPlayerMP player) {
+//        double chance = (double) getLevel(player) / (double) getConfig().getInt("MaxLevel");
+//        return MathHelper.nextDouble(player.world.rand, 0, 100) < chance * 100.0D;
+//    }
 
     public Map<UUID, Long> treeFellerMap = Maps.newHashMap();
     public Map<UUID, Long> treeFellerCooldownMap = Maps.newHashMap();
