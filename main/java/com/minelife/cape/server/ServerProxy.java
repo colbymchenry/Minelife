@@ -1,5 +1,6 @@
 package com.minelife.cape.server;
 
+import com.google.common.collect.Maps;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.cape.ModCapes;
@@ -10,11 +11,18 @@ import com.minelife.util.fireworks.FireworkBuilder;
 import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+
+import java.util.Map;
+import java.util.UUID;
 
 public class ServerProxy extends MLProxy {
 
@@ -30,21 +38,23 @@ public class ServerProxy extends MLProxy {
         Minelife.getNetwork().sendToAll(new PacketUpdateCape(event.player.getUniqueID(), event.player.getEntityId(), ModCapes.itemCape.getPixels(event.player)));
     }
 
+    private static Map<UUID, String> PIXELS_DEATHS = Maps.newHashMap();
+
     @SubscribeEvent
     public void deathEvent(LivingDeathEvent event) {
-        if (event.getEntityLiving() instanceof EntityCreeper) {
-            if (event.getSource().getTrueSource() instanceof EntitySkeleton) {
-                EntityCreeper creeper = (EntityCreeper) event.getEntityLiving();
-                creeper.dropItem(ModCapes.itemCape, 1);
+        if(event.getEntityLiving() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+            if(ModCapes.itemCape.getPixels(player) != null) PIXELS_DEATHS.put(player.getUniqueID(), ModCapes.itemCape.getPixels(player));
+        }
+    }
 
-                ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, FireworkBuilder.Type.LARGE_BALL,
-                        new int[]{Color.RED.asRGB(), Color.ORANGE.asRGB()}, new int[]{Color.YELLOW.asRGB(), Color.ORANGE.asRGB()}).getStack(1);
-
-                EntityFireworkRocket ent = new EntityFireworkRocket(creeper.getEntityWorld(), creeper.posX, creeper.posY + 2, creeper.posZ, fireworkStack);
-                creeper.getEntityWorld().spawnEntity(ent);
-                EntityFireworkRocket ent1 = new EntityFireworkRocket(creeper.getEntityWorld(), creeper.posX, creeper.posY + 2, creeper.posZ, fireworkStack);
-                creeper.getEntityWorld().spawnEntity(ent1);
-            }
+    @SubscribeEvent
+    public void spawnEvent(PlayerEvent.PlayerRespawnEvent event) {
+        if(PIXELS_DEATHS.containsKey(event.player.getUniqueID())) {
+            CommandCape.setCape((EntityPlayerMP) event.player, PIXELS_DEATHS.get(event.player.getUniqueID()));
+            Minelife.getNetwork().sendToAll(new PacketUpdateCape(event.player.getUniqueID(), event.player.getEntityId(), PIXELS_DEATHS.get(event.player.getUniqueID())));
+            Minelife.getNetwork().sendToAll(new PacketUpdateCapeStatus(event.player.getEntityId(), true));
+            PIXELS_DEATHS.remove(event.player.getUniqueID());
         }
     }
 

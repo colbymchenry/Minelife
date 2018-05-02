@@ -130,6 +130,14 @@ public class ServerProxy extends MLProxy {
         }
     }
 
+    @SubscribeEvent
+    public void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if(Home.getDefaultHome(event.player.getUniqueID()) != null) {
+            Location location = Home.getDefaultHome(event.player.getUniqueID());
+            event.player.setPositionAndUpdate(location.getX(), location.getY(), location.getZ());
+        }
+    }
+
     public static boolean isNewPlayer(UUID playerID) {
         String worldName = FMLServerHandler.instance().getServer().getWorld(0).getWorldInfo().getWorldName();
         File playerFile = new File(System.getProperty("user.dir") + File.separator + worldName + File.separator + "playerdata", playerID.toString() + ".dat");

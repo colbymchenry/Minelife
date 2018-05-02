@@ -76,7 +76,6 @@ public class Airdrop implements Comparable<Airdrop> {
             int yPos = world.getTopSolidOrLiquidBlock(new BlockPos(xPos, 0, zPos)).getY();
             bandit.setPosition(xPos + 0.5, yPos, zPos + 0.5);
             bandit.setEquipmentBasedOnDifficulty(null);
-            bandit.setTimeSpawned(Calendar.getInstance().getTime());
             world.spawnEntity(bandit);
         }
 

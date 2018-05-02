@@ -41,7 +41,7 @@ public class CommandAirdrop extends CommandBase {
             airdrop.spawnBandits();
             ModAirdrop.airdrops.add(airdrop);
             airdrop.sendToAll();
-            PlayerHelper.sendMessageToAll("&4&lAirDrop dropped! &6&lLoot Level: &9&l" + (ModAirdrop.config.getInt("Weight") /2));
+            PlayerHelper.sendMessageToAll("&4&lAirDrop dropped!");
         } else if(args[0].equalsIgnoreCase("reload")) {
             try {
                 ModAirdrop.config.reload();

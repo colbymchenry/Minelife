@@ -56,12 +56,11 @@ public class Home extends CommandBase {
             return;
         }
 
-        Location location = homes.get(id);
-        location.setX(location.getX() + 0.5);
-        location.setY(location.getY() + 0.2);
-        location.setZ(location.getZ() + 0.5);
-
-        TeleportHandler.teleport(Player, location);
+        if(!ModPermission.hasPermission(Player.getUniqueID(), "homes.admin")) {
+            TeleportHandler.teleport(Player, getDefaultHome(Player.getUniqueID()));
+        } else {
+            TeleportHandler.teleport(Player, homes.get(id));
+        }
     }
 
     @Override
@@ -118,6 +117,43 @@ public class Home extends CommandBase {
             e.printStackTrace();
         }
         return homes;
+    }
+
+    public static Location getDefaultHome(UUID playerID) {
+        if(GetHomes(playerID).containsKey("default")) {
+            Location home = GetHomes(playerID).get("default");
+            BlockPos pos = new BlockPos(home.getX(), home.getY(), home.getZ());
+
+            if(home.getEntityWorld().isAirBlock(pos.add(0, 1, 0)) && home.getEntityWorld().isAirBlock(pos.add(0, 2, 0))) {
+                home.setY(home.getY() + 1);
+            } else if(home.getEntityWorld().isAirBlock(pos.add(1, 0, 0))) {
+                 home.setX(home.getX() + 1);
+            } else if (home.getEntityWorld().isAirBlock(pos.add(-1, 0, 0))) {
+                home.setX(home.getX() - 1);
+            } else if (home.getEntityWorld().isAirBlock(pos.add(0, 0, 1))) {
+                home.setZ(home.getZ() + 1);
+            } else if (home.getEntityWorld().isAirBlock(pos.add(0, 0, -1))) {
+                home.setZ(home.getZ() - 1);
+            }else if (home.getEntityWorld().isAirBlock(pos.add(1, 0, 1))) {
+                home.setX(home.getX() + 1);
+                home.setZ(home.getZ() + 1);
+            }else if (home.getEntityWorld().isAirBlock(pos.add(-1, 0, -1))) {
+                home.setX(home.getX() - 1);
+                home.setZ(home.getZ() - 1);
+            }else if (home.getEntityWorld().isAirBlock(pos.add(1, 0, -1))) {
+                home.setX(home.getX() + 1);
+                home.setZ(home.getZ() - 1);
+            }else if (home.getEntityWorld().isAirBlock(pos.add(-1, 0, 1))) {
+                home.setX(home.getX() - 1);
+                home.setZ(home.getX() + 1);
+            }
+
+            home.setX(home.getX() + 0.5);
+            home.setZ(home.getZ() + 0.5);
+
+            return home;
+        }
+        return null;
     }
 
     public static UUID getHomeAtLoc(int dimension, BlockPos pos) {

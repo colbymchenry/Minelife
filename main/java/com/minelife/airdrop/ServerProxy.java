@@ -55,7 +55,7 @@ public class ServerProxy extends MLProxy {
             airdrop.spawnBandits();
             ModAirdrop.airdrops.add(airdrop);
             airdrop.sendToAll();
-            PlayerHelper.sendMessageToAll("&4&lAirDrop dropped! &6&lLoot Level: &9&l" + (ModAirdrop.config.getInt("Weight") / 2));
+            PlayerHelper.sendMessageToAll("&4&lAirDrop dropped!");
         }
 
         ListIterator<Airdrop> iterator = ModAirdrop.airdrops.listIterator();
@@ -63,7 +63,7 @@ public class ServerProxy extends MLProxy {
             Airdrop airdrop = iterator.next();
 
             if (airdrop.world.getBlockState(new BlockPos(airdrop.x, airdrop.y, airdrop.z)).getBlock() == Blocks.AIR) {
-                airdrop.y -= 0.15;
+                airdrop.y -= 0.015;
                 airdrop.sendToAll();
             } else {
                 if (airdrop.world.getBlockState(new BlockPos(airdrop.x, airdrop.y + 1, airdrop.z)).getBlock() != Blocks.CHEST) {

@@ -35,12 +35,13 @@ import java.util.List;
 public class EntityBandit extends EntityMob implements IRangedAttackMob {
 
     private static final DataParameter<Integer> DATA_SKIN = EntityDataManager.createKey(EntityReceptionist.class, DataSerializers.VARINT);
-    private static final DataParameter<String> DATA_TIME_SPAWNED = EntityDataManager.createKey(EntityReceptionist.class, DataSerializers.STRING);
+    private long spawnTime = 0;
 
     public EntityBandit(World worldIn) {
         super(worldIn);
         this.setSize(0.6F, 1.99F);
         this.setSkin(worldIn.rand.nextInt(4));
+        this.spawnTime = System.currentTimeMillis();
     }
 
     protected void initEntityAI() {
@@ -67,17 +68,12 @@ public class EntityBandit extends EntityMob implements IRangedAttackMob {
         return false;
     }
 
-    int ticks = 0;
-
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
-        ticks++;
 
-        if(ticks > 1000) {
-            if(System.currentTimeMillis() - getTimeSpawned() / 60000L > 60) {
-                setDead();
-            }
+        if ((System.currentTimeMillis() - spawnTime) / 60000L > 60) {
+            setDead();
         }
     }
 
@@ -89,26 +85,16 @@ public class EntityBandit extends EntityMob implements IRangedAttackMob {
         return this.getDataManager().get(DATA_SKIN);
     }
 
-    public void setTimeSpawned(Date time) {
-        this.getDataManager().set(DATA_TIME_SPAWNED, DateHelper.dateToString(time));
-    }
-
-    public long getTimeSpawned() {
-        return this.getDataManager().getAll().contains(DATA_TIME_SPAWNED) ? DateHelper.stringToDate(this.getDataManager().get(DATA_TIME_SPAWNED)).getTime() : System.currentTimeMillis();
-    }
-
     @Override
     public void readEntityFromNBT(NBTTagCompound tagCompound) {
         super.readEntityFromNBT(tagCompound);
         this.setSkin(tagCompound.getInteger("Skin"));
-        this.setTimeSpawned(DateHelper.stringToDate(tagCompound.getString("TimeSpawned")));
     }
 
     @Override
     public void writeEntityToNBT(NBTTagCompound tagCompound) {
         super.writeEntityToNBT(tagCompound);
         tagCompound.setInteger("Skin", this.getSkin());
-        tagCompound.setString("TimeSpawned", DateHelper.dateToString(new Date(this.getTimeSpawned())));
     }
 
 
@@ -116,7 +102,6 @@ public class EntityBandit extends EntityMob implements IRangedAttackMob {
     protected void entityInit() {
         super.entityInit();
         this.getDataManager().register(DATA_SKIN, 0);
-        this.getDataManager().register(DATA_TIME_SPAWNED, "");
     }
 
     /**

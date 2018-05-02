@@ -62,7 +62,7 @@ public class CommandCape extends CommandBase {
                 return;
             }
 
-            if(player.getEntityData().hasKey("Cape") && player.getEntityData().hasKey("CapePixels")) {
+            if (player.getEntityData().hasKey("Cape") && player.getEntityData().hasKey("CapePixels")) {
                 ItemStack capeStack = new ItemStack(ModCapes.itemCape);
                 ModCapes.itemCape.setUniqueID(capeStack);
                 ModCapes.itemCape.setPixels(capeStack, ModCapes.itemCape.getPixels(player));
@@ -70,13 +70,13 @@ public class CommandCape extends CommandBase {
                 entityCapeItem.setPickupDelay(0);
             }
 
-            setCape(player, player.getHeldItemMainhand());
+            setCape(player, ModCapes.itemCape.getPixels(player.getHeldItemMainhand()));
             player.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
 
             Minelife.getNetwork().sendToAll(new PacketUpdateCape(player.getUniqueID(), player.getEntityId(), ModCapes.itemCape.getPixels(player)));
             Minelife.getNetwork().sendToAll(new PacketUpdateCapeStatus(player.getEntityId(), true));
         } else if (args[0].equalsIgnoreCase("off")) {
-            if(player.getEntityData().hasKey("Cape") && player.getEntityData().hasKey("CapePixels")) {
+            if (player.getEntityData().hasKey("Cape") && player.getEntityData().hasKey("CapePixels")) {
                 ItemStack capeStack = new ItemStack(ModCapes.itemCape);
                 ModCapes.itemCape.setUniqueID(capeStack);
                 ModCapes.itemCape.setPixels(capeStack, ModCapes.itemCape.getPixels(player));
@@ -97,8 +97,8 @@ public class CommandCape extends CommandBase {
         sender.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Cape] " + TextFormatting.GOLD + msg));
     }
 
-    public static void setCape(EntityPlayerMP player, ItemStack capeStack) {
-        if(capeStack == null) {
+    public static void setCape(EntityPlayerMP player, String pixels) {
+        if (pixels == null) {
 //            NettyOutbound outbound = new NettyOutbound(1);
 //            outbound.write(player.getUniqueID().toString());
 //            outbound.send();
@@ -112,7 +112,7 @@ public class CommandCape extends CommandBase {
 //            outbound.send();
             player.getEntityData().setBoolean("Cape", true);
             player.writeEntityToNBT(player.getEntityData());
-            ModCapes.itemCape.setPixels(player, ModCapes.itemCape.getPixels(capeStack));
+            ModCapes.itemCape.setPixels(player, pixels);
         }
     }
 
