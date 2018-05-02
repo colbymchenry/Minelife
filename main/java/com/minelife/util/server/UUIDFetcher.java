@@ -17,18 +17,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public final class UUIDFetcher {
 
-    protected static final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
-
     public static void get(String player, NameUUIDCallback callback, Object... objects) {
-        pool.submit(() -> {
-            UUID playerUUID = get(player);
-            callback.callback(playerUUID, NameFetcher.get(playerUUID), objects);
-        });
+        Runnable runnableTask = () -> {
+            try {
+                UUID playerUUID = get(player);
+                callback.callback(playerUUID, NameFetcher.get(playerUUID), objects);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
+
+        MLCommand.pool.execute(runnableTask);
     }
 
     protected static final Map<UUID, String> CACHE = Maps.newHashMap();

@@ -68,6 +68,7 @@ public class ClientProxy extends MLProxy {
         registerBlockRenderer(TileEntityTurret.class, new TileEntityRenderTurret());
         RenderingRegistry.registerEntityRenderingHandler(EntityDynamite.class, RenderDynamite::new);
         ModGuns.itemDynamite.registerModel();
+        ModGuns.gunSkinUnlocker.registerModel();
 
         EnumGun.registerModels();
         EnumAttachment.registerModels();

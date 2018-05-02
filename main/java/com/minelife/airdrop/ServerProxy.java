@@ -32,17 +32,18 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent
     public void onTick(TickEvent.ServerTickEvent event) {
+        long seconds = (lastDrop - System.currentTimeMillis()) / 1000L;
 
-        if (System.currentTimeMillis() - lastDrop > ((1000L * ModAirdrop.config.getInt("DropDurationMinutes")) * 60)) {
-            lastDrop = System.currentTimeMillis() + ((1000L * ModAirdrop.config.getInt("DropDurationMinutes")) * 60);
+        if (seconds < 0) {
+            lastDrop = System.currentTimeMillis() + (60000L * ModAirdrop.config.getInt("DropDurationMinutes"));
             Airdrop airdrop = new Airdrop();
-            if (random.nextInt(100) > 50) {
+            if (random.nextInt(100) > 49) {
                 airdrop.x = ModAirdrop.config.getInt("DropCenter.x") + random.nextInt(ModAirdrop.config.getInt("DropRadius"));
             } else {
                 airdrop.x = ModAirdrop.config.getInt("DropCenter.x") - random.nextInt(ModAirdrop.config.getInt("DropRadius"));
             }
             airdrop.y = 249;
-            if (random.nextInt(100) > 50) {
+            if (random.nextInt(100) > 49) {
                 airdrop.z = ModAirdrop.config.getInt("DropCenter.z") + random.nextInt(ModAirdrop.config.getInt("DropRadius"));
             } else {
                 airdrop.z = ModAirdrop.config.getInt("DropCenter.z") - random.nextInt(ModAirdrop.config.getInt("DropRadius"));
@@ -51,9 +52,10 @@ public class ServerProxy extends MLProxy {
             airdrop.id = UUID.randomUUID();
             airdrop.world = FMLServerHandler.instance().getServer().worlds[0];
             airdrop.initLoot();
+            airdrop.spawnBandits();
             ModAirdrop.airdrops.add(airdrop);
             airdrop.sendToAll();
-            PlayerHelper.sendMessageToAll("&4&lAirDrop dropped! &6&lLoot Level: &9&l" + (ModAirdrop.config.getInt("Weight") / airdrop.loot.size()));
+            PlayerHelper.sendMessageToAll("&4&lAirDrop dropped! &6&lLoot Level: &9&l" + (ModAirdrop.config.getInt("Weight") / 2));
         }
 
         ListIterator<Airdrop> iterator = ModAirdrop.airdrops.listIterator();
@@ -61,7 +63,7 @@ public class ServerProxy extends MLProxy {
             Airdrop airdrop = iterator.next();
 
             if (airdrop.world.getBlockState(new BlockPos(airdrop.x, airdrop.y, airdrop.z)).getBlock() == Blocks.AIR) {
-                airdrop.y -= 0.015;
+                airdrop.y -= 0.15;
                 airdrop.sendToAll();
             } else {
                 if (airdrop.world.getBlockState(new BlockPos(airdrop.x, airdrop.y + 1, airdrop.z)).getBlock() != Blocks.CHEST) {

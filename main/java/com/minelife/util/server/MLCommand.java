@@ -15,22 +15,24 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public abstract class MLCommand extends CommandBase {
 
-    private static final ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    public static ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     protected static List<Runnable> scheduledTasks = Lists.newArrayList();
 
     @Override
     public final synchronized void execute(MinecraftServer server, ICommandSender sender, String[] args) {
-        pool.submit(() -> {
+        Runnable runnableTask = () -> {
             try {
                 runAsync(server, sender, args);
             } catch (Exception e) {
                 e.printStackTrace();
-                sender.sendMessage(new TextComponentString(TextFormatting.RED + "An error occurred."));
             }
-        });
+        };
+
+        pool.execute(runnableTask);
 
         try {
             runSync(server, sender, args);

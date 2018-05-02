@@ -12,8 +12,10 @@ import com.minelife.guns.ModGuns;
 import com.minelife.jobs.ModJobs;
 import com.minelife.locks.ModLocks;
 import com.minelife.minebay.ModMinebay;
+import com.minelife.minereset.ModMineReset;
 import com.minelife.notifications.ModNotifications;
 import com.minelife.permission.ModPermission;
+import com.minelife.police.ModPolice;
 import com.minelife.pvplogger.ModPVPLogger;
 import com.minelife.realestate.ModRealEstate;
 import com.minelife.tdm.ModTDM;
@@ -23,9 +25,11 @@ import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.PacketPopup;
 import com.minelife.util.client.PacketRequestName;
 import com.minelife.util.client.PacketRequestUUID;
+import com.minelife.util.server.MLCommand;
 import com.minelife.util.server.PacketResponseName;
 import com.minelife.util.server.PacketResponseUUID;
 import com.minelife.welfare.ModWelfare;
+import com.minelife.worldborder.ModWorldborder;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -42,6 +46,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 //dependencies = "required-after:ic2;"
 @Mod(modid = Minelife.MOD_ID, name = Minelife.NAME, version = Minelife.VERSION, dependencies = "required-after:immersiveengineering;")
 public class Minelife {
@@ -83,6 +89,9 @@ public class Minelife {
         MODS.add(new ModTutorial());
         MODS.add(new ModPVPLogger());
         MODS.add(new ModAirdrop());
+        MODS.add(new ModMineReset());
+        MODS.add(new ModWorldborder());
+        MODS.add(new ModPolice());
     }
 
     @Mod.EventHandler
@@ -130,6 +139,18 @@ public class Minelife {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         MODS.forEach(mod -> mod.postInit(event));
+    }
+
+    @Mod.EventHandler
+    public void onShutdown(FMLServerStoppingEvent event) {
+        MLCommand.pool.shutdown();
+        try {
+            if (!MLCommand.pool.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+                MLCommand.pool.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            MLCommand.pool.shutdownNow();
+        }
     }
 
     @SubscribeEvent

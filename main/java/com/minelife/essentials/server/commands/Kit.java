@@ -125,7 +125,7 @@ public class Kit extends CommandBase {
         if (kitItems == null) return;
         kitItems.forEach(itemStack -> {
             EntityItem entityItem = player.dropItem(itemStack, false);
-            entityItem.setPickupDelay(0);
+            if(entityItem != null) entityItem.setPickupDelay(0);
         });
         cooldowns.add(new Cooldown(player.getUniqueID(), kit, System.currentTimeMillis() + (getAllowedKits(player).containsKey(kit) ? getAllowedKits(player).get(kit) * 1000L : 0)));
     }

@@ -87,7 +87,7 @@ public class PacketBuyFromShop implements IMessage {
                 int didNotFitCash = ModEconomy.depositCashPiles(tile.getOwner(), tile.getPrice() * message.amount);
                 int didNotFitInv = ModEconomy.withdrawInventory(player, tile.getPrice() * message.amount);
 
-                if(didNotFitCash > 0) ModEconomy.depositATM(tile.getOwner(), didNotFitCash, true);
+                if(didNotFitCash > 0) ModEconomy.depositATM(tile.getOwner(), didNotFitCash, !tile.isServerShop());
                 if(didNotFitInv > 0){
                     ModEconomy.depositATM(player.getUniqueID(), didNotFitInv, true);
                     player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "$" + NumberConversions.format(didNotFitInv) + " did not fit in your inventory and was deposited into your ATM."));

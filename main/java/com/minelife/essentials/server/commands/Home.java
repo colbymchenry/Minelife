@@ -56,7 +56,12 @@ public class Home extends CommandBase {
             return;
         }
 
-        TeleportHandler.teleport(Player, homes.get(id));
+        Location location = homes.get(id);
+        location.setX(location.getX() + 0.5);
+        location.setY(location.getY() + 0.2);
+        location.setZ(location.getZ() + 0.5);
+
+        TeleportHandler.teleport(Player, location);
     }
 
     @Override

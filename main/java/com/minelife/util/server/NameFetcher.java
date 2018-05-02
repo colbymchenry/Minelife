@@ -13,7 +13,15 @@ import java.util.UUID;
 public final class NameFetcher  {
 
     public static String get(UUID id, NameUUIDCallback callback, Object... objects) {
-        UUIDFetcher.pool.submit(() -> callback.callback(id, get(id), objects));
+        Runnable runnableTask = () -> {
+            try {
+                callback.callback(id, get(id), objects);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
+
+        MLCommand.pool.execute(runnableTask);
 
         return "Fetching...";
     }

@@ -27,7 +27,7 @@ import java.util.List;
 
 public enum EnumGun {
 
-    AK47(null, 70, 8, 30, 2500, 6, 7, 387, 2.8, true,
+    AK47(null, 70, 13, 30, 2500, 6, 7, 387, 2.8, true,
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.68, 0, 1, 0), new Translation(-0.9, -0.05, -0.58)),
             Lists.newArrayList(new Scale(5, 5, 5), new Rotation(0.9, 0, 1, 0), new Rotation(-1.3, 0, 0, 1), new Rotation(0.2, 1, 0, 0), new Translation(-0.5, -0.6, -0.35)),
             Lists.newArrayList(new Scale(3, 3, 3), new Rotation(0.785, 0, 1, 0), new Translation(-0.9, -0.03, -0.735)),

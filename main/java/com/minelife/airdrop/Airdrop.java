@@ -7,9 +7,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -39,22 +42,13 @@ public class Airdrop implements Comparable<Airdrop> {
 
     public void initLoot() {
         loot = Lists.newArrayList();
-        int weight = ModAirdrop.config.getInt("Weight");
-//        System.out.println("LOOTSIZE: " + ModAirdrop.getLoot().size());
-        Random random = new Random();
-
-        if(ModAirdrop.getLoot().isEmpty()) return;
-
-        for(int i = 0; i < 64; i++) {
-            if(weight <= 0) break;
-            Loot l = ModAirdrop.getLoot().get(random.nextInt(ModAirdrop.getLoot().size()));
-            int size = random.nextInt(l.itemStack.getCount() < 1 ? 1 : l.itemStack.getCount());
-            size = size == 0 ? 1 : size;
-            ItemStack stack = new ItemStack(l.itemStack.getItem(), size, l.itemStack.getItemDamage());
+        AirdropTable airdropTable = new AirdropTable();
+        airdropTable.getResult().forEach(drop -> {
+            ItemStackDropable d = ((ItemStackDropable) drop);
+            ItemStack stack = d.getValue().copy();
+            stack.setCount(MathHelper.floor(MathHelper.nextDouble(world.rand, d.getMinSize(), d.getMaxSize())));
             loot.add(stack);
-            weight -= l.weight;
-        }
-
+        });
     }
 
     public void spawnChest() {
@@ -70,6 +64,22 @@ public class Airdrop implements Comparable<Airdrop> {
             world.scheduleBlockUpdate(chest.getPos(), chest.getBlockType(), 0, 0);
             chest.markDirty();
         }
+    }
+
+    public void spawnBandits() {
+        int amountToSpawn = world.rand.nextInt(4) + 2;
+
+        for (int i = 0; i < amountToSpawn; i++) {
+            EntityBandit bandit = new EntityBandit(world);
+            int xPos = (int) (x + MathHelper.nextDouble(world.rand, -10, 10));
+            int zPos = (int) (z + MathHelper.nextDouble(world.rand, -10, 10));
+            int yPos = world.getTopSolidOrLiquidBlock(new BlockPos(xPos, 0, zPos)).getY();
+            bandit.setPosition(xPos + 0.5, yPos, zPos + 0.5);
+            bandit.setEquipmentBasedOnDifficulty(null);
+            bandit.setTimeSpawned(Calendar.getInstance().getTime());
+            world.spawnEntity(bandit);
+        }
+
     }
 
     public void sendToAll() {

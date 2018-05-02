@@ -42,7 +42,7 @@ public class MinerListener {
         if (event.isCanceled()) return;
 
         int level = MinerHandler.INSTANCE.getLevel(player);
-        int xp = MinerHandler.INSTANCE.getXPForBlock(event.getState().getBlock());
+        int xp = event.getWorld().getBlockState(event.getPos()).getBlock() == Blocks.STONE ? 1 : MinerHandler.INSTANCE.getXPForBlock(event.getState().getBlock());
 
         if (xp < 1) return;
 

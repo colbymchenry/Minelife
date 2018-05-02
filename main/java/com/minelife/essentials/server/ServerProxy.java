@@ -127,8 +127,6 @@ public class ServerProxy extends MLProxy {
             Home.SetHome("default", new Location(event.getEntityPlayer().dimension, event.getPos().getX(), event.getPos().getY(),
                     event.getPos().getZ(), event.getEntityPlayer().rotationYaw, event.getEntityPlayer().rotationPitch), event.getEntityPlayer().getUniqueID());
             event.getEntityPlayer().sendMessage(new TextComponentString("Home set!"));
-
-            event.setCanceled(true);
         }
     }
 

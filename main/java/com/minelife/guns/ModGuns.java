@@ -38,6 +38,7 @@ public class ModGuns extends MLMod {
     public static ItemGunPart itemGunPart;
     public static ItemBlock itemTurret;
     public static ItemDynamite itemDynamite;
+    public static ItemGunSkinUnlocker gunSkinUnlocker;
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
@@ -46,6 +47,8 @@ public class ModGuns extends MLMod {
         registerTileEntity(TileEntityTurret.class, "turret");
         registerItem(itemTurret = (ItemBlock) new ItemBlock(blockTurretBottom).setRegistryName(Minelife.MOD_ID, "turret_true")
                 .setUnlocalizedName(Minelife.MOD_ID + ":turret_true").setCreativeTab(CreativeTabs.MISC));
+
+        registerItem(gunSkinUnlocker = new ItemGunSkinUnlocker());
 
         registerItem(itemGun = new ItemGun());
 //        registerItem(itemAmmo = new ItemAmmo());

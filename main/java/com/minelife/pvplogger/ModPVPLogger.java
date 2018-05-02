@@ -45,10 +45,12 @@ public class ModPVPLogger extends MLMod {
 
     @SubscribeEvent
     public void onTeleport(EventTeleport event) {
-        if(System.currentTimeMillis() < ModPVPLogger.damageMap.get(event.getPlayer().getUniqueID()) + (1000L * 20)) {
-            event.setCanceled(true);
-            int timeLeft = (int) (((ModPVPLogger.damageMap.get(event.getPlayer().getUniqueID()) + (1000L * 20)) - System.currentTimeMillis()) / 1000L);
-            event.getPlayer().sendMessage(new TextComponentString(TextFormatting.GOLD + "You were attacked recently! Please wait " + TextFormatting.RED + timeLeft + TextFormatting.GOLD + " seconds."));
+        if(ModPVPLogger.damageMap.containsKey(event.getPlayer().getUniqueID())) {
+            if (System.currentTimeMillis() < ModPVPLogger.damageMap.get(event.getPlayer().getUniqueID()) + (1000L * 20)) {
+                event.setCanceled(true);
+                int timeLeft = (int) (((ModPVPLogger.damageMap.get(event.getPlayer().getUniqueID()) + (1000L * 20)) - System.currentTimeMillis()) / 1000L);
+                event.getPlayer().sendMessage(new TextComponentString(TextFormatting.GOLD + "You were attacked recently! Please wait " + TextFormatting.RED + timeLeft + TextFormatting.GOLD + " seconds."));
+            }
         }
     }
 

@@ -158,7 +158,7 @@ public class Bullet {
     }
 
     private void damageEntity(EntityLivingBase e) {
-        e.attackEntityFrom(shooter != null && shooter instanceof EntityPlayerMP ? DamageSource.causePlayerDamage((EntityPlayer) shooter) : DamageSource.GENERIC, (float) bulletDamage);
+        e.attackEntityFrom(shooter != null && shooter instanceof EntityPlayerMP ? DamageSource.causePlayerDamage((EntityPlayer) shooter) : DamageSource.causeMobDamage(shooter), (float) bulletDamage);
         if (shooter != null && shooter instanceof EntityPlayerMP && e instanceof EntityPlayer) {
             Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.arrow.hit_player", 1, 1), (EntityPlayerMP) shooter);
         }

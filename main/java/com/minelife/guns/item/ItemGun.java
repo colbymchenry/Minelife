@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -129,12 +130,21 @@ public class ItemGun extends Item {
         gunStack.setTagCompound(tagCompound);
     }
 
-    public static void reload(EntityPlayer player, ItemStack gunStack) {
+    public static void reload(EntityLivingBase player, ItemStack gunStack) {
         if (gunStack.getItem() != ModGuns.itemGun) return;
-        doReload(player, gunStack, getAmmo(player.inventory));
+
+        Map<Integer, ItemStack> ammo = Maps.newHashMap();
+
+        if(player instanceof EntityPlayer) {
+            ammo = getAmmo(((EntityPlayer) player).inventory);
+        } else {
+            ammo.put(0, getAmmo(64));
+        }
+
+        doReload(player, gunStack, ammo);
     }
 
-    private static void doReload(EntityPlayer player, ItemStack gunStack, Map<Integer, ItemStack> ammo) {
+    private static void doReload(EntityLivingBase player, ItemStack gunStack, Map<Integer, ItemStack> ammo) {
         EnumGun gun = EnumGun.values()[gunStack.getMetadata()];
         int clipSize = gun.clipSize;
         int clipCount = getClipCount(gunStack);
@@ -159,12 +169,18 @@ public class ItemGun extends Item {
             if (amountNeeded <= 0) break;
         }
 
-        depletedSlots.forEach(slot -> player.inventory.setInventorySlotContents(slot, ItemStack.EMPTY));
-        if (lastStackSlot > -1) player.inventory.setInventorySlotContents(lastStackSlot, ammo.get(lastStackSlot));
+        if(player instanceof EntityPlayer) {
+            depletedSlots.forEach(slot -> ((EntityPlayer) player).inventory.setInventorySlotContents(slot, ItemStack.EMPTY));
+            if (lastStackSlot > -1) ((EntityPlayer) player).inventory.setInventorySlotContents(lastStackSlot, ammo.get(lastStackSlot));
+        }
 
         NBTTagCompound tagCompound = gunStack.hasTagCompound() ? gunStack.getTagCompound() : new NBTTagCompound();
         tagCompound.setInteger("Ammo", clipCount + toAdd);
         gunStack.setTagCompound(tagCompound);
+
+        if(player instanceof EntityPlayer) {
+            ((EntityPlayer) player).inventoryContainer.detectAndSendChanges();
+        }
     }
 
     public static int getClipCount(ItemStack gunStack) {
@@ -186,18 +202,20 @@ public class ItemGun extends Item {
         return stack.hasTagCompound() && stack.getTagCompound().hasKey("ReloadTime");
     }
 
-    public static boolean fire(EntityPlayer player, Vec3d lookVector, long pingDelay) {
+    public static boolean fire(EntityLivingBase player, Vec3d lookVector, long pingDelay) {
         if (player.getHeldItemMainhand().getItem() != ModGuns.itemGun) return false;
 
         EnumGun gun = EnumGun.values()[player.getHeldItemMainhand().getMetadata()];
 
         pingDelay = pingDelay > 300 ? 300 : pingDelay;
 
-        if (ItemGun.isReloading(player.getEntityWorld(), player.getHeldItemMainhand())) return false;
+        if (ItemGun.isReloading(player.getEntityWorld(), player.getHeldItemMainhand())) {
+            return false;
+        }
 
         if (ItemGun.getClipCount(player.getHeldItemMainhand()) <= 0) {
             if (player.world.isRemote) {
-                player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gun.soundEmpty), SoundCategory.NEUTRAL, 1, 1);
+                player.getEntityWorld().playSound(player.posX, player.posY, player.posZ, new SoundEvent(gun.soundEmpty), SoundCategory.NEUTRAL, 1, 1, false);
             }
             return false;
         }
@@ -212,8 +230,14 @@ public class ItemGun extends Item {
         Bullet.BULLETS.add(bullet);
 
         ItemGun.decreaseAmmo(player.getHeldItemMainhand());
-        int didNotFit = ItemGun.addCasings(new InventoryRange(player.inventory, 0, 36), 1);
-        player.inventoryContainer.detectAndSendChanges();
+
+        int didNotFit = 0;
+
+        if(player instanceof EntityPlayer) {
+            didNotFit = ItemGun.addCasings(new InventoryRange(((EntityPlayer)player).inventory, 0, 36), 1);
+            ((EntityPlayer)player).inventoryContainer.detectAndSendChanges();
+        }
+
 
         if (!player.world.isRemote) {
             Minelife.getNetwork().sendToAllAround(new PacketBullet(gun, bullet),
@@ -226,7 +250,7 @@ public class ItemGun extends Item {
         } else {
             Minelife.getNetwork().sendToServer(new PacketFire(lookVector));
             gun.resetAnimation();
-            player.getEntityWorld().playSound(player, player.getPosition(), new SoundEvent(gun.soundShot), SoundCategory.NEUTRAL, 1, 1);
+            player.getEntityWorld().playSound(player.posX, player.posY + player.getEyeHeight(), player.posZ, new SoundEvent(gun.soundShot), SoundCategory.NEUTRAL, 1, 1, false);
             initRecoil();
         }
 
@@ -436,4 +460,13 @@ public class ItemGun extends Item {
                 'S', Ingredient.fromStacks(new ItemStack(IEContent.itemMetal, 1, 38)),
                 'F', Ingredient.fromStacks(new ItemStack(ModGuns.itemGunPart, 1, ItemGunPart.Type.PISTOL_FRAME.ordinal())));
     }
+
+    public static ItemStack getAmmo(int size) {
+        ItemStack bullet = new ItemStack(IEContent.itemBullet, size, 2);
+        NBTTagCompound tagCompound = new NBTTagCompound();
+        tagCompound.setString("bullet", "casull");
+        bullet.setTagCompound(tagCompound);
+        return bullet;
+    }
+
 }

@@ -88,7 +88,7 @@ public class BlockHempCrop extends BlockCrops {
 
         boolean alreadyFemale = state.getValue(FEMALE) == 1;
         if (getAge(state) == 0) {
-            boolean female = worldIn.rand.nextInt(100) > 79;
+            boolean female = worldIn.rand.nextInt(100) > 49;
             worldIn.setBlockState(pos, this.withAge(0).withProperty(FEMALE, female || alreadyFemale ? 1 : 0));
         } else {
             worldIn.setBlockState(pos, state.withProperty(FEMALE, alreadyFemale ? 1 : 0));
@@ -142,8 +142,9 @@ public class BlockHempCrop extends BlockCrops {
     public boolean isBlockValid(World world, BlockPos pos) {
 //        boolean blockLeft = world.getBlockState(pos.add(-1, 0, 0)).getBlock().isOpaqueCube(world.getBlockState(pos.add(-1, 0, 0))) && world.getBlockState(pos.add(-1, 0, 0)).getBlock() != Blocks.AIR;
 //        boolean blockRight = world.getBlockState(pos.add(1, 0, 0)).getBlock().isOpaqueCube(world.getBlockState(pos.add(1, 0, 0))) && world.getBlockState(pos.add(1, 0, 0)).getBlock() != Blocks.AIR;
-        boolean day = world.getWorldTime() < 13665 || world.getWorldTime() > 22310L;
-        return !day  ? world.getLightBrightness(pos) == 0 : world.getLightBrightness(pos) >= 0.27 ;
+//        boolean day = world.getWorldTime() < 13665 || world.getWorldTime() > 22310L;
+//        return !day  ? world.getLightBrightness(pos) == 0 : world.getLightBrightness(pos) >= 0.27 ;
+        return true;
     }
 
     // TODO: Implement lights: http://www.growweedeasy.com/cannabis-grow-lights

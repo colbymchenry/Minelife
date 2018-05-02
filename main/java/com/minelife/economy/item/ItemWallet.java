@@ -46,6 +46,7 @@ public class ItemWallet extends Item {
         setUnlocalizedName(Minelife.MOD_ID + ":wallet");
         setCreativeTab(CreativeTabs.MISC);
         setHasSubtypes(true);
+        setMaxStackSize(1);
     }
 
     @Override

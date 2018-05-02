@@ -38,9 +38,10 @@ public class CommandAirdrop extends CommandBase {
             airdrop.id = UUID.randomUUID();
             airdrop.world = sender.getEntityWorld();
             airdrop.initLoot();
+            airdrop.spawnBandits();
             ModAirdrop.airdrops.add(airdrop);
             airdrop.sendToAll();
-            PlayerHelper.sendMessageToAll("&4&lAirDrop dropped! &6&lLoot Level: &9&l" + (ModAirdrop.config.getInt("Weight") / airdrop.loot.size()));
+            PlayerHelper.sendMessageToAll("&4&lAirDrop dropped! &6&lLoot Level: &9&l" + (ModAirdrop.config.getInt("Weight") /2));
         } else if(args[0].equalsIgnoreCase("reload")) {
             try {
                 ModAirdrop.config.reload();

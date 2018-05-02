@@ -84,20 +84,23 @@ public class ServerProxy extends MLProxy {
         LockType lock = ModLocks.getLock(world, event.getPos());
         Gang gang = Gang.getGangForPlayer(ModLocks.getLockPlacer(world, event.getPos()));
 
-        if(blockState.getBlock() == ModEconomy.blockCash) return;
+        if (blockState.getBlock() == ModEconomy.blockCash) return;
 
         boolean holdingLockPick = player.getHeldItem(event.getHand()).getItem() == ModLocks.itemLockpick;
         boolean holdingLock = player.getHeldItem(event.getHand()).getItem() == ModLocks.itemLock;
         boolean isLockOwner = Objects.equals(ModLocks.getLockPlacer(world, event.getPos()), player.getUniqueID());
         boolean hasLockOverride = ModPermission.hasPermission(player.getUniqueID(), "locks.override");
         boolean hasEstatePermission = estate != null ? estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.OPEN_LOCKS) : false;
-        boolean hasGangPermission =  gang != null ? gang.hasPermission(player.getUniqueID(), GangPermission.OPEN_LOCKS) : false;
+        boolean hasGangPermission = gang != null ? gang.hasPermission(player.getUniqueID(), GangPermission.OPEN_LOCKS) : false;
 
-        if(lock != null) {
-            if (isLockOwner || hasLockOverride || hasEstatePermission || hasGangPermission) {
+        if (lock != null) {
+            if (isLockOwner) return;
+            else if (hasGangPermission) return;
+            else if (hasLockOverride) return;
+            else if (hasEstatePermission) {
                 return;
             } else {
-                if(holdingLockPick) {
+                if (holdingLockPick) {
                     ModLocks.itemLockpick.onItemUse(player, world, event.getPos(), EnumHand.MAIN_HAND, event.getFace(), 0.5F, 0.5F, 0.5F);
                     event.setCanceled(true);
                     if (blockState.getBlock().getRegistryName().toString().contains("_door"))
@@ -106,16 +109,18 @@ public class ServerProxy extends MLProxy {
                     event.setCanceled(true);
                     player.sendMessage(new TextComponentString(TextFormatting.RED + "This block is locked with a " + TextFormatting.DARK_RED + WordUtils.capitalizeFully(lock.name().replace("_", " ") + TextFormatting.RED + " lock.")));
                 }
-            }
-        } else {
-            if(holdingLock) {
-                event.setCanceled(true);
-                if(blockState.getBlock().getRegistryName().toString().contains("_door")) {
+
+                if (blockState.getBlock().getRegistryName().toString().contains("_door")) {
                     ModLocks.cancelDoorOpen(world, blockState, event.getPos());
-                    player.sendMessage(new TextComponentString(TextFormatting.RED + "aThere is already a lock on that block."));
                 } else {
                     ModLocks.itemLock.onItemUse(player, world, event.getPos(), event.getHand(), event.getFace(), 0.5f, 0.5f, 0.5f);
                 }
+
+            }
+        } else {
+            if (holdingLock) {
+                event.setCanceled(true);
+                ModLocks.itemLock.onItemUse(player, world, event.getPos(), event.getHand(), event.getFace(), 0.5f, 0.5f, 0.5f);
             }
         }
 
@@ -123,10 +128,10 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public void onInteract(BlockEvent.BreakEvent event) {
-        if(event.isCanceled()) return;
+        if (event.isCanceled()) return;
 
         LockType lock = ModLocks.getLock(event.getWorld(), event.getPos());
-        if(lock != null) {
+        if (lock != null) {
             ModLocks.deleteLock(event.getWorld(), event.getPos());
             ItemStack stack = new ItemStack(ModLocks.itemLock, 1, lock.ordinal());
             event.getPlayer().dropItem(stack, false);

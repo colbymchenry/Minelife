@@ -184,5 +184,9 @@
   "drug_level_up": {
     "category": "neutral",
     "sounds": ["minelife:drug_level_up"]
+  },
+  "tazer": {
+    "category": "neutral",
+    "sounds": ["minelife:tazer"]
   }
 }

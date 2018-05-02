@@ -18,7 +18,7 @@ public class ServerProxy extends MLProxy {
         MinecraftForge.EVENT_BUS.register(new MLCommand.Ticker());
         MinecraftForge.EVENT_BUS.register(new SoundTrack());
         MinecraftForge.EVENT_BUS.register(new BreakHelper());
-        MinecraftForge.EVENT_BUS.register(new MobSpawnChecker());
+//        MinecraftForge.EVENT_BUS.register(new MobSpawnChecker());
 
         Minelife.getModList().forEach(mod -> {
             try {

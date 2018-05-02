@@ -27,6 +27,9 @@ public class GuiScrollableListing extends GuiScrollableContent {
 
     @Override
     public void drawObject(int index, int mouseX, int mouseY, boolean isHovering) {
+        if(selected == index) {
+            GuiHelper.drawDefaultBackground(0, 0, width - 8, getObjectHeight(index), 0xba00b8);
+        }
         this.itemListings.get(index).draw(mouseX, mouseY);
         if(index == 0) foundOne = false;
         if(mouseX >= 3 && mouseX <= 3 + 20 && mouseY >= 3 && mouseY <= 3 + 20 && !foundOne){
@@ -66,7 +69,7 @@ public class GuiScrollableListing extends GuiScrollableContent {
 
     @Override
     public void drawSelectionBox(int index, int width, int height) {
-        GuiHelper.drawDefaultBackground(0, 0, width - 8, height, 0xba00b8);
+
     }
 
     public ItemStack getHoveringStack() {

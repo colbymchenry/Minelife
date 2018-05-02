@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.minelife.Minelife;
+import com.minelife.gangs.Gang;
 import com.minelife.guns.Bullet;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumGun;
@@ -131,6 +132,7 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
 
         List<EntityLivingBase> toRemove = Lists.newArrayList();
         Estate estate = ModRealEstate.getEstateAt(getWorld(), getPos());
+        Gang gang = Gang.getGang(getOwner());
         Set<UUID> memberKeys = estate != null ? estate.getSurroundingMembers().keySet() : Sets.newTreeSet();
         Set<UUID> ownersKeys = estate != null ? estate.getSurroundingOwners() : Sets.newTreeSet();
 
@@ -147,16 +149,18 @@ public class TileEntityTurret extends MLTileEntity implements ITickable {
                 if (owner != null && owner.equals(e.getUniqueID())) toRemove.add(e);
 
                 // TODO
-//                boolean agro = e.getHeldItemMainhand().getItem() == ModGuns.itemGun
-//                        || e.getHeldItemMainhand().getItem() == ItemName.dynamite.getInstance()
-//                        || e.getHeldItemMainhand().getItem() == ItemName.dynamite_sticky.getInstance();
-
-                boolean agro = false;
+                boolean agro = e.getHeldItemMainhand().getItem() == ModGuns.itemGun
+                        || e.getHeldItemMainhand().getItem() == ModGuns.itemDynamite;
 
                 if (estate != null) {
                     if (Objects.equals(estate.getOwnerID(), e.getUniqueID())) toRemove.add(e);
                     if (memberKeys.contains(e.getUniqueID())) toRemove.add(e);
                     if (ownersKeys.contains(e.getUniqueID())) toRemove.add(e);
+                }
+
+                if(gang != null) {
+                    if (Objects.equals(gang.getOwner(), e.getUniqueID())) toRemove.add(e);
+                    if (gang.getMembers().containsKey(e.getUniqueID())) toRemove.add(e);
                 }
 
                 if (isWaitForAgroPlayer()) {

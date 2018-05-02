@@ -1,6 +1,7 @@
 package com.minelife.util.client.render;
 
 import net.minecraft.client.model.ModelPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
@@ -8,12 +9,12 @@ public class AdjustPlayerModelEvent extends Event {
 
     private float ageInTicks;
     private ModelPlayer model;
-    private EntityPlayer player;
+    private EntityLivingBase entityLiving;
 
-    public AdjustPlayerModelEvent(ModelPlayer model, float ageInTicks, EntityPlayer player) {
+    public AdjustPlayerModelEvent(ModelPlayer model, float ageInTicks, EntityLivingBase player) {
         this.model = model;
         this.ageInTicks = ageInTicks;
-        this.player = player;
+        this.entityLiving = player;
     }
 
     public ModelPlayer getModel() {
@@ -24,7 +25,7 @@ public class AdjustPlayerModelEvent extends Event {
         return ageInTicks;
     }
 
-    public EntityPlayer getPlayer() {
-        return player;
+    public EntityLivingBase getPlayer() {
+        return entityLiving;
     }
 }

@@ -82,7 +82,7 @@ public class EstateListener {
     @SubscribeEvent
     public void onFill(FillBucketEvent event) {
         EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
-        if(event.getTarget().getBlockPos() == null) return;
+        if(event.getTarget() == null || event.getTarget().getBlockPos() == null) return;
         Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getTarget().getBlockPos());
 
         if (estate == null) return;
@@ -134,18 +134,18 @@ public class EstateListener {
         player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " You are " + TextFormatting.RED + "not" + TextFormatting.GOLD + " authorized to build here."));
     }
 
-//    @SubscribeEvent(priority = EventPriority.HIGH)
-//    public void onInteract(PlayerInteractEvent.RightClickBlock event) {
-//        EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
-//        Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());
-//
-//        if (estate == null) return;
-//
-//        if (estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.INTERACT)) return;
-//
-//        player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " You are " + TextFormatting.RED + "not" + TextFormatting.GOLD + " authorized to interact here."));
-//        event.setCanceled(true);
-//    }
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onInteract(PlayerInteractEvent.RightClickBlock event) {
+        EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
+        Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());
+
+        if (estate == null) return;
+
+        if (estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.INTERACT)) return;
+
+        player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " You are " + TextFormatting.RED + "not" + TextFormatting.GOLD + " authorized to interact here."));
+        event.setCanceled(true);
+    }
 
     // TODO: Add fire spread protection
     // TODO: cannot interact with cars, but can interact with containers

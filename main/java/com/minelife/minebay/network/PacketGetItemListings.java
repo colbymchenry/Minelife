@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.minebay.ItemListing;
 import com.minelife.minebay.ModMinebay;
+import com.minelife.util.server.MLCommand;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -19,8 +20,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class PacketGetItemListings implements IMessage {
-
-    private static final ExecutorService pool = Executors.newFixedThreadPool(1);
 
     public static String[] options = new String[]{"Price", "Date", "Metadata", "Stack Size"};
     private int page;
@@ -86,13 +85,17 @@ public class PacketGetItemListings implements IMessage {
             final String query_count = query;
             query += "LIMIT " + min_row + "," + max_row;
             final String query_final = query;
-            pool.submit(() -> {
+
+            Runnable runnableTask = () -> {
                 try {
                     getListings(ModMinebay.getDatabase().query("SELECT * FROM items " + query_final), ModMinebay.getDatabase().query("SELECT COUNT(*) AS count FROM items " + query_count), ctx.getServerHandler().player);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            });
+            };
+
+
+            MLCommand.pool.execute(runnableTask);
             return null;
         }
 
