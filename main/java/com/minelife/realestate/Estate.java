@@ -357,6 +357,7 @@ public class Estate implements Comparable<Estate> {
         } else if (getMembersWithPermissions().containsKey(playerID)) {
             permissions.addAll(getActualMemberPerms(playerID));
         }
+
         return permissions;
     }
 

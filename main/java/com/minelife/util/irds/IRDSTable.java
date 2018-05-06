@@ -21,7 +21,7 @@ public abstract class IRDSTable implements IRDSObject {
     public void addToResult(List<IRDSObject> resultList, IRDSObject irdsObject) {
         if(!irdsObject.isUnique() || !uniquedrops.contains(irdsObject)) {
             if(irdsObject.isUnique()) uniquedrops.add(irdsObject);
-            if(!(irdsObject instanceof RDSNullValue)) {
+//            if(!(irdsObject instanceof RDSNullValue)) {
                 if(irdsObject instanceof IRDSTable) {
                     resultList.addAll(((IRDSTable) irdsObject).getResult());
                 } else {
@@ -31,9 +31,9 @@ public abstract class IRDSTable implements IRDSObject {
                     resultList.add(adder);
                     irdsObject.onHit();
                 }
-            } else {
-                irdsObject.onHit();
-            }
+//            } else {
+//                irdsObject.onHit();
+//            }
         }
     }
 

@@ -150,7 +150,6 @@ public class EntityAIShoot extends EntityAIBase
 
             if (true)
             {
-                System.out.println(this.attackTime);
                 if (!flag && this.seeTime < -60)
                 {
                     this.entity.resetActiveHand();

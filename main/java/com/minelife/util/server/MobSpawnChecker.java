@@ -5,9 +5,7 @@ import com.minelife.airdrop.EntityBandit;
 import com.minelife.jobs.EntityJobNPC;
 import com.minelife.pvplogger.EntityPlayerTracker;
 import com.minelife.realestate.EntityReceptionist;
-import de.maxhenkel.car.entity.car.base.EntityCarNumberPlateBase;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EntityTracker;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.EntityElderGuardian;
 import net.minecraft.entity.monster.EntityGuardian;
@@ -28,7 +26,7 @@ public class MobSpawnChecker {
                 event.getEntity() instanceof EntityJobNPC || event.getEntity() instanceof EntityReceptionist ||
                 event.getEntity() instanceof EntityPlayerTracker || event.getEntity() instanceof EntityGuardian
                 || event.getEntity() instanceof EntityElderGuardian ||
-                event.getEntity() instanceof EntityArmorStand || event.getEntity() instanceof EntityCarNumberPlateBase ||
+                event.getEntity() instanceof EntityArmorStand ||
                 event.getEntity() instanceof EntityBandit) return;
 
         if (!(event.getEntity() instanceof EntityLivingBase)) return;

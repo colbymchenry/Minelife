@@ -24,14 +24,6 @@ public class EntityCop extends EntityVillager {
 
     public EntityCop(World worldIn) {
         super(worldIn);
-//        Field field = ReflectionHelper.findField(EntityLiving.class, "navigator");
-//        field.setAccessible(true);
-//        try {
-//            field.set(this, new CustomNavigator(this, world));
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-
     }
 
     @Override
@@ -40,11 +32,10 @@ public class EntityCop extends EntityVillager {
         this.tasks.addTask(1, new EntityAIOpenDoor(this, true));
         this.tasks.addTask(2, aiPolice = new AICopPolice(this));
         this.tasks.addTask(3, aiRegroup = new AICopRegroup(this));
-
-//        this.tasks.addTask(2, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-//        this.tasks.addTask(3, new EntityAIWanderAvoidWater(this, 1.0D));
-//        this.tasks.addTask(4, new EntityAILookIdle(this));
-//        this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
+        this.tasks.addTask(4, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
+        this.tasks.addTask(6, new EntityAILookIdle(this));
+        this.tasks.addTask(7, new EntityAIOpenDoor(this, true));
         this.targetTasks.addTask(0, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
     }
 
@@ -53,7 +44,6 @@ public class EntityCop extends EntityVillager {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(80.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23000000417232513D);
-//        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
     }
 

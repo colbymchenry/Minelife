@@ -6,19 +6,19 @@ import com.minelife.cape.ModCapes;
 import com.minelife.chestshop.ModChestShop;
 import com.minelife.drugs.ModDrugs;
 import com.minelife.economy.ModEconomy;
+import com.minelife.emt.ModEMT;
 import com.minelife.essentials.ModEssentials;
 import com.minelife.gangs.ModGangs;
 import com.minelife.guns.ModGuns;
 import com.minelife.jobs.ModJobs;
 import com.minelife.locks.ModLocks;
 import com.minelife.minebay.ModMinebay;
-import com.minelife.minereset.ModMineReset;
 import com.minelife.notifications.ModNotifications;
 import com.minelife.permission.ModPermission;
 import com.minelife.police.ModPolice;
 import com.minelife.pvplogger.ModPVPLogger;
 import com.minelife.realestate.ModRealEstate;
-import com.minelife.tdm.ModTDM;
+import com.minelife.resourcefulness.ModResourcefulness;
 import com.minelife.tracker.ModTracker;
 import com.minelife.tutorial.ModTutorial;
 import com.minelife.util.PacketPlaySound;
@@ -84,14 +84,14 @@ public class Minelife {
         MODS.add(new ModCapes());
         MODS.add(new ModJobs());
         MODS.add(new ModGangs());
-//        MODS.add(new ModTDM());
         MODS.add(new ModLocks());
         MODS.add(new ModTutorial());
         MODS.add(new ModPVPLogger());
         MODS.add(new ModAirdrop());
-        MODS.add(new ModMineReset());
         MODS.add(new ModWorldborder());
         MODS.add(new ModPolice());
+        MODS.add(new ModEMT());
+        MODS.add(new ModResourcefulness());
     }
 
     @Mod.EventHandler

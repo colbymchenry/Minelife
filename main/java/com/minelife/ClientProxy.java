@@ -5,7 +5,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.minelife.util.client.CustomGuiMainMenu;
 import com.minelife.util.client.render.AdjustPlayerModelEvent;
+import com.minelife.util.client.render.ModelPlayerCustom;
 import com.minelife.util.client.render.RenderPlayerCustom;
+import com.minelife.util.client.render.SkinChanger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -33,6 +35,7 @@ public class ClientProxy extends MLProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(new CustomGuiMainMenu());
+        MinecraftForge.EVENT_BUS.register(new SkinChanger());
         MinecraftForge.EVENT_BUS.register(this);
         OBJLoader.INSTANCE.addDomain(Minelife.MOD_ID);
 

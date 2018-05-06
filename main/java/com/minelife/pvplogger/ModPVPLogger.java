@@ -73,6 +73,8 @@ public class ModPVPLogger extends MLMod {
         EntityPlayerTracker playerTracker = (EntityPlayerTracker) event.getEntityLiving();
         if (!playerTrackers.containsKey(playerTracker.getPlayerID())) return;
 
+        if(playerTracker.getEntityData().hasKey("DiedNaturally")) return;
+
         for (int i = 0; i < playerTracker.getInventory().getSizeInventory(); i++) {
             if(playerTracker.getInventory().getStackInSlot(i) != ItemStack.EMPTY) {
                 playerTracker.entityDropItem(playerTracker.getInventory().getStackInSlot(i), 0.5f);

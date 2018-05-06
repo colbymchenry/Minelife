@@ -125,13 +125,13 @@ public class CommandEstate extends CommandBase {
                 return;
             }
 
-            if (Objects.equals(estateAtPos.getOwnerID(), player.getUniqueID()) || Objects.equals(estateAtPos.getRenterID(), player.getUniqueID())) {
-                sendMessage(player, TextFormatting.RED + "You cannot buy from yourself.");
+            if (estateAtPos.getRenterID() != null) {
+                sendMessage(player, TextFormatting.RED + "This estate has someone renting it.");
                 return;
             }
 
-            if (estateAtPos.getRenterID() != null) {
-                sendMessage(player, TextFormatting.RED + "This estate has someone renting it.");
+            if (Objects.equals(estateAtPos.getOwnerID(), player.getUniqueID())) {
+                sendMessage(player, TextFormatting.RED + "You cannot buy from yourself.");
                 return;
             }
 

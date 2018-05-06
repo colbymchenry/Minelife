@@ -15,6 +15,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -26,6 +29,7 @@ public class ItemDynamite extends ItemBow {
         setRegistryName(Minelife.MOD_ID, "dynamite");
         setUnlocalizedName(Minelife.MOD_ID + ":dynamite");
         setCreativeTab(CreativeTabs.MISC);
+        setMaxStackSize(64);
     }
 
     @Override
@@ -44,9 +48,29 @@ public class ItemDynamite extends ItemBow {
 
             dynamite.shoot(entityLiving, entityLiving.rotationPitch, entityLiving.rotationYaw, 0, getArrowVelocity(i) * 1.4F, 1);
 
+            EntityPlayer player = (EntityPlayer) entityLiving;
+
+            stack.shrink(1);
+
+            if (stack.isEmpty()) player.inventory.deleteStack(stack);
+
+            player.inventoryContainer.detectAndSendChanges();
+
             worldIn.spawnEntity(dynamite);
         }
     }
+
+
+    /**
+     * Called when the equipped item is right clicked.
+     */
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
+    {
+        playerIn.setActiveHand(handIn);
+        return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+    }
+
 
     public void registerModel() {
         ModelResourceLocation itemModelResourceLocation = new ModelResourceLocation(Minelife.MOD_ID + ":dynamite", "inventory");

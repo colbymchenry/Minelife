@@ -65,8 +65,8 @@ public class PacketPurchaseEstate implements IMessage {
                     return;
                 }
 
-                if (ModEconomy.getBalanceCashPiles(player.getUniqueID()) < (message.rent ? estate.getRentPrice() : estate.getPurchasePrice())) {
-                    PacketPopup.sendPopup("Insufficient funds in cash piles.", player);
+                if (ModEconomy.getBalanceInventory(player) < (message.rent ? estate.getRentPrice() : estate.getPurchasePrice())) {
+                    PacketPopup.sendPopup("Insufficient funds in inventory.", player);
                     return;
                 }
 
@@ -96,7 +96,7 @@ public class PacketPurchaseEstate implements IMessage {
                 }
 
 
-                int didNotFit = ModEconomy.withdrawCashPiles(player.getUniqueID(), message.rent ? estate.getRentPrice() : estate.getPurchasePrice());
+                int didNotFit = ModEconomy.withdrawInventory(player, message.rent ? estate.getRentPrice() : estate.getPurchasePrice());
                 if (didNotFit > 0) {
                     CommandEconomy.sendMessage(player, "$" + NumberConversions.format(didNotFit) + " was deposited to your ATM.");
                     ModEconomy.depositATM(player.getUniqueID(), didNotFit, true);

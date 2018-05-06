@@ -37,35 +37,35 @@ public class EstateListener {
 
     private static Map<EntityPlayerMP, Estate> PLAYERS_ESTATE = Maps.newHashMap();
 
-    @SubscribeEvent
-    public void playerTick(TickEvent.PlayerTickEvent event) {
-        EntityPlayerMP player = (EntityPlayerMP) event.player;
-        Estate estate = ModRealEstate.getEstateAt(player.getEntityWorld(), player.getPosition());
-
-        if (estate == null) {
-            if (PLAYERS_ESTATE.containsKey(player)) {
-                if (PLAYERS_ESTATE.get(player).getOutro() != null && !PLAYERS_ESTATE.get(player).getOutro().trim().isEmpty())
-                    player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(PLAYERS_ESTATE.get(player).getOutro(), '&')));
-                PLAYERS_ESTATE.remove(player);
-            }
-            return;
-        }
-
-        if (!PLAYERS_ESTATE.containsKey(player)) {
-            if (estate.getIntro() != null && !estate.getIntro().trim().isEmpty())
-                player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(estate.getIntro(), '&')));
-            PLAYERS_ESTATE.put(player, estate);
-            return;
-        }
-
-        if (PLAYERS_ESTATE.get(player) != estate) {
-            if (PLAYERS_ESTATE.get(player).getOutro() != null && !PLAYERS_ESTATE.get(player).getOutro().trim().isEmpty())
-                player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(PLAYERS_ESTATE.get(player).getOutro(), '&')));
-            if (estate.getIntro() != null && !estate.getIntro().trim().isEmpty())
-                player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(estate.getIntro(), '&')));
-            PLAYERS_ESTATE.put(player, estate);
-        }
-    }
+//    @SubscribeEvent
+//    public void playerTick(TickEvent.PlayerTickEvent event) {
+//        EntityPlayerMP player = (EntityPlayerMP) event.player;
+//        Estate estate = ModRealEstate.getEstateAt(player.getEntityWorld(), player.getPosition());
+//
+//        if (estate == null) {
+//            if (PLAYERS_ESTATE.containsKey(player)) {
+//                if (PLAYERS_ESTATE.get(player).getOutro() != null && !PLAYERS_ESTATE.get(player).getOutro().trim().isEmpty())
+//                    player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(PLAYERS_ESTATE.get(player).getOutro(), '&')));
+//                PLAYERS_ESTATE.remove(player);
+//            }
+//            return;
+//        }
+//
+//        if (!PLAYERS_ESTATE.containsKey(player)) {
+//            if (estate.getIntro() != null && !estate.getIntro().trim().isEmpty())
+//                player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(estate.getIntro(), '&')));
+//            PLAYERS_ESTATE.put(player, estate);
+//            return;
+//        }
+//
+//        if (PLAYERS_ESTATE.get(player) != estate) {
+//            if (PLAYERS_ESTATE.get(player).getOutro() != null && !PLAYERS_ESTATE.get(player).getOutro().trim().isEmpty())
+//                player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(PLAYERS_ESTATE.get(player).getOutro(), '&')));
+//            if (estate.getIntro() != null && !estate.getIntro().trim().isEmpty())
+//                player.sendMessage(new TextComponentString(StringHelper.ParseFormatting(estate.getIntro(), '&')));
+//            PLAYERS_ESTATE.put(player, estate);
+//        }
+//    }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void onBreak(BlockEvent.BreakEvent event) {

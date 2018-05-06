@@ -188,5 +188,13 @@
   "tazer": {
     "category": "neutral",
     "sounds": ["minelife:tazer"]
+  },
+  "emt_revive": {
+    "category": "neutral",
+    "sounds": ["minelife:emt_revive"]
+  },
+  "police_radio": {
+    "category": "neutral",
+    "sounds": ["minelife:police_radio"]
   }
 }

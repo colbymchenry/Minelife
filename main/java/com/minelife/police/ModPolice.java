@@ -48,8 +48,19 @@ public class ModPolice extends MLMod {
 
     public static void setUnconscious(EntityPlayer entity, boolean value) {
         Minelife.getNetwork().sendToAll(new PacketUnconscious(entity.getEntityId(), value));
-        entity.getEntityData().setLong("UnconsciousTime", System.currentTimeMillis() + (60000L * 3));
-        entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 60 * 20, 10, false, false));
+
+        if(value) {
+            entity.getEntityData().setLong("UnconsciousTime", System.currentTimeMillis() + (60000L * 3));
+            entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 60 * 20, 10, false, false));
+        } else {
+            entity.getEntityData().removeTag("UnconsciousTime");
+            entity.getEntityData().removeTag("Tazed");
+            entity.removePotionEffect(MobEffects.SLOWNESS);
+        }
+    }
+
+    public static boolean isUnconscious(EntityPlayer player) {
+        return player.getEntityData().hasKey("UnconsciousTime") && player.getEntityData().getLong("UnconsciousTime") > System.currentTimeMillis();
     }
 
 }

@@ -7,16 +7,13 @@ import com.minelife.guns.ModGuns;
 import com.minelife.police.server.Prison;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.render.Vector;
-import net.minecraft.block.BlockButton;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBucketMilk;
 import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -32,9 +29,10 @@ public class AICopPolice extends EntityAIBase {
     private int pathAttempt = 0;
     private EntityCop entity;
     private List<ChargeType> chargesForTarget = Lists.newArrayList();
-    private long lastPlayedTaze;
+    private long lastPlayerTazed;
 
     public AICopPolice(EntityCop cop) {
+        // TODO: Add the canSee from the SkeletonAI
         this.entity = cop;
         setMutexBits(7);
     }
@@ -62,6 +60,7 @@ public class AICopPolice extends EntityAIBase {
                     this.entity.getAttackTarget().startRiding(this.entity, true);
                     ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), false);
                 } else if (this.entity.getDistance(this.entity.getAttackTarget()) < tazeRange) {
+                    entity.getAttackTarget().getEntityData().setBoolean("Tazed", true);
                     ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), true);
                     playTazerSound();
                 }
@@ -208,9 +207,9 @@ public class AICopPolice extends EntityAIBase {
     }
 
     private void playTazerSound() {
-        if (lastPlayedTaze < System.currentTimeMillis()) {
+        if (lastPlayerTazed < System.currentTimeMillis()) {
             Minelife.getNetwork().sendToAllAround(new PacketPlaySound(Minelife.MOD_ID + ":tazer", 0.2f, 1), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 10));
-            lastPlayedTaze = System.currentTimeMillis() + 2000L;
+            lastPlayerTazed = System.currentTimeMillis() + 2000L;
         }
     }
 

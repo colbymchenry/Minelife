@@ -62,7 +62,14 @@ public class ModWorldborder extends MLMod {
         Vector v = new Vector(event.player.posX, event.player.posY, event.player.posZ);
         Vector v1 = new Vector(config.getInt("x"), event.player.posY, config.getInt("z"));
 
-        if (v.distanceSquared(v1) - (config.getInt("radius") * config.getInt("radius")) > 500) {
+        if(v.distanceSquared(v1) - (config.getInt("radius") * config.getInt("radius")) > 100) {
+            if(!sentMessage.containsKey(event.player.getUniqueID()) || sentMessage.get(event.player.getUniqueID()) < System.currentTimeMillis()) {
+                event.player.sendMessage(new TextComponentString(TextFormatting.DARK_RED + "You are out side of the server bounds! Keep going and you will be teleported back to spawn!"));
+                sentMessage.put(event.player.getUniqueID(), System.currentTimeMillis() + 5000L);
+            }
+        }
+
+        if (v.distanceSquared(v1) - (config.getInt("radius") * config.getInt("radius")) > 1500) {
             if(!sentMessage.containsKey(event.player.getUniqueID()) || sentMessage.get(event.player.getUniqueID()) < System.currentTimeMillis()) {
                 event.player.sendMessage(new TextComponentString(TextFormatting.DARK_RED + "You are out side of the server bounds!"));
                 sentMessage.put(event.player.getUniqueID(), System.currentTimeMillis() + 5000L);
@@ -72,14 +79,11 @@ public class ModWorldborder extends MLMod {
             return;
         }
 
-        if(!sentMessage.containsKey(event.player.getUniqueID()) || sentMessage.get(event.player.getUniqueID()) < System.currentTimeMillis()) {
-            event.player.sendMessage(new TextComponentString(TextFormatting.DARK_RED + "You are out side of the server bounds!"));
-            sentMessage.put(event.player.getUniqueID(), System.currentTimeMillis() + 5000L);
-        }
 
-        Vector subtracted = v.subtract(v1).normalize();
-        event.player.addVelocity(-subtracted.getX(), 0, -subtracted.getZ());
-        event.player.velocityChanged = true;
+//
+//        Vector subtracted = v.subtract(v1).normalize();
+//        event.player.addVelocity(-subtracted.getX(), 0, -subtracted.getZ());
+//        event.player.velocityChanged = true;
     }
 
     class CommandWorldBorder extends CommandBase {

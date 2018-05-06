@@ -69,6 +69,7 @@ public class EntityPlayerTracker extends EntityCreature {
         if(spawnTime > 1000) {
             ModPVPLogger.playerTrackers.remove(getPlayerID());
             ModPVPLogger.damageMap.remove(getPlayerID());
+            getEntityData().setBoolean("DiedNaturally", true);
             setDead();
         }
 

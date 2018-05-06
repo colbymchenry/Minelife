@@ -63,10 +63,20 @@ public class ItemGunSkinUnlocker extends Item {
             playerIn.getEntityWorld().spawnEntity(ent);
 
             PlayerHelper.sendMessageToAll(StringHelper.ParseFormatting("&9&l" + playerIn.getName() + " &6&lunlocked the &c&l" + WordUtils.capitalizeFully(gunUnlocked.gunSkin.name().replace("_", " ")) + " &6&lskin!", '&'));
-            ModPermission.addPlayerPermission(playerIn.getUniqueID(), "gun.skin." + gunUnlocked.gunSkin.name());
+            ModPermission.addPlayerPermission(playerIn.getUniqueID(), "gun.skin." + gunUnlocked.gunSkin.name().toLowerCase());
         } else {
             playerIn.sendMessage(new TextComponentString(StringHelper.ParseFormatting("&6&lYou got nothing good...", '&')));
         }
+
+        if(playerIn.getHeldItem(handIn).getCount() == 1) {
+            playerIn.setHeldItem(handIn, ItemStack.EMPTY);
+        } else {
+            ItemStack stack = playerIn.getHeldItem(handIn);
+            stack.setCount(playerIn.getHeldItem(handIn).getCount() - 1);
+            playerIn.setHeldItem(handIn, stack);
+        }
+
+        playerIn.inventoryContainer.detectAndSendChanges();
 
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }
