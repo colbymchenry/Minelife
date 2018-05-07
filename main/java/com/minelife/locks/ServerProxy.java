@@ -94,6 +94,7 @@ public class ServerProxy extends MLProxy {
         boolean hasGangPermission = gang != null ? gang.hasPermission(player.getUniqueID(), GangPermission.OPEN_LOCKS) : false;
 
         if (lock != null) {
+            System.out.println("FOUND LOCK");
             if (isLockOwner) return;
             else if (hasGangPermission) return;
             else if (hasLockOverride) return;

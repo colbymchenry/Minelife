@@ -7,6 +7,7 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -38,21 +39,20 @@ public class BlockHempCrop extends BlockCrops {
 
     @Override
     protected int getBonemealAgeIncrease(World worldIn) {
-        return 0;
+        return 1;
     }
 
     @Override
     public void grow(World worldIn, BlockPos pos, IBlockState state) {
-        int i = this.getAge(state) + this.getBonemealAgeIncrease(worldIn);
+        int i = this.getAge(state);
         int j = this.getMaxAge();
 
-        if (i > j)
-        {
+        if (i > j) {
             i = j;
         }
 
-
-        worldIn.setBlockState(pos, state.withProperty(AGE, i), 2);
+        boolean alreadyFemale = state.getValue(FEMALE) == 1;
+        worldIn.setBlockState(pos, state.withProperty(AGE, i).withProperty(FEMALE, alreadyFemale ? 1 : 0), 2);
     }
 
     // can be used for bonemeal in the RightClickBlockEvent if we decide to enable it
@@ -97,10 +97,26 @@ public class BlockHempCrop extends BlockCrops {
 
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
-        super.updateTick(worldIn, pos, state, rand);
-        if(!canBlockStay(worldIn, pos, state)) {
-//            spawnAsEntity(worldIn, pos, new ItemStack(ModDrugs.itemHempSeed));
-            worldIn.setBlockToAir(pos);
+        if (!this.canBlockStay(worldIn, pos, state)) {
+            this.dropBlockAsItem(worldIn, pos, state, 0);
+            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+            return;
+        }
+
+        if (!worldIn.isAreaLoaded(pos, 1))
+            return; // Forge: prevent loading unloaded chunks when checking neighbor's light
+        if (worldIn.getLightFromNeighbors(pos.up()) >= 9) {
+            int i = this.getAge(state);
+
+            if (i < this.getMaxAge()) {
+                float f = getGrowthChance(this, worldIn, pos);
+
+                if (net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt((int) (25.0F / f) + 1) == 0)) {
+                    boolean alreadyFemale = state.getValue(FEMALE) == 1;
+                    worldIn.setBlockState(pos, this.withAge(i + 1).withProperty(FEMALE, alreadyFemale ? 1 : 0), 2);
+                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
+                }
+            }
         }
     }
 
@@ -126,7 +142,8 @@ public class BlockHempCrop extends BlockCrops {
     @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         super.getDrops(drops, world, pos, state, fortune);
-        if (state.getValue(FEMALE) == 1 && state.getValue(AGE) == 7) drops.add(new ItemStack(ModDrugs.itemHempBuds, random.nextInt(2) + 1));
+        if (state.getValue(FEMALE) == 1 && state.getValue(AGE) == 7)
+            drops.add(new ItemStack(ModDrugs.itemHempBuds, random.nextInt(2) + 1));
     }
 
     @Override
@@ -166,14 +183,14 @@ public class BlockHempCrop extends BlockCrops {
 
         event.setCanceled(true);
 
-        if(isCancelled) return;
+        if (isCancelled) return;
 
         int oldGrowthStage = event.getWorld().getBlockState(event.getPos()).getValue(AGE);
 
-        if(oldGrowthStage == 7) {
+        if (oldGrowthStage == 7) {
             NonNullList<ItemStack> drops = NonNullList.create();
             getDrops(drops, event.getWorld(), event.getPos(), event.getWorld().getBlockState(event.getPos()), 0);
-            drops.forEach(stack ->   spawnAsEntity(event.getWorld(), event.getPos(), stack));
+            drops.forEach(stack -> spawnAsEntity(event.getWorld(), event.getPos(), stack));
         }
 
         boolean holdingHoe = event.getEntityPlayer().getHeldItem(event.getHand()).getItem().getRegistryName().toString().contains("_hoe");
@@ -181,7 +198,7 @@ public class BlockHempCrop extends BlockCrops {
         int growthStage = oldGrowthStage == 7 || holdingHoe ? random.nextInt(1) : oldGrowthStage;
         event.getWorld().setBlockState(event.getPos(), this.withAge(growthStage).withProperty(FEMALE, event.getWorld().getBlockState(event.getPos()).getValue(FEMALE)), 2);
 
-        if(holdingHoe && growthStage > 1) {
+        if (holdingHoe && growthStage > 1) {
             event.getEntityPlayer().getHeldItem(event.getHand()).setItemDamage(event.getEntityPlayer().getHeldItem(event.getHand()).getItemDamage() + 1);
             event.getEntityPlayer().inventoryContainer.detectAndSendChanges();
         }

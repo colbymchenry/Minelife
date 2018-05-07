@@ -26,6 +26,7 @@ public class RenderEntityJobNPC extends RenderBiped {
     private ResourceLocation minerTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/miner.png");
     private ResourceLocation policeTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/police.png");
     private ResourceLocation drugProducerTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/drug_producer.png");
+    private ResourceLocation emtTex = new ResourceLocation(Minelife.MOD_ID, "textures/entity/job/emt.png");
 
     public RenderEntityJobNPC(RenderManager renderManager) {
         super(renderManager, new ModelPlayer(0.0F, false), 0.5F);
@@ -99,6 +100,8 @@ public class RenderEntityJobNPC extends RenderBiped {
                 return policeTex;
             case 7:
                 return drugProducerTex;
+            case 8:
+                return emtTex;
         }
         return null;
     }

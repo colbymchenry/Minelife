@@ -7,10 +7,12 @@ import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.emt.entity.EntityEMT;
 import com.minelife.police.EntityCop;
+import com.minelife.util.MLConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -31,6 +33,11 @@ public class ModEMT extends MLMod {
     }
 
     @Override
+    public void serverStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CommandEMT());
+    }
+
+    @Override
     public Class<? extends MLProxy> getClientProxyClass() {
         return com.minelife.emt.ClientProxy.class;
     }
@@ -39,6 +46,12 @@ public class ModEMT extends MLMod {
     public Class<? extends MLProxy> getServerProxyClass() {
         return com.minelife.emt.ServerProxy.class;
     }
+
+    public static MLConfig getConfig() {
+        return ServerProxy.config;
+    }
+
+    // TODO: Test spawns of EMT and Cops
 
     public static boolean isEMT(UUID playerID) {
         return ServerProxy.config.getStringList("players") != null ? ServerProxy.config.getStringList("players").contains(playerID.toString()): null;
@@ -52,8 +65,10 @@ public class ModEMT extends MLMod {
         List<String> emts = ServerProxy.config.contains("players") ? ServerProxy.config.getStringList("players") : Lists.newArrayList();
         if(value) {
             if(!emts.contains(player.getUniqueID().toString())) emts.add(player.getUniqueID().toString());
+            Minelife.getNetwork().sendToAll(new PacketSendEMTStatus(player.getUniqueID(), true));
         } else {
             emts.remove(player.getUniqueID().toString());
+            Minelife.getNetwork().sendToAll(new PacketSendEMTStatus(player.getUniqueID(), false));
         }
         ServerProxy.config.set("players", emts);
         ServerProxy.config.save();

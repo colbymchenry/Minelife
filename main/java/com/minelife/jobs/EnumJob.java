@@ -6,6 +6,7 @@ import com.minelife.jobs.job.bountyhunter.BountyHunterHandler;
 import com.minelife.jobs.job.bountyhunter.BountyHunterListener;
 import com.minelife.jobs.job.drugproducer.DrugProducerHandler;
 import com.minelife.jobs.job.drugproducer.DrugProducerListener;
+import com.minelife.jobs.job.emt.EMTHandler;
 import com.minelife.jobs.job.farmer.FarmerHandler;
 import com.minelife.jobs.job.farmer.FarmerListener;
 import com.minelife.jobs.job.fisherman.FishermanHandler;
@@ -30,7 +31,8 @@ public enum EnumJob {
     RESTAURATEUR(new ItemStack(ItemRegistry.baconcheeseburgerItem), TextFormatting.GREEN),
     LUMBERJACK(new ItemStack(Items.IRON_AXE), TextFormatting.DARK_GREEN),
     POLICE(new ItemStack(ModGuns.itemGun, 1, 1), TextFormatting.BLUE),
-    DRUG_PRODUCER(new ItemStack(ModGuns.itemGun, 1, EnumGun.AK47_BLOODBATH.ordinal()), TextFormatting.DARK_RED);
+    DRUG_PRODUCER(new ItemStack(ModGuns.itemGun, 1, EnumGun.AK47_BLOODBATH.ordinal()), TextFormatting.DARK_RED),
+    EMT(ItemStack.EMPTY, TextFormatting.BLUE);
 
     public ItemStack heldStack;
     public TextFormatting coloredName;
@@ -49,6 +51,7 @@ public enum EnumJob {
             case RESTAURATEUR: return RestaurateurHandler.INSTANCE;
             case LUMBERJACK: return LumberjackHandler.INSTANCE;
             case DRUG_PRODUCER: return DrugProducerHandler.INSTANCE;
+            case EMT: return EMTHandler.INSTANCE;
         }
         return null;
     }

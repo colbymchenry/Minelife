@@ -3,17 +3,22 @@ package com.minelife.police;
 import com.minelife.police.server.Prison;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -21,6 +26,7 @@ public class EntityCop extends EntityVillager {
 
     private AICopRegroup aiRegroup;
     private AICopPolice aiPolice;
+    private EntityPlayer chasingPlayer;
 
     public EntityCop(World worldIn) {
         super(worldIn);
@@ -61,5 +67,24 @@ public class EntityCop extends EntityVillager {
 
     public static List<EntityCop> getNearbyPolice(World world, BlockPos pos) {
         return world.getEntitiesWithinAABB(EntityCop.class, new AxisAlignedBB(pos.getX() - 20, pos.getY() - 20, pos.getZ() - 20, pos.getX() + 20, pos.getY() + 20, pos.getZ() + 20));
+    }
+
+    public void setChasingPlayer(EntityPlayer chasingPlayer) {
+        this.chasingPlayer = chasingPlayer;
+    }
+
+    public EntityPlayer getChasingPlayer() {
+        return chasingPlayer;
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public EntityLivingBase getAttackTarget() {
+        return getChasingPlayer() != null ? getChasingPlayer() : super.getAttackTarget();
     }
 }

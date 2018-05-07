@@ -34,11 +34,16 @@ public class ServerProxy extends MLProxy {
             try {
                 for (EntityPlayerMP entityPlayerMP : FMLServerHandler.instance().getServer().getPlayerList().getPlayers()) {
                     int payout = (ModTracker.getHoursPlayed(entityPlayerMP.getUniqueID()) * 30) + 60;
-                    ModEconomy.depositATM(entityPlayerMP.getUniqueID(), payout, false);
-                    Notification welfareNotification = new Notification(entityPlayerMP.getUniqueID(),
-                            TextFormatting.DARK_GRAY + "Welfare: " + TextFormatting.DARK_GREEN + "$" + NumberConversions.format(payout),
-                            NotificationType.EDGED, 5, 0xFFFFFF);
-                    welfareNotification.sendTo(entityPlayerMP, true, true, false);
+                    WelfarePayoutEvent payoutEvent = new WelfarePayoutEvent(entityPlayerMP, payout);
+                    MinecraftForge.EVENT_BUS.post(payoutEvent);
+                    payout = payoutEvent.getAmount();
+                    if(!payoutEvent.isCanceled()) {
+                        ModEconomy.depositATM(entityPlayerMP.getUniqueID(), payout, false);
+                        Notification welfareNotification = new Notification(entityPlayerMP.getUniqueID(),
+                                TextFormatting.DARK_GRAY + "Welfare: " + TextFormatting.DARK_GREEN + "$" + NumberConversions.format(payout),
+                                NotificationType.EDGED, 5, 0xFFFFFF);
+                        welfareNotification.sendTo(entityPlayerMP, true, true, false);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

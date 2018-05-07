@@ -132,12 +132,13 @@ public class AICopPolice extends EntityAIBase {
     @Override
     public void startExecuting() {
         this.entity.getNavigator().tryMoveToXYZ(this.entity.getAttackTarget().posX, this.entity.getAttackTarget().posY, this.entity.getAttackTarget().posZ, moveSpeed);
+        this.entity.setChasingPlayer((EntityPlayer) this.entity.getAttackTarget());
         super.startExecuting();
     }
 
     @Override
     public boolean shouldExecute() {
-        return this.entity.getAttackTarget() != null && !hasArrestedPlayer() && !isTargetArrested()
+        return this.entity.getAttackTarget() != null && this.entity.getEntitySenses().canSee(this.entity.getAttackTarget()) && !hasArrestedPlayer() && !isTargetArrested()
                 && (targetHolding(ModGuns.itemGun) || targetHolding(ModGuns.itemDynamite) || targetHolding(ModDrugs.itemJoint) || getAggressivePlayer() != null);
     }
 
@@ -217,7 +218,7 @@ public class AICopPolice extends EntityAIBase {
         setChargesForTarget(Lists.newArrayList());
         setAggressivePlayer(null);
         setKillerPlayer(null);
-        System.out.println("LOST PLAYER!");
+        entity.setChasingPlayer(null);
     }
 
     private BlockPos getNearestButton() {
