@@ -62,7 +62,7 @@ public class ServerProxy extends MLProxy {
 
         ModEMT.PLAYERS_BEING_HEALED.put(playerClicked.getUniqueID(), System.currentTimeMillis() + (1000L * 21));
         Minelife.getNetwork().sendTo(new PacketReviving(), (EntityPlayerMP) event.getEntityPlayer());
-        Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:emt_revive", 1, 1), new NetworkRegistry.TargetPoint(event.getEntityPlayer().dimension, event.getEntityPlayer().posX, event.getEntityPlayer().posY, event.getEntityPlayer().posZ, 10));
+        Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:emt_revive", 1, 1, event.getEntityPlayer().posX, event.getEntityPlayer().posY, event.getEntityPlayer().posZ), new NetworkRegistry.TargetPoint(event.getEntityPlayer().dimension, event.getEntityPlayer().posX, event.getEntityPlayer().posY, event.getEntityPlayer().posZ, 10));
     }
 
     @SubscribeEvent
@@ -71,8 +71,9 @@ public class ServerProxy extends MLProxy {
         ModEMT.PLAYERS_BEING_HEALED.forEach((playerID, reviveTime) -> {
             if (System.currentTimeMillis() >= reviveTime) {
                 toRemove.add(playerID);
-                if (PlayerHelper.getPlayer(playerID) != null)
-                    ModPolice.setUnconscious(PlayerHelper.getPlayer(playerID), false);
+                if (PlayerHelper.getPlayer(playerID) != null) {
+                    ModPolice.setUnconscious(PlayerHelper.getPlayer(playerID), false, false);
+                }
             }
         });
 

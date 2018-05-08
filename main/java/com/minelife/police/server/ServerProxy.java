@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.minelife.MLProxy;
 import com.minelife.core.event.EntityDismountEvent;
 import com.minelife.emt.ModEMT;
+import com.minelife.emt.entity.EntityEMT;
 import com.minelife.essentials.Location;
 import com.minelife.essentials.server.EventTeleport;
 import com.minelife.essentials.server.commands.Spawn;
@@ -42,13 +43,9 @@ public class ServerProxy extends MLProxy {
         Prison.initPrisons();
         config = new MLConfig("police");
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(ModPolice.itemHandcuff);
+        MinecraftForge.EVENT_BUS.register(ModPolice.itemHandcuffKey);
     }
-
-    @SubscribeEvent
-    public void onDismount(EntityDismountEvent event) {
-        System.out.println("ON DISMOUNT!");
-    }
-
 
     @SubscribeEvent
     public void onHit(LivingAttackEvent event) {
@@ -61,6 +58,17 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent
     public void onDeath(LivingDeathEvent event) {
+        if(event.getEntity() instanceof EntityEMT) {
+            com.minelife.emt.ServerProxy.spawnEMTs(event.getEntity().world);
+            EntityEMT emt = (EntityEMT) event.getEntity();
+            if(emt.getRevivingPlayer() != null) {
+                ModEMT.requestEMT(emt.getRevivingPlayer());
+            }
+            return;
+        }
+
+        if(event.getEntity() instanceof EntityCop) spawnCops(event.getEntity().world);
+
         if (!(event.getEntity() instanceof EntityPlayer)) return;
 
         if (event.getSource().getTrueSource() instanceof EntityPlayer) {
@@ -74,7 +82,7 @@ public class ServerProxy extends MLProxy {
 
         event.setCanceled(true);
         ((EntityPlayer) event.getEntity()).setHealth(10);
-        ModPolice.setUnconscious((EntityPlayer) event.getEntity(), true);
+        ModPolice.setUnconscious((EntityPlayer) event.getEntity(), true, false);
         ModEMT.requestEMT((EntityPlayer) event.getEntity());
     }
 
@@ -117,7 +125,7 @@ public class ServerProxy extends MLProxy {
                 }
             }
 
-            ModPolice.setUnconscious(event.player, false);
+            ModPolice.setUnconscious(event.player, false, false);
 
             Location spawn = Spawn.GetSpawn();
             if (spawn != null)

@@ -30,12 +30,14 @@ import java.util.UUID;
 public class ModPolice extends MLMod {
 
     public static ItemHandcuff itemHandcuff;
+    public static ItemHandcuffKey itemHandcuffKey;
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         EntityRegistry.registerModEntity(new ResourceLocation(Minelife.MOD_ID, "cop"), EntityCop.class, "cop", 7, Minelife.getInstance(), 77, 1, true, 0xFFFFFF, 0x4286f4);
         registerPacket(PacketUnconscious.Handler.class, PacketUnconscious.class, Side.CLIENT);
         registerItem(itemHandcuff = new ItemHandcuff());
+        registerItem(itemHandcuffKey = new ItemHandcuffKey());
         itemHandcuff.registerRecipe();
     }
 
@@ -59,16 +61,16 @@ public class ModPolice extends MLMod {
         return ServerProxy.config;
     }
 
-    public static void setUnconscious(EntityPlayer entity, boolean value) {
+    public static void setUnconscious(EntityPlayer entity, boolean value, boolean playSound) {
         Minelife.getNetwork().sendToAll(new PacketUnconscious(entity.getEntityId(), value));
 
         if(value) {
             entity.getEntityData().setLong("UnconsciousTime", System.currentTimeMillis() + (60000L * 3));
-            entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 60 * 20, 10, false, false));
+            ItemHandcuff.setHandcuffed(entity, true, playSound);
         } else {
             entity.getEntityData().removeTag("UnconsciousTime");
             entity.getEntityData().removeTag("Tazed");
-            entity.removePotionEffect(MobEffects.SLOWNESS);
+            ItemHandcuff.setHandcuffed(entity, false, false);
         }
     }
 
@@ -76,15 +78,15 @@ public class ModPolice extends MLMod {
         return player.getEntityData().hasKey("UnconsciousTime") && player.getEntityData().getLong("UnconsciousTime") > System.currentTimeMillis();
     }
 
-    public static boolean isOfficer(UUID playerID) {
+    public static boolean isCop(UUID playerID) {
         return ServerProxy.config.getStringList("players") != null ? ServerProxy.config.getStringList("players").contains(playerID.toString()): null;
     }
 
-    public static boolean isPoliceClientCheck(UUID playerID) {
+    public static boolean isCopClientCheck(UUID playerID) {
         return ClientProxy.POLICE_SET.contains(playerID);
     }
 
-    public static void setOfficer(EntityPlayer player, boolean value) {
+    public static void setCop(EntityPlayer player, boolean value) {
         List<String> emts = ServerProxy.config.contains("players") ? ServerProxy.config.getStringList("players") : Lists.newArrayList();
         if(value) {
             if(!emts.contains(player.getUniqueID().toString())) emts.add(player.getUniqueID().toString());

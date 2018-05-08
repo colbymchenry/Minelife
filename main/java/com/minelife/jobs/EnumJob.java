@@ -4,6 +4,7 @@ import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumGun;
 import com.minelife.jobs.job.bountyhunter.BountyHunterHandler;
 import com.minelife.jobs.job.bountyhunter.BountyHunterListener;
+import com.minelife.jobs.job.cop.CopHandler;
 import com.minelife.jobs.job.drugproducer.DrugProducerHandler;
 import com.minelife.jobs.job.drugproducer.DrugProducerListener;
 import com.minelife.jobs.job.emt.EMTHandler;
@@ -30,7 +31,7 @@ public enum EnumJob {
     BOUNTY_HUNTER(new ItemStack(Items.BOW), TextFormatting.RED),
     RESTAURATEUR(new ItemStack(ItemRegistry.baconcheeseburgerItem), TextFormatting.GREEN),
     LUMBERJACK(new ItemStack(Items.IRON_AXE), TextFormatting.DARK_GREEN),
-    POLICE(new ItemStack(ModGuns.itemGun, 1, 1), TextFormatting.BLUE),
+    COP(new ItemStack(ModGuns.itemGun, 1, 1), TextFormatting.BLUE),
     DRUG_PRODUCER(new ItemStack(ModGuns.itemGun, 1, EnumGun.AK47_BLOODBATH.ordinal()), TextFormatting.DARK_RED),
     EMT(ItemStack.EMPTY, TextFormatting.BLUE);
 
@@ -52,6 +53,7 @@ public enum EnumJob {
             case LUMBERJACK: return LumberjackHandler.INSTANCE;
             case DRUG_PRODUCER: return DrugProducerHandler.INSTANCE;
             case EMT: return EMTHandler.INSTANCE;
+            case COP: return CopHandler.INSTANCE;
         }
         return null;
     }

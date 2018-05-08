@@ -26,13 +26,12 @@ public class AICopPolice extends EntityAIBase {
 
     private double moveSpeed = 1.8;
     private int followRange = 20, arrestRange = 2, tazeRange = 6;
-    private int pathAttempt = 0;
+    private int pathAttempt = 0, inWater = 0;
     private EntityCop entity;
     private List<ChargeType> chargesForTarget = Lists.newArrayList();
     private long lastPlayerTazed;
 
     public AICopPolice(EntityCop cop) {
-        // TODO: Add the canSee from the SkeletonAI
         this.entity = cop;
         setMutexBits(7);
     }
@@ -40,6 +39,7 @@ public class AICopPolice extends EntityAIBase {
     @Override
     public boolean shouldContinueExecuting() {
         if (this.entity.getAttackTarget() != null || hasArrestedPlayer()) {
+
             // if does not have arrested player go to player that we are attempting to arrest
             if (!hasArrestedPlayer() && !isTargetArrested()) {
                 this.entity.getNavigator().tryMoveToXYZ(this.entity.getAttackTarget().posX, this.entity.getAttackTarget().posY, this.entity.getAttackTarget().posZ, moveSpeed);
@@ -48,7 +48,7 @@ public class AICopPolice extends EntityAIBase {
                 if (Objects.equals(entity.getAttackTarget().getUniqueID(), getAggressivePlayer())
                         && !Objects.equals(entity.getAttackTarget().getUniqueID(), getKillerPlayer())) {
                     if (this.entity.getDistance(this.entity.getAttackTarget()) < tazeRange) {
-                        ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), true);
+                        ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), true, false);
                         playTazerSound();
                         setAggressivePlayer(null);
                         entity.setAttackTarget(null);
@@ -58,10 +58,10 @@ public class AICopPolice extends EntityAIBase {
 
                 if (this.entity.getDistance(this.entity.getAttackTarget()) < arrestRange) {
                     this.entity.getAttackTarget().startRiding(this.entity, true);
-                    ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), false);
+                    ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), false, true);
                 } else if (this.entity.getDistance(this.entity.getAttackTarget()) < tazeRange) {
                     entity.getAttackTarget().getEntityData().setBoolean("Tazed", true);
-                    ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), true);
+                    ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), true, false);
                     playTazerSound();
                 }
             } else {
@@ -96,11 +96,31 @@ public class AICopPolice extends EntityAIBase {
                     }
                 }
 
+
+                if(this.entity.isInWater()) {
+                    inWater++;
+
+                    if(inWater > 50) {
+                        this.entity.setPosition(nearbyPrison.getDropOffPos().getX(), nearbyPrison.getDropOffPos().getY(), nearbyPrison.getDropOffPos().getZ());
+                        this.entity.getAttackTarget().setPosition(nearbyPrison.getDropOffPos().getX(), nearbyPrison.getDropOffPos().getY(), nearbyPrison.getDropOffPos().getZ());
+                        ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), false, false);
+                        this.entity.getAttackTarget().removePotionEffect(MobEffects.SLOWNESS);
+                        this.entity.setAttackTarget(null);
+                        this.entity.removePassengers();
+                        this.entity.getRegroupAI().setRegroupPos(this.entity.getRegroupAI().getRandomRegroupPos());
+                        lostPlayer();
+                        this.pathAttempt = 0;
+                        return false;
+                    }
+                }
+
+
+
                 if (nearbyPrison != null && this.getClosestForPathTarget() != null) {
                     this.entity.getNavigator().setPath(getClosestForPathTarget(), moveSpeed);
                     // drop player at drop off position
                     if (this.entity.getPosition().getDistance(nearbyPrison.getDropOffPos().getX(), nearbyPrison.getDropOffPos().getY(), nearbyPrison.getDropOffPos().getZ()) < 2) {
-                        ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), false);
+                        ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), false, false);
                         this.entity.getAttackTarget().removePotionEffect(MobEffects.SLOWNESS);
                         this.entity.setAttackTarget(null);
                         this.entity.removePassengers();
@@ -113,7 +133,7 @@ public class AICopPolice extends EntityAIBase {
                     if (this.pathAttempt > 100) {
                         this.entity.setPosition(nearbyPrison.getDropOffPos().getX(), nearbyPrison.getDropOffPos().getY(), nearbyPrison.getDropOffPos().getZ());
                         this.entity.getAttackTarget().setPosition(nearbyPrison.getDropOffPos().getX(), nearbyPrison.getDropOffPos().getY(), nearbyPrison.getDropOffPos().getZ());
-                        ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), false);
+                        ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), false, false);
                         this.entity.getAttackTarget().removePotionEffect(MobEffects.SLOWNESS);
                         this.entity.setAttackTarget(null);
                         this.entity.removePassengers();

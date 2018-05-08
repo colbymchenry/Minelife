@@ -39,7 +39,8 @@ public class PacketFire implements IMessage {
 
         @Override
         public IMessage onMessage(PacketFire message, MessageContext ctx) {
-            FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.fire(ctx.getServerHandler().player, message.lookVector, ctx.getServerHandler().player.ping));
+            // TODO: Need to fix ping '0'
+            FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.fire(ctx.getServerHandler().player, message.lookVector, 0));
             return null;
         }
 

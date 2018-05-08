@@ -21,11 +21,13 @@ public class ClientProxy extends MLProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
         RenderingRegistry.registerEntityRenderingHandler(EntityCop.class, RenderCop::new);
+        ModPolice.itemHandcuff.registerModel();
+        ModPolice.itemHandcuffKey.registerModel();
     }
 
     @Override
     public void init(FMLInitializationEvent event) throws Exception {
-        ModPolice.itemHandcuff.registerModel();
+
     }
 
     public static void setSleeping(EntityPlayer player, boolean value) {

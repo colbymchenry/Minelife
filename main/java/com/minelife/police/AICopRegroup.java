@@ -15,7 +15,7 @@ public class AICopRegroup extends EntityAIBase {
     private double moveSpeed = 1.8;
     private BlockPos regroupPos;
     private EntityCop entity;
-    private int pathAttempt = 0;
+    private int pathAttempt = 0, inWater = 0;
 
     public AICopRegroup(EntityCop cop) {
         this.entity = cop;
@@ -27,6 +27,18 @@ public class AICopRegroup extends EntityAIBase {
         if (regroupPos == null) return false;
 
         if (shouldExecute()) {
+
+            if(this.entity.isInWater()) {
+                inWater++;
+
+                if(inWater > 50) {
+                    this.entity.setPosition(regroupPos.getX(), regroupPos.getY(), regroupPos.getZ());
+                    this.pathAttempt = 0;
+                    this.inWater = 0;
+                    return false;
+                }
+            }
+
             if (this.getClosestForPathRegroup() != null) {
                 this.entity.getNavigator().setPath(getClosestForPathRegroup(), moveSpeed);
             } else {

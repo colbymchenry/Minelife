@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import java.util.List;
+import java.util.Objects;
 
 public class AIEMTRevive extends EntityAIBase {
 
@@ -23,6 +24,7 @@ public class AIEMTRevive extends EntityAIBase {
     private int followRange = 20, arrestRange = 2, tazeRange = 6;
     private int pathAttempt = 0;
     private EntityEMT entity;
+    private int inWater = 0;
 
     public AIEMTRevive(EntityEMT cop) {
         // TODO: Add the canSee from the SkeletonAI
@@ -45,11 +47,21 @@ public class AIEMTRevive extends EntityAIBase {
                 }
             } else {
                 this.entity.getNavigator().setPath(getClosestForPathTarget(), moveSpeed);
+
+                if(this.entity.isInWater()) {
+                    this.inWater++;
+
+                    if(this.inWater > 50) {
+                        this.entity.setPosition(entity.getAttackTarget().posX, entity.getAttackTarget().posY, entity.getAttackTarget().posZ);
+                        this.pathAttempt = 0;
+                        this.inWater = 0;
+                    }
+                }
             }
 
             if(entity.getAttackTarget().getPosition().getDistance((int)entity.posX, (int)entity.posY, (int)entity.posZ) < 4) {
                 ModEMT.PLAYERS_BEING_HEALED.put(this.entity.getAttackTarget().getUniqueID(), System.currentTimeMillis() + (1000L * 21));
-                Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:emt_revive", 1, 1), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 10));
+                Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:emt_revive", 1, 1, this.entity.posX, this.entity.posY, this.entity.posZ), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 10));
                 this.entity.setRevivingPlayer(null);
             }
         }
@@ -83,6 +95,7 @@ public class AIEMTRevive extends EntityAIBase {
     }
 
     private boolean isAlreadyBeingRevived(EntityPlayer player) {
-        return ModEMT.PLAYERS_BEING_HEALED.containsKey(player.getUniqueID());
+        System.out.println(ServerProxy.getEMTsForWorld(player.world).stream().filter(entityEMT -> !entityEMT.getUniqueID().equals(entity.getUniqueID()) && entityEMT.getRevivingPlayer() != null && Objects.equals(player.getUniqueID(), entityEMT.getRevivingPlayer().getUniqueID())).findFirst().orElse(null) != null);
+        return ModEMT.PLAYERS_BEING_HEALED.containsKey(player.getUniqueID()) || ServerProxy.getEMTsForWorld(player.world).stream().filter(entityEMT -> !entityEMT.getUniqueID().equals(entity.getUniqueID()) && entityEMT.getRevivingPlayer() != null && Objects.equals(player.getUniqueID(), entityEMT.getRevivingPlayer().getUniqueID())).findFirst().orElse(null) != null;
     }
 }

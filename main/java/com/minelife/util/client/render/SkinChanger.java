@@ -3,6 +3,7 @@ package com.minelife.util.client.render;
 import com.google.common.collect.Maps;
 import com.minelife.Minelife;
 import com.minelife.emt.ModEMT;
+import com.minelife.police.ModPolice;
 import com.minelife.util.SkinHelper;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.Minecraft;
@@ -57,7 +58,7 @@ public class SkinChanger {
 
     private static ResourceLocation getTexture(AbstractClientPlayer player) throws IOException {
         if(player == null) return null;
-        if(!ModEMT.isEMTClientCheck(player.getUniqueID())) { return player.getLocationSkin(); }
+        if(!ModEMT.isEMTClientCheck(player.getUniqueID()) && !ModPolice.isCopClientCheck(player.getUniqueID())) { return player.getLocationSkin(); }
         if (playerTextures.containsKey(player.getUniqueID())) return playerTextures.get(player.getUniqueID());
 
         final ResourceLocation resourceLocation = new ResourceLocation(Minelife.MOD_ID, "textures/players/" + player.getUniqueID().toString() + ".png");
