@@ -11,6 +11,7 @@ import com.minelife.jobs.job.SellingOption;
 import com.minelife.jobs.network.PacketOpenNormalGui;
 import com.minelife.jobs.network.PacketOpenSignupGui;
 import com.minelife.jobs.server.CommandJob;
+import com.minelife.police.ModPolice;
 import com.minelife.util.fireworks.Color;
 import com.minelife.util.fireworks.FireworkBuilder;
 import net.minecraft.entity.item.EntityFireworkRocket;
@@ -46,14 +47,19 @@ public class EMTHandler extends NPCHandler {
     @Override
     public void joinProfession(EntityPlayer player) {
         if (ModEMT.isEMT(player.getUniqueID())) {
-            CommandJob.sendMessage(player, EnumJob.FARMER, TextFormatting.RED + "You are already an EMT.");
+            CommandJob.sendMessage(player, EnumJob.EMT, TextFormatting.RED + "You are already an EMT.");
+            return;
+        }
+
+        if(ModPolice.isCop(player.getUniqueID())) {
+            CommandJob.sendMessage(player, EnumJob.EMT, TextFormatting.RED + "You are already a cop.");
             return;
         }
 
         ModEMT.setEMT(player, true);
 
         ItemStack fireworkStack = FireworkBuilder.builder().addExplosion(true, true, FireworkBuilder.Type.LARGE_BALL,
-                new int[]{Color.YELLOW.asRGB(), Color.LIME.asRGB()}, new int[]{Color.YELLOW.asRGB(), Color.GREEN.asRGB()}).getStack(1);
+                new int[]{Color.BLUE.asRGB(), Color.ORANGE.asRGB()}, new int[]{Color.WHITE.asRGB(), Color.AQUA.asRGB()}).getStack(1);
 
         EntityFireworkRocket ent = new EntityFireworkRocket(player.getEntityWorld(), player.posX, player.posY + 2, player.posZ, fireworkStack);
         player.getEntityWorld().spawnEntity(ent);

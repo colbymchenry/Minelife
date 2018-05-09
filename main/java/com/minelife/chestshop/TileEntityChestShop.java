@@ -28,7 +28,7 @@ public class TileEntityChestShop extends MLTileEntity {
     private EnumFacing facing = EnumFacing.NORTH;
     private ItemStack item;
     private int price = 0;
-    private boolean serverShop = false;
+    private boolean serverShop = false, sellingShop = false;
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
@@ -40,6 +40,7 @@ public class TileEntityChestShop extends MLTileEntity {
         if (tag.hasKey("Owner")) this.owner = UUID.fromString(tag.getString("Owner"));
         else this.owner = null;
         this.serverShop = tag.getBoolean("ServerShop");
+        this.sellingShop = tag.getBoolean("SellingShop");
     }
 
     @Override
@@ -55,6 +56,7 @@ public class TileEntityChestShop extends MLTileEntity {
         }
         if (this.owner != null) tag.setString("Owner", this.owner.toString());
         tag.setBoolean("ServerShop", serverShop);
+        tag.setBoolean("SellingShop", sellingShop);
         return tag;
     }
 
@@ -64,6 +66,14 @@ public class TileEntityChestShop extends MLTileEntity {
 
     public void setServerShop(boolean serverShop) {
         this.serverShop = serverShop;
+    }
+
+    public void setSellingShop(boolean sellingShop) {
+        this.sellingShop = sellingShop;
+    }
+
+    public boolean isSellingShop() {
+        return sellingShop;
     }
 
     public UUID getOwner() {

@@ -1,10 +1,8 @@
 package com.minelife.police;
 
-import com.minelife.police.server.Prison;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.render.Vector;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.init.Blocks;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.math.BlockPos;
 
@@ -75,7 +73,6 @@ public class AICopRegroup extends EntityAIBase {
 
         Path path = this.entity.getNavigator().getPathToPos(regroupPos);
         if (path == null) {
-            System.out.println("CALLED");
             path = this.entity.getNavigator().getPathToPos(new BlockPos(entity.posX + (-subtracted.getX() * distance), entity.posY, entity.posZ + (-subtracted.getZ() * distance)));
         }
         return path;

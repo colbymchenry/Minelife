@@ -14,6 +14,7 @@ import lib.PatPeter.SQLibrary.Database;
 import lib.PatPeter.SQLibrary.SQLite;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
@@ -63,6 +64,8 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent
     public void onJoin(PlayerEvent.PlayerLoggedInEvent event) throws SQLException, IOException {
+        event.player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(10);
+
         if (isNewPlayer(event.player.getUniqueID())) {
             if (Spawn.GetNewSpawn() != null) {
                 Location spawn = Spawn.GetNewSpawn();

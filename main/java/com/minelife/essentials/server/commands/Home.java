@@ -49,14 +49,14 @@ public class Home extends CommandBase {
 
         String id = args.length == 0 ? "default" : args[0].toLowerCase();
 
-        if(!ModPermission.hasPermission(Player.getUniqueID(), "homes.admin")) id = "default";
+        if (!ModPermission.hasPermission(Player.getUniqueID(), "homes.admin")) id = "default";
 
         if (!homes.containsKey(id)) {
             Player.sendMessage(new TextComponentString(TextFormatting.RED + "You do not have a home. Sleep in a bed to set your home."));
             return;
         }
 
-        if(!ModPermission.hasPermission(Player.getUniqueID(), "homes.admin")) {
+        if (!ModPermission.hasPermission(Player.getUniqueID(), "homes.admin")) {
             TeleportHandler.teleport(Player, getDefaultHome(Player.getUniqueID()));
         } else {
             TeleportHandler.teleport(Player, homes.get(id));
@@ -120,30 +120,30 @@ public class Home extends CommandBase {
     }
 
     public static Location getDefaultHome(UUID playerID) {
-        if(GetHomes(playerID).containsKey("default")) {
+        if (GetHomes(playerID).containsKey("default")) {
             Location home = GetHomes(playerID).get("default");
-            BlockPos pos = new BlockPos(home.getX(), home.getY(), home.getZ());
+            BlockPos pos = new BlockPos(home.getX(), home.getY() + 0.8, home.getZ());
 
-            if(home.getEntityWorld().isAirBlock(pos.add(0, 1, 0)) && home.getEntityWorld().isAirBlock(pos.add(0, 2, 0))) {
+            if (home.getEntityWorld().isAirBlock(pos.add(0, 1, 0)) && home.getEntityWorld().isAirBlock(pos.add(0, 2, 0))) {
                 home.setY(home.getY() + 1);
-            } else if(home.getEntityWorld().isAirBlock(pos.add(1, 0, 0))) {
-                 home.setX(home.getX() + 1);
+            } else if (home.getEntityWorld().isAirBlock(pos.add(1, 0, 0))) {
+                home.setX(home.getX() + 1);
             } else if (home.getEntityWorld().isAirBlock(pos.add(-1, 0, 0))) {
                 home.setX(home.getX() - 1);
             } else if (home.getEntityWorld().isAirBlock(pos.add(0, 0, 1))) {
                 home.setZ(home.getZ() + 1);
             } else if (home.getEntityWorld().isAirBlock(pos.add(0, 0, -1))) {
                 home.setZ(home.getZ() - 1);
-            }else if (home.getEntityWorld().isAirBlock(pos.add(1, 0, 1))) {
+            } else if (home.getEntityWorld().isAirBlock(pos.add(1, 0, 1))) {
                 home.setX(home.getX() + 1);
                 home.setZ(home.getZ() + 1);
-            }else if (home.getEntityWorld().isAirBlock(pos.add(-1, 0, -1))) {
+            } else if (home.getEntityWorld().isAirBlock(pos.add(-1, 0, -1))) {
                 home.setX(home.getX() - 1);
                 home.setZ(home.getZ() - 1);
-            }else if (home.getEntityWorld().isAirBlock(pos.add(1, 0, -1))) {
+            } else if (home.getEntityWorld().isAirBlock(pos.add(1, 0, -1))) {
                 home.setX(home.getX() + 1);
                 home.setZ(home.getZ() - 1);
-            }else if (home.getEntityWorld().isAirBlock(pos.add(-1, 0, 1))) {
+            } else if (home.getEntityWorld().isAirBlock(pos.add(-1, 0, 1))) {
                 home.setX(home.getX() - 1);
                 home.setZ(home.getX() + 1);
             }
@@ -158,8 +158,8 @@ public class Home extends CommandBase {
 
     public static UUID getHomeAtLoc(int dimension, BlockPos pos) {
         try {
-            ResultSet result = ModEssentials.getDB().query("SELECT * FROM homes WHERE dimension='" + dimension + "' AND x='" + pos.getX() + "' AND y='" + pos.getY()+ "' AND z='" + pos.getZ() + "'");
-            if(result.next()) {
+            ResultSet result = ModEssentials.getDB().query("SELECT * FROM homes WHERE dimension='" + dimension + "' AND x='" + pos.getX() + "' AND y='" + pos.getY() + "' AND z='" + pos.getZ() + "'");
+            if (result.next()) {
                 return UUID.fromString(result.getString("player"));
             }
         } catch (SQLException e) {

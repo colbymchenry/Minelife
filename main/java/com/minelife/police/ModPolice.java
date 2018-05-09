@@ -6,13 +6,14 @@ import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.emt.PacketSendEMTStatus;
 import com.minelife.emt.entity.EntityEMT;
+import com.minelife.jobs.network.PacketOpenSignupGui;
 import com.minelife.police.client.ClientProxy;
+import com.minelife.police.network.PacketJailPlayer;
 import com.minelife.police.network.PacketUnconscious;
-import com.minelife.police.server.CommandCop;
-import com.minelife.police.server.CommandPrison;
-import com.minelife.police.server.ServerProxy;
+import com.minelife.police.server.*;
 import com.minelife.util.MLConfig;
 import com.minelife.util.PacketPlaySound;
+import lib.PatPeter.SQLibrary.Database;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -36,6 +37,10 @@ public class ModPolice extends MLMod {
     public void preInit(FMLPreInitializationEvent event) {
         EntityRegistry.registerModEntity(new ResourceLocation(Minelife.MOD_ID, "cop"), EntityCop.class, "cop", 7, Minelife.getInstance(), 77, 1, true, 0xFFFFFF, 0x4286f4);
         registerPacket(PacketUnconscious.Handler.class, PacketUnconscious.class, Side.CLIENT);
+        registerPacket(PacketSendCopStatus.Handler.class, PacketSendCopStatus.class, Side.CLIENT);
+        registerPacket(PacketRequestCopStatus.Handler.class, PacketRequestCopStatus.class, Side.SERVER);
+        registerPacket(PacketOpenSignupGui.Handler.class, PacketOpenSignupGui.class, Side.CLIENT);
+        registerPacket(PacketJailPlayer.Handler.class, PacketJailPlayer.class, Side.SERVER);
         registerItem(itemHandcuff = new ItemHandcuff());
         registerItem(itemHandcuffKey = new ItemHandcuffKey());
         itemHandcuff.registerRecipe();
@@ -55,6 +60,12 @@ public class ModPolice extends MLMod {
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandPrison());
         event.registerServerCommand(new CommandCop());
+        event.registerServerCommand(new CommandRespawn());
+        event.registerServerCommand(new CommandJail());
+    }
+
+    public static Database getDatabase() {
+        return ServerProxy.database;
     }
 
     public static MLConfig getConfig() {
@@ -87,15 +98,15 @@ public class ModPolice extends MLMod {
     }
 
     public static void setCop(EntityPlayer player, boolean value) {
-        List<String> emts = ServerProxy.config.contains("players") ? ServerProxy.config.getStringList("players") : Lists.newArrayList();
+        List<String> cops = ServerProxy.config.contains("players") ? ServerProxy.config.getStringList("players") : Lists.newArrayList();
         if(value) {
-            if(!emts.contains(player.getUniqueID().toString())) emts.add(player.getUniqueID().toString());
-            Minelife.getNetwork().sendToAll(new PacketSendEMTStatus(player.getUniqueID(), true));
+            if(!cops.contains(player.getUniqueID().toString())) cops.add(player.getUniqueID().toString());
+            Minelife.getNetwork().sendToAll(new PacketSendCopStatus(player.getUniqueID(), true));
         } else {
-            emts.remove(player.getUniqueID().toString());
-            Minelife.getNetwork().sendToAll(new PacketSendEMTStatus(player.getUniqueID(), false));
+            cops.remove(player.getUniqueID().toString());
+            Minelife.getNetwork().sendToAll(new PacketSendCopStatus(player.getUniqueID(), false));
         }
-        ServerProxy.config.set("players", emts);
+        ServerProxy.config.set("players", cops);
         ServerProxy.config.save();
     }
 

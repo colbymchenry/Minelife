@@ -7,7 +7,8 @@ public enum ChargeType {
     POSSESSION_OF_UNLAWFUL_FIREARM(1000),
     MURDER(15000),
     THEFT(4000),
-    BREAKING_AND_ENTERING(3000);
+    BREAKING_AND_ENTERING(3000),
+    PRISON_BREAK(15000);
 
     public int chargeAmount;
 

@@ -71,8 +71,16 @@ public class ServerProxy extends MLProxy {
         ModEMT.PLAYERS_BEING_HEALED.forEach((playerID, reviveTime) -> {
             if (System.currentTimeMillis() >= reviveTime) {
                 toRemove.add(playerID);
-                if (PlayerHelper.getPlayer(playerID) != null) {
-                    ModPolice.setUnconscious(PlayerHelper.getPlayer(playerID), false, false);
+                EntityPlayer player = PlayerHelper.getPlayer(playerID);
+                if (player != null) {
+                    ModPolice.setUnconscious(player, false, false);
+
+                    EntityEMT emtRevivingPlayer = getEMTsForWorld(player.getEntityWorld()).stream().filter(entityEMT -> entityEMT.getRevivingPlayer() != null && entityEMT.getRevivingPlayer().getUniqueID().equals(playerID)).findFirst().orElse(null);
+                    if(emtRevivingPlayer != null) {
+                        emtRevivingPlayer.setRevivingPlayer(null);
+                        emtRevivingPlayer.setAttackTarget(null);
+                        emtRevivingPlayer.getRegroupAI().setRegroupPos(emtRevivingPlayer.getRegroupAI().getRandomRegroupPos());
+                    }
                 }
             }
         });

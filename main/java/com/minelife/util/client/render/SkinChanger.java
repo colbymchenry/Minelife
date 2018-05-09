@@ -58,13 +58,13 @@ public class SkinChanger {
 
     private static ResourceLocation getTexture(AbstractClientPlayer player) throws IOException {
         if(player == null) return null;
-        if(!ModEMT.isEMTClientCheck(player.getUniqueID()) && !ModPolice.isCopClientCheck(player.getUniqueID())) { return player.getLocationSkin(); }
         if (playerTextures.containsKey(player.getUniqueID())) return playerTextures.get(player.getUniqueID());
+        if(!ModEMT.isEMTClientCheck(player.getUniqueID()) && !ModPolice.isCopClientCheck(player.getUniqueID())) { return player.getLocationSkin(); }
 
         final ResourceLocation resourceLocation = new ResourceLocation(Minelife.MOD_ID, "textures/players/" + player.getUniqueID().toString() + ".png");
         TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
 
-        BufferedImage bimgEMTSkin = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(ModEMT.isEMT(player.getUniqueID()) ? emtSkin : policeSkin).getInputStream());
+        BufferedImage bimgEMTSkin = ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(ModEMT.isEMTClientCheck(player.getUniqueID()) ? emtSkin : policeSkin).getInputStream());
         BufferedImage bimgPlayerSkin = SkinHelper.getBufferedImage(player.getUniqueID());
 
         if (bimgPlayerSkin == null) return null;
@@ -77,6 +77,12 @@ public class SkinChanger {
         textureManager.loadTexture(resourceLocation, threadDownloadImageData);
         playerTextures.put(player.getUniqueID(), resourceLocation);
         return resourceLocation;
+    }
+
+    public static void resetSkin(AbstractClientPlayer player) {
+        if(!ModEMT.isEMTClientCheck(player.getUniqueID()) && !ModPolice.isCopClientCheck(player.getUniqueID())) {
+            playerTextures.put(player.getUniqueID(), SkinHelper.loadSkin(player.getUniqueID()));
+        }
     }
 
     private static class CustomTexture extends ThreadDownloadImageData {

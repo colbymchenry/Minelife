@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Map;
@@ -64,7 +65,7 @@ public class RenderChestShopBlock extends TileEntitySpecialRenderer<TileEntityCh
         model.render(ccrs);
         ccrs.draw();
 
-        if(te.getItem() != null) {
+        if (te.getItem() != null) {
             GlStateManager.scale(0.5, 0.5, 0.5);
             GlStateManager.rotate(90, 0, 1, 0);
             GlStateManager.translate(-0.95, 1.32, 2.05);
@@ -72,11 +73,11 @@ public class RenderChestShopBlock extends TileEntitySpecialRenderer<TileEntityCh
             GlStateManager.scale(0.03, 0.03, 0.03);
             GlStateManager.rotate(180f, 1f, 0f, 0f);
             GlStateManager.translate(8, 8, -4);
-            getFontRenderer().drawString("x" + te.getItem().getCount(), 0, 1, 0xFFFFFF, false);
+            getFontRenderer().drawString("x" + te.getItem().getCount(), 0, 1, te.isSellingShop() ? 0x058e08 : 0xFFFFFF, false);
             GlStateManager.scale(0.7, 0.7, 0.7);
             GlStateManager.translate(-35, 32, 4);
             GlStateManager.translate(24 - (getFontRenderer().getStringWidth("$" + NumberConversions.format(te.getPrice()))) / 2, 0, 0);
-            getFontRenderer().drawString("$" + NumberConversions.format(te.getPrice()), 0, -1, 0xFFFFFF, false);
+            getFontRenderer().drawString("$" + NumberConversions.format(te.getPrice()), 0, -1, te.isSellingShop() ? 0x058e08 : 0xFFFFFF, false);
         }
 
         GlStateManager.enableCull();

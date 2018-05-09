@@ -48,7 +48,7 @@ public class CommandNPC extends CommandBase {
             return;
         }
 
-        if(NumberConversions.toInt(args[1]) > EnumJob.values().length || NumberConversions.toInt(args[1]) < 0) {
+        if(NumberConversions.toInt(args[1]) >= EnumJob.values().length || NumberConversions.toInt(args[1]) < 0) {
             player.sendMessage(new TextComponentString(TextFormatting.RED + "Min: 0, Max: " + (EnumJob.values().length - 1)));
             return;
         }

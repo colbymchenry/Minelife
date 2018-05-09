@@ -8,7 +8,7 @@ import java.util.LinkedList;
 public class GuiEMTSignup extends GuiSignUp {
 
     public GuiEMTSignup() {
-        super(EnumJob.BOUNTY_HUNTER);
+        super(EnumJob.EMT);
     }
 
     @Override

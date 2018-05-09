@@ -5,7 +5,9 @@ import com.minelife.Minelife;
 import com.minelife.drugs.ModDrugs;
 import com.minelife.guns.ModGuns;
 import com.minelife.police.server.Prison;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.PacketPlaySound;
+import com.minelife.util.StringHelper;
 import com.minelife.util.client.render.Vector;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -16,8 +18,10 @@ import net.minecraft.item.Item;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -72,6 +76,11 @@ public class AICopPolice extends EntityAIBase {
                 }
 
                 if (chargesForTarget.isEmpty()) {
+                    if (Prisoner.isPrisoner(entity.getAttackTarget().getUniqueID())) {
+                        chargesForTarget.addAll(Prisoner.getPrisoner(entity.getAttackTarget().getUniqueID()).getCharges());
+
+                    }
+
                     if (targetHolding(ModGuns.itemGun)) {
                         chargesForTarget.add(ChargeType.POSSESSION_OF_UNLAWFUL_FIREARM);
                     } else if (targetHolding(ModGuns.itemDynamite)) {
@@ -83,13 +92,17 @@ public class AICopPolice extends EntityAIBase {
                     if (Objects.equals(entity.getAttackTarget().getUniqueID(), getKillerPlayer())) {
                         chargesForTarget.add(ChargeType.MURDER);
                     }
+
+                    if (Prison.getPrison(entity.getAttackTarget().getPosition()) != null && Prisoner.isPrisoner(entity.getAttackTarget().getUniqueID())) {
+                        chargesForTarget.add(ChargeType.PRISON_BREAK);
+                    }
                 }
 
                 // if we have an arrested player take them to the nearest prison
                 Prison nearbyPrison = entity.getNearbyPrison();
 
                 if (nearbyPrison != null) {
-                    if(getNearestButton() != null) {
+                    if (getNearestButton() != null) {
                         BlockPos nearestButton = getNearestButton();
                         IBlockState blockState = entity.getEntityWorld().getBlockState(nearestButton);
                         blockState.getBlock().onBlockActivated(entity.getEntityWorld(), nearestButton, blockState, null, null, null, 0.5f, 0.5f, 0.5f);
@@ -97,10 +110,10 @@ public class AICopPolice extends EntityAIBase {
                 }
 
 
-                if(this.entity.isInWater()) {
+                if (this.entity.isInWater()) {
                     inWater++;
 
-                    if(inWater > 50) {
+                    if (inWater > 50) {
                         this.entity.setPosition(nearbyPrison.getDropOffPos().getX(), nearbyPrison.getDropOffPos().getY(), nearbyPrison.getDropOffPos().getZ());
                         this.entity.getAttackTarget().setPosition(nearbyPrison.getDropOffPos().getX(), nearbyPrison.getDropOffPos().getY(), nearbyPrison.getDropOffPos().getZ());
                         ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), false, false);
@@ -115,11 +128,23 @@ public class AICopPolice extends EntityAIBase {
                 }
 
 
-
                 if (nearbyPrison != null && this.getClosestForPathTarget() != null) {
                     this.entity.getNavigator().setPath(getClosestForPathTarget(), moveSpeed);
                     // drop player at drop off position
                     if (this.entity.getPosition().getDistance(nearbyPrison.getDropOffPos().getX(), nearbyPrison.getDropOffPos().getY(), nearbyPrison.getDropOffPos().getZ()) < 2) {
+                        Prisoner prisoner = new Prisoner(entity.getAttackTarget().getUniqueID(), chargesForTarget);
+                        prisoner.setSavedInventory(((EntityPlayer) entity.getAttackTarget()).inventory);
+                        try {
+                            prisoner.save();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+
+                        entity.getAttackTarget().sendMessage(new TextComponentString(StringHelper.ParseFormatting("&4----------------------------------", '&')));
+                        entity.getAttackTarget().sendMessage(new TextComponentString(StringHelper.ParseFormatting("&6You are jailed for: &c" + ((prisoner.getTotalSentenceTime() / 60)) + " &6minutes.", '&')));
+                        entity.getAttackTarget().sendMessage(new TextComponentString(StringHelper.ParseFormatting("&6Total for bail: &c$" + NumberConversions.format((prisoner.getTotalBailAmount())) + "&6.", '&')));
+                        entity.getAttackTarget().sendMessage(new TextComponentString(StringHelper.ParseFormatting("&4----------------------------------", '&')));
+
                         ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), false, false);
                         this.entity.getAttackTarget().removePotionEffect(MobEffects.SLOWNESS);
                         this.entity.setAttackTarget(null);
@@ -131,6 +156,14 @@ public class AICopPolice extends EntityAIBase {
                     this.pathAttempt++;
 
                     if (this.pathAttempt > 100) {
+                        Prisoner prisoner = new Prisoner(entity.getAttackTarget().getUniqueID(), chargesForTarget);
+                        prisoner.setSavedInventory(((EntityPlayer) entity.getAttackTarget()).inventory);
+                        try {
+                            prisoner.save();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+
                         this.entity.setPosition(nearbyPrison.getDropOffPos().getX(), nearbyPrison.getDropOffPos().getY(), nearbyPrison.getDropOffPos().getZ());
                         this.entity.getAttackTarget().setPosition(nearbyPrison.getDropOffPos().getX(), nearbyPrison.getDropOffPos().getY(), nearbyPrison.getDropOffPos().getZ());
                         ModPolice.setUnconscious((EntityPlayer) entity.getAttackTarget(), false, false);
@@ -199,7 +232,8 @@ public class AICopPolice extends EntityAIBase {
     }
 
     public boolean isTargetArrested() {
-        return this.entity.getAttackTarget() != null && this.entity.getAttackTarget().getRidingEntity() != null && this.entity.getAttackTarget().getRidingEntity() instanceof EntityCop;
+        return this.entity.getAttackTarget() != null && this.entity.getAttackTarget().getRidingEntity() != null
+                && (this.entity.getAttackTarget().getRidingEntity() instanceof EntityCop || (this.entity.getAttackTarget().getRidingEntity() instanceof EntityPlayer && ModPolice.isCop(this.entity.getAttackTarget().getUniqueID())));
     }
 
     public Path getClosestForPathTarget() {
@@ -212,8 +246,7 @@ public class AICopPolice extends EntityAIBase {
 
         Path path = this.entity.getNavigator().getPathToPos(prison.getDropOffPos());
         if (path == null)
-            path = this.entity.getNavigator().getPathToPos(new BlockPos(entity.posX + (-subtracted.getX() *distance), entity.posY, entity.posZ + (-subtracted.getZ() * distance)));
-
+            path = this.entity.getNavigator().getPathToPos(new BlockPos(entity.posX + (-subtracted.getX() * distance), entity.posY, entity.posZ + (-subtracted.getZ() * distance)));
 
 
         return path;

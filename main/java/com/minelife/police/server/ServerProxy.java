@@ -3,6 +3,7 @@ package com.minelife.police.server;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.minelife.MLProxy;
+import com.minelife.Minelife;
 import com.minelife.core.event.EntityDismountEvent;
 import com.minelife.emt.ModEMT;
 import com.minelife.emt.entity.EntityEMT;
@@ -11,7 +12,13 @@ import com.minelife.essentials.server.EventTeleport;
 import com.minelife.essentials.server.commands.Spawn;
 import com.minelife.police.EntityCop;
 import com.minelife.police.ModPolice;
+import com.minelife.police.Prisoner;
+import com.minelife.police.network.PacketUnconscious;
+import com.minelife.util.DateHelper;
 import com.minelife.util.MLConfig;
+import com.minelife.util.StringHelper;
+import lib.PatPeter.SQLibrary.Database;
+import lib.PatPeter.SQLibrary.SQLite;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -31,20 +38,29 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 public class ServerProxy extends MLProxy {
 
     public static MLConfig config;
+    public static Database database;
 
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
-        Prison.initPrisons();
         config = new MLConfig("police");
+        config.save();
+        Prison.initPrisons();
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(ModPolice.itemHandcuff);
         MinecraftForge.EVENT_BUS.register(ModPolice.itemHandcuffKey);
+        MinecraftForge.EVENT_BUS.register(new Prisoner());
+
+        database = new SQLite(Logger.getLogger("Minecraft"), "[Police]", Minelife.getDirectory().getAbsolutePath(), "police");
+        database.open();
+        database.query("CREATE TABLE IF NOT EXISTS prisoners (uuid VARCHAR(36), charges TEXT, timeServed LONG)");
     }
 
     @SubscribeEvent
@@ -84,6 +100,8 @@ public class ServerProxy extends MLProxy {
         ((EntityPlayer) event.getEntity()).setHealth(10);
         ModPolice.setUnconscious((EntityPlayer) event.getEntity(), true, false);
         ModEMT.requestEMT((EntityPlayer) event.getEntity());
+
+        event.getEntity().sendMessage(new TextComponentString(StringHelper.ParseFormatting("&c&lType &6&l/respawn &c&lto respawn. You will lose everything.", '&')));
     }
 
     @SubscribeEvent
@@ -125,6 +143,9 @@ public class ServerProxy extends MLProxy {
                 }
             }
 
+            event.player.inventory.clear();
+            event.player.inventoryContainer.detectAndSendChanges();
+
             ModPolice.setUnconscious(event.player, false, false);
 
             Location spawn = Spawn.GetSpawn();
@@ -139,7 +160,7 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent
     public void onTeleport(EventTeleport event) {
-       if(Prison.getPrison(event.getPlayer().getPosition()) != null || event.getPlayer().isRiding()) {
+       if(Prison.getPrison(event.getPlayer().getPosition()) != null || (event.getPlayer().isRiding() && event.getPlayer().getRidingEntity() instanceof EntityCop)) {
            event.setCanceled(true);
            if(event.getPlayer().isRiding()) {
                event.getPlayer().sendMessage(new TextComponentString(TextFormatting.RED + "You are under arrest. Teleportation cancelled."));

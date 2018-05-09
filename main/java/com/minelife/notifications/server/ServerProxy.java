@@ -28,7 +28,7 @@ public class ServerProxy extends MLProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) throws Exception {
-         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(this);
 
         ModNotifications.getDatabase().query("DELETE FROM notifications WHERE datepublished < '" + DateHelper.dateToString(Calendar.getInstance().getTime()) + "'");
     }
@@ -36,7 +36,7 @@ public class ServerProxy extends MLProxy {
     @SubscribeEvent
     public void onJoin(PlayerEvent.PlayerLoggedInEvent event) {
         try {
-            if(!turnedOffFireSpread) {
+            if (!turnedOffFireSpread) {
                 MinecraftServer server = FMLServerHandler.instance().getServer();
                 server.getCommandManager().executeCommand(server, "/gamerule doFireTick false");
                 turnedOffFireSpread = true;

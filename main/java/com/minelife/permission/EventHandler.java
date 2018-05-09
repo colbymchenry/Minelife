@@ -4,12 +4,14 @@ import com.google.common.collect.Lists;
 import com.minelife.gangs.Gang;
 import com.minelife.gangs.ModGangs;
 import com.minelife.gangs.server.CommandGang;
+import com.minelife.police.ModPolice;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -27,6 +29,11 @@ public class EventHandler {
     @SubscribeEvent
     public void onChat(ServerChatEvent event) {
         event.setCanceled(true);
+
+        if(ModPolice.isUnconscious(event.getPlayer())) {
+            event.getPlayer().sendMessage(new TextComponentString(TextFormatting.RED + "You cannot chat while unconscious."));
+            return;
+        }
 
         UUID uuid = event.getPlayer().getUniqueID();
         String playerPrefix = ModPermission.getPrefix(uuid), playerSuffix = ModPermission.getSuffix(uuid);

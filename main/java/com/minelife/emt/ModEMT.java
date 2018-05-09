@@ -54,7 +54,7 @@ public class ModEMT extends MLMod {
     // TODO: Test spawns of EMT and Cops
 
     public static boolean isEMT(UUID playerID) {
-        return ServerProxy.config.getStringList("players") != null ? ServerProxy.config.getStringList("players").contains(playerID.toString()): null;
+        return playerID == null ? false : ServerProxy.config.getStringList("players") != null ? ServerProxy.config.getStringList("players").contains(playerID.toString()): null;
     }
 
     public static boolean isEMTClientCheck(UUID playerID) {

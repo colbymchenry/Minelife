@@ -8,8 +8,10 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
 public class Spawn extends CommandBase {
 
@@ -59,7 +61,11 @@ public class Spawn extends CommandBase {
             return new Location(dimension, X, Y, Z, Yaw, Pitch);
         }
 
-        return null;
+        BlockPos defaultPos = FMLServerHandler.instance().getServer().worlds[0].getSpawnCoordinate();
+
+        Location defaultLoc = new Location(FMLServerHandler.instance().getServer().worlds[0].provider.getDimension(), defaultPos.getX() + 0.5, defaultPos.getY() + 0.5, defaultPos.getZ() + 0.5);
+
+        return defaultLoc;
     }
 
     public static void SetNewSpawn(Location Location) {
@@ -83,6 +89,6 @@ public class Spawn extends CommandBase {
             return new Location(dimension, X, Y, Z, Yaw, Pitch);
         }
 
-        return null;
+        return GetSpawn();
     }
 }

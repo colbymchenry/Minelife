@@ -61,6 +61,9 @@ public class PacketOpenSignupGui implements IMessage {
                     case EMT:
                         Minecraft.getMinecraft().displayGuiScreen(new GuiEMTSignup());
                         return;
+                    case COP:
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiCopSignup());
+                        return;
                 }
             });
             return null;

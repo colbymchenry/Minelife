@@ -8,9 +8,11 @@ import com.minelife.chestshop.client.render.RenderChestShopBlock;
 import com.minelife.chestshop.client.render.RenderChestShopItem;
 import com.minelife.economy.ModEconomy;
 import com.minelife.permission.ModPermission;
+import com.minelife.util.ItemHelper;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.client.MLParticleDigging;
+import com.minelife.util.client.PacketPopup;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -77,6 +79,14 @@ public class BlockChestShop extends BlockContainer {
                 tile.sendUpdates();
                 return true;
             }
+
+            if (playerIn.getHeldItem(hand).getItem() == Items.BLAZE_POWDER && ModPermission.hasPermission(playerIn.getUniqueID(), "shop.servershop")) {
+                boolean isSellingShop = tile.isSellingShop();
+                tile.setSellingShop(!isSellingShop);
+                playerIn.sendMessage(new TextComponentString("SELLING SHOP: " + !isSellingShop));
+                tile.sendUpdates();
+                return true;
+            }
         }
 
         if (Objects.equals(tile.getOwner(), playerIn.getUniqueID())) {
@@ -93,37 +103,64 @@ public class BlockChestShop extends BlockContainer {
             }
 
             if (!worldIn.isRemote) {
-                int balance = ModEconomy.getBalanceInventory((EntityPlayerMP) playerIn);
 
-                if (tile.getItem() == null) {
-                    playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Item not set."));
-                    return false;
-                }
+                if(!tile.isSellingShop()) {
+                    int balance = ModEconomy.getBalanceInventory((EntityPlayerMP) playerIn);
 
-                if (balance < tile.getPrice()) {
-                    playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Insufficient funds in inventory."));
-                    return false;
-                }
+                    if (tile.getItem() == null) {
+                        playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Item not set."));
+                        return false;
+                    }
 
-                if (tile.getStockCount() < tile.getItem().getCount()) {
-                    playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Out of stock."));
-                    return false;
-                }
+                    if (balance < tile.getPrice()) {
+                        playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Insufficient funds in inventory."));
+                        return false;
+                    }
 
-                if(!tile.canPurchaseFit((EntityPlayerMP) playerIn,1)) {
-                    playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Insufficient inventory space."));
-                    return false;
-                }
+                    if (tile.getStockCount() < tile.getItem().getCount()) {
+                        playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Out of stock."));
+                        return false;
+                    }
 
-                tile.doPurchase((EntityPlayerMP) playerIn, 1);
-                int didNotFitCash = ModEconomy.depositCashPiles(tile.getOwner(), tile.getPrice());
-                int didNotFitInv = ModEconomy.withdrawInventory((EntityPlayerMP) playerIn, tile.getPrice());
+                    if (!tile.canPurchaseFit((EntityPlayerMP) playerIn, 1)) {
+                        playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Insufficient inventory space."));
+                        return false;
+                    }
 
-                if(didNotFitCash > 0) ModEconomy.depositATM(tile.getOwner(), didNotFitCash, true);
-                if(didNotFitInv > 0){
-                    ModEconomy.depositATM(playerIn.getUniqueID(), didNotFitInv, true);
-                    playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "$" + NumberConversions.format(didNotFitInv) + " did not fit in your inventory and was deposited into your ATM."));
-                    return true;
+                    tile.doPurchase((EntityPlayerMP) playerIn, 1);
+                    int didNotFitCash = ModEconomy.depositCashPiles(tile.getOwner(), tile.getPrice());
+                    int didNotFitInv = ModEconomy.withdrawInventory((EntityPlayerMP) playerIn, tile.getPrice());
+
+                    if (didNotFitCash > 0) ModEconomy.depositATM(tile.getOwner(), didNotFitCash, true);
+                    if (didNotFitInv > 0) {
+                        ModEconomy.depositATM(playerIn.getUniqueID(), didNotFitInv, true);
+                        playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "$" + NumberConversions.format(didNotFitInv) + " did not fit in your inventory and was deposited into your ATM."));
+                        return true;
+                    }
+                } else {
+                    if (tile.getItem() == null) {
+                        playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "Item not set."));
+                        return false;
+                    }
+
+
+                    if (ItemHelper.amountInInventory((EntityPlayerMP) playerIn, tile.getItem()) < tile.getItem().getCount()) {
+                        playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "You do not have enough of that item"));
+                        return false;
+                    }
+
+                    ItemHelper.removeFromPlayerInventory((EntityPlayerMP) playerIn, tile.getItem(), tile.getItem().getCount());
+                    playerIn.inventoryContainer.detectAndSendChanges();
+
+                    int didNotFitInv = ModEconomy.depositInventory((EntityPlayerMP) playerIn, tile.getPrice());
+
+                    if (didNotFitInv > 0) {
+                        ModEconomy.depositATM(playerIn.getUniqueID(), didNotFitInv, true);
+                        playerIn.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[Shop] " + TextFormatting.GOLD + "$" + NumberConversions.format(didNotFitInv) + " did not fit in your inventory and was deposited into your ATM."));
+                        return true;
+                    }
+
+
                 }
             }
         }

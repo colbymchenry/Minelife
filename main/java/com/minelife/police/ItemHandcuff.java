@@ -8,6 +8,8 @@ import com.minelife.guns.item.ItemDynamite;
 import com.minelife.util.PacketPlaySound;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
@@ -58,6 +60,7 @@ public class ItemHandcuff extends Item {
     public static void setHandcuffed(EntityPlayer player, boolean value, boolean playSound) {
         List<String> handcuffed = ModPolice.getConfig().getStringList("Handcuffed") != null ? ModPolice.getConfig().getStringList("Handcuffed") : Lists.newArrayList();
         if (value) {
+            // TODO: Stop player movement and jumping, also make EMT walk back to spawn position after healing player. Like the police do
             if (!isHandcuffed(player)) {
                 handcuffed.add(player.getUniqueID().toString() + "," + UUID.randomUUID().toString());
                 player.addPotionEffect(new PotionEffect(MobEffects.SPEED, Integer.MAX_VALUE, -10, false, false));
@@ -108,11 +111,26 @@ public class ItemHandcuff extends Item {
     }
 
     @SubscribeEvent
+    public void onInteractBlock(PlayerInteractEvent.RightClickBlock event) {
+        EntityPlayer player = event.getEntityPlayer();
+        if(!player.getPassengers().isEmpty() && player.getPassengers().get(0) instanceof EntityPlayer
+                && isHandcuffed((EntityPlayer) player.getPassengers().get(0))) {
+            player.getPassengers().get(0).dismountRidingEntity();
+            return;
+        }
+    }
+
+    @SubscribeEvent
     public void onInteract(PlayerInteractEvent.EntityInteract event) {
         if (!(event.getTarget() instanceof EntityPlayer)) return;
 
         EntityPlayer handcuffing = event.getEntityPlayer();
         EntityPlayer beingHandcuffed = (EntityPlayer) event.getTarget();
+
+        if(isHandcuffed(beingHandcuffed) && handcuffing.isSneaking() && handcuffing.getPassengers().isEmpty()) {
+            beingHandcuffed.startRiding(handcuffing);
+            return;
+        }
 
         if (handcuffing.getHeldItem(event.getHand()).getItem() != this) return;
 
@@ -136,16 +154,6 @@ public class ItemHandcuff extends Item {
         handcuffing.setHeldItem(event.getHand(), key);
 
         handcuffing.inventoryContainer.detectAndSendChanges();
-    }
-
-    @SubscribeEvent
-    public void onJump(LivingEvent.LivingJumpEvent event) {
-        if (!(event.getEntityLiving() instanceof EntityPlayer)) return;
-
-        EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-        if (isHandcuffed(player)) {
-            player.addVelocity(0, 10, 0);
-        }
     }
 
     @SubscribeEvent

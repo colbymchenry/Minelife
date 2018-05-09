@@ -18,6 +18,7 @@ import com.minelife.jobs.job.miner.MinerHandler;
 import com.minelife.jobs.job.miner.MinerListener;
 import com.minelife.jobs.job.restaurateur.RestaurateurHandler;
 import com.minelife.jobs.job.restaurateur.RestaurateurListener;
+import com.minelife.police.ModPolice;
 import com.pam.harvestcraft.item.ItemRegistry;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -31,7 +32,7 @@ public enum EnumJob {
     BOUNTY_HUNTER(new ItemStack(Items.BOW), TextFormatting.RED),
     RESTAURATEUR(new ItemStack(ItemRegistry.baconcheeseburgerItem), TextFormatting.GREEN),
     LUMBERJACK(new ItemStack(Items.IRON_AXE), TextFormatting.DARK_GREEN),
-    COP(new ItemStack(ModGuns.itemGun, 1, 1), TextFormatting.BLUE),
+    COP(new ItemStack(ModPolice.itemHandcuff), TextFormatting.BLUE),
     DRUG_PRODUCER(new ItemStack(ModGuns.itemGun, 1, EnumGun.AK47_BLOODBATH.ordinal()), TextFormatting.DARK_RED),
     EMT(ItemStack.EMPTY, TextFormatting.BLUE);
 

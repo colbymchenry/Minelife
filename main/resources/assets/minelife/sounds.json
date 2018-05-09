@@ -47,6 +47,14 @@
     "category": "neutral",
     "sounds": ["minelife:guns/m4a4_reload"]
   },
+  "guns.m4a4_black_mesa.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/m4a4"]
+  },
+  "guns.m4a4_black_mesa.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/m4a4_reload"]
+  },
   "guns.barrett.shot": {
     "category": "neutral",
     "sounds": ["minelife:guns/barrett"]
@@ -55,11 +63,43 @@
     "category": "neutral",
     "sounds": ["minelife:guns/barrett_reload"]
   },
+  "guns.barrett_hot_rod.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/barrett"]
+  },
+  "guns.barrett_hot_rod.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/barrett_reload"]
+  },
+  "guns.barrett_pineapple.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/barrett"]
+  },
+  "guns.barrett_pineapple.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/barrett_reload"]
+  },
   "guns.awp.shot": {
     "category": "neutral",
     "sounds": ["minelife:guns/awp"]
   },
   "guns.awp.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/awp_reload"]
+  },
+  "guns.awp_ghost.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/awp"]
+  },
+  "guns.awp_ghost.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/awp_reload"]
+  },
+  "guns.awp_spec_ops.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/awp"]
+  },
+  "guns.awp_spec_ops.reload": {
     "category": "neutral",
     "sounds": ["minelife:guns/awp_reload"]
   },
@@ -79,6 +119,30 @@
     "category": "neutral",
     "sounds": ["minelife:guns/ak47_reload"]
   },
+  "guns.ak47_blue_steel.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/ak47"]
+  },
+  "guns.ak47_blue_steel.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/ak47_reload"]
+  },
+  "guns.ak47_gold.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/ak47"]
+  },
+  "guns.ak47_gold.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/ak47_reload"]
+  },
+  "guns.ak47_spec_ops.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/ak47"]
+  },
+  "guns.ak47_spec_ops.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/ak47_reload"]
+  },
   "guns.magnum.shot": {
     "category": "neutral",
     "sounds": ["minelife:guns/magnum"]
@@ -95,11 +159,51 @@
     "category": "neutral",
     "sounds": ["minelife:guns/magnum_reload"]
   },
+  "guns.magnum_kingpin.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/magnum"]
+  },
+  "guns.magnum_kingpin.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/magnum_reload"]
+  },
+  "guns.magnum_rust_coat.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/magnum"]
+  },
+  "guns.magnum_rust_coat.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/magnum_reload"]
+  },
+  "guns.magnum_spec_ops.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/magnum"]
+  },
+  "guns.magnum_spec_ops.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/magnum_reload"]
+  },
   "guns.desert_eagle.shot": {
     "category": "neutral",
     "sounds": ["minelife:guns/desert_eagle"]
   },
   "guns.desert_eagle.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/desert_eagle_reload"]
+  },
+  "guns.desert_eagle_black_mesa.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/desert_eagle"]
+  },
+  "guns.desert_eagle_black_mesa.reload": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/desert_eagle_reload"]
+  },
+  "guns.desert_eagle_pineapple.shot": {
+    "category": "neutral",
+    "sounds": ["minelife:guns/desert_eagle"]
+  },
+  "guns.desert_eagle_pineapple.reload": {
     "category": "neutral",
     "sounds": ["minelife:guns/desert_eagle_reload"]
   },

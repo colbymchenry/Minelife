@@ -41,7 +41,7 @@ public class EntityJobNPC extends EntityCreature {
     }
 
     public int getProfession() {
-        return this.getDataManager().get(DATA_PROFESSION);
+        return this.getDataManager().get(DATA_PROFESSION) >= EnumJob.values().length ? 0 : this.getDataManager().get(DATA_PROFESSION);
     }
 
     @Override

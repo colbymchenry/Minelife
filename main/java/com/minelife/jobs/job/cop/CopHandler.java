@@ -9,6 +9,7 @@ import com.minelife.jobs.NPCHandler;
 import com.minelife.jobs.job.SellingOption;
 import com.minelife.jobs.network.PacketOpenSignupGui;
 import com.minelife.jobs.server.CommandJob;
+import com.minelife.permission.ModPermission;
 import com.minelife.police.ModPolice;
 import com.minelife.util.fireworks.Color;
 import com.minelife.util.fireworks.FireworkBuilder;
@@ -29,16 +30,18 @@ public class CopHandler extends NPCHandler {
         super("cop");
     }
 
-    // TODO: Finish player becoming a cop
-
     @Override
     public void onEntityRightClick(EntityPlayer player) {
         if (player.world.isRemote) return;
 
-        if (!ModEMT.isEMT(player.getUniqueID())) {
-            Minelife.getNetwork().sendTo(new PacketOpenSignupGui(EnumJob.COP), (EntityPlayerMP) player);
+        if (!ModPolice.isCop(player.getUniqueID())) {
+            if(ModPermission.hasPermission(player.getUniqueID(), "police.join")) {
+                Minelife.getNetwork().sendTo(new PacketOpenSignupGui(EnumJob.COP), (EntityPlayerMP) player);
+            } else {
+                player.sendMessage(new TextComponentString(TextFormatting.RED + "You do not have permission to become a cop."));
+            }
         } else {
-            ModEMT.setEMT(player, false);
+            ModPolice.setCop(player, false);
             player.sendMessage(new TextComponentString("You are no longer a cop!"));
         }
     }
@@ -46,7 +49,12 @@ public class CopHandler extends NPCHandler {
     @Override
     public void joinProfession(EntityPlayer player) {
         if (ModPolice.isCop(player.getUniqueID())) {
-            CommandJob.sendMessage(player, EnumJob.FARMER, TextFormatting.RED + "You are already a cop.");
+            CommandJob.sendMessage(player, EnumJob.COP, TextFormatting.RED + "You are already a cop.");
+            return;
+        }
+
+        if (ModEMT.isEMT(player.getUniqueID())) {
+            CommandJob.sendMessage(player, EnumJob.EMT, TextFormatting.RED + "You are already an EMT.");
             return;
         }
 
@@ -59,8 +67,6 @@ public class CopHandler extends NPCHandler {
         player.getEntityWorld().spawnEntity(ent);
         EntityFireworkRocket ent1 = new EntityFireworkRocket(player.getEntityWorld(), player.posX, player.posY + 2, player.posZ, fireworkStack);
         player.getEntityWorld().spawnEntity(ent1);
-
-        ModEssentials.sendTitle(null ,TextFormatting.RED + "Right click an unconscious player to revive them!", 6, (EntityPlayerMP) player);
     }
 
     @Override

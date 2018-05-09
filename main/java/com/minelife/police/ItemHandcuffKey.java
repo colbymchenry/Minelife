@@ -50,6 +50,7 @@ public class ItemHandcuffKey extends Item {
     @SubscribeEvent
     public void onInteract(PlayerInteractEvent.EntityInteract event) {
         if(!(event.getEntity() instanceof EntityPlayer)) return;
+        if(!(event.getTarget() instanceof EntityPlayer)) return;
 
         EntityPlayer uncuffing = event.getEntityPlayer();
         EntityPlayer beingUncuffed = (EntityPlayer) event.getTarget();
