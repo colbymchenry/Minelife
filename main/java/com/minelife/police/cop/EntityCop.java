@@ -1,15 +1,21 @@
-package com.minelife.police;
+package com.minelife.police.cop;
 
+import com.google.common.collect.Lists;
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumGun;
 import com.minelife.guns.item.ItemGun;
+import com.minelife.police.ChargeType;
+import com.minelife.police.ModPolice;
 import com.minelife.police.server.Prison;
+import com.minelife.police.server.ServerProxy;
 import com.minelife.util.client.render.Vector;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -24,55 +30,60 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
 
 public class EntityCop extends EntityVillager implements IRangedAttackMob {
 
-    private AICopRegroup aiRegroup;
-    private AICopPolice aiPolice;
     private AIShootPrison aiShoot;
     private EntityPlayer chasingPlayer;
+    protected List<ChargeType> chargesForTarget = Lists.newArrayList();
+    protected Prison prison;
+    private boolean checkedForPrison;
 
-    public EntityCop(World worldIn) {
-        super(worldIn);
+    public EntityCop(World world) {
+        super(world);
+    }
+
+    public EntityCop(World worldIn, boolean isGuard) {
+        this(worldIn);
+        if (isGuard)
+            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ModGuns.itemGun, 1, EnumGun.M4A4.ordinal()));
     }
 
     @Override
     protected void initEntityAI() {
         this.tasks.addTask(0, new EntityAIRestrictOpenDoor(this));
-        this.tasks.addTask(1, new EntityAIOpenDoor(this, true));
-        this.tasks.addTask(2, aiShoot = new AIShootPrison(this, 1.0D, 20, 15.0F));
-        this.tasks.addTask(3, aiPolice = new AICopPolice(this));
-        this.tasks.addTask(4, aiRegroup = new AICopRegroup(this));
+        this.tasks.addTask(1, aiShoot = new AIShootPrison(this, 1.0D, 20, 15.0F));
+        this.tasks.addTask(2, new AICopGotoPrison(this));
+        this.tasks.addTask(3, new AICopPatrol(this));
+        this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
         this.tasks.addTask(5, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(7, new EntityAILookIdle(this));
         this.tasks.addTask(8, new EntityAIOpenDoor(this, true));
-        this.targetTasks.addTask(0, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
         aiShoot.setAttackCooldown(20);
+        this.targetTasks.addTask(0, new AIAttackNearestTarget(this, EntityPlayer.class, true));
     }
 
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(80.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23000000417232513D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
     }
 
-    public Prison getNearbyPrison() {
-        return Prison.getClosestPrison(getPosition());
-    }
-
-    public AICopRegroup getRegroupAI() {
-        return aiRegroup;
-    }
-
-    public AICopPolice getPoliceAI() {
-        return aiPolice;
+    @Override
+    public void onLivingUpdate() {
+        super.onLivingUpdate();
+        if(!checkedForPrison) {
+            checkedForPrison = true;
+            prison = Prison.getPrison(getPosition());
+        }
     }
 
     public static List<EntityCop> getNearbyPolice(World world, BlockPos pos) {
-        return world.getEntitiesWithinAABB(EntityCop.class, new AxisAlignedBB(pos.getX() - 20, pos.getY() - 20, pos.getZ() - 20, pos.getX() + 20, pos.getY() + 20, pos.getZ() + 20));
+        return world.getEntitiesWithinAABB(EntityCop.class, new AxisAlignedBB(pos.getX() - 64, pos.getY() - 64, pos.getZ() - 64, pos.getX() + 64, pos.getY() + 64, pos.getZ() + 64));
     }
 
     public void setChasingPlayer(EntityPlayer chasingPlayer) {
@@ -83,19 +94,6 @@ public class EntityCop extends EntityVillager implements IRangedAttackMob {
         return chasingPlayer;
     }
 
-    /**
-     * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
-     * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
-     */
-    @Nullable
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
-        livingdata = super.onInitialSpawn(difficulty, livingdata);
-        this.setEquipmentBasedOnDifficulty(difficulty);
-        this.setEnchantmentBasedOnDifficulty(difficulty);
-        this.setCanPickUpLoot(this.rand.nextFloat() < 0.55F * difficulty.getClampedAdditionalDifficulty());
-        return livingdata;
-    }
-
     @Override
     protected SoundEvent getAmbientSound() {
         return null;
@@ -104,19 +102,17 @@ public class EntityCop extends EntityVillager implements IRangedAttackMob {
     @Nullable
     @Override
     public EntityLivingBase getAttackTarget() {
-        return getChasingPlayer() != null ? getChasingPlayer() : super.getAttackTarget();
+        EntityLivingBase target = getChasingPlayer() != null ? getChasingPlayer() : super.getAttackTarget();
+        return target instanceof EntityPlayer && ModPolice.isCop(target.getUniqueID()) ? null : target;
     }
 
-    /**
-     * Gives armor or weapon for entity based on given DifficultyInstance
-     */
+    @Override
     public void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        if (Prison.getPrison(this.getPosition()) != null)
-            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ModGuns.itemGun, 1, EnumGun.M4A4.ordinal()));
     }
 
     @Override
     public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
+        System.out.println("CALLED");
         this.getLookHelper().setLookPosition(this.getAttackTarget().posX, this.getAttackTarget().posY + (double) this.getAttackTarget().getEyeHeight(), this.getAttackTarget().posZ, (float) this.getHorizontalFaceSpeed(), (float) this.getVerticalFaceSpeed());
         if (ItemGun.getClipCount(getHeldItemMainhand()) < 1) {
             ItemGun.reload(this, getHeldItemMainhand());
@@ -133,4 +129,36 @@ public class EntityCop extends EntityVillager implements IRangedAttackMob {
     public void setSwingingArms(boolean swingingArms) {
 
     }
+
+    @Override
+    protected boolean canDespawn() {
+        return false;
+    }
+
+    public boolean isCarryingPlayer() {
+        return !getPassengers().isEmpty() && getPassengers().get(0) instanceof EntityPlayer;
+    }
+
+    public EntityPlayer getCarryingPlayer() {
+        return isCarryingPlayer() ? (EntityPlayer) getPassengers().get(0) : null;
+    }
+
+    public boolean isTargetArrested() {
+        if (getAttackTarget() == null) return false;
+        return ServerProxy.getCopsForWorld(world).stream().filter(cop -> cop.isCarryingPlayer() && cop.getCarryingPlayer().getUniqueID().equals(getAttackTarget().getUniqueID())).findFirst().orElse(null) != null;
+    }
+
+    public UUID getKillerPlayer() {
+        return getEntityData().hasKey("KillerPlayer") ? UUID.fromString(getEntityData().getString("KillerPlayer")) : null;
+    }
+
+    public void setKillerPlayer(UUID playerID) {
+        if (playerID == null) {
+            getEntityData().removeTag("KillerPlayer");
+            return;
+        }
+        getEntityData().setString("KillerPlayer", playerID.toString());
+    }
+
+
 }

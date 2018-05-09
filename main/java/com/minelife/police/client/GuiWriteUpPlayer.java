@@ -22,6 +22,8 @@ public class GuiWriteUpPlayer extends GuiScreen {
         this.playerID = playerID;
     }
 
+    // TODO: Finish write up gui
+
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         GlStateManager.disableTexture2D();

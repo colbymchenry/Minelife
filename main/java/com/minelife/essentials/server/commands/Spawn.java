@@ -61,7 +61,7 @@ public class Spawn extends CommandBase {
             return new Location(dimension, X, Y, Z, Yaw, Pitch);
         }
 
-        BlockPos defaultPos = FMLServerHandler.instance().getServer().worlds[0].getSpawnCoordinate();
+        BlockPos defaultPos = FMLServerHandler.instance().getServer().getEntityWorld().getSpawnPoint();
 
         Location defaultLoc = new Location(FMLServerHandler.instance().getServer().worlds[0].provider.getDimension(), defaultPos.getX() + 0.5, defaultPos.getY() + 0.5, defaultPos.getZ() + 0.5);
 

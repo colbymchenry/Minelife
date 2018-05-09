@@ -1,21 +1,14 @@
 package com.minelife.emt.entity;
 
-import com.minelife.police.AICopPolice;
-import com.minelife.police.AICopRegroup;
-import com.minelife.police.EntityCop;
-import com.minelife.police.server.Prison;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class EntityEMT extends EntityVillager {
 
@@ -40,7 +33,6 @@ public class EntityEMT extends EntityVillager {
         this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(7, new EntityAILookIdle(this));
         this.tasks.addTask(7, new EntityAIOpenDoor(this, true));
-        this.targetTasks.addTask(0, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
     }
 
     @Override
@@ -68,6 +60,11 @@ public class EntityEMT extends EntityVillager {
     @Override
     protected SoundEvent getAmbientSound() {
         return null;
+    }
+
+    @Override
+    protected boolean canDespawn() {
+        return false;
     }
 
     public AIEMTRegroup getRegroupAI() {

@@ -2,6 +2,7 @@ package com.minelife.guns;
 
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
+import com.minelife.police.cop.EntityCop;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.render.LineRenderer;
 import com.minelife.util.client.render.Vector;
@@ -158,6 +159,8 @@ public class Bullet {
     }
 
     private void damageEntity(EntityLivingBase e) {
+        if(e instanceof EntityCop && shooter instanceof EntityCop) return;
+
         e.attackEntityFrom(shooter != null && shooter instanceof EntityPlayerMP ? DamageSource.causePlayerDamage((EntityPlayer) shooter) : DamageSource.causeMobDamage(shooter), (float) bulletDamage);
         if (shooter != null && shooter instanceof EntityPlayerMP && e instanceof EntityPlayer) {
             Minelife.getNetwork().sendTo(new PacketPlaySound("minecraft:entity.arrow.hit_player", 1, 1), (EntityPlayerMP) shooter);

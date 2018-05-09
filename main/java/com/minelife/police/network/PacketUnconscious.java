@@ -40,14 +40,16 @@ public class PacketUnconscious implements IMessage {
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(PacketUnconscious message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
-                if (message.status) {
-                    Minecraft.getMinecraft().world.getEntityByID(message.playerID).getEntityData().setBoolean("Unconscious", true);
-                    Minecraft.getMinecraft().world.getEntityByID(message.playerID).getEntityData().setLong("UnconsciousTime", System.currentTimeMillis() + (60000L * 3));
-                    ClientProxy.setSleeping((EntityPlayer) Minecraft.getMinecraft().world.getEntityByID(message.playerID), true);
-                } else {
-                    Minecraft.getMinecraft().world.getEntityByID(message.playerID).getEntityData().removeTag("Unconscious");
-                    Minecraft.getMinecraft().world.getEntityByID(message.playerID).getEntityData().removeTag("UnconsciousTime");
-                    ClientProxy.setSleeping((EntityPlayer) Minecraft.getMinecraft().world.getEntityByID(message.playerID), false);
+                if(Minecraft.getMinecraft().world.getEntityByID(message.playerID) != null) {
+                    if (message.status) {
+                        Minecraft.getMinecraft().world.getEntityByID(message.playerID).getEntityData().setBoolean("Unconscious", true);
+                        Minecraft.getMinecraft().world.getEntityByID(message.playerID).getEntityData().setLong("UnconsciousTime", System.currentTimeMillis() + (60000L * 3));
+                        ClientProxy.setSleeping((EntityPlayer) Minecraft.getMinecraft().world.getEntityByID(message.playerID), true);
+                    } else {
+                        Minecraft.getMinecraft().world.getEntityByID(message.playerID).getEntityData().removeTag("Unconscious");
+                        Minecraft.getMinecraft().world.getEntityByID(message.playerID).getEntityData().removeTag("UnconsciousTime");
+                        ClientProxy.setSleeping((EntityPlayer) Minecraft.getMinecraft().world.getEntityByID(message.playerID), false);
+                    }
                 }
             });
             return null;

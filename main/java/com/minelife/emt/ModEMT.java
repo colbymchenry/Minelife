@@ -6,7 +6,6 @@ import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.emt.entity.EntityEMT;
-import com.minelife.police.EntityCop;
 import com.minelife.util.MLConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

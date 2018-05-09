@@ -105,7 +105,6 @@ public class EstateListener {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlace(BlockEvent.PlaceEvent event) {
-
         EntityPlayerMP player = (EntityPlayerMP) event.getPlayer();
 
         if (event.getPlacedBlock().getBlock().getRegistryName().toString().contains("mirror")) {

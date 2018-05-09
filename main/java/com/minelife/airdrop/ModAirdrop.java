@@ -2,7 +2,6 @@ package com.minelife.airdrop;
 
 import blusunrize.immersiveengineering.common.IEContent;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
@@ -11,49 +10,19 @@ import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumGun;
 import com.minelife.guns.item.ItemGun;
 import com.minelife.locks.ModLocks;
-import com.minelife.police.EntityCop;
 import com.minelife.util.MLConfig;
-import com.minelife.util.client.GuiHelper;
 import com.minelife.util.configuration.InvalidConfigurationException;
-import com.minelife.util.fireworks.Color;
-import com.minelife.util.fireworks.FireworkBuilder;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
-import net.minecraft.entity.item.EntityFireworkRocket;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
 
 public class ModAirdrop extends MLMod {
 

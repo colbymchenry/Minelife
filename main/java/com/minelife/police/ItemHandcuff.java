@@ -5,6 +5,7 @@ import com.minelife.Minelife;
 import com.minelife.core.event.EntityDismountEvent;
 import com.minelife.drugs.XRayEffect;
 import com.minelife.guns.item.ItemDynamite;
+import com.minelife.police.cop.EntityCop;
 import com.minelife.util.PacketPlaySound;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -107,7 +108,7 @@ public class ItemHandcuff extends Item {
     public void onDismount(EntityDismountEvent event) {
         EntityPlayer player = (EntityPlayer) event.entity;
 
-        if (isHandcuffed(player)) event.setCanceled(true);
+        if (isHandcuffed(player) || player.getRidingEntity() instanceof EntityCop) event.setCanceled(true);
     }
 
     @SubscribeEvent
@@ -122,19 +123,29 @@ public class ItemHandcuff extends Item {
 
     @SubscribeEvent
     public void onInteract(PlayerInteractEvent.EntityInteract event) {
-        if (!(event.getTarget() instanceof EntityPlayer)) return;
+        if (!(event.getTarget() instanceof EntityPlayer))  {
+            System.out.println("HELLO");
+            return;
+        }
 
         EntityPlayer handcuffing = event.getEntityPlayer();
         EntityPlayer beingHandcuffed = (EntityPlayer) event.getTarget();
 
         if(isHandcuffed(beingHandcuffed) && handcuffing.isSneaking() && handcuffing.getPassengers().isEmpty()) {
             beingHandcuffed.startRiding(handcuffing);
+            System.out.println("HELLO1");
             return;
         }
 
-        if (handcuffing.getHeldItem(event.getHand()).getItem() != this) return;
+        if (handcuffing.getHeldItem(event.getHand()).getItem() != this) {
+            System.out.println("HELLO2");
+            return;
+        }
 
-        if(handcuffing.getDistance(beingHandcuffed) > 1) return;
+        if(handcuffing.getDistance(beingHandcuffed) > 1) {
+            System.out.println("HELLO3");
+            return;
+        }
 
         if (isHandcuffed(beingHandcuffed)) {
             handcuffing.sendMessage(new TextComponentString(TextFormatting.RED + "That player is already handcuffed."));

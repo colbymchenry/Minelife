@@ -1,7 +1,9 @@
-package com.minelife.police;
+package com.minelife.police.cop;
 
 import com.minelife.guns.ModGuns;
 import com.minelife.guns.item.EnumGun;
+import com.minelife.police.ModPolice;
+import com.minelife.police.Prisoner;
 import com.minelife.police.server.Prison;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IRangedAttackMob;
@@ -38,10 +40,17 @@ public class AIShootPrison extends EntityAIBase {
      * Returns whether the EntityAIBase should begin execution.
      */
     public boolean shouldExecute() {
-        return this.entity.getAttackTarget() == null ? false : this.isBowInMainhand();
+        return this.entity.getAttackTarget() != null
+                && this.entity.getAttackTarget() instanceof EntityPlayer
+                && !((EntityPlayer)this.entity.getAttackTarget()).capabilities.isCreativeMode
+                && !ModPolice.isUnconscious((EntityPlayer) this.entity.getAttackTarget())
+                && !Prisoner.isPrisoner(this.entity.getAttackTarget().getUniqueID())
+                && !(this.entity.getAttackTarget().getRidingEntity() instanceof EntityCop)
+                && !this.entity.getAttackTarget().isDead
+                && this.isGunInHand();
     }
 
-    protected boolean isBowInMainhand() {
+    protected boolean isGunInHand() {
         return this.entity.getHeldItemMainhand().getItem() == ModGuns.itemGun;
     }
 
@@ -49,7 +58,7 @@ public class AIShootPrison extends EntityAIBase {
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     public boolean shouldContinueExecuting() {
-        return (this.shouldExecute() || !this.entity.getNavigator().noPath()) && this.isBowInMainhand();
+        return (this.shouldExecute() || !this.entity.getNavigator().noPath()) && this.isGunInHand();
     }
 
     /**

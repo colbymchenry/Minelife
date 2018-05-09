@@ -287,7 +287,7 @@ public class Estate implements Comparable<Estate> {
         BlockPos max = this.getMaximum();
         BlockPos min1 = estate.getMinimum();
         BlockPos max1 = estate.getMaximum();
-        return this.getMinimum() != null && this.getMaximum() != null && estate.getWorld().equals(getWorld()) &&
+        return this.getMinimum() != null && this.getMaximum() != null && estate.getWorld().provider.getDimension() == this.getWorld().provider.getDimension() &&
                 min1.getX() > min.getX() && min1.getY() > min.getY() && min1.getZ() > min.getZ() &&
                 max1.getX() < max.getX() && max1.getY() < max.getY() && max1.getZ() < max.getZ();
     }
@@ -301,10 +301,13 @@ public class Estate implements Comparable<Estate> {
 
     public Estate getParentEstate() {
         Estate closest = null;
-        if (this.getMinimum() == null || this.getMaximum() == null) return closest;
+        if (this.getMinimum() == null || this.getMaximum() == null) {
+            System.out.println((this.getMinimum() == null) + "," + (this.getMaximum() == null));
+            return closest;
+        }
 
         for (Estate estate : ModRealEstate.getLoadedEstates()) {
-            if (estate.contains(this) && estate.getWorld().equals(getWorld())) {
+            if (estate.contains(this) && estate.getWorld().provider.getDimension() == getWorld().provider.getDimension()) {
                 if (closest == null) closest = estate;
                 else {
                     int distMinX = this.getMinimum().getX() - estate.getMinimum().getX();
@@ -312,6 +315,10 @@ public class Estate implements Comparable<Estate> {
                     if (distMinX < distMinX1) closest = estate;
                 }
             }
+        }
+
+        if(closest == null) {
+            System.out.println("IT'S A NULL!");
         }
         return closest;
     }
@@ -336,25 +343,31 @@ public class Estate implements Comparable<Estate> {
         permissions.addAll(getActualGlobalPerms());
 
         if (getParentEstate() == null && Objects.equals(playerID, getOwnerID())) {
+            System.out.println("BOOM!!");
             permissions.addAll(toSet(Arrays.asList(PlayerPermission.values())));
             return permissions;
         }
 
         if (getMasterEstate() != null && Objects.equals(playerID, getMasterEstate().getOwnerID())) {
+            System.out.println("BOOM1!!");
             permissions.addAll(toSet(Arrays.asList(PlayerPermission.values())));
             return permissions;
         }
 
         if (PlayerHelper.isOp(PlayerHelper.getPlayer(playerID))) {
+            System.out.println("BOOM2!!");
             permissions.addAll(toSet(Arrays.asList(PlayerPermission.values())));
             return permissions;
         }
 
         if (Objects.equals(playerID, getOwnerID())) {
+            System.out.println("BOOM3!!");
             permissions.addAll(Arrays.asList(PlayerPermission.values()));
         } else if (Objects.equals(playerID, getRenterID())) {
+            System.out.println("BOOM4!!");
             permissions.addAll(getActualRenterPerms());
         } else if (getMembersWithPermissions().containsKey(playerID)) {
+            System.out.println("BOOM5!!");
             permissions.addAll(getActualMemberPerms(playerID));
         }
 
@@ -367,7 +380,7 @@ public class Estate implements Comparable<Estate> {
         Estate parentEstate = getParentEstate();
         while (parentEstate != null) {
             for (PlayerPermission p : globalPermissions)
-                if (!parentEstate.getGlobalPermissions().contains(p) && !parentEstate.getPlayerPermissions(parentEstate.getOwnerID()).contains(p))
+                if (!parentEstate.getPlayerPermissions(parentEstate.getOwnerID()).contains(p))
                     toRemove.add(p);
             parentEstate = parentEstate.getParentEstate();
         }
@@ -385,7 +398,7 @@ public class Estate implements Comparable<Estate> {
         while (parentEstate != null) {
 
             for (PlayerPermission p : renterPerms)
-                if (!parentEstate.getRenterPermissions().contains(p) && !parentEstate.getPlayerPermissions(parentEstate.getOwnerID()).contains(p))
+                if (!parentEstate.getPlayerPermissions(parentEstate.getOwnerID()).contains(p))
                     toRemove.add(p);
 
             parentEstate = parentEstate.getParentEstate();
@@ -405,8 +418,7 @@ public class Estate implements Comparable<Estate> {
         while (parentEstate != null) {
 
             for (PlayerPermission p : memberPerms)
-                if (parentEstate.getMembersWithPermissions().containsKey(playerID) &&
-                        !parentEstate.getMembersWithPermissions().get(playerID).contains(p))
+                if (!parentEstate.getPlayerPermissions(parentEstate.getOwnerID()).contains(p))
                     toRemove.add(p);
 
             parentEstate = parentEstate.getParentEstate();

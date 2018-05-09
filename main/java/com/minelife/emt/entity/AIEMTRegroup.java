@@ -1,8 +1,6 @@
 package com.minelife.emt.entity;
 
 import com.minelife.emt.ModEMT;
-import com.minelife.police.EntityCop;
-import com.minelife.police.ModPolice;
 import com.minelife.util.NumberConversions;
 import com.minelife.util.client.render.Vector;
 import net.minecraft.entity.ai.EntityAIBase;

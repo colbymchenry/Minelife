@@ -1,21 +1,18 @@
 package com.minelife.police.server;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
-import com.minelife.core.event.EntityDismountEvent;
 import com.minelife.emt.ModEMT;
 import com.minelife.emt.entity.EntityEMT;
 import com.minelife.essentials.Location;
 import com.minelife.essentials.server.EventTeleport;
 import com.minelife.essentials.server.commands.Spawn;
-import com.minelife.police.EntityCop;
+import com.minelife.police.cop.EntityCop;
 import com.minelife.police.ModPolice;
 import com.minelife.police.Prisoner;
-import com.minelife.police.network.PacketUnconscious;
-import com.minelife.util.DateHelper;
 import com.minelife.util.MLConfig;
+import com.minelife.util.PlayerHelper;
 import com.minelife.util.StringHelper;
 import lib.PatPeter.SQLibrary.Database;
 import lib.PatPeter.SQLibrary.SQLite;
@@ -26,7 +23,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -38,7 +34,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -49,18 +44,22 @@ public class ServerProxy extends MLProxy {
     public static Database database;
 
     @Override
-    public void preInit(FMLPreInitializationEvent event) throws Exception {
-        config = new MLConfig("police");
-        config.save();
-        Prison.initPrisons();
-        MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(ModPolice.itemHandcuff);
-        MinecraftForge.EVENT_BUS.register(ModPolice.itemHandcuffKey);
-        MinecraftForge.EVENT_BUS.register(new Prisoner());
-
-        database = new SQLite(Logger.getLogger("Minecraft"), "[Police]", Minelife.getDirectory().getAbsolutePath(), "police");
-        database.open();
-        database.query("CREATE TABLE IF NOT EXISTS prisoners (uuid VARCHAR(36), charges TEXT, timeServed LONG)");
+    public void preInit(FMLPreInitializationEvent event) {
+        try {
+            database = new SQLite(Logger.getLogger("Minecraft"), "[Police]", Minelife.getDirectory().getAbsolutePath(), "police");
+            database.open();
+            database.query("CREATE TABLE IF NOT EXISTS prisoners (uuid VARCHAR(36), charges TEXT, timeServed LONG)");
+            config = new MLConfig("police");
+            config.save();
+            Prison.initPrisons();
+            Prisoner.initPrisoners();
+            MinecraftForge.EVENT_BUS.register(this);
+            MinecraftForge.EVENT_BUS.register(ModPolice.itemHandcuff);
+            MinecraftForge.EVENT_BUS.register(ModPolice.itemHandcuffKey);
+            MinecraftForge.EVENT_BUS.register(new Prisoner.Listener());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @SubscribeEvent
@@ -90,8 +89,8 @@ public class ServerProxy extends MLProxy {
         if (event.getSource().getTrueSource() instanceof EntityPlayer) {
             EntityCop.getNearbyPolice(event.getEntityLiving().getEntityWorld(), event.getSource().getTrueSource().getPosition()).forEach(officer -> {
                 if (officer.getEntitySenses().canSee(event.getSource().getTrueSource())) {
-                    officer.setAttackTarget((EntityPlayer) event.getSource().getTrueSource());
-                    officer.getPoliceAI().setKillerPlayer(event.getSource().getTrueSource().getUniqueID());
+                    officer.setChasingPlayer((EntityPlayer) event.getSource().getTrueSource());
+                    officer.setKillerPlayer(event.getSource().getTrueSource().getUniqueID());
                 }
             });
         }
@@ -111,8 +110,8 @@ public class ServerProxy extends MLProxy {
 
         EntityCop.getNearbyPolice(event.getEntityLiving().getEntityWorld(), event.getSource().getTrueSource().getPosition()).forEach(officer -> {
             if (officer.getEntitySenses().canSee(event.getSource().getTrueSource())) {
-                officer.setAttackTarget((EntityPlayer) event.getSource().getTrueSource());
-                officer.getPoliceAI().setAggressivePlayer(event.getSource().getTrueSource().getUniqueID());
+                officer.setChasingPlayer((EntityPlayer) event.getSource().getTrueSource());
+//                officer.getPoliceAI().setAggressivePlayer(event.getSource().getTrueSource().getUniqueID());
             }
         });
 
@@ -160,6 +159,7 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent
     public void onTeleport(EventTeleport event) {
+        if(PlayerHelper.isOp(event.getPlayer())) return;
        if(Prison.getPrison(event.getPlayer().getPosition()) != null || (event.getPlayer().isRiding() && event.getPlayer().getRidingEntity() instanceof EntityCop)) {
            event.setCanceled(true);
            if(event.getPlayer().isRiding()) {
@@ -205,7 +205,7 @@ public class ServerProxy extends MLProxy {
             String[] data = spawn.split(",");
             BlockPos pos = new BlockPos(Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2]));
             for (int i = 0; i < policePerSpawn; i++) {
-                EntityCop cop = new EntityCop(world);
+                EntityCop cop = new EntityCop(world, Prison.getPrison(pos) != null);
                 cop.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
                 world.spawnEntity(cop);
             }
