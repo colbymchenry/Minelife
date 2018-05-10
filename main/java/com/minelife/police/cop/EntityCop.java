@@ -90,7 +90,7 @@ public class EntityCop extends EntityVillager implements IRangedAttackMob {
         this.chasingPlayer = chasingPlayer;
     }
 
-    public EntityPlayer getChasingPlayer() {
+    private EntityPlayer getChasingPlayer() {
         return chasingPlayer;
     }
 
@@ -112,7 +112,6 @@ public class EntityCop extends EntityVillager implements IRangedAttackMob {
 
     @Override
     public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
-        System.out.println("CALLED");
         this.getLookHelper().setLookPosition(this.getAttackTarget().posX, this.getAttackTarget().posY + (double) this.getAttackTarget().getEyeHeight(), this.getAttackTarget().posZ, (float) this.getHorizontalFaceSpeed(), (float) this.getVerticalFaceSpeed());
         if (ItemGun.getClipCount(getHeldItemMainhand()) < 1) {
             ItemGun.reload(this, getHeldItemMainhand());

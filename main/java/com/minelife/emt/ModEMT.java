@@ -77,7 +77,7 @@ public class ModEMT extends MLMod {
         EntityEMT closest = null;
         for (Entity entity : player.getEntityWorld().loadedEntityList) {
             if(entity instanceof EntityEMT) {
-                if(((EntityEMT) entity).getRevivingPlayer() == null) {
+                if(((EntityEMT) entity).getAttackTarget() == null) {
                     EntityEMT emt = (EntityEMT) entity;
                     if(closest == null) closest = emt;
                     if(emt.getDistance(player) < closest.getDistance(player)) closest = emt;

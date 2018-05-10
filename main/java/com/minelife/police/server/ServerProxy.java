@@ -76,8 +76,11 @@ public class ServerProxy extends MLProxy {
         if(event.getEntity() instanceof EntityEMT) {
             com.minelife.emt.ServerProxy.spawnEMTs(event.getEntity().world);
             EntityEMT emt = (EntityEMT) event.getEntity();
-            if(emt.getRevivingPlayer() != null) {
-                ModEMT.requestEMT(emt.getRevivingPlayer());
+            if(emt.getAttackTarget() != null) {
+                ModEMT.requestEMT((EntityPlayer) emt.getAttackTarget());
+                emt.setAttackTarget(null);
+                emt.setRevivingPlayer(null);
+                emt.getNavigator().clearPath();
             }
             return;
         }

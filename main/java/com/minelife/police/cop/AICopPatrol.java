@@ -1,12 +1,14 @@
 package com.minelife.police.cop;
 
 import com.google.common.collect.Lists;
+import com.minelife.Minelife;
 import com.minelife.drugs.ModDrugs;
 import com.minelife.guns.ModGuns;
 import com.minelife.police.ChargeType;
 import com.minelife.police.ModPolice;
 import com.minelife.police.Prisoner;
 import com.minelife.police.server.Prison;
+import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.render.Vector;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -15,6 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import java.util.List;
 import java.util.Objects;
@@ -65,17 +68,22 @@ public class AICopPatrol extends EntityAIBase {
 
         if (distance < 2) {
             // handcuff
+            System.out.println("HOLA1");
             if (ModPolice.isUnconscious((EntityPlayer) cop.getAttackTarget())) {
                 ModPolice.setUnconscious((EntityPlayer) cop.getAttackTarget(), false, false);
                 cop.getAttackTarget().getEntityData().setBoolean("Tazed", false);
                 cop.getAttackTarget().startRiding(cop);
+                System.out.println("HOLA");
             }
 
         } else if (distance < 4) {
+            System.out.println("HOLA aaadad");
             // taze
             if (!ModPolice.isUnconscious((EntityPlayer) cop.getAttackTarget())) {
+
                 ModPolice.setUnconscious((EntityPlayer) cop.getAttackTarget(), true, true);
                 cop.getAttackTarget().getEntityData().setBoolean("Tazed", true);
+                Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:tazer", 1, 1), new NetworkRegistry.TargetPoint(cop.dimension, cop.posX, cop.posY, cop.posZ, 10));
             }
         } else {
             cop.getNavigator().tryMoveToEntityLiving(cop.getAttackTarget(), 1.8);
@@ -92,7 +100,11 @@ public class AICopPatrol extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-        return cop.getAttackTarget() != null && !Prisoner.isPrisoner(cop.getAttackTarget().getUniqueID()) && !cop.isCarryingPlayer() && !cop.isTargetArrested() && cop.getEntitySenses().canSee(cop.getAttackTarget());
+        return cop.getAttackTarget() != null
+                && !Prisoner.isPrisoner(cop.getAttackTarget().getUniqueID())
+                && !cop.isCarryingPlayer()
+                && !cop.isTargetArrested()
+                && cop.getEntitySenses().canSee(cop.getAttackTarget());
     }
 
     @Override
@@ -103,21 +115,6 @@ public class AICopPatrol extends EntityAIBase {
         cop.setAttackTarget(null);
         cop.setChasingPlayer(null);
         cop.getNavigator().clearPath();
-    }
-
-    public Path findBestPath() {
-        double maxDistance = cop.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getBaseValue();
-        double distance = cop.getDistance(cop.getAttackTarget());
-
-        if (distance > maxDistance) {
-            Vector v = new Vector(cop.posX, cop.posY, cop.posZ);
-            Vector v1 = new Vector(cop.getAttackTarget().posX, cop.getAttackTarget().posY, cop.getAttackTarget().posZ);
-            Vector subtracted = v.subtract(v1).normalize();
-
-            return cop.getNavigator().getPathToPos(new BlockPos(cop.posX + (-subtracted.getX() * maxDistance), cop.posY, cop.posZ + (-subtracted.getZ() * maxDistance)));
-        }
-
-        return cop.getNavigator().getPathToEntityLiving(cop.getAttackTarget());
     }
 
     public boolean targetHolding(Item item) {

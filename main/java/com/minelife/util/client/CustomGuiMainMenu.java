@@ -31,6 +31,8 @@ import java.util.*;
 
 public class CustomGuiMainMenu extends GuiMainMenu {
 
+    public static boolean musicMuted = false;
+
     private static final ResourceLocation[] introSongs = new ResourceLocation[]{new ResourceLocation("minelife:intro0"), new ResourceLocation("minelife:intro1"), new ResourceLocation("minelife:intro2")};
     private static final ResourceLocation[] introImages = new ResourceLocation[]{
             new ResourceLocation("minelife:textures/gui/title/background/background0.png"),
@@ -46,6 +48,7 @@ public class CustomGuiMainMenu extends GuiMainMenu {
     private float scale = 1, fade = 255;
     private int image = 0;
     private int songLoop = -1;
+    private GuiButton muteTitleMusic;
 
     public CustomGuiMainMenu() {
         songLoop = new Random().nextInt(introSongs.length);
@@ -116,6 +119,8 @@ public class CustomGuiMainMenu extends GuiMainMenu {
         GlStateManager.popMatrix();
 
         this.buttonList.forEach(btn -> btn.drawButton(mc, mouseX, mouseY, partialTicks));
+
+        this.muteTitleMusic.drawButton(mc, mouseX, mouseY, partialTicks);
 //        }
     }
 
@@ -136,6 +141,8 @@ public class CustomGuiMainMenu extends GuiMainMenu {
             GuiButton modsBtn = this.buttonList.stream().filter(btn -> btn.id == 6).findFirst().orElse(null);
             modsBtn.width = multiplayerBtn.width;
         }
+
+        muteTitleMusic = new GuiButton(60, 10, height - 25, 70, 20, !musicMuted ? "Mute Music" : "Unmute Music");
     }
 
     @Override
@@ -164,6 +171,17 @@ public class CustomGuiMainMenu extends GuiMainMenu {
 //        } else {
         super.mouseClicked(mouseX, mouseY, mouseButton);
 //        }
+
+        if(muteTitleMusic.mousePressed(mc, mouseX, mouseY)) {
+            if(musicMuted) {
+                mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(new SoundEvent(introSongs[songLoop]), 1, 0.03F));
+            } else {
+                stopAllMusic();
+            }
+            musicMuted = !musicMuted;
+
+            muteTitleMusic.displayString = !musicMuted ? "Mute Music" : "Unmute Music";
+        }
     }
 
     @SubscribeEvent
@@ -174,6 +192,7 @@ public class CustomGuiMainMenu extends GuiMainMenu {
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
+
         Minecraft mc = Minecraft.getMinecraft();
         if (mc.player == null && (mc.currentScreen instanceof CustomGuiMainMenu || mc.currentScreen instanceof GuiMultiplayer
                 || mc.currentScreen instanceof GuiOptions || mc.currentScreen instanceof GuiLanguage || mc.currentScreen instanceof GuiModList)) {
@@ -202,7 +221,7 @@ public class CustomGuiMainMenu extends GuiMainMenu {
                 }
             }
 
-            if (!foundMusic) {
+            if (!foundMusic && !musicMuted) {
                 if (songLoop > introSongs.length - 1) songLoop = 0;
                 mc.getSoundHandler().playSound(PositionedSoundRecord.getRecord(new SoundEvent(introSongs[songLoop]), 1, 0.03F));
                 songLoop++;
@@ -215,5 +234,18 @@ public class CustomGuiMainMenu extends GuiMainMenu {
         Minecraft.getMinecraft().getSoundHandler().stopSounds();
     }
 
+    private void stopAllMusic() {
+        SoundManager mng = ReflectionHelper.getPrivateValue(SoundHandler.class, mc.getSoundHandler(), "sndManager", "field_147694_f");
+        Map playingSounds = ReflectionHelper.getPrivateValue(SoundManager.class, mng, "playingSounds", "field_148629_h");
+        Iterator it = playingSounds.keySet().iterator();
+        while (it.hasNext()) {
+            PositionedSound ps = (PositionedSound) playingSounds.get(it.next());
+            ResourceLocation reloc = ReflectionHelper.getPrivateValue(PositionedSound.class, ps, "positionedSoundLocation", "field_147664_a");
+            if (reloc.toString().contains("minelife")) {
+                mc.getSoundHandler().stopSound(ps);
+                break;
+            }
+        }
+    }
 
 }

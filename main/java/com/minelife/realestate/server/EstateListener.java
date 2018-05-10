@@ -344,11 +344,4 @@ public class EstateListener {
 
     }
 
-//    @SubscribeEvent
-//    public void ic2Explosion(ic2.api.event.ExplosionEvent event) {
-//        event.setCanceled(true);
-//
-//        event.getWorld().createExplosion(event.entity, event.pos.x, event.pos.y, event.pos.z, 4.0F, true);
-//    }
-
 }

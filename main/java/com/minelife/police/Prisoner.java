@@ -202,7 +202,6 @@ public class Prisoner implements Comparable<Prisoner> {
 
         @SubscribeEvent
         public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
-            System.out.println("HHOOOOAAAA: " + PRISONERS.size());
             if (!isPrisoner(event.player.getUniqueID())) return;
             Prison prison = Prison.getClosestPrison(event.player.getPosition());
 

@@ -8,6 +8,7 @@ import com.minelife.police.server.Prison;
 import com.minelife.util.PlayerHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -21,15 +22,15 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-public class PacketJailPlayer implements IMessage {
+public class PacketWriteup implements IMessage {
 
     private UUID playerID;
     private List<ChargeType> charges;
 
-    public PacketJailPlayer() {
+    public PacketWriteup() {
     }
 
-    public PacketJailPlayer(UUID playerID, List<ChargeType> charges) {
+    public PacketWriteup(UUID playerID, List<ChargeType> charges) {
         this.playerID = playerID;
         this.charges = charges;
     }
@@ -52,13 +53,13 @@ public class PacketJailPlayer implements IMessage {
             charges.forEach(chargeType -> buf.writeInt(chargeType.ordinal()));
     }
 
-    public static class Handler implements IMessageHandler<PacketJailPlayer, IMessage> {
+    public static class Handler implements IMessageHandler<PacketWriteup, IMessage> {
 
         @SideOnly(Side.SERVER)
-        public IMessage onMessage(PacketJailPlayer message, MessageContext ctx) {
+        public IMessage onMessage(PacketWriteup message, MessageContext ctx) {
             EntityPlayer player = ctx.getServerHandler().player;
 
-            if (!ModPolice.isCop(player.getUniqueID())) {
+            if (!ModPolice.isCop(player.getUniqueID()) && !PlayerHelper.isOp((EntityPlayerMP) player)) {
                 player.sendMessage(new TextComponentString(TextFormatting.RED + "You are not a cop."));
                 return null;
             }
@@ -81,11 +82,14 @@ public class PacketJailPlayer implements IMessage {
                 prisoner.setSavedInventory(PlayerHelper.getPlayer(message.playerID).inventory);
                 PlayerHelper.getPlayer(message.playerID).inventory.clear();
                 PlayerHelper.getPlayer(message.playerID).inventoryContainer.detectAndSendChanges();
-                player.setPositionAndUpdate(prison.getDropOffPos().getX() + 0.5, prison.getDropOffPos().getY() + 0.5, prison.getDropOffPos().getZ() + 0.5);
+                PlayerHelper.getPlayer(message.playerID).setPositionAndUpdate(prison.getDropOffPos().getX() + 0.5, prison.getDropOffPos().getY() + 0.5, prison.getDropOffPos().getZ() + 0.5);
+                ModPolice.setUnconscious(PlayerHelper.getPlayer(message.playerID), false, false);
             }
 
             try {
                 prisoner.save();
+                player.sendMessage(new TextComponentString(TextFormatting.BLUE + "Player has been jailed!"));
+                player.closeScreen();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

@@ -1,6 +1,8 @@
 package com.minelife.guns.packet;
 
 import com.minelife.guns.item.ItemGun;
+import com.minelife.police.ItemHandcuff;
+import com.minelife.police.ModPolice;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -40,6 +42,7 @@ public class PacketFire implements IMessage {
         @Override
         public IMessage onMessage(PacketFire message, MessageContext ctx) {
             // TODO: Need to fix ping '0'
+            if(ItemHandcuff.isHandcuffed(ctx.getServerHandler().player)) return null;
             FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.fire(ctx.getServerHandler().player, message.lookVector, 0));
             return null;
         }

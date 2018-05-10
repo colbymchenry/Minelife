@@ -45,6 +45,7 @@ public class AIShootPrison extends EntityAIBase {
                 && !((EntityPlayer)this.entity.getAttackTarget()).capabilities.isCreativeMode
                 && !ModPolice.isUnconscious((EntityPlayer) this.entity.getAttackTarget())
                 && !Prisoner.isPrisoner(this.entity.getAttackTarget().getUniqueID())
+                && Prison.getPrison(entity.getAttackTarget().getPosition()) != null
                 && !(this.entity.getAttackTarget().getRidingEntity() instanceof EntityCop)
                 && !this.entity.getAttackTarget().isDead
                 && this.isGunInHand();

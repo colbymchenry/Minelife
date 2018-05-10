@@ -7,7 +7,8 @@ import com.minelife.Minelife;
 import com.minelife.jobs.network.PacketOpenSignupGui;
 import com.minelife.police.client.ClientProxy;
 import com.minelife.police.cop.EntityCop;
-import com.minelife.police.network.PacketJailPlayer;
+import com.minelife.police.network.PacketWriteup;
+import com.minelife.police.network.PacketOpenWriteupGUI;
 import com.minelife.police.network.PacketUnconscious;
 import com.minelife.police.server.*;
 import com.minelife.util.MLConfig;
@@ -35,7 +36,8 @@ public class ModPolice extends MLMod {
         registerPacket(PacketSendCopStatus.Handler.class, PacketSendCopStatus.class, Side.CLIENT);
         registerPacket(PacketRequestCopStatus.Handler.class, PacketRequestCopStatus.class, Side.SERVER);
         registerPacket(PacketOpenSignupGui.Handler.class, PacketOpenSignupGui.class, Side.CLIENT);
-        registerPacket(PacketJailPlayer.Handler.class, PacketJailPlayer.class, Side.SERVER);
+        registerPacket(PacketWriteup.Handler.class, PacketWriteup.class, Side.SERVER);
+        registerPacket(PacketOpenWriteupGUI.Handler.class, PacketOpenWriteupGUI.class, Side.CLIENT);
         registerItem(itemHandcuff = new ItemHandcuff());
         registerItem(itemHandcuffKey = new ItemHandcuffKey());
         itemHandcuff.registerRecipe();
@@ -57,6 +59,8 @@ public class ModPolice extends MLMod {
         event.registerServerCommand(new CommandCop());
         event.registerServerCommand(new CommandRespawn());
         event.registerServerCommand(new CommandJail());
+        event.registerServerCommand(new CommandWriteup());
+        event.registerServerCommand(new CommandDrop());
     }
 
     public static Database getDatabase() {
@@ -106,22 +110,22 @@ public class ModPolice extends MLMod {
     }
 
     public static boolean requestOfficer(EntityPlayer player) {
-        EntityCop closest = null;
-        for (Entity entity : player.getEntityWorld().loadedEntityList) {
-            if(entity instanceof EntityCop) {
-                if(((EntityCop) entity).getChasingPlayer() == null) {
-                    EntityCop cop = (EntityCop) entity;
-                    if(closest == null) closest = cop;
-                    if(cop.getDistance(player) < closest.getDistance(player)) closest = cop;
-                }
-            }
-        }
-
-        if(closest != null) {
-            closest.setAttackTarget(player);
-            closest.setChasingPlayer(player);
-            return true;
-        }
+//        EntityCop closest = null;
+//        for (Entity entity : player.getEntityWorld().loadedEntityList) {
+//            if(entity instanceof EntityCop) {
+//                if(((EntityCop) entity).getChasingPlayer() == null) {
+//                    EntityCop cop = (EntityCop) entity;
+//                    if(closest == null) closest = cop;
+//                    if(cop.getDistance(player) < closest.getDistance(player)) closest = cop;
+//                }
+//            }
+//        }
+//
+//        if(closest != null) {
+//            closest.setAttackTarget(player);
+//            closest.setChasingPlayer(player);
+//            return true;
+//        }
 
         return false;
     }

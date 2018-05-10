@@ -317,9 +317,6 @@ public class Estate implements Comparable<Estate> {
             }
         }
 
-        if(closest == null) {
-            System.out.println("IT'S A NULL!");
-        }
         return closest;
     }
 
@@ -343,31 +340,25 @@ public class Estate implements Comparable<Estate> {
         permissions.addAll(getActualGlobalPerms());
 
         if (getParentEstate() == null && Objects.equals(playerID, getOwnerID())) {
-            System.out.println("BOOM!!");
             permissions.addAll(toSet(Arrays.asList(PlayerPermission.values())));
             return permissions;
         }
 
         if (getMasterEstate() != null && Objects.equals(playerID, getMasterEstate().getOwnerID())) {
-            System.out.println("BOOM1!!");
             permissions.addAll(toSet(Arrays.asList(PlayerPermission.values())));
             return permissions;
         }
 
         if (PlayerHelper.isOp(PlayerHelper.getPlayer(playerID))) {
-            System.out.println("BOOM2!!");
             permissions.addAll(toSet(Arrays.asList(PlayerPermission.values())));
             return permissions;
         }
 
         if (Objects.equals(playerID, getOwnerID())) {
-            System.out.println("BOOM3!!");
             permissions.addAll(Arrays.asList(PlayerPermission.values()));
         } else if (Objects.equals(playerID, getRenterID())) {
-            System.out.println("BOOM4!!");
             permissions.addAll(getActualRenterPerms());
         } else if (getMembersWithPermissions().containsKey(playerID)) {
-            System.out.println("BOOM5!!");
             permissions.addAll(getActualMemberPerms(playerID));
         }
 

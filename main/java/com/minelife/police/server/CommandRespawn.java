@@ -1,14 +1,31 @@
 package com.minelife.police.server;
 
+import com.google.common.collect.Sets;
+import com.minelife.Minelife;
 import com.minelife.essentials.server.commands.Spawn;
+import com.minelife.police.ItemHandcuff;
 import com.minelife.police.ModPolice;
+import com.minelife.util.client.PacketDropEntity;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
+import net.minecraft.item.ItemBucketMilk;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class CommandRespawn extends CommandBase {
 
@@ -35,9 +52,18 @@ public class CommandRespawn extends CommandBase {
         player.experienceTotal = 0;
         player.inventoryContainer.detectAndSendChanges();
 
-        ModPolice.setUnconscious(player, false, false);
+        Set<Potion> p =  player.getActivePotionMap().keySet();
+        Set<Potion> potions = Sets.newConcurrentHashSet();
+        potions.addAll(p);
+        Iterator<Potion> iterator = potions.iterator();
+        while(iterator.hasNext()) player.removePotionEffect(iterator.next());
 
-        if(Spawn.GetSpawn() != null) {
+        ItemHandcuff.setHandcuffed(player, false, false);
+        ModPolice.setUnconscious(player, false, false);
+        Minelife.getNetwork().sendToAll(new PacketDropEntity(player.getEntityId()));
+        player.dismountRidingEntity();
+
+        if (Spawn.GetSpawn() != null) {
             player.setPositionAndUpdate(Spawn.GetSpawn().getX(), Spawn.GetSpawn().getY(), Spawn.GetSpawn().getZ());
         } else {
             BlockPos worldSpawn = player.world.getSpawnPoint();

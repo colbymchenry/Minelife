@@ -5,8 +5,10 @@ import com.minelife.emt.ModEMT;
 import com.minelife.emt.ServerProxy;
 import com.minelife.police.ModPolice;
 import com.minelife.police.server.Prison;
+import com.minelife.util.NumberConversions;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.render.Vector;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -29,61 +31,34 @@ public class AIEMTRevive extends EntityAIBase {
 
     public AIEMTRevive(EntityEMT cop) {
         this.entity = cop;
-        setMutexBits(7);
+        setMutexBits(3);
     }
 
     // TODO: Stop EMT from running away from player
 
     @Override
     public boolean shouldContinueExecuting() {
-        if ((this.entity.getRevivingPlayer() != null && isAlreadyBeingRevived((EntityPlayer) entity.getAttackTarget())) || (this.entity.getAttackTarget() != null && ModPolice.isUnconscious((EntityPlayer) entity.getAttackTarget())
-                && !isAlreadyBeingRevived((EntityPlayer) entity.getAttackTarget()))) {
-            // if does not have arrested player go to player that we are attempting to arrest
+        if (this.entity.getAttackTarget() == null) return false;
+        if (isAlreadyBeingRevived((EntityPlayer) entity.getAttackTarget())) return false;
+        if (!ModPolice.isUnconscious((EntityPlayer) entity.getAttackTarget())) return false;
 
-            previousPosition = this.entity.getPosition();
-            if (this.entity.getPosition().getDistance(previousPosition.getX(), previousPosition.getY(), previousPosition.getZ()) < 1 && this.entity.getDistance(this.entity.getAttackTarget()) > 5) {
-                this.pathAttempt++;
-                if (this.pathAttempt > 100) {
-                    this.entity.setPosition(entity.getAttackTarget().posX, entity.getAttackTarget().posY, entity.getAttackTarget().posZ);
-                    this.pathAttempt = 0;
-                }
-            }
-
-            if (getClosestForPathTarget() == null) {
-                this.pathAttempt++;
-
-                if (this.pathAttempt > 100) {
-                    this.entity.setPosition(entity.getAttackTarget().posX, entity.getAttackTarget().posY, entity.getAttackTarget().posZ);
-                    this.pathAttempt = 0;
-                }
-            } else {
-//                this.entity.getNavigator().setPath(getClosestForPathTarget(), moveSpeed);
-
-                if (this.entity.isInWater()) {
-                    this.inWater++;
-
-                    if (this.inWater > 50) {
-                        this.entity.setPosition(entity.getAttackTarget().posX, entity.getAttackTarget().posY, entity.getAttackTarget().posZ);
-                        this.pathAttempt = 0;
-                        this.inWater = 0;
-                    }
-                }
-            }
-
-            if (entity.getAttackTarget().getPosition().getDistance((int) entity.posX, (int) entity.posY, (int) entity.posZ) < 3) {
-
-                this.entity.getLookHelper().setLookPosition(this.entity.getRevivingPlayer().posX, this.entity.getRevivingPlayer().posY, this.entity.getRevivingPlayer().posZ, (float) this.entity.getHorizontalFaceSpeed(), (float) this.entity.getVerticalFaceSpeed());
-
-                if (!ModEMT.PLAYERS_BEING_HEALED.containsKey(this.entity.getAttackTarget().getUniqueID())) {
-                    ModEMT.PLAYERS_BEING_HEALED.put(this.entity.getAttackTarget().getUniqueID(), System.currentTimeMillis() + (1000L * 21));
-                    Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:emt_revive", 1, 1, this.entity.posX, this.entity.posY, this.entity.posZ), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 10));
-                }
+        if (entity.getNavigator().noPath()) {
+            Path path = findBestPath();
+            if (path != null) entity.getNavigator().setPath(path, 1.8);
+            else {
+                entity.setPositionAndUpdate(entity.getAttackTarget().posX, entity.getAttackTarget().posY + 0.5, entity.getAttackTarget().posZ);
+                revivePlayer();
+                entity.getNavigator().clearPath();
             }
         }
 
-        if (this.entity.getRevivingPlayer() != null) return true;
+        return true;
+    }
 
-        return this.entity.getAttackTarget() != null && this.entity.getDistance(this.entity.getAttackTarget()) < followRange;
+    @Override
+    public void resetTask() {
+        super.resetTask();
+        entity.getNavigator().clearPath();
     }
 
     @Override
@@ -94,26 +69,42 @@ public class AIEMTRevive extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-        return (this.entity.getRevivingPlayer() != null && !isAlreadyBeingRevived((EntityPlayer) entity.getAttackTarget())) || (this.entity.getAttackTarget() != null && entity.getAttackTarget() instanceof EntityPlayer && ModPolice.isUnconscious((EntityPlayer) entity.getAttackTarget()) && !isAlreadyBeingRevived((EntityPlayer) entity.getAttackTarget()) && !entity.getAttackTarget().getEntityData().hasKey("Tazed"));
+        return this.entity.getAttackTarget() != null
+                && ModPolice.isUnconscious((EntityPlayer) entity.getAttackTarget())
+                && !isAlreadyBeingRevived((EntityPlayer) entity.getAttackTarget())
+                && !entity.getAttackTarget().getEntityData().hasKey("Tazed");
     }
 
-    public Path getClosestForPathTarget() {
-        if(entity.getNavigator().getPathToPos(entity.getAttackTarget().getPosition()) != null) return entity.getNavigator().getPathToPos(entity.getAttackTarget().getPosition());
+    public Path findBestPath() {
+        if (entity.getAttackTarget() == null) return null;
 
-        Vector v = new Vector(entity.posX, entity.posY, entity.posZ);
-        Vector v1 = new Vector(entity.getAttackTarget().posX, entity.getAttackTarget().posY, entity.getAttackTarget().posZ);
-        int distance = (int) v.distance(v1);
-        distance = distance > (int) this.entity.getNavigator().getPathSearchRange() ? (int) this.entity.getNavigator().getPathSearchRange() : distance;
-        Vector subtracted = v.subtract(v1).normalize();
+        double maxDistance = entity.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getBaseValue();
+        double distance = entity.getDistance(entity.getAttackTarget());
 
-        Path path = this.entity.getNavigator().getPathToPos(this.entity.getAttackTarget().getPosition());
-        if (path == null)
-            path = this.entity.getNavigator().getPathToPos(new BlockPos(entity.posX + (-subtracted.getX() * distance), entity.posY, entity.posZ + (-subtracted.getZ() * distance)));
+        if (distance > maxDistance) {
+            Vector v = new Vector(entity.posX, entity.posY, entity.posZ);
+            Vector v1 = new Vector(entity.getAttackTarget().posX, entity.getAttackTarget().posY, entity.getAttackTarget().posZ);
+            Vector subtracted = v.subtract(v1).normalize();
 
-        return path;
+            return entity.getNavigator().getPathToXYZ(entity.posX + (-subtracted.getX() * maxDistance), entity.posY, entity.posZ + (-subtracted.getZ() * maxDistance));
+        }
+
+        return entity.getNavigator().getPathToEntityLiving(entity.getAttackTarget());
     }
 
     private boolean isAlreadyBeingRevived(EntityPlayer player) {
-        return ModEMT.PLAYERS_BEING_HEALED.containsKey(player.getUniqueID()) || ServerProxy.getEMTsForWorld(player.world).stream().filter(entityEMT -> !entityEMT.getUniqueID().equals(entity.getUniqueID()) && entityEMT.getRevivingPlayer() != null && Objects.equals(player.getUniqueID(), entityEMT.getRevivingPlayer().getUniqueID())).findFirst().orElse(null) != null;
+        return ModEMT.PLAYERS_BEING_HEALED.containsKey(player.getUniqueID()) ||
+                ServerProxy.getEMTsForWorld(player.world).stream().filter(
+                        entityEMT -> !entityEMT.getUniqueID().equals(entity.getUniqueID())
+                                && entityEMT.getAttackTarget() != null
+                                && Objects.equals(player.getUniqueID(), entityEMT.getAttackTarget().getUniqueID())).findFirst().orElse(null) != null;
     }
+
+    private void revivePlayer() {
+        if (this.entity.getAttackTarget() == null) return;
+        ModEMT.PLAYERS_BEING_HEALED.put(this.entity.getAttackTarget().getUniqueID(), System.currentTimeMillis() + (1000L * 21));
+        Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:emt_revive", 1, 1, this.entity.posX, this.entity.posY, this.entity.posZ), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 10));
+    }
+
+
 }

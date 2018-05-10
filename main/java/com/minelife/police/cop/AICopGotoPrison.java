@@ -33,7 +33,7 @@ public class AICopGotoPrison extends EntityAIBase {
                 // if we can't find a path then just teleport cop to prison
                 jailPlayer();
                 cop.setPositionAndUpdate(prison.getDropOffPos().getX() + 0.5, prison.getDropOffPos().getY() + 0.5, prison.getDropOffPos().getZ() + 0.5);
-                cop.getCarryingPlayer().setPositionAndUpdate(prison.getDropOffPos().getX() + 0.5, prison.getDropOffPos().getY() + 0.5, prison.getDropOffPos().getZ() + 0.5);
+                cop.getCarryingPlayer().setPositionAndUpdate(prison.getDropOffPos().getX() + 0.5, prison.getDropOffPos().getY(), prison.getDropOffPos().getZ() + 0.5);
                 cop.getNavigator().clearPath();
             }
         }
@@ -53,11 +53,10 @@ public class AICopGotoPrison extends EntityAIBase {
             jailPlayer();
             EntityPlayer carryingPlayer = cop.getCarryingPlayer();
             carryingPlayer.dismountRidingEntity();
-            carryingPlayer.setPositionAndUpdate(prison.getDropOffPos().getX()+ 0.5, prison.getDropOffPos().getY()+ 0.5, prison.getDropOffPos().getZ() + 0.5);
+            carryingPlayer.setPositionAndUpdate(prison.getDropOffPos().getX()+ 0.5, prison.getDropOffPos().getY(), prison.getDropOffPos().getZ() + 0.5);
             BlockPos randomSpawnPoint = getRandomSpawnPoint();
             cop.setPositionAndUpdate(randomSpawnPoint.getX(), randomSpawnPoint.getY(), randomSpawnPoint.getZ());
             cop.getNavigator().clearPath();
-
         }
 
         return true;
@@ -95,14 +94,14 @@ public class AICopGotoPrison extends EntityAIBase {
             Vector v1 = new Vector(prison.getDropOffPos().getX(), prison.getDropOffPos().getY(), prison.getDropOffPos().getZ());
             Vector subtracted = v.subtract(v1).normalize();
 
-            return cop.getNavigator().getPathToPos(new BlockPos(cop.posX + (-subtracted.getX() * maxDistance), cop.posY, cop.posZ + (-subtracted.getZ() * maxDistance)));
+            return cop.getNavigator().getPathToXYZ(cop.posX + (-subtracted.getX() * maxDistance), cop.posY, cop.posZ + (-subtracted.getZ() * maxDistance));
         }
 
         return cop.getNavigator().getPathToXYZ(prison.getDropOffPos().getX(), prison.getDropOffPos().getY(), prison.getDropOffPos().getZ());
     }
 
     public BlockPos getRandomSpawnPoint() {
-        if (!ModPolice.getConfig().contains("PoliceSpawnPoints")) return cop.getPosition();
+        if (ModPolice.getConfig().getStringList("PoliceSpawnPoints") == null) return cop.getPosition();
         List<String> spawnPoints = ModPolice.getConfig().getStringList("PoliceSpawnPoints");
         String s = spawnPoints.get(cop.getEntityWorld().rand.nextInt(spawnPoints.size()));
         String[] data = s.split(",");

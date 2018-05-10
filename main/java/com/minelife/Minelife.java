@@ -22,9 +22,7 @@ import com.minelife.resourcefulness.ModResourcefulness;
 import com.minelife.tracker.ModTracker;
 import com.minelife.tutorial.ModTutorial;
 import com.minelife.util.PacketPlaySound;
-import com.minelife.util.client.PacketPopup;
-import com.minelife.util.client.PacketRequestName;
-import com.minelife.util.client.PacketRequestUUID;
+import com.minelife.util.client.*;
 import com.minelife.util.server.MLCommand;
 import com.minelife.util.server.PacketResponseName;
 import com.minelife.util.server.PacketResponseUUID;
@@ -104,6 +102,8 @@ public class Minelife {
         MLMod.registerPacket(PacketRequestUUID.Handler.class, PacketRequestUUID.class, Side.SERVER);
         MLMod.registerPacket(PacketResponseUUID.Handler.class, PacketResponseUUID.class, Side.CLIENT);
         MLMod.registerPacket(PacketPopup.Handler.class, PacketPopup.class, Side.CLIENT);
+        MLMod.registerPacket(PacketRidingEntity.Handler.class, PacketRidingEntity.class, Side.CLIENT);
+        MLMod.registerPacket(PacketDropEntity.Handler.class, PacketDropEntity.class, Side.CLIENT);
 
         MinecraftForge.EVENT_BUS.register(this);
 

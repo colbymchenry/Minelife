@@ -75,11 +75,13 @@ public class ServerProxy extends MLProxy {
                 if (player != null) {
                     ModPolice.setUnconscious(player, false, false);
 
-                    EntityEMT emtRevivingPlayer = getEMTsForWorld(player.getEntityWorld()).stream().filter(entityEMT -> entityEMT.getRevivingPlayer() != null && entityEMT.getRevivingPlayer().getUniqueID().equals(playerID)).findFirst().orElse(null);
+                    EntityEMT emtRevivingPlayer = getEMTsForWorld(player.getEntityWorld()).stream().filter(entityEMT -> entityEMT.getAttackTarget() != null && entityEMT.getAttackTarget().getUniqueID().equals(playerID)).findFirst().orElse(null);
                     if(emtRevivingPlayer != null) {
                         emtRevivingPlayer.setRevivingPlayer(null);
                         emtRevivingPlayer.setAttackTarget(null);
-                        emtRevivingPlayer.getRegroupAI().setRegroupPos(emtRevivingPlayer.getRegroupAI().getRandomRegroupPos());
+                        emtRevivingPlayer.getNavigator().clearPath();
+                        BlockPos randomPos = emtRevivingPlayer.getRandomSpawnPoint();
+                        emtRevivingPlayer.setPositionAndUpdate(randomPos.getX(), randomPos.getY() + 0.5, randomPos.getZ());
                     }
                 }
             }

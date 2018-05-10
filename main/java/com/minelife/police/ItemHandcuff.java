@@ -7,6 +7,8 @@ import com.minelife.drugs.XRayEffect;
 import com.minelife.guns.item.ItemDynamite;
 import com.minelife.police.cop.EntityCop;
 import com.minelife.util.PacketPlaySound;
+import com.minelife.util.StringHelper;
+import com.minelife.util.client.PacketRidingEntity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -61,7 +63,6 @@ public class ItemHandcuff extends Item {
     public static void setHandcuffed(EntityPlayer player, boolean value, boolean playSound) {
         List<String> handcuffed = ModPolice.getConfig().getStringList("Handcuffed") != null ? ModPolice.getConfig().getStringList("Handcuffed") : Lists.newArrayList();
         if (value) {
-            // TODO: Stop player movement and jumping, also make EMT walk back to spawn position after healing player. Like the police do
             if (!isHandcuffed(player)) {
                 handcuffed.add(player.getUniqueID().toString() + "," + UUID.randomUUID().toString());
                 player.addPotionEffect(new PotionEffect(MobEffects.SPEED, Integer.MAX_VALUE, -10, false, false));
@@ -112,19 +113,8 @@ public class ItemHandcuff extends Item {
     }
 
     @SubscribeEvent
-    public void onInteractBlock(PlayerInteractEvent.RightClickBlock event) {
-        EntityPlayer player = event.getEntityPlayer();
-        if(!player.getPassengers().isEmpty() && player.getPassengers().get(0) instanceof EntityPlayer
-                && isHandcuffed((EntityPlayer) player.getPassengers().get(0))) {
-            player.getPassengers().get(0).dismountRidingEntity();
-            return;
-        }
-    }
-
-    @SubscribeEvent
     public void onInteract(PlayerInteractEvent.EntityInteract event) {
         if (!(event.getTarget() instanceof EntityPlayer))  {
-            System.out.println("HELLO");
             return;
         }
 
@@ -133,17 +123,16 @@ public class ItemHandcuff extends Item {
 
         if(isHandcuffed(beingHandcuffed) && handcuffing.isSneaking() && handcuffing.getPassengers().isEmpty()) {
             beingHandcuffed.startRiding(handcuffing);
-            System.out.println("HELLO1");
+            handcuffing.sendMessage(new TextComponentString(StringHelper.ParseFormatting("&6&lType &c&l/drop &6&lto drop the player.", '&')));
+            Minelife.getNetwork().sendToAll(new PacketRidingEntity(beingHandcuffed.getEntityId(), handcuffing.getEntityId()));
             return;
         }
 
         if (handcuffing.getHeldItem(event.getHand()).getItem() != this) {
-            System.out.println("HELLO2");
             return;
         }
 
         if(handcuffing.getDistance(beingHandcuffed) > 1) {
-            System.out.println("HELLO3");
             return;
         }
 
@@ -179,6 +168,11 @@ public class ItemHandcuff extends Item {
             player.addPotionEffect(new PotionEffect(MobEffects.SPEED, Integer.MAX_VALUE, -10, false, false));
             player.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, Integer.MAX_VALUE, -10, false, false));
         }
+    }
+
+    @SubscribeEvent
+    public void onInteract(PlayerInteractEvent event) {
+        if(isHandcuffed(event.getEntityPlayer())) event.setCanceled(true);
     }
 
 }
