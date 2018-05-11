@@ -1,19 +1,20 @@
 package com.minelife.police;
 
 import com.google.common.collect.Lists;
+import com.minelife.AbstractGuiHandler;
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
 import com.minelife.jobs.network.PacketOpenSignupGui;
 import com.minelife.police.client.ClientProxy;
 import com.minelife.police.cop.EntityCop;
+import com.minelife.police.network.PacketCheckUnconscious;
 import com.minelife.police.network.PacketWriteup;
 import com.minelife.police.network.PacketOpenWriteupGUI;
 import com.minelife.police.network.PacketUnconscious;
 import com.minelife.police.server.*;
 import com.minelife.util.MLConfig;
 import lib.PatPeter.SQLibrary.Database;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -38,6 +39,7 @@ public class ModPolice extends MLMod {
         registerPacket(PacketOpenSignupGui.Handler.class, PacketOpenSignupGui.class, Side.CLIENT);
         registerPacket(PacketWriteup.Handler.class, PacketWriteup.class, Side.SERVER);
         registerPacket(PacketOpenWriteupGUI.Handler.class, PacketOpenWriteupGUI.class, Side.CLIENT);
+        registerPacket(PacketCheckUnconscious.Handler.class, PacketCheckUnconscious.class, Side.SERVER);
         registerItem(itemHandcuff = new ItemHandcuff());
         registerItem(itemHandcuffKey = new ItemHandcuffKey());
         itemHandcuff.registerRecipe();
@@ -51,6 +53,11 @@ public class ModPolice extends MLMod {
     @Override
     public Class<? extends MLProxy> getServerProxyClass() {
         return ServerProxy.class;
+    }
+
+    @Override
+    public AbstractGuiHandler getGuiHandler() {
+        return new GuiHandler();
     }
 
     @Override

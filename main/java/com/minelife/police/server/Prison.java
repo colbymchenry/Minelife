@@ -12,10 +12,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class Prison implements Comparable<Prison> {
 
@@ -43,8 +40,10 @@ public class Prison implements Comparable<Prison> {
 
     public static void initPrisons() throws IOException, InvalidConfigurationException {
         File file = new File(Minelife.getDirectory(), "prisons");
-        for (File file1 : file.listFiles()) {
-            new Prison(UUID.fromString(file1.getName().replace(".yml", "")));
+        if(file.listFiles() != null) {
+            for (File file1 : Objects.requireNonNull(file.listFiles())) {
+                new Prison(UUID.fromString(file1.getName().replace(".yml", "")));
+            }
         }
     }
 

@@ -9,8 +9,8 @@ public class ContainerWallet extends ContainerCashBlock {
 
     private InventoryWallet inventoryWallet;
 
-    public ContainerWallet(IInventory playerInventory, InventoryWallet inventoryWallet) {
-        super(playerInventory, inventoryWallet.getInventory(), null);
+    public ContainerWallet(IInventory playerInventory, InventoryWallet inventoryWallet, EntityPlayer player) {
+        super(playerInventory, inventoryWallet.getInventory(), null, player);
         this.inventoryWallet = inventoryWallet;
     }
 

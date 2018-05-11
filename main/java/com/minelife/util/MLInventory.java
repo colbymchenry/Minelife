@@ -2,8 +2,10 @@ package com.minelife.util;
 
 import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryLargeChest;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -115,29 +117,44 @@ public class MLInventory implements IInventory {
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack) {
-        this.contents.set(slot, stack);
+        NonNullList<ItemStack> nonnulllist = contents;
+
+        if (nonnulllist != null)
+        {
+            nonnulllist.set(slot, stack);
+        }
     }
 
     @Override
     public ItemStack getStackInSlot(int slot) {
-        return this.contents.get(slot);
+        List<ItemStack> list = contents;
+
+        return list == null ? ItemStack.EMPTY : (ItemStack)list.get(slot);
     }
 
     @Override
     public ItemStack decrStackSize(int index, int count) {
-        ItemStack stack = contents.get(index);
-        ItemStack stack1 = stack.copy();
-        stack.setCount(stack.getCount() - count < 0 ? 0 : stack.getCount() - count);
-        contents.set(index, stack);
-        return stack1;
+        List<ItemStack> list = contents;
+        return list != null && !((ItemStack)list.get(index)).isEmpty() ? ItemStackHelper.getAndSplit(list, index, count) : ItemStack.EMPTY;
     }
 
     @Override
     public ItemStack removeStackFromSlot(int index) {
-        ItemStack before = contents.get(index).copy();
-        contents.add(index, ItemStack.EMPTY);
-        return before;
+        NonNullList<ItemStack> nonnulllist = contents;
+
+        if (nonnulllist != null && !((ItemStack)nonnulllist.get(index)).isEmpty())
+        {
+            ItemStack itemstack = nonnulllist.get(index);
+            nonnulllist.set(index, ItemStack.EMPTY);
+            return itemstack;
+        }
+        else
+        {
+            return ItemStack.EMPTY;
+        }
     }
+
+
 
     public void readFromNBT(NBTTagCompound compound) {
         this.contents = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);

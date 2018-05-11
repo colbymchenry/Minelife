@@ -86,17 +86,30 @@ public class ItemGunSkinUnlocker extends Item {
         static List<GunSkinRDS> skinUnlocks = Lists.newArrayList();
 
         static {
-            skinUnlocks.add(new GunSkinRDS(40, EnumGun.M4A4));
-            skinUnlocks.add(new GunSkinRDS(40, EnumGun.DESERT_EAGLE));
-            skinUnlocks.add(new GunSkinRDS(40, EnumGun.AK47));
-            skinUnlocks.add(new GunSkinRDS(40, EnumGun.BARRETT));
-            skinUnlocks.add(new GunSkinRDS(40, EnumGun.MAGNUM));
-            skinUnlocks.add(new GunSkinRDS(40, EnumGun.AWP));
+//            skinUnlocks.add(new GunSkinRDS(40, EnumGun.M4A4));
+//            skinUnlocks.add(new GunSkinRDS(40, EnumGun.DESERT_EAGLE));
+//            skinUnlocks.add(new GunSkinRDS(40, EnumGun.AK47));
+//            skinUnlocks.add(new GunSkinRDS(40, EnumGun.BARRETT));
+//            skinUnlocks.add(new GunSkinRDS(40, EnumGun.MAGNUM));
+//            skinUnlocks.add(new GunSkinRDS(40, EnumGun.AWP));
             skinUnlocks.add(new GunSkinRDS(10, EnumGun.AK47_BLOODBATH));
+            skinUnlocks.add(new GunSkinRDS(2, EnumGun.AK47_BLUE_STEEL));
+            skinUnlocks.add(new GunSkinRDS(1, EnumGun.AK47_GOLD));
+            skinUnlocks.add(new GunSkinRDS(1, EnumGun.AK47_SPEC_OPS));
             skinUnlocks.add(new GunSkinRDS(20, EnumGun.M4A4_BUMBLEBEE));
             skinUnlocks.add(new GunSkinRDS(20, EnumGun.M4A4_PINEAPPLE));
+            skinUnlocks.add(new GunSkinRDS(10, EnumGun.M4A4_BLACK_MESA));
+            skinUnlocks.add(new GunSkinRDS(2, EnumGun.AWP_GHOST));
+            skinUnlocks.add(new GunSkinRDS(1, EnumGun.AWP_SPEC_OPS));
+            skinUnlocks.add(new GunSkinRDS(10, EnumGun.BARRETT_HOT_ROD));
+            skinUnlocks.add(new GunSkinRDS(15, EnumGun.BARRETT_PINEAPPLE));
             skinUnlocks.add(new GunSkinRDS(1.5, EnumGun.DESERT_EAGLE_SHOCK));
-            skinUnlocks.add(new GunSkinRDS(1, EnumGun.MAGNUM_BLACK_MESA));
+            skinUnlocks.add(new GunSkinRDS(5, EnumGun.DESERT_EAGLE_BLACK_MESA));
+            skinUnlocks.add(new GunSkinRDS(10, EnumGun.DESERT_EAGLE_PINEAPPLE));
+            skinUnlocks.add(new GunSkinRDS(6, EnumGun.MAGNUM_BLACK_MESA));
+            skinUnlocks.add(new GunSkinRDS(5, EnumGun.MAGNUM_KINGPIN));
+            skinUnlocks.add(new GunSkinRDS(1, EnumGun.MAGNUM_SPEC_OPS));
+            skinUnlocks.add(new GunSkinRDS(20, EnumGun.MAGNUM_RUST_COAT));
         }
 
         @Override

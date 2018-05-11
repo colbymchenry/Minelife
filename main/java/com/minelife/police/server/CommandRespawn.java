@@ -5,7 +5,9 @@ import com.minelife.Minelife;
 import com.minelife.essentials.server.commands.Spawn;
 import com.minelife.police.ItemHandcuff;
 import com.minelife.police.ModPolice;
+import com.minelife.tdm.SavedInventory;
 import com.minelife.util.client.PacketDropEntity;
+import com.minelife.util.configuration.InvalidConfigurationException;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -21,6 +23,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Iterator;
@@ -62,6 +65,13 @@ public class CommandRespawn extends CommandBase {
         ModPolice.setUnconscious(player, false, false);
         Minelife.getNetwork().sendToAll(new PacketDropEntity(player.getEntityId()));
         player.dismountRidingEntity();
+
+        try {
+            SavedInventory savedInventory = new SavedInventory(player.getUniqueID());
+            if(savedInventory != null) savedInventory.delete();
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
 
         if (Spawn.GetSpawn() != null) {
             player.setPositionAndUpdate(Spawn.GetSpawn().getX(), Spawn.GetSpawn().getY(), Spawn.GetSpawn().getZ());

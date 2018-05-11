@@ -8,6 +8,7 @@ public enum ChargeType {
     MURDER(15000),
     THEFT(4000),
     BREAKING_AND_ENTERING(3000),
+    ASSAULT(3000),
     PRISON_BREAK(15000);
 
     public int chargeAmount;

@@ -2,11 +2,10 @@ package com.minelife.economy.client.gui.cash;
 
 import com.minelife.economy.ModEconomy;
 import com.minelife.economy.tileentity.TileEntityCash;
+import com.minelife.police.client.ContainerPlayerInventory;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerChest;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 
 public class ContainerCashBlock extends Container {
@@ -14,10 +13,10 @@ public class ContainerCashBlock extends Container {
     private final int numRows;
     private final TileEntityCash tileCash;
 
-    public ContainerCashBlock(IInventory playerInventory, IInventory inventory, TileEntityCash tileCash) {
+    public ContainerCashBlock(IInventory playerInventory, IInventory inventory, TileEntityCash tileCash, EntityPlayer player) {
         this.numRows = inventory.getSizeInventory() / 9;
         this.tileCash = tileCash;
-
+        inventory.openInventory(player);
         int i = (this.numRows - 4) * 18;
 
         for (int j = 0; j < this.numRows; ++j) {
@@ -54,26 +53,41 @@ public class ContainerCashBlock extends Container {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
 
-        if (slot != null && slot.getHasStack()) {
+        if (slot != null && slot.getHasStack())
+        {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
 
-            if (index < this.numRows * 9) {
-                if (!this.mergeItemStack(itemstack1, this.numRows * 9, this.inventorySlots.size(), true)) {
+            if (index < this.numRows * 9)
+            {
+                if (!this.mergeItemStack(itemstack1, this.numRows * 9, this.inventorySlots.size(), true))
+                {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemstack1, 0, this.numRows * 9, false)) {
+            }
+            else if (!this.mergeItemStack(itemstack1, 0, this.numRows * 9, false))
+            {
                 return ItemStack.EMPTY;
             }
 
-            if (itemstack1.isEmpty()) {
+            if (itemstack1.isEmpty())
+            {
                 slot.putStack(ItemStack.EMPTY);
-            } else {
+            }
+            else
+            {
                 slot.onSlotChanged();
             }
         }
 
         return itemstack;
+    }
+
+    @Override
+    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
+        System.out.println("BOOM");
+        System.out.println(clickTypeIn.name());
+        return super.slotClick(slotId, dragType, clickTypeIn, player);
     }
 
     class SlotCash extends Slot {

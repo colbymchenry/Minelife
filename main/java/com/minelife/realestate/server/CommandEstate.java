@@ -113,7 +113,10 @@ public class CommandEstate extends CommandBase {
                 return;
             }
 
-            if (!ModPermission.hasPermission(player.getUniqueID(), "estate.override.modify") && !Objects.equals(estateAtPos.getOwnerID(), player.getUniqueID()) && !Objects.equals(estateAtPos.getRenterID(), player.getUniqueID())) {
+            if (!ModPermission.hasPermission(player.getUniqueID(), "estate.override.modify")
+                    && !estateAtPos.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.MODIFY_MEMBERS)
+                    && !Objects.equals(estateAtPos.getOwnerID(), player.getUniqueID())
+                    && !Objects.equals(estateAtPos.getRenterID(), player.getUniqueID())) {
                 sendMessage(player, TextFormatting.RED + "You are not authorized to modify this estate.");
                 return;
             }

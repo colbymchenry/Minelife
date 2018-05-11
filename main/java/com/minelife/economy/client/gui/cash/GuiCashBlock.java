@@ -3,15 +3,16 @@ package com.minelife.economy.client.gui.cash;
 import com.minelife.economy.tileentity.TileEntityCash;
 import com.minelife.util.client.GuiFakeInventory;
 import com.minelife.util.client.GuiHelper;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 
 public class GuiCashBlock extends GuiContainer {
 
-    public GuiCashBlock(IInventory playerInventory, IInventory cashInventory, TileEntityCash tileCash) {
-        super(new ContainerCashBlock(playerInventory, cashInventory, tileCash));
-        this.allowUserInput = false;
+    public GuiCashBlock(IInventory playerInventory, IInventory cashInventory, TileEntityCash tileCash, EntityPlayer player) {
+        super(new ContainerCashBlock(playerInventory, cashInventory, tileCash, player));
         int inventoryRows = cashInventory.getSizeInventory() / 9;
         this.ySize = 114 + inventoryRows * 18;
     }
@@ -34,4 +35,6 @@ public class GuiCashBlock extends GuiContainer {
         this.inventorySlots.inventorySlots.forEach(slot ->
                 GuiFakeInventory.drawSlot(this.guiLeft + slot.xPos - 1, this.guiTop + slot.yPos - 1, 17, 17));
     }
+
+
 }

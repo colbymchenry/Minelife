@@ -12,6 +12,7 @@ import com.minelife.police.cop.EntityCop;
 import com.minelife.police.ModPolice;
 import com.minelife.police.Prisoner;
 import com.minelife.util.MLConfig;
+import com.minelife.util.PacketPlaySound;
 import com.minelife.util.PlayerHelper;
 import com.minelife.util.StringHelper;
 import lib.PatPeter.SQLibrary.Database;
@@ -31,6 +32,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.io.File;
@@ -87,7 +89,7 @@ public class ServerProxy extends MLProxy {
 
         if(event.getEntity() instanceof EntityCop) spawnCops(event.getEntity().world);
 
-        if (!(event.getEntity() instanceof EntityPlayer)) return;
+        if (!(event.getEntity() instanceof EntityPlayer) && !(event.getEntity() instanceof EntityCop)) return;
 
         if (event.getSource().getTrueSource() instanceof EntityPlayer) {
             EntityCop.getNearbyPolice(event.getEntityLiving().getEntityWorld(), event.getSource().getTrueSource().getPosition()).forEach(officer -> {
@@ -99,9 +101,11 @@ public class ServerProxy extends MLProxy {
         }
 
         event.setCanceled(true);
-        ((EntityPlayer) event.getEntity()).setHealth(10);
-        ModPolice.setUnconscious((EntityPlayer) event.getEntity(), true, false);
-        ModEMT.requestEMT((EntityPlayer) event.getEntity());
+        if(event.getEntity() instanceof EntityPlayer) {
+            ((EntityPlayer) event.getEntity()).setHealth(10);
+            ModPolice.setUnconscious((EntityPlayer) event.getEntity(), true, false);
+            ModEMT.requestEMT((EntityPlayer) event.getEntity());
+        }
 
         event.getEntity().sendMessage(new TextComponentString(StringHelper.ParseFormatting("&c&lType &6&l/respawn &c&lto respawn. You will lose everything.", '&')));
     }
@@ -109,12 +113,22 @@ public class ServerProxy extends MLProxy {
     @SubscribeEvent
     public void onDamage(LivingDamageEvent event) {
         if (!(event.getSource().getTrueSource() instanceof EntityPlayer)) return;
+
         if (!(event.getEntity() instanceof EntityPlayer) && !(event.getEntity() instanceof EntityCop)) return;
 
+        if(event.getEntity() instanceof EntityCop) {
+            ModPolice.setUnconscious((EntityPlayer) event.getSource().getTrueSource(), true, true);
+            event.getSource().getTrueSource().getEntityData().setBoolean("Tazed", false);
+            Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:tazer", 1, 1), new NetworkRegistry.TargetPoint(event.getEntity().dimension, event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ, 10));
+            return;
+        }
+
+        // TODO: Make cop chase player down and then taze
         EntityCop.getNearbyPolice(event.getEntityLiving().getEntityWorld(), event.getSource().getTrueSource().getPosition()).forEach(officer -> {
-            if (officer.getEntitySenses().canSee(event.getSource().getTrueSource())) {
-                officer.setChasingPlayer((EntityPlayer) event.getSource().getTrueSource());
-//                officer.getPoliceAI().setAggressivePlayer(event.getSource().getTrueSource().getUniqueID());
+            if (officer.getEntitySenses().canSee(event.getSource().getTrueSource()) && officer.getDistance(event.getSource().getTrueSource()) < 4) {
+                ModPolice.setUnconscious((EntityPlayer) event.getSource().getTrueSource(), true, true);
+                event.getSource().getTrueSource().getEntityData().setBoolean("Tazed", false);
+                Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:tazer", 1, 1), new NetworkRegistry.TargetPoint(event.getEntity().dimension, event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ, 10));
             }
         });
 

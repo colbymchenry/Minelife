@@ -3,21 +3,17 @@ package com.minelife.police;
 import com.google.common.collect.Lists;
 import com.minelife.Minelife;
 import com.minelife.core.event.EntityDismountEvent;
-import com.minelife.drugs.XRayEffect;
-import com.minelife.guns.item.ItemDynamite;
 import com.minelife.police.cop.EntityCop;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.StringHelper;
+import com.minelife.util.client.PacketDropEntity;
 import com.minelife.util.client.PacketRidingEntity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.potion.PotionEffect;
@@ -26,10 +22,9 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -55,9 +50,10 @@ public class ItemHandcuff extends Item {
     public void registerRecipe() {
         ResourceLocation name = new ResourceLocation(Minelife.MOD_ID + ":handcuff");
         GameRegistry.addShapedRecipe(name, null, new ItemStack(this),
-                "AA",
-                "AA",
-                'A', Ingredient.fromStacks(new ItemStack(Items.IRON_INGOT)));
+                "AA ",
+                "AAA",
+                " AA",
+                'A', Ingredient.fromStacks(new ItemStack(Items.IRON_NUGGET)));
     }
 
     public static void setHandcuffed(EntityPlayer player, boolean value, boolean playSound) {
@@ -109,22 +105,39 @@ public class ItemHandcuff extends Item {
     public void onDismount(EntityDismountEvent event) {
         EntityPlayer player = (EntityPlayer) event.entity;
 
+        if(player.getRidingEntity().getClass().getSimpleName().contains("Sittable")) {
+            Minelife.getNetwork().sendToAll(new PacketDropEntity(player.getEntityId()));
+            return;
+        }
+
         if (isHandcuffed(player) || player.getRidingEntity() instanceof EntityCop) event.setCanceled(true);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent.EntityInteract event) {
-        if (!(event.getTarget() instanceof EntityPlayer))  {
+        if (!(event.getTarget() instanceof EntityPlayer)) {
             return;
         }
 
         EntityPlayer handcuffing = event.getEntityPlayer();
         EntityPlayer beingHandcuffed = (EntityPlayer) event.getTarget();
 
-        if(isHandcuffed(beingHandcuffed) && handcuffing.isSneaking() && handcuffing.getPassengers().isEmpty()) {
-            beingHandcuffed.startRiding(handcuffing);
-            handcuffing.sendMessage(new TextComponentString(StringHelper.ParseFormatting("&6&lType &c&l/drop &6&lto drop the player.", '&')));
-            Minelife.getNetwork().sendToAll(new PacketRidingEntity(beingHandcuffed.getEntityId(), handcuffing.getEntityId()));
+        if (isHandcuffed(beingHandcuffed) && handcuffing.getPassengers().isEmpty()) {
+            if (handcuffing.isSneaking()) {
+                beingHandcuffed.startRiding(handcuffing);
+                handcuffing.sendMessage(new TextComponentString(StringHelper.ParseFormatting("&6&lType &c&l/drop &6&lto drop the player.", '&')));
+                Minelife.getNetwork().sendToAll(new PacketRidingEntity(beingHandcuffed.getEntityId(), handcuffing.getEntityId()));
+            } else {
+                if (!ModPolice.isCop(handcuffing.getUniqueID()))
+                    handcuffing.sendMessage(new TextComponentString(TextFormatting.RED + "Only the police can view a handcuffed player's inventory."));
+                else
+                    handcuffing.openGui(Minelife.getInstance(), GuiHandler.GUI_PLAYER_INVENTORY, handcuffing.getEntityWorld(), beingHandcuffed.getEntityId(), 0, 0);
+            }
+            return;
+        }
+
+        if (ModPolice.isUnconscious(beingHandcuffed)) {
+            handcuffing.openGui(Minelife.getInstance(), GuiHandler.GUI_PLAYER_INVENTORY, handcuffing.getEntityWorld(), beingHandcuffed.getEntityId(), 0, 0);
             return;
         }
 
@@ -132,7 +145,7 @@ public class ItemHandcuff extends Item {
             return;
         }
 
-        if(handcuffing.getDistance(beingHandcuffed) > 1) {
+        if (handcuffing.getDistance(beingHandcuffed) > 1) {
             return;
         }
 
@@ -158,7 +171,7 @@ public class ItemHandcuff extends Item {
 
     @SubscribeEvent
     public void onPlayerTick(EntityJoinWorldEvent event) {
-        if(!(event.getEntity() instanceof EntityPlayer)) return;
+        if (!(event.getEntity() instanceof EntityPlayer)) return;
 
         EntityPlayer player = (EntityPlayer) event.getEntity();
 
@@ -170,9 +183,9 @@ public class ItemHandcuff extends Item {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent event) {
-        if(isHandcuffed(event.getEntityPlayer())) event.setCanceled(true);
+        if (isHandcuffed(event.getEntityPlayer())) event.setCanceled(true);
     }
 
 }

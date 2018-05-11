@@ -56,11 +56,17 @@ public class AICopPatrol extends EntityAIBase {
             if (Prison.getPrison(cop.getAttackTarget().getPosition()) != null && !Prisoner.isPrisoner(cop.getAttackTarget().getUniqueID())) {
                 cop.chargesForTarget.add(ChargeType.PRISON_BREAK);
             }
+
+            if(cop.getLastDamageSource() != null && cop.getLastDamageSource().getTrueSource() instanceof EntityPlayer) {
+                cop.chargesForTarget.add(ChargeType.ASSAULT);
+            }
+
+
         }
 
-        if(cop.getNavigator().noPath()) {
+        if (cop.getNavigator().noPath()) {
             Path path = cop.getNavigator().getPathToEntityLiving(cop.getAttackTarget());
-            if(path == null) return false;
+            if (path == null) return false;
             else cop.getNavigator().setPath(path, 1.8);
         }
 
@@ -68,16 +74,13 @@ public class AICopPatrol extends EntityAIBase {
 
         if (distance < 2) {
             // handcuff
-            System.out.println("HOLA1");
             if (ModPolice.isUnconscious((EntityPlayer) cop.getAttackTarget())) {
                 ModPolice.setUnconscious((EntityPlayer) cop.getAttackTarget(), false, false);
                 cop.getAttackTarget().getEntityData().setBoolean("Tazed", false);
                 cop.getAttackTarget().startRiding(cop);
-                System.out.println("HOLA");
             }
 
         } else if (distance < 4) {
-            System.out.println("HOLA aaadad");
             // taze
             if (!ModPolice.isUnconscious((EntityPlayer) cop.getAttackTarget())) {
 
@@ -109,7 +112,7 @@ public class AICopPatrol extends EntityAIBase {
 
     @Override
     public void resetTask() {
-        if(cop.getRidingEntity() != null)
+        if (cop.getRidingEntity() != null)
             cop.getRidingEntity().dismountRidingEntity();
 
         cop.setAttackTarget(null);

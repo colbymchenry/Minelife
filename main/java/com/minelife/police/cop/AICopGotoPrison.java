@@ -112,6 +112,9 @@ public class AICopGotoPrison extends EntityAIBase {
         if(!cop.chargesForTarget.isEmpty() && cop.getCarryingPlayer() != null) {
             Prisoner prisoner = new Prisoner(cop.getCarryingPlayer().getUniqueID(), cop.chargesForTarget);
             try {
+                prisoner.setSavedInventory(cop.getCarryingPlayer().inventory);
+                cop.getCarryingPlayer().inventory.clear();
+                cop.getCarryingPlayer().inventoryContainer.detectAndSendChanges();
                 prisoner.save();
             } catch (SQLException e) {
                 e.printStackTrace();

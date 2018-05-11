@@ -44,7 +44,7 @@ public class DrugProducerListener {
         DrugProducerHandler.INSTANCE.addXP(player.getUniqueID(), 100);
 
         if (DrugProducerHandler.INSTANCE.getLevel(player) > level
-                && (!lastLevelUpSong.containsKey(player.getUniqueID()) || lastLevelUpSong.get(player.getUniqueID()) < System.currentTimeMillis())) {
+                && DrugProducerHandler.INSTANCE.getLevel(player) % 10 == 0 && (!lastLevelUpSong.containsKey(player.getUniqueID()) || lastLevelUpSong.get(player.getUniqueID()) < System.currentTimeMillis())) {
             lastLevelUpSong.put(player.getUniqueID(), System.currentTimeMillis() + 10000L);
             Minelife.getNetwork().sendTo(new PacketPlaySound("minelife:drug_level_up", 1, 1), player);
 

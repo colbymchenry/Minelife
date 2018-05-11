@@ -3,9 +3,11 @@ package com.minelife.police.client;
 import com.google.common.collect.Sets;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
+import com.minelife.core.event.EntityDismountEvent;
 import com.minelife.police.cop.EntityCop;
 import com.minelife.police.ModPolice;
 import com.minelife.police.PacketRequestCopStatus;
+import com.minelife.police.network.PacketCheckUnconscious;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -41,6 +43,7 @@ public class ClientProxy extends MLProxy {
         if (event.getEntity() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getEntity();
             Minelife.getNetwork().sendToServer(new PacketRequestCopStatus(player.getUniqueID()));
+            Minelife.getNetwork().sendToServer(new PacketCheckUnconscious(player.getUniqueID()));
         }
     }
 
@@ -51,6 +54,15 @@ public class ClientProxy extends MLProxy {
             field.set(player, value);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
+        }
+    }
+
+    @SubscribeEvent
+    public void onDismount(EntityDismountEvent event) {
+        EntityPlayer player = (EntityPlayer) event.entity;
+        System.out.println(player.getRidingEntity().getClass().getSimpleName());
+        if(player.getRidingEntity().getClass().getSimpleName().contains("sit")) {
+            player.dismountRidingEntity();
         }
     }
 }

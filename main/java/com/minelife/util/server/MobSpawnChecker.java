@@ -7,6 +7,7 @@ import com.minelife.jobs.EntityJobNPC;
 import com.minelife.police.cop.EntityCop;
 import com.minelife.pvplogger.EntityPlayerTracker;
 import com.minelife.realestate.EntityReceptionist;
+import com.minelife.realestate.ModRealEstate;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.EntityElderGuardian;
@@ -34,6 +35,8 @@ public class MobSpawnChecker {
                 event.getEntity() instanceof EntityEMT) return;
 
         if (!(event.getEntity() instanceof EntityLivingBase)) return;
+
+        if(ModRealEstate.getEstateAt(event.getWorld(), event.getEntity().getPosition()) != null) return;
 
         int rand = event.getWorld().rand.nextInt(100);
 

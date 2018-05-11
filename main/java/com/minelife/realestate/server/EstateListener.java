@@ -139,7 +139,6 @@ public class EstateListener {
         Estate estate = ModRealEstate.getEstateAt(event.getWorld(), event.getPos());
 
         if (estate == null) return;
-
         if (estate.getPlayerPermissions(player.getUniqueID()).contains(PlayerPermission.INTERACT)) return;
 
         player.sendMessage(new TextComponentString(TextFormatting.LIGHT_PURPLE + "[RealEstate]" + TextFormatting.GOLD + " You are " + TextFormatting.RED + "not" + TextFormatting.GOLD + " authorized to interact here."));

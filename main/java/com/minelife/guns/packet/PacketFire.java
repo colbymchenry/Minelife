@@ -43,7 +43,7 @@ public class PacketFire implements IMessage {
         public IMessage onMessage(PacketFire message, MessageContext ctx) {
             // TODO: Need to fix ping '0'
             if(ItemHandcuff.isHandcuffed(ctx.getServerHandler().player)) return null;
-            FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.fire(ctx.getServerHandler().player, message.lookVector, 0));
+            FMLServerHandler.instance().getServer().addScheduledTask(() -> ItemGun.fire(ctx.getServerHandler().player, message.lookVector, ctx.getServerHandler().player.ping));
             return null;
         }
 

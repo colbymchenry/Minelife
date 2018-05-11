@@ -46,35 +46,6 @@ public class CommandCop extends MLCommand {
             ServerProxy.cleanCops(sender.getEntityWorld());
             ServerProxy.spawnCops(sender.getEntityWorld());
             sender.sendMessage(new TextComponentString("Reset!"));
-        } else if(args[0].equalsIgnoreCase("bail")) {
-            if (args.length != 2) {
-                sender.sendMessage(new TextComponentString(getUsage(sender)));
-                return;
-            }
-
-            UUID playerID = UUIDFetcher.get(args[1]);
-
-            if (playerID != null) {
-
-                // kick off cop if player is riding cop
-                EntityCop cop = ServerProxy.getCopsForWorld(sender.getEntityWorld()).stream().filter(entityCop -> entityCop.getCarryingPlayer() != null && entityCop.getCarryingPlayer().getUniqueID().equals(playerID)).findFirst().orElse(null);
-                if (cop != null) {
-                    cop.getCarryingPlayer().dismountRidingEntity();
-                    cop.setAttackTarget(null);
-                    cop.setChasingPlayer(null);
-                    cop.getNavigator().clearPath();
-                }
-
-                Prisoner prisoner = Prisoner.getPrisoner(playerID);
-
-                // if a prisoner take back to spawn and give items back
-                if (prisoner != null) {
-                    if(PlayerHelper.getPlayer(playerID) != null) {
-                        prisoner.freePrisoner(PlayerHelper.getPlayer(playerID));
-                    } else sender.sendMessage(new TextComponentString(TextFormatting.RED + "Player is not online."));
-                }
-
-            }
         } else if(args[0].equalsIgnoreCase("reset-inventory")) {
             if (args.length != 2) {
                 sender.sendMessage(new TextComponentString(getUsage(sender)));

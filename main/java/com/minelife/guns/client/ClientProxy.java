@@ -231,7 +231,7 @@ public class ClientProxy extends MLProxy {
                 GuiHelper.drawRect(centerX - 6, centerY, 3, 1);
                 GuiHelper.drawRect(centerX + 4, centerY, 3, 1);
             } else {
-                if (gunType == EnumGun.BARRETT || gunType == EnumGun.AWP)
+                if (gunType.name().contains("BARRETT") || gunType.name().contains("AWP"))
                     drawSniperScope(centerX, centerY, 100);
             }
 
@@ -267,7 +267,7 @@ public class ClientProxy extends MLProxy {
 //                    }
                 }
 
-                event.setNewfov(gunType == EnumGun.AWP || gunType == EnumGun.BARRETT ? 0.2F : 0.9F);
+                event.setNewfov(gunType.name().contains("BARRETT") || gunType.name().contains("AWP") ? 0.2F : 0.9F);
             }
         }
     }

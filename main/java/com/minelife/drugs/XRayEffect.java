@@ -1,5 +1,6 @@
 package com.minelife.drugs;
 
+import blusunrize.immersiveengineering.common.IEContent;
 import blusunrize.immersiveengineering.common.blocks.BlockTypes_Ore;
 import blusunrize.immersiveengineering.common.blocks.ItemBlockIEBase;
 import com.google.common.collect.Lists;
@@ -76,7 +77,7 @@ public class XRayEffect extends Potion {
 //        whitelist.put(Block.getBlockFromName("immersiveengineering:ore").getDefaultState().withProperty(BlockTypes_Ore, BlockTypes_Ore.ALUMINUM), new Color(165, 93, 53, 50));
 //        whitelist.put(BlockName.resource.getBlockState(ResourceBlock.tin_ore), new Color(211, 212, 213, 50));
 //        whitelist.put(BlockName.resource.getBlockState(ResourceBlock.uranium_ore), new Color(93, 165, 116, 50));
-//        whitelist.put(BlockName.resource.getBlockState(ResourceBlock.lead_ore), new Color(132, 116, 90, 50));
+//        whitelist.put(IEContent.blockOre.getDefaultState().withProperty(), new Color(132, 116, 90, 50));
         whitelist.put(ModGuns.blockZincOre.getDefaultState(), new Color(186, 196, 200, 50));
 //        whitelist.put(MLBlocks.sulfur_ore, new Color(163, 165, 66, 50));
 //        whitelist.put(MLBlocks.pyrolusite_ore, new Color(26, 27, 27, 50));
