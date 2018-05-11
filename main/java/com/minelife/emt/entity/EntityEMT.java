@@ -8,6 +8,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -17,6 +18,7 @@ import java.util.List;
 
 public class EntityEMT extends EntityVillager {
 
+    private BlockPos spawnPoint;
     private EntityPlayer revivingPlayer;
 
     public EntityEMT(World worldIn) {
@@ -61,6 +63,12 @@ public class EntityEMT extends EntityVillager {
     }
 
     @Override
+    public void onLivingUpdate() {
+        super.onLivingUpdate();
+        if(spawnPoint == null) spawnPoint = getPosition();
+    }
+
+    @Override
     protected SoundEvent getAmbientSound() {
         return null;
     }
@@ -70,14 +78,12 @@ public class EntityEMT extends EntityVillager {
         return false;
     }
 
-    public BlockPos getRandomSpawnPoint() {
-        if (ModEMT.getConfig().getStringList("EMTSpawnPoints") == null) return getPosition();
-        List<String> spawnPoints = ModPolice.getConfig().getStringList("EMTSpawnPoints");
-        if(spawnPoints.size() < 1) return getPosition();
-        String s = spawnPoints.get(getEntityWorld().rand.nextInt(spawnPoints.size()));
-        String[] data = s.split(",");
-        return new BlockPos(NumberConversions.toInt(data[0]), NumberConversions.toInt(data[1]), NumberConversions.toInt(data[2]));
+    public BlockPos getSpawnPoint() {
+        return spawnPoint;
     }
 
-
+    @Override
+    public boolean processInteract(EntityPlayer player, EnumHand hand) {
+        return false;
+    }
 }

@@ -8,9 +8,9 @@ import com.minelife.emt.entity.EntityEMT;
 import com.minelife.essentials.Location;
 import com.minelife.essentials.server.EventTeleport;
 import com.minelife.essentials.server.commands.Spawn;
-import com.minelife.police.cop.EntityCop;
 import com.minelife.police.ModPolice;
 import com.minelife.police.Prisoner;
+import com.minelife.police.cop.EntityCop;
 import com.minelife.util.MLConfig;
 import com.minelife.util.PacketPlaySound;
 import com.minelife.util.PlayerHelper;
@@ -75,19 +75,12 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent
     public void onDeath(LivingDeathEvent event) {
-        if(event.getEntity() instanceof EntityEMT) {
-            com.minelife.emt.ServerProxy.spawnEMTs(event.getEntity().world);
-            EntityEMT emt = (EntityEMT) event.getEntity();
-            if(emt.getAttackTarget() != null) {
-                ModEMT.requestEMT((EntityPlayer) emt.getAttackTarget());
-                emt.setAttackTarget(null);
-                emt.setRevivingPlayer(null);
-                emt.getNavigator().clearPath();
-            }
-            return;
+        if (event.getEntity() instanceof EntityCop) {
+            event.setCanceled(true);
+            EntityCop cop = (EntityCop) event.getEntity();
+            event.getEntity().setPosition(cop.getSpawnPoint().getX() + 0.5, cop.getSpawnPoint().getY() + 0.5, cop.getSpawnPoint().getZ() + 0.5);
+            cop.setHealth(20);
         }
-
-        if(event.getEntity() instanceof EntityCop) spawnCops(event.getEntity().world);
 
         if (!(event.getEntity() instanceof EntityPlayer) && !(event.getEntity() instanceof EntityCop)) return;
 
@@ -101,7 +94,7 @@ public class ServerProxy extends MLProxy {
         }
 
         event.setCanceled(true);
-        if(event.getEntity() instanceof EntityPlayer) {
+        if (event.getEntity() instanceof EntityPlayer) {
             ((EntityPlayer) event.getEntity()).setHealth(10);
             ModPolice.setUnconscious((EntityPlayer) event.getEntity(), true, false);
             ModEMT.requestEMT((EntityPlayer) event.getEntity());
@@ -116,12 +109,13 @@ public class ServerProxy extends MLProxy {
 
         if (!(event.getEntity() instanceof EntityPlayer) && !(event.getEntity() instanceof EntityCop)) return;
 
-        if(event.getEntity() instanceof EntityCop) {
-            ModPolice.setUnconscious((EntityPlayer) event.getSource().getTrueSource(), true, true);
-            event.getSource().getTrueSource().getEntityData().setBoolean("Tazed", false);
-            Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:tazer", 1, 1), new NetworkRegistry.TargetPoint(event.getEntity().dimension, event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ, 10));
-            return;
-        }
+//        if (event.getEntity() instanceof EntityCop) {
+//
+//            ModPolice.setUnconscious((EntityPlayer) event.getSource().getTrueSource(), true, true);
+//            event.getSource().getTrueSource().getEntityData().setBoolean("Tazed", false);
+//            Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:tazer", 1, 1), new NetworkRegistry.TargetPoint(event.getEntity().dimension, event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ, 10));
+//            return;
+//        }
 
         // TODO: Make cop chase player down and then taze
         EntityCop.getNearbyPolice(event.getEntityLiving().getEntityWorld(), event.getSource().getTrueSource().getPosition()).forEach(officer -> {
@@ -176,15 +170,15 @@ public class ServerProxy extends MLProxy {
 
     @SubscribeEvent
     public void onTeleport(EventTeleport event) {
-        if(PlayerHelper.isOp(event.getPlayer())) return;
-       if(Prison.getPrison(event.getPlayer().getPosition()) != null || (event.getPlayer().isRiding() && event.getPlayer().getRidingEntity() instanceof EntityCop)) {
-           event.setCanceled(true);
-           if(event.getPlayer().isRiding()) {
-               event.getPlayer().sendMessage(new TextComponentString(TextFormatting.RED + "You are under arrest. Teleportation cancelled."));
-           } else {
-               event.getPlayer().sendMessage(new TextComponentString(TextFormatting.RED + "You are in prison. Teleportation cancelled."));
-           }
-       }
+        if (PlayerHelper.isOp(event.getPlayer())) return;
+        if (Prison.getPrison(event.getPlayer().getPosition()) != null || (event.getPlayer().isRiding() && event.getPlayer().getRidingEntity() instanceof EntityCop)) {
+            event.setCanceled(true);
+            if (event.getPlayer().isRiding()) {
+                event.getPlayer().sendMessage(new TextComponentString(TextFormatting.RED + "You are under arrest. Teleportation cancelled."));
+            } else {
+                event.getPlayer().sendMessage(new TextComponentString(TextFormatting.RED + "You are in prison. Teleportation cancelled."));
+            }
+        }
     }
 
     private static Random random = new Random();
@@ -194,7 +188,7 @@ public class ServerProxy extends MLProxy {
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (nextCheck <= System.currentTimeMillis()) {
             // initial setup
-            if(nextCheck == 0) {
+            if (nextCheck == 0) {
                 cleanCops(FMLServerHandler.instance().getServer().worlds[0]);
                 spawnCops(FMLServerHandler.instance().getServer().worlds[0]);
                 nextCheck = System.currentTimeMillis() + 60000L;
@@ -222,7 +216,7 @@ public class ServerProxy extends MLProxy {
             String[] data = spawn.split(",");
             BlockPos pos = new BlockPos(Integer.parseInt(data[0]), Integer.parseInt(data[1]), Integer.parseInt(data[2]));
             for (int i = 0; i < policePerSpawn; i++) {
-                EntityCop cop = new EntityCop(world, Prison.getPrison(pos) != null);
+                EntityCop cop = new EntityCop(world);
                 cop.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
                 world.spawnEntity(cop);
             }

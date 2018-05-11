@@ -12,6 +12,7 @@ import com.minelife.util.PacketPlaySound;
 import com.minelife.util.client.render.Vector;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAIMoveToBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.pathfinding.Path;
@@ -34,7 +35,10 @@ public class AICopPatrol extends EntityAIBase {
 
     @Override
     public boolean shouldContinueExecuting() {
-        if (cop.isCarryingPlayer() || cop.getAttackTarget() == null || cop.isTargetArrested()) return false;
+        if (cop.isCarryingPlayer() || cop.getAttackTarget() == null || cop.isTargetArrested()) {
+            cop.setPositionAndUpdate(cop.getSpawnPoint().getX() + 0.5, cop.getSpawnPoint().getY() + 0.5, cop.getSpawnPoint().getZ() + 0.5);
+            return false;
+        }
 
         if (cop.chargesForTarget.isEmpty()) {
             if (Prisoner.isPrisoner(cop.getAttackTarget().getUniqueID())) {

@@ -20,6 +20,7 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -39,15 +40,10 @@ public class EntityCop extends EntityVillager implements IRangedAttackMob {
     protected List<ChargeType> chargesForTarget = Lists.newArrayList();
     protected Prison prison;
     private boolean checkedForPrison;
+    private BlockPos spawnPoint;
 
     public EntityCop(World world) {
         super(world);
-    }
-
-    public EntityCop(World worldIn, boolean isGuard) {
-        this(worldIn);
-        if (isGuard)
-            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ModGuns.itemGun, 1, EnumGun.M4A4.ordinal()));
     }
 
     @Override
@@ -56,11 +52,12 @@ public class EntityCop extends EntityVillager implements IRangedAttackMob {
         this.tasks.addTask(1, aiShoot = new AIShootPrison(this, 1.0D, 20, 15.0F));
         this.tasks.addTask(2, new AICopGotoPrison(this));
         this.tasks.addTask(3, new AICopPatrol(this));
-        this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
-        this.tasks.addTask(5, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
-        this.tasks.addTask(7, new EntityAILookIdle(this));
-        this.tasks.addTask(8, new EntityAIOpenDoor(this, true));
+        this.tasks.addTask(4, new AICopGoHome(this));
+        this.tasks.addTask(5, new EntityAIOpenDoor(this, true));
+        this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D));
+        this.tasks.addTask(8, new EntityAILookIdle(this));
+        this.tasks.addTask(9, new EntityAIOpenDoor(this, true));
         aiShoot.setAttackCooldown(20);
         this.targetTasks.addTask(0, new AIAttackNearestTarget(this, EntityPlayer.class, true));
     }
@@ -79,6 +76,9 @@ public class EntityCop extends EntityVillager implements IRangedAttackMob {
         if(!checkedForPrison) {
             checkedForPrison = true;
             prison = Prison.getPrison(getPosition());
+            if(prison != null)  this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(ModGuns.itemGun, 1, EnumGun.M4A4.ordinal()));
+            spawnPoint = getPosition();
+            setHomePosAndDistance(spawnPoint, 11);
         }
     }
 
@@ -134,6 +134,11 @@ public class EntityCop extends EntityVillager implements IRangedAttackMob {
         return false;
     }
 
+    @Override
+    public boolean processInteract(EntityPlayer player, EnumHand hand) {
+        return false;
+    }
+
     public boolean isCarryingPlayer() {
         return !getPassengers().isEmpty() && getPassengers().get(0) instanceof EntityPlayer;
     }
@@ -159,5 +164,7 @@ public class EntityCop extends EntityVillager implements IRangedAttackMob {
         getEntityData().setString("KillerPlayer", playerID.toString());
     }
 
-
+    public BlockPos getSpawnPoint() {
+        return spawnPoint;
+    }
 }

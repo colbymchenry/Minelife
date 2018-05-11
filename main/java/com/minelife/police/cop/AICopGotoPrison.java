@@ -101,11 +101,11 @@ public class AICopGotoPrison extends EntityAIBase {
     }
 
     public BlockPos getRandomSpawnPoint() {
-        if (ModPolice.getConfig().getStringList("PoliceSpawnPoints") == null) return cop.getPosition();
-        List<String> spawnPoints = ModPolice.getConfig().getStringList("PoliceSpawnPoints");
-        String s = spawnPoints.get(cop.getEntityWorld().rand.nextInt(spawnPoints.size()));
-        String[] data = s.split(",");
-        return new BlockPos(NumberConversions.toInt(data[0]), NumberConversions.toInt(data[1]), NumberConversions.toInt(data[2]));
+//        if (ModPolice.getConfig().getStringList("PoliceSpawnPoints") == null) return cop.getPosition();
+//        List<String> spawnPoints = ModPolice.getConfig().getStringList("PoliceSpawnPoints");
+//        String s = spawnPoints.get(cop.getEntityWorld().rand.nextInt(spawnPoints.size()));
+//        String[] data = s.split(",");
+        return this.cop.getSpawnPoint();
     }
 
     public void jailPlayer() {

@@ -23,27 +23,34 @@ public class ForestListener {
         initForests();
     }
 
+    int tick;
+
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
-        FOREST_QUE.forEach(((forest, resetTime) -> {
-            int secondsTillReset = (int) ((resetTime - System.currentTimeMillis()) / 1000L);
-            if (secondsTillReset <= 0) {
-                List<EntityLivingBase> entities = forest.getWorld().getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(forest.getMin(), forest.getMax()));
-                entities.forEach(entity -> entity.setPositionAndUpdate(forest.getExit().getX(), forest.getExit().getY(), forest.getExit().getZ()));
-                try {
-                    forest.generate();
-                } catch (MaxChangedBlocksException e) {
-                    e.printStackTrace();
+        tick++;
+        if(tick > 100) {
+            FOREST_QUE.forEach(((forest, resetTime) -> {
+                int secondsTillReset = (int) ((resetTime - System.currentTimeMillis()) / 1000L);
+                if (secondsTillReset <= 0) {
+                    List<EntityLivingBase> entities = forest.getWorld().getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(forest.getMin(), forest.getMax()));
+                    entities.forEach(entity -> entity.setPositionAndUpdate(forest.getExit().getX(), forest.getExit().getY(), forest.getExit().getZ()));
+                    try {
+                        forest.generate();
+                    } catch (MaxChangedBlocksException e) {
+                        e.printStackTrace();
+                    }
+                    FOREST_QUE.put(forest, System.currentTimeMillis() + forest.getSecondsBetweenReset() * 1000L);
                 }
-                FOREST_QUE.put(forest, System.currentTimeMillis() + forest.getSecondsBetweenReset() * 1000L);
-            }
-        }));
+            }));
+        }
     }
 
     private void initForests() throws IOException, InvalidConfigurationException {
         File file = new File(Minelife.getDirectory() + "/resourcefulness/forests");
-        for (File file1 : file.listFiles()) {
-            FOREST_QUE.put(new Forest(UUID.fromString(file1.getName().replace(".yml", ""))), System.currentTimeMillis());
+        if(file.listFiles() != null) {
+            for (File file1 : file.listFiles()) {
+                FOREST_QUE.put(new Forest(UUID.fromString(file1.getName().replace(".yml", ""))), System.currentTimeMillis());
+            }
         }
     }
 

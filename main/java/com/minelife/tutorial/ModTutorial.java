@@ -5,6 +5,7 @@ import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.util.NumberConversions;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.File;
@@ -29,6 +30,11 @@ public class ModTutorial extends MLMod {
     @Override
     public Class<? extends MLProxy> getClientProxyClass() {
         return com.minelife.tutorial.ClientProxy.class;
+    }
+
+    @Override
+    public void serverStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CommandHelp());
     }
 
     public static List<File> getPages(File currentSection) {

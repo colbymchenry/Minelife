@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -40,6 +41,16 @@ public class ServerProxy extends MLProxy {
     @SubscribeEvent
     public void onPayout(WelfarePayoutEvent event) {
         event.setAmount(event.getAmount() + 1024);
+    }
+
+    @SubscribeEvent
+    public void onDeath(LivingDeathEvent event) {
+        if(event.getEntity() instanceof EntityEMT) {
+            event.setCanceled(true);
+            EntityEMT emt = (EntityEMT) event.getEntity();
+            event.getEntity().setPosition(emt.getSpawnPoint().getX() + 0.5, emt.getSpawnPoint().getY() + 0.5, emt.getSpawnPoint().getZ() + 0.5);
+            emt.setHealth(20);
+        }
     }
 
     @SubscribeEvent
@@ -80,8 +91,7 @@ public class ServerProxy extends MLProxy {
                         emtRevivingPlayer.setRevivingPlayer(null);
                         emtRevivingPlayer.setAttackTarget(null);
                         emtRevivingPlayer.getNavigator().clearPath();
-                        BlockPos randomPos = emtRevivingPlayer.getRandomSpawnPoint();
-                        emtRevivingPlayer.setPositionAndUpdate(randomPos.getX(), randomPos.getY() + 0.5, randomPos.getZ());
+                        emtRevivingPlayer.setPositionAndUpdate(emtRevivingPlayer.getSpawnPoint().getX() + 0.5, emtRevivingPlayer.getSpawnPoint().getY() + 0.5, emtRevivingPlayer.getSpawnPoint().getZ() + 0.5);
                     }
                 }
             }
@@ -114,7 +124,7 @@ public class ServerProxy extends MLProxy {
     private static long nextCheck = 0L;
 
     public static void spawnEMTs(World world) {
-        int maxEMTs = config.getInt("MaxEMTs", 30);
+        int maxEMTs = config.getInt("MaxEMTs", 5);
         List<String> spawns = config.getStringList("EMTSpawnPoints") != null ? config.getStringList("EMTSpawnPoints") : null;
         int policePerSpawn = spawns.isEmpty() ? 0 : maxEMTs / spawns.size();
 

@@ -22,23 +22,32 @@ public class QuarryListener {
         initQuarries();
     }
 
+    int tick;
+
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
-        QUARRY_QUE.forEach(((quarry, resetTime) -> {
-            int secondsTillReset = (int) ((resetTime - System.currentTimeMillis()) / 1000L);
-            if (secondsTillReset <= 0) {
-                List<EntityLivingBase> entities = quarry.getWorld().getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(quarry.getMin(), quarry.getMax()));
-                entities.forEach(entity -> entity.setPositionAndUpdate(quarry.getExit().getX(), quarry.getExit().getY(), quarry.getExit().getZ()));
-                quarry.generate();
-                QUARRY_QUE.put(quarry, System.currentTimeMillis() + quarry.getSecondsBetweenReset() * 1000L);
-            }
-        }));
+        tick++;
+        if(tick > 100) {
+            QUARRY_QUE.forEach(((quarry, resetTime) -> {
+                int secondsTillReset = (int) ((resetTime - System.currentTimeMillis()) / 1000L);
+                if (secondsTillReset <= 0) {
+                    try {
+                        List<EntityLivingBase> entities = quarry.getWorld().getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(quarry.getMin(), quarry.getMax()));
+                        entities.forEach(entity -> entity.setPositionAndUpdate(quarry.getExit().getX(), quarry.getExit().getY(), quarry.getExit().getZ()));
+                        quarry.generate();
+                        QUARRY_QUE.put(quarry, System.currentTimeMillis() + quarry.getSecondsBetweenReset() * 1000L);
+                    }catch(Exception e) {}
+                }
+            }));
+        }
     }
 
     private void initQuarries() throws IOException, InvalidConfigurationException {
         File file = new File(Minelife.getDirectory() + "/resourcefulness/quarries");
-        for (File file1 : file.listFiles()) {
-            QUARRY_QUE.put(new Quarry(UUID.fromString(file1.getName().replace(".yml", ""))), System.currentTimeMillis());
+        if(file.listFiles() != null) {
+            for (File file1 : file.listFiles()) {
+                QUARRY_QUE.put(new Quarry(UUID.fromString(file1.getName().replace(".yml", ""))), System.currentTimeMillis());
+            }
         }
     }
 

@@ -17,8 +17,7 @@ import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Quarry implements Comparable<Quarry> {
 
@@ -150,9 +149,9 @@ public class Quarry implements Comparable<Quarry> {
         World world = getWorld();
         List<IRDSObject> ores = quarryTable.getResult();
         int i = 0;
-        for (int x = getMin().getX(); x < getMax().getX(); x++) {
-            for (int y = getMin().getY(); y < getMax().getY(); y++) {
-                for (int z = getMin().getZ(); z < getMax().getZ(); z++) {
+        for (int x = getMin().getX(); x <= getMax().getX(); x++) {
+            for (int y = getMin().getY(); y <= getMax().getY(); y++) {
+                for (int z = getMin().getZ(); z <= getMax().getZ(); z++) {
                     i = i >= ores.size() ? ores.size() - 1 : i;
                     QuarryBlock quarryBlock = (QuarryBlock) ores.get(i);
                     world.setBlockState(new BlockPos(x, y, z), quarryBlock.getValue());

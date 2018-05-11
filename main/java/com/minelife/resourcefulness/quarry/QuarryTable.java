@@ -16,9 +16,9 @@ public class QuarryTable extends IRDSTable {
     @Override
     public int getCount() {
         int i = 0;
-        for (int x = quarry.getMin().getX(); x < quarry.getMax().getX(); x++) {
-            for (int y = quarry.getMin().getY(); y < quarry.getMax().getY(); y++) {
-                for (int z = quarry.getMin().getZ(); z < quarry.getMax().getZ(); z++) {
+        for (int x = quarry.getMin().getX(); x <= quarry.getMax().getX(); x++) {
+            for (int y = quarry.getMin().getY(); y <= quarry.getMax().getY(); y++) {
+                for (int z = quarry.getMin().getZ(); z <= quarry.getMax().getZ(); z++) {
                     i++;
                 }
             }
