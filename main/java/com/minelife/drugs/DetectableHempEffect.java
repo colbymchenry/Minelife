@@ -28,7 +28,7 @@ public class DetectableHempEffect extends Potion {
     @SubscribeEvent
     public void onEntityUpdate(LivingEvent.LivingUpdateEvent e) {
         if (e.getEntityLiving().isPotionActive(this)) {
-            if (e.getEntityLiving().getActivePotionEffect(this).getDuration() == 0) {
+            if (e.getEntityLiving().getActivePotionEffect(this).getDuration() <= 1) {
                 e.getEntityLiving().removePotionEffect(this);
             }
         }

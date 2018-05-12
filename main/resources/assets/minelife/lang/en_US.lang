@@ -1,6 +1,7 @@
 potion.detectable_cocaine=Detectable Cocaine
 potion.detectable_hemp=Detectable Hemp
 potion.xray=X-Ray
+potion.arrest=Arrested
 tile.minelife:chest_shop.name=Chest Shop
 tile.minelife:atmBottom.name=ATM
 tile.minelife:cash.name=Cash Pile

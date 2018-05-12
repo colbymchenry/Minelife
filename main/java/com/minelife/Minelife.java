@@ -47,10 +47,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 //dependencies = "required-after:ic2;"
-@Mod(modid = Minelife.MOD_ID, name = Minelife.NAME, version = Minelife.VERSION, dependencies = "required-after:immersiveengineering;", acceptableRemoteVersions = Minelife.VERSION)
+@Mod(modid = Minelife.MOD_ID, name = Minelife.NAME, version = Minelife.VERSION, dependencies = "required-after:immersiveengineering;", acceptableRemoteVersions = "3.3")
 public class Minelife {
 
-    public static final String MOD_ID = "minelife", VERSION = "3.2", NAME = "Minelife";
+    public static final String MOD_ID = "minelife", VERSION = "3.3", NAME = "Minelife";
 
     @SidedProxy(clientSide = "com.minelife.ClientProxy", serverSide = "com.minelife.ServerProxy")
     private static MLProxy PROXY;

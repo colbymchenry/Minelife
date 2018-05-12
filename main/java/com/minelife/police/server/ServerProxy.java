@@ -8,6 +8,8 @@ import com.minelife.emt.entity.EntityEMT;
 import com.minelife.essentials.Location;
 import com.minelife.essentials.server.EventTeleport;
 import com.minelife.essentials.server.commands.Spawn;
+import com.minelife.police.ArrestedEffect;
+import com.minelife.police.ItemHandcuff;
 import com.minelife.police.ModPolice;
 import com.minelife.police.Prisoner;
 import com.minelife.police.cop.EntityCop;
@@ -56,7 +58,7 @@ public class ServerProxy extends MLProxy {
             Prison.initPrisons();
             Prisoner.initPrisoners();
             MinecraftForge.EVENT_BUS.register(this);
-            MinecraftForge.EVENT_BUS.register(ModPolice.itemHandcuff);
+            MinecraftForge.EVENT_BUS.register(ArrestedEffect.INSTANCE);
             MinecraftForge.EVENT_BUS.register(ModPolice.itemHandcuffKey);
             MinecraftForge.EVENT_BUS.register(new Prisoner.Listener());
         } catch (Exception e) {
@@ -109,14 +111,6 @@ public class ServerProxy extends MLProxy {
 
         if (!(event.getEntity() instanceof EntityPlayer) && !(event.getEntity() instanceof EntityCop)) return;
 
-//        if (event.getEntity() instanceof EntityCop) {
-//
-//            ModPolice.setUnconscious((EntityPlayer) event.getSource().getTrueSource(), true, true);
-//            event.getSource().getTrueSource().getEntityData().setBoolean("Tazed", false);
-//            Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:tazer", 1, 1), new NetworkRegistry.TargetPoint(event.getEntity().dimension, event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ, 10));
-//            return;
-//        }
-
         // TODO: Make cop chase player down and then taze
         EntityCop.getNearbyPolice(event.getEntityLiving().getEntityWorld(), event.getSource().getTrueSource().getPosition()).forEach(officer -> {
             if (officer.getEntitySenses().canSee(event.getSource().getTrueSource()) && officer.getDistance(event.getSource().getTrueSource()) < 4) {
@@ -135,8 +129,11 @@ public class ServerProxy extends MLProxy {
             }
         }
 
+        player.inventory.clear();
+
         File file = new File(System.getProperty("user.dir") + "/world/playerdata", player.getUniqueID().toString() + ".dat");
-        file.delete();
+        if (file != null)
+            file.delete();
     }
 
     @SubscribeEvent
@@ -171,9 +168,11 @@ public class ServerProxy extends MLProxy {
     @SubscribeEvent
     public void onTeleport(EventTeleport event) {
         if (PlayerHelper.isOp(event.getPlayer())) return;
-        if (Prison.getPrison(event.getPlayer().getPosition()) != null || (event.getPlayer().isRiding() && event.getPlayer().getRidingEntity() instanceof EntityCop)) {
+        if (Prisoner.isPrisoner(event.getPlayer().getUniqueID()) || ItemHandcuff.isHandcuffed(event.getPlayer()) ||
+                (event.getPlayer().isRiding() && (event.getPlayer().getRidingEntity() instanceof EntityCop
+                        || ModPolice.isCop(event.getPlayer().getRidingEntity().getUniqueID())))) {
             event.setCanceled(true);
-            if (event.getPlayer().isRiding()) {
+            if (event.getPlayer().isRiding() || ItemHandcuff.isHandcuffed(event.getPlayer())) {
                 event.getPlayer().sendMessage(new TextComponentString(TextFormatting.RED + "You are under arrest. Teleportation cancelled."));
             } else {
                 event.getPlayer().sendMessage(new TextComponentString(TextFormatting.RED + "You are in prison. Teleportation cancelled."));

@@ -48,7 +48,7 @@ public class XRayEffect extends Potion {
     @SubscribeEvent
     public void onEntityUpdate(LivingEvent.LivingUpdateEvent e) {
         if (e.getEntityLiving().isPotionActive(this)) {
-            if (e.getEntityLiving().getActivePotionEffect(this).getDuration() == 0) {
+            if (e.getEntityLiving().getActivePotionEffect(this).getDuration() <= 1) {
                 e.getEntityLiving().removePotionEffect(this);
             }
         }
@@ -79,8 +79,11 @@ public class XRayEffect extends Potion {
 //        whitelist.put(BlockName.resource.getBlockState(ResourceBlock.uranium_ore), new Color(93, 165, 116, 50));
 //        whitelist.put(IEContent.blockOre.getDefaultState().withProperty(), new Color(132, 116, 90, 50));
         whitelist.put(ModGuns.blockZincOre.getDefaultState(), new Color(186, 196, 200, 50));
-//        whitelist.put(MLBlocks.sulfur_ore, new Color(163, 165, 66, 50));
-//        whitelist.put(MLBlocks.pyrolusite_ore, new Color(26, 27, 27, 50));
+//        defaultOres.add(new QuarryBlock(IEContent.blockOre.getStateFromMeta(BlockTypes_MetalsIE.COPPER.ordinal()), 5, true, false, true));
+//        defaultOres.add(new QuarryBlock(IEContent.blockOre.getStateFromMeta(BlockTypes_MetalsIE.ALUMINUM.ordinal()), 2, true, false, true));
+//        defaultOres.add(new QuarryBlock(IEContent.blockOre.getStateFromMeta(BlockTypes_MetalsIE.NICKEL.ordinal()), 5, true, false, true));
+//        defaultOres.add(new QuarryBlock(IEContent.blockOre.getStateFromMeta(BlockTypes_MetalsIE.SILVER.ordinal()), 5, true, false, true));
+//        defaultOres.add(new QuarryBlock(IEContent.blockOre.getStateFromMeta(BlockTypes_MetalsIE.URANIUM.ordinal()), 1, true, false, true));
 
         List<Vector> block_vectors = Lists.newArrayList();
 

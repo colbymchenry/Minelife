@@ -29,7 +29,7 @@ public class CommandEMT extends CommandBase {
             return;
         }
 
-        List<String> spawns = ModEMT.getConfig().getStringList("EMTSpawnPoints") != null ? ModPolice.getConfig().getStringList("EMTSpawnPoints") : Lists.newArrayList();
+        List<String> spawns = ModEMT.getConfig().getStringList("EMTSpawnPoints") != null ? ModEMT.getConfig().getStringList("EMTSpawnPoints") : Lists.newArrayList();
 
         if (args[0].equalsIgnoreCase("addspawn")) {
             spawns.add(sender.getPosition().getX() + "," + sender.getPosition().getY() + "," + sender.getPosition().getZ());

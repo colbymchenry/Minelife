@@ -34,7 +34,6 @@ public class CommandDrop extends CommandBase {
         }
 
         Minelife.getNetwork().sendToAll(new PacketDropEntity(player.getPassengers().get(0).getEntityId()));
-        ((EntityPlayer) player.getPassengers().get(0)).addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 80, 5));
         player.removePassengers();
     }
 

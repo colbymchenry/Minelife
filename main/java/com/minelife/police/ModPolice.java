@@ -5,6 +5,7 @@ import com.minelife.AbstractGuiHandler;
 import com.minelife.MLMod;
 import com.minelife.MLProxy;
 import com.minelife.Minelife;
+import com.minelife.drugs.XRayEffect;
 import com.minelife.jobs.network.PacketOpenSignupGui;
 import com.minelife.police.client.ClientProxy;
 import com.minelife.police.cop.EntityCop;
@@ -20,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.List;
@@ -32,6 +34,7 @@ public class ModPolice extends MLMod {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
+        ForgeRegistries.POTIONS.register(ArrestedEffect.INSTANCE);
         EntityRegistry.registerModEntity(new ResourceLocation(Minelife.MOD_ID, "cop"), EntityCop.class, "cop", 7, Minelife.getInstance(), 77, 1, true, 0xFFFFFF, 0x4286f4);
         registerPacket(PacketUnconscious.Handler.class, PacketUnconscious.class, Side.CLIENT);
         registerPacket(PacketSendCopStatus.Handler.class, PacketSendCopStatus.class, Side.CLIENT);

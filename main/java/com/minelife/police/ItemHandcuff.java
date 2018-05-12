@@ -61,23 +61,14 @@ public class ItemHandcuff extends Item {
         if (value) {
             if (!isHandcuffed(player)) {
                 handcuffed.add(player.getUniqueID().toString() + "," + UUID.randomUUID().toString());
-                player.addPotionEffect(new PotionEffect(MobEffects.SPEED, Integer.MAX_VALUE, -10, false, false));
-                player.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, Integer.MAX_VALUE, -10, false, false));
+                player.addPotionEffect(new PotionEffect(ArrestedEffect.INSTANCE, Integer.MAX_VALUE, 0, false, false));
 
                 if (playSound)
                     Minelife.getNetwork().sendToAllAround(new PacketPlaySound("minelife:handcuff", 1, 1), new NetworkRegistry.TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 10));
             }
         } else {
-            String toRemove = null;
-            for (String s : handcuffed) {
-                if (s.contains(player.getUniqueID().toString())) {
-                    toRemove = s;
-                    break;
-                }
-            }
-            handcuffed.remove(toRemove);
-            player.removePotionEffect(MobEffects.SPEED);
-            player.removePotionEffect(MobEffects.JUMP_BOOST);
+            player.removePotionEffect(ArrestedEffect.INSTANCE);
+            player.addPotionEffect(new PotionEffect(ArrestedEffect.INSTANCE, 20, 0, false, false));
         }
 
         ModPolice.getConfig().set("Handcuffed", handcuffed);
@@ -97,95 +88,9 @@ public class ItemHandcuff extends Item {
     }
 
     public static boolean isHandcuffed(EntityPlayer player) {
-        return ModPolice.getConfig().getStringList("Handcuffed") != null
-                && ModPolice.getConfig().getStringList("Handcuffed").stream().filter(playerString -> playerString.contains(player.getUniqueID().toString())).findFirst().orElse(null) != null;
+        return player.getActivePotionEffect(ArrestedEffect.INSTANCE) != null;
     }
 
-    @SubscribeEvent
-    public void onDismount(EntityDismountEvent event) {
-        EntityPlayer player = (EntityPlayer) event.entity;
 
-        if(player.getRidingEntity().getClass().getSimpleName().contains("Sittable")) {
-            Minelife.getNetwork().sendToAll(new PacketDropEntity(player.getEntityId()));
-            return;
-        }
-
-        if (isHandcuffed(player) || player.getRidingEntity() instanceof EntityCop) event.setCanceled(true);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onInteract(PlayerInteractEvent.EntityInteract event) {
-        if (!(event.getTarget() instanceof EntityPlayer)) {
-            return;
-        }
-
-        EntityPlayer handcuffing = event.getEntityPlayer();
-        EntityPlayer beingHandcuffed = (EntityPlayer) event.getTarget();
-
-        if (isHandcuffed(beingHandcuffed) && handcuffing.getPassengers().isEmpty()) {
-            if (handcuffing.isSneaking()) {
-                beingHandcuffed.startRiding(handcuffing);
-                handcuffing.sendMessage(new TextComponentString(StringHelper.ParseFormatting("&6&lType &c&l/drop &6&lto drop the player.", '&')));
-                Minelife.getNetwork().sendToAll(new PacketRidingEntity(beingHandcuffed.getEntityId(), handcuffing.getEntityId()));
-            } else {
-                if (!ModPolice.isCop(handcuffing.getUniqueID()))
-                    handcuffing.sendMessage(new TextComponentString(TextFormatting.RED + "Only the police can view a handcuffed player's inventory."));
-                else
-                    handcuffing.openGui(Minelife.getInstance(), GuiHandler.GUI_PLAYER_INVENTORY, handcuffing.getEntityWorld(), beingHandcuffed.getEntityId(), 0, 0);
-            }
-            return;
-        }
-
-        if (ModPolice.isUnconscious(beingHandcuffed)) {
-            handcuffing.openGui(Minelife.getInstance(), GuiHandler.GUI_PLAYER_INVENTORY, handcuffing.getEntityWorld(), beingHandcuffed.getEntityId(), 0, 0);
-            return;
-        }
-
-        if (handcuffing.getHeldItem(event.getHand()).getItem() != this) {
-            return;
-        }
-
-        if (handcuffing.getDistance(beingHandcuffed) > 1) {
-            return;
-        }
-
-        if (isHandcuffed(beingHandcuffed)) {
-            handcuffing.sendMessage(new TextComponentString(TextFormatting.RED + "That player is already handcuffed."));
-            return;
-        }
-
-        setHandcuffed(beingHandcuffed, true, true);
-
-        ItemStack stack = handcuffing.getHeldItem(event.getHand());
-
-        stack.shrink(1);
-
-        if (stack.isEmpty()) handcuffing.inventory.deleteStack(stack);
-
-        ItemStack key = new ItemStack(ModPolice.itemHandcuffKey);
-        ItemHandcuffKey.setUUID(key, getKeyUUID(beingHandcuffed), beingHandcuffed.getUniqueID());
-        handcuffing.setHeldItem(event.getHand(), key);
-
-        handcuffing.inventoryContainer.detectAndSendChanges();
-    }
-
-    @SubscribeEvent
-    public void onPlayerTick(EntityJoinWorldEvent event) {
-        if (!(event.getEntity() instanceof EntityPlayer)) return;
-
-        EntityPlayer player = (EntityPlayer) event.getEntity();
-
-        if (isHandcuffed(player)) {
-            player.removePotionEffect(MobEffects.SPEED);
-            player.removePotionEffect(MobEffects.JUMP_BOOST);
-            player.addPotionEffect(new PotionEffect(MobEffects.SPEED, Integer.MAX_VALUE, -10, false, false));
-            player.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, Integer.MAX_VALUE, -10, false, false));
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onInteract(PlayerInteractEvent event) {
-        if (isHandcuffed(event.getEntityPlayer())) event.setCanceled(true);
-    }
 
 }
